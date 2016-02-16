@@ -1,0 +1,25 @@
+{
+  "name": "sGis",
+  "authors": [
+    "Maximkaaa <maxim@gritsenko.biz>"
+  ],
+  "description": "Front-end library for visualizing and working with geo-data",
+  "main": "source/sGis.js",
+  "moduleType": [
+    "amd",
+    "globals"
+  ],
+  "license": "GPLv3",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jasmine-core": "jasmine#^2.4.1",
+    "jquery": "^2.2.0"
+  }
+}
