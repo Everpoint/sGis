@@ -76,7 +76,7 @@
         return Math.abs(number - Math.round(number)) < 0.001 ? Math.round(number) : number;
     };
 
-    Event.add(document, 'DOMContentLoaded', setCssRules);
+    sGis.Event.add(document, 'DOMContentLoaded', setCssRules);
 
     function setCssRules() {
         utils.css = {

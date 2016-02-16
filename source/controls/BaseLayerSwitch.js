@@ -161,7 +161,7 @@
             container.className = this.activeCss;
 
             var self = this;
-            Event.add(container, 'click', function(event) {
+            sGis.Event.add(container, 'click', function(event) {
                 if (self.useToggle) {
                     if (self._inactiveLayerBox.style.maxWidth === '0px') {
                         self._showInactiveLayerBox();
@@ -179,7 +179,7 @@
             var container = document.createElement('div');
             container.className = this.containerCss;
 
-            Event.add(container, 'dblclick', function(event) {
+            sGis.Event.add(container, 'dblclick', function(event) {
                 event.stopPropagation();
             });
 

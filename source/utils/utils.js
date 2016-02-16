@@ -37,17 +37,6 @@
         },
 
         /**
-         * Return offset (in pixels) of the cursor relative to the target node
-         * @param {HTMLElement} target
-         * @param event - mouse event object
-         * @returns {{x: number, y: number}}
-         */
-        getMouseOffset: function(target, event) {
-            var docPos = getPosition(target);
-            return {x: event.pageX - docPos.x, y: event.pageY - docPos.y};
-        },
-
-        /**
          * Returns position of element relative to the left top window corner
          * @param {HTMLElement} element
          * @returns {{x: number, y: number}} - position of element relative to the left top window corner

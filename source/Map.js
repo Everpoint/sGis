@@ -673,33 +673,33 @@
     }
 
     function setEventHandlers(map) {
-        Event.add(map._innerWrapper, 'mousedown', onmousedown);
-        Event.add(map._innerWrapper, 'wheel', onwheel);
-        Event.add(map._innerWrapper, 'touchstart', ontouchstart);
-        Event.add(map._innerWrapper, 'touchmove', ontouchmove);
-        Event.add(map._innerWrapper, 'touchend', ontouchend);
-        Event.add(map._innerWrapper, 'click', onclick);
-        Event.add(map._innerWrapper, 'dblclick', ondblclick);
-        Event.add(map._innerWrapper, 'mousemove', onmousemove);
-        Event.add(map._innerWrapper, 'mouseout', onmouseout);
-        Event.add(map._innerWrapper, 'contextmenu', oncontextmenu);
-        Event.add(document, 'keydown', function(event) { map.fire('keydown', { browserEvent: event }); });
-        Event.add(document, 'keypress', function(event) {
+        sGis.Event.add(map._innerWrapper, 'mousedown', onmousedown);
+        sGis.Event.add(map._innerWrapper, 'wheel', onwheel);
+        sGis.Event.add(map._innerWrapper, 'touchstart', ontouchstart);
+        sGis.Event.add(map._innerWrapper, 'touchmove', ontouchmove);
+        sGis.Event.add(map._innerWrapper, 'touchend', ontouchend);
+        sGis.Event.add(map._innerWrapper, 'click', onclick);
+        sGis.Event.add(map._innerWrapper, 'dblclick', ondblclick);
+        sGis.Event.add(map._innerWrapper, 'mousemove', onmousemove);
+        sGis.Event.add(map._innerWrapper, 'mouseout', onmouseout);
+        sGis.Event.add(map._innerWrapper, 'contextmenu', oncontextmenu);
+        sGis.Event.add(document, 'keydown', function(event) { map.fire('keydown', { browserEvent: event }); });
+        sGis.Event.add(document, 'keypress', function(event) {
             map.fire('keypress', {browserEvent: event});
         });
-        Event.add(document, 'keyup', function(event) {map.fire('keyup', {browserEvent: event});});
+        sGis.Event.add(document, 'keyup', function(event) {map.fire('keyup', {browserEvent: event});});
     }
 
     function onmouseout(event) {
         var map = event.currentTarget.map,
-            offset = getMouseOffset(event.currentTarget, event),
+            offset = sGis.Event.getMouseOffset(event.currentTarget, event),
             point = map.getPointFromPxPosition(offset.x, offset.y);
 
         event.currentTarget.map.fire('mouseout', {position: offset, point: point});
     }
 
     function onmousemove(event) {
-        var mouseOffset = getMouseOffset(event.currentTarget, event);
+        var mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event);
         var map = event.currentTarget.map;
         var point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
         var resolution = map.resolution;
@@ -725,7 +725,7 @@
                 dxPx = event.currentTarget.dragPrevPosition[touch.identifier].x - touch.pageX,
                 dyPx = event.currentTarget.dragPrevPosition[touch.identifier].y - touch.pageY,
                 resolution = map.resolution,
-                touchOffset = getMouseOffset(event.currentTarget, touch),
+                touchOffset = sGis.Event.getMouseOffset(event.currentTarget, touch),
                 point = map.getPointFromPxPosition(touchOffset.x, touchOffset.y),
                 position = {x: point.x / resolution, y: 0 - point.y / resolution};
 
@@ -790,7 +790,7 @@
     function onclick(event) {
         if (mouseHandler.clickCatcher && !isFormElement(event.target)) {
             var map = event.currentTarget.map,
-                mouseOffset = getMouseOffset(event.currentTarget, event),
+                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
                 point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
                 position = {x: point.x / map.resolution, y: - point.y / map.resolution};
             map.fire('click', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
@@ -799,7 +799,7 @@
 
     function oncontextmenu(event) {
         var map = event.currentTarget.map,
-            mouseOffset = getMouseOffset(event.currentTarget, event),
+            mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
             point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
             position = { x: point.x / map.resolution, y: -point.y / map.resolution };
         map.fire('contextmenu', { mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position });
@@ -810,7 +810,7 @@
         if (!isFormElement(event.target)) {
             mouseHandler.clickCatcher = null;
             var map = event.currentTarget.map,
-                mouseOffset = getMouseOffset(event.currentTarget, event),
+                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
                 point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
                 position = {x: point.x / map.resolution, y: - point.y / map.resolution};
             map.fire('dblclick', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
@@ -824,8 +824,8 @@
         if (time - wheelTimer > minDelay) {
             wheelTimer = time;
             var map = event.currentTarget.map,
-                wheelDirection = getWheelDirection(event),
-                mouseOffset = getMouseOffset(event.currentTarget, event);
+                wheelDirection = sGis.Event.getWheelDirection(event),
+                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event);
 
             map.zoom(wheelDirection, map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y));
         }
@@ -843,11 +843,11 @@
         if (!isFormElement(event.target)) {
             mouseHandler.clickCatcher = true;
             if (event.which === 1) {
-                mouseHandler.dragPosition = getMouseOffset(event.currentTarget, event);
+                mouseHandler.dragPosition = sGis.Event.getMouseOffset(event.currentTarget, event);
                 mouseHandler.activeObject = event.currentTarget.map;
 
-                Event.add(document, 'mousemove', onDocumentMousemove);
-                Event.add(document, 'mouseup', onDocumentMouseup);
+                sGis.Event.add(document, 'mousemove', onDocumentMousemove);
+                sGis.Event.add(document, 'mouseup', onDocumentMouseup);
 
                 document.ondragstart = function() {return false;};
                 document.body.onselectstart = function() {return false;};
@@ -858,7 +858,7 @@
 
     function onDocumentMousemove(event) {
         var map = mouseHandler.activeObject,
-            mousePosition = getMouseOffset(map._wrapper, event),
+            mousePosition = sGis.Event.getMouseOffset(map._wrapper, event),
             dxPx = mouseHandler.dragPosition.x - mousePosition.x,
             dyPx = mouseHandler.dragPosition.y - mousePosition.y,
             resolution = map.resolution,
@@ -882,8 +882,8 @@
 
     function onDocumentMouseup(event) {
         var map = mouseHandler.activeObject;
-        Event.remove(document, 'mousemove', onDocumentMousemove);
-        Event.remove(document, 'mouseup', onDocumentMouseup);
+        sGis.Event.remove(document, 'mousemove', onDocumentMousemove);
+        sGis.Event.remove(document, 'mouseup', onDocumentMouseup);
         document.ondragstart = null;
         document.body.onselectstart = null;
 
