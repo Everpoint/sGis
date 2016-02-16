@@ -11,7 +11,7 @@ $(document).ready(function() {
     describe('utils.html', function() {
         it('should insert the html properly', function() {
             var table = document.createElement('table');
-            utils.html(table, '<tbody><tr><td>1</td><td>2</td></tr></tbody>');
+            sGis.utils.html(table, '<tbody><tr><td>1</td><td>2</td></tr></tbody>');
             
             expect(table.childNodes.length).toBe(1);
         });

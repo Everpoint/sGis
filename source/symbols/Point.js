@@ -96,7 +96,7 @@
 
         offset: {
             get: function() {
-                return utils.copyObject(this._offset);
+                return sGis.utils.copyObject(this._offset);
             },
             set: function(offset) {
                 this._offset = offset;
@@ -198,7 +198,7 @@
 
         anchorPoint: {
             get: function() {
-                return utils.copyObject(this._anchorPoint);
+                return sGis.utils.copyObject(this._anchorPoint);
             },
             set: function(point) {
                 this._anchorPoint = point;
@@ -309,7 +309,7 @@
 
         offset: {
             get: function() {
-                return utils.copyObject(this._offset);
+                return sGis.utils.copyObject(this._offset);
             },
             set: function(offset) {
                 this._offset = offset;

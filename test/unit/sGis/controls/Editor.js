@@ -665,7 +665,7 @@ $(function() {
                 it('should remove the handlers from the selected feature', function() {
                     editor.activeLayer = layer;
                     editor.activate();
-                    var handlers = utils.copyObject(point._eventHandlers);
+                    var handlers = sGis.utils.copyObject(point._eventHandlers);
 
                     editor.select(point);
 
@@ -681,7 +681,7 @@ $(function() {
                         }
                     }
 
-                    handlers = utils.copyObject(polygon._eventHandlers);
+                    handlers = sGis.utils.copyObject(polygon._eventHandlers);
 
                     editor.select(polygon);
 

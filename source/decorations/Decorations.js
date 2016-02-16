@@ -5,7 +5,7 @@
 sGis.decorations = {};
     
 sGis.decorations.Scale = function(map, options) {
-    utils.init(this, options);
+    sGis.utils.init(this, options);
     this._map  = map;
     this.updateDisplay();
 };
@@ -84,7 +84,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._plusImageSrc;
         },
         set: function(src) {
-            utils.validateString(src);
+            sGis.utils.validateString(src);
             this._plusImageSrc = src;
         }
     },
@@ -94,7 +94,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._minusImageSrc;
         },
         set: function(src) {
-            utils.validateString(src);
+            sGis.utils.validateString(src);
             this._minusImageSrc = src;
         }
     },
@@ -104,7 +104,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._xAlign;
         },
         set: function(align) {
-            utils.validateValue(align, ['left', 'right']);
+            sGis.utils.validateValue(align, ['left', 'right']);
             this._xAlign = align;
         }
     },
@@ -114,7 +114,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._yAlign;
         },
         set: function(align) {
-            utils.validateValue(align, ['top', 'bottom']);
+            sGis.utils.validateValue(align, ['top', 'bottom']);
             this._yAlign = align;
         }
     },
@@ -124,7 +124,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._xOffset;
         },
         set: function(offset) {
-            utils.validateNumber(offset);
+            sGis.utils.validateNumber(offset);
             this._xOffset = offset;
         }
     },
@@ -134,7 +134,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._yOffset;
         },
         set: function(offset) {
-            utils.validateNumber(offset);
+            sGis.utils.validateNumber(offset);
             this._yOffset = offset;
         }
     },
@@ -144,7 +144,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._width;
         },
         set: function(width) {
-            utils.validatePositiveNumber(width);
+            sGis.utils.validatePositiveNumber(width);
             this._width = width;
         }
     },
@@ -154,7 +154,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._height;
         },
         set: function(height) {
-            utils.validatePositiveNumber(height);
+            sGis.utils.validatePositiveNumber(height);
             this._height = height;
         }
     },
@@ -164,7 +164,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._horizontal;
         },
         set: function(bool) {
-            utils.validateBool(bool);
+            sGis.utils.validateBool(bool);
             this._horizontal = bool;
         }
     },
@@ -174,7 +174,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._css;
         },
         set: function(css) {
-            utils.validateString(css);
+            sGis.utils.validateString(css);
             this._css = css;
         }
     },
@@ -184,7 +184,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._plusCss;
         },
         set: function(css) {
-            utils.validateString(css);
+            sGis.utils.validateString(css);
             this._plusCss = css;
         }
     },
@@ -194,7 +194,7 @@ Object.defineProperties(sGis.decorations.Scale.prototype, {
             return this._minusCss;
         },
         set: function(css) {
-            utils.validateString(css);
+            sGis.utils.validateString(css);
             this._minusCss = css;
         }
     }

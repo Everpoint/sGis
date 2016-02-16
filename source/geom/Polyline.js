@@ -1,7 +1,7 @@
 (function() {
 
     sGis.geom.Polyline = function(coordinates, options) {
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
@@ -13,7 +13,7 @@
         ignoreEvents: false,
 
         addPoint: function(point, ring) {
-            if (!isValidPoint(point)) utils.error('Array of 2 coordinates is expected but got ' + point + ' instead');
+            if (!isValidPoint(point)) sGis.utils.error('Array of 2 coordinates is expected but got ' + point + ' instead');
             var ringAdj = ring || 0;
             this.setPoint(ringAdj, this._coordinates[ringAdj].length, point);
         },
@@ -23,7 +23,7 @@
         },
 
         contains: function(a, b) {
-            var position = b && isValidPoint([a, b]) ? [a, b] : utils.isArray(a) && isValidPoint(a) ? a : utils.isNumber(a.x) && utils.isNumber(a.y) ? [a.x, a.y] : utils.error('Point coordinates are expecred but got ' + a + ' instead'),
+            var position = b && isValidPoint([a, b]) ? [a, b] : sGis.utils.isArray(a) && isValidPoint(a) ? a : sGis.utils.isNumber(a.x) && sGis.utils.isNumber(a.y) ? [a.x, a.y] : sGis.utils.error('Point coordinates are expecred but got ' + a + ' instead'),
                 coordinates = this._coordinates;
 
             for (var ring = 0, l = coordinates.length; ring < l; ring++) {
@@ -35,12 +35,12 @@
         },
 
         getRing: function(index) {
-            return this._coordinates[index] ? utils.copyArray(this._coordinates[index]) : undefined;
+            return this._coordinates[index] ? sGis.utils.copyArray(this._coordinates[index]) : undefined;
         },
 
         setRing: function(n, coordinates) {
-            if (!utils.isArray(coordinates)) utils.error('Array is expected but got ' + coordinates + ' instead');
-            if (!utils.isNumber(n)) utils.error('Number is expected for the ring index but got ' + n + ' instead');
+            if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
+            if (!sGis.utils.isNumber(n)) sGis.utils.error('Number is expected for the ring index but got ' + n + ' instead');
 
             if (n > this._coordinates.length) n = this._coordinates.length;
 
@@ -55,9 +55,9 @@
         },
 
         setPoint: function(ring, n, point) {
-            if (!isValidPoint(point)) utils.error('Array of 2 coordinates is expected but got ' + point + ' instead');
-            if (this._coordinates[ring] === undefined) utils.error('The ring with index ' + ring + ' does not exist in the geometry');
-            if (!utils.isNumber(n)) utils.error('Number is expected for the point index but got ' + n + ' instead');
+            if (!isValidPoint(point)) sGis.utils.error('Array of 2 coordinates is expected but got ' + point + ' instead');
+            if (this._coordinates[ring] === undefined) sGis.utils.error('The ring with index ' + ring + ' does not exist in the geometry');
+            if (!sGis.utils.isNumber(n)) sGis.utils.error('Number is expected for the point index but got ' + n + ' instead');
 
             this._coordinates[ring][n] = [].concat(point);
         },
@@ -102,7 +102,7 @@
             },
 
             set: function(color) {
-                if (!utils.isString(color)) utils.error('Unexpected value of color: ' + color);
+                if (!sGis.utils.isString(color)) sGis.utils.error('Unexpected value of color: ' + color);
                 this._color = color;
                 this._clearCache();
             }
@@ -114,7 +114,7 @@
             },
 
             set: function(width) {
-                if (!utils.isNumber(width) || width < 0) utils.error('Unexpected value of width: ' + width);
+                if (!sGis.utils.isNumber(width) || width < 0) sGis.utils.error('Unexpected value of width: ' + width);
                 this._width = width;
                 this._clearCache();
             }
@@ -122,12 +122,12 @@
 
         coordinates: {
             get: function() {
-                return utils.copyArray(this._coordinates);
+                return sGis.utils.copyArray(this._coordinates);
             },
             set: function(coordinates) {
-                if (!utils.isArray(coordinates)) utils.error('Array is expected but got ' + coordinates + ' instead');
+                if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
 
-                if (!utils.isArray(coordinates[0]) || !utils.isArray(coordinates[0][0])) {
+                if (!sGis.utils.isArray(coordinates[0]) || !sGis.utils.isArray(coordinates[0][0])) {
                     this.setRing(0, coordinates);
                 } else {
                     for (var i = 0, l = coordinates.length; i < l; i++) {
@@ -185,7 +185,7 @@
     });
 
     function isValidPoint(point) {
-        return utils.isArray(point) & utils.isNumber(point[0]) && utils.isNumber(point[1]);
+        return sGis.utils.isArray(point) & sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]);
     }
 
     function pointToLineDistance(point, line) {

@@ -17,7 +17,7 @@
             if (properties.fillImage) {
                 var defs = document.createElementNS(this.ns, 'defs');
                 var pattern = document.createElementNS(this.ns, 'pattern');
-                var id = utils.getGuid();
+                var id = sGis.utils.getGuid();
                 pattern.setAttribute('id', id);
                 pattern.setAttribute('patternUnits', 'userSpaceOnUse');
                 pattern.setAttribute('x', properties.x);

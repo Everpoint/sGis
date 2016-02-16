@@ -17,8 +17,8 @@
         },
 
         setCoordinates: function(coordinates) {
-            if (!utils.isArray(coordinates) || coordinates.length !== 2 || !utils.isNumber(coordinates[0]) || !utils.isNumber(coordinates[1])) {
-                utils.error('Coordinates in format [x, y] are expected, but got ' + coordinates + ' instead');
+            if (!sGis.utils.isArray(coordinates) || coordinates.length !== 2 || !sGis.utils.isNumber(coordinates[0]) || !sGis.utils.isNumber(coordinates[1])) {
+                sGis.utils.error('Coordinates in format [x, y] are expected, but got ' + coordinates + ' instead');
             }
 
             this._coord = coordinates;
@@ -48,7 +48,7 @@
             },
 
             set: function(size) {
-                if (!utils.isNumber(size) || size <= 0) utils.error('Expected positive number but got ' + size + ' instead');
+                if (!sGis.utils.isNumber(size) || size <= 0) sGis.utils.error('Expected positive number but got ' + size + ' instead');
                 this._size = size;
             }
         },
@@ -59,7 +59,7 @@
             },
 
             set: function(color) {
-                if (!utils.isString(color)) utils.error('Expected a string but got ' + color + 'instead');
+                if (!sGis.utils.isString(color)) sGis.utils.error('Expected a string but got ' + color + 'instead');
                 this._color = color;
             }
         }

@@ -32,10 +32,10 @@
             set: function(point) {
                 if (point instanceof sGis.Point) {
                     this._point = point.projectTo(this._crs);
-                } else if (utils.isArray(point)) {
+                } else if (sGis.utils.isArray(point)) {
                     this._point = new sGis.Point(point[0], point[1], this._crs);
                 } else {
-                    utils.error('Coordinates are expected but got ' + point + ' instead');
+                    sGis.utils.error('Coordinates are expected but got ' + point + ' instead');
                 }
                 this._resetCache();
             }
@@ -53,7 +53,7 @@
             },
 
             set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
                 if (this._point) this._point = this._point.projectTo(crs);
                 this._crs = crs;
             }
@@ -65,13 +65,13 @@
             },
 
             set: function(content) {
-                if (utils.isString(content)) {
+                if (sGis.utils.isString(content)) {
                     var node = document.createTextNode(content);
                     this._content = node;
-                } else if (utils.isNode) {
+                } else if (sGis.utils.isNode(content)) {
                     this._content = content;
                 } else {
-                    utils.error('DOM node is expected but got ' + content + ' instead');
+                    sGis.utils.error('DOM node is expected but got ' + content + ' instead');
                 }
                 this._resetCache();
             }

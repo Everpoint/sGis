@@ -1,10 +1,10 @@
 ﻿(function() {
 
     sGis.controls.BaseLayerSwitch = function(map, options) {
-        if (!(map instanceof sGis.Map)) utils.error('sGis.Map instance is expected but got ' + map + ' instead');
+        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
-        utils.init(this, options);
+        sGis.utils.init(this, options);
         this._container = this._getNewControlContainer();
 
         this._layerDescriptions = [];
@@ -32,9 +32,9 @@
         },
 
         addLayer: function(layer, imageSrc) {
-            if (!(layer instanceof sGis.Layer)) utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
-            if (!layer.tileScheme) utils.error('A layer without tile scheme cannot be interpreted as base layer');
-            if (this.getLayerIndex(layer) !== -1) utils.error('The layer is already in the list');
+            if (!(layer instanceof sGis.Layer)) sGis.utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
+            if (!layer.tileScheme) sGis.utils.error('A layer without tile scheme cannot be interpreted as base layer');
+            if (this.getLayerIndex(layer) !== -1) sGis.utils.error('The layer is already in the list');
 
             this._layerDescriptions.push({ layer: layer, imageSrc: imageSrc });
             this._addLayerToImageBox(layer);
@@ -217,7 +217,7 @@
                 return this._xAlign;
             },
             set: function(align) {
-                utils.validateValue(align, ['left', 'right']);
+                sGis.utils.validateValue(align, ['left', 'right']);
                 this._xAlign = align;
             }
         },
@@ -227,7 +227,7 @@
                 return this._yAlign;
             },
             set: function(align) {
-                utils.validateValue(align, ['top', 'bottom']);
+                sGis.utils.validateValue(align, ['top', 'bottom']);
                 this._yAlign = align;
             }
         },
@@ -237,7 +237,7 @@
                 return this._xOffset;
             },
             set: function(offset) {
-                utils.validateNumber(offset);
+                sGis.utils.validateNumber(offset);
                 this._xOffset = offset;
             }
         },
@@ -247,7 +247,7 @@
                 return this._yOffset;
             },
             set: function(offset) {
-                utils.validateNumber(offset);
+                sGis.utils.validateNumber(offset);
                 this._yOffset = offset;
             }
         },
@@ -257,7 +257,7 @@
                 return this._width;
             },
             set: function(width) {
-                utils.validatePositiveNumber(width);
+                sGis.utils.validatePositiveNumber(width);
                 this._width = width;
             }
         },
@@ -267,7 +267,7 @@
                 return this._height;
             },
             set: function(height) {
-                utils.validatePositiveNumber(height);
+                sGis.utils.validatePositiveNumber(height);
                 this._height = height;
             }
         },
@@ -277,7 +277,7 @@
                 return this._inactiveWidth;
             },
             set: function(width) {
-                utils.validatePositiveNumber(width);
+                sGis.utils.validatePositiveNumber(width);
                 this._inactiveWidth = width;
             }
         },
@@ -287,7 +287,7 @@
                 return this._inactiveHeight;
             },
             set: function(height) {
-                utils.validatePositiveNumber(height);
+                sGis.utils.validatePositiveNumber(height);
                 this._inactiveHeight = height;
             }
         }
@@ -318,7 +318,7 @@
                 if (layer !== this._activeLayer) {
                     var indexInList = this.getLayerIndex(layer),
                         indexOnMap = 0;
-                    if (indexInList === -1) utils.error('The layer is not in the list');
+                    if (indexInList === -1) sGis.utils.error('The layer is not in the list');
 
                     if (this._activeLayer) {
                         indexOnMap = this._map.getLayerIndex(this._activeLayer);

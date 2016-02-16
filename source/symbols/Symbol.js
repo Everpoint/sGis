@@ -38,7 +38,7 @@
 
     sGis.symbol.label = {
         Label: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         }
     };
 
@@ -50,7 +50,7 @@
         _css: '',
 
         renderFunction: function(feature, resolution, crs) {
-            if (!feature._cache || !utils.softEquals(resolution, feature._cache[0].resolution)) {
+            if (!feature._cache || !sGis.utils.softEquals(resolution, feature._cache[0].resolution)) {
                 var div = document.createElement('div');
                 div.className = this.css;
                 div.appendChild(feature.content);
@@ -107,7 +107,7 @@
 
         offset: {
             get: function() {
-                return utils.copyObject(this._offset);
+                return sGis.utils.copyObject(this._offset);
             },
             set: function(offset) {
                 this._offset = offset;
@@ -137,7 +137,7 @@
 
     sGis.symbol.image = {
         Image: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         }
     };
 

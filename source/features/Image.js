@@ -26,7 +26,7 @@
                 return this._src;
             },
             set: function(source) {
-                if (!utils.isString(source) && source !== null) utils.error('String is expected but got ' + source + ' instead');
+                if (!sGis.utils.isString(source) && source !== null) sGis.utils.error('String is expected but got ' + source + ' instead');
                 if (this._src !== source) {
                     this._src = source;
                     this._cache = null;

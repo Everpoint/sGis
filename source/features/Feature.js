@@ -37,7 +37,7 @@
                 this.id = options.id;
                 delete options.id;
             } else {
-                this._id = utils.getGuid();
+                this._id = sGis.utils.getGuid();
             }
 
             if (!options || !options.symbol && this._defaultSymbol) {
@@ -89,7 +89,7 @@
             },
 
             set: function(symbol) {
-                if (!(symbol instanceof sGis.Symbol)) utils.error('sGis.Symbol instance is expected but got ' + symbol + ' instead');
+                if (!(symbol instanceof sGis.Symbol)) sGis.utils.error('sGis.Symbol instance is expected but got ' + symbol + ' instead');
                 //if (symbol.type !==  this.type) utils.error('sGis.feature.Point object requere symbol of the type "' + this.type + '" but got ' + symbol.type + ' instead');
 
                 this._symbol = symbol;
@@ -119,7 +119,7 @@
                 } else if (bool === false) {
                     this.show();
                 } else {
-                    utils.error('Boolean is expected but got ' + bool + ' instead');
+                    sGis.utils.error('Boolean is expected but got ' + bool + ' instead');
                 }
             }
         },
@@ -143,7 +143,7 @@
     var id = 0;
 
     sGis.Feature.getNewId = function() {
-        return utils.getGuid();
+        return sGis.utils.getGuid();
     };
 
 })();

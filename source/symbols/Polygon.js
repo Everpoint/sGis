@@ -2,13 +2,13 @@
 
     sGis.symbol.polygon = {
         Simple: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         },
         BrushFill: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         },
         ImageFill: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         }
     };
 
@@ -130,7 +130,7 @@
                 return this._fillBrush;
             },
             set: function(brush) {
-                this._fillBrush = utils.copyArray(brush);
+                this._fillBrush = sGis.utils.copyArray(brush);
                 this._imageSrc = getBrushImage(this);
                 if (!this._image) this._image = new Image();
                 this._image.src = this._imageSrc;
@@ -225,7 +225,7 @@
                 }
             }
 
-            var simpl = utils.simplify(projected, 0.5);
+            var simpl = sGis.utils.simplify(projected, 0.5);
             feature._cache[resolution] = simpl;
         } else {
             simpl = feature._cache[resolution];

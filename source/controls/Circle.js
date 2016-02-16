@@ -1,7 +1,7 @@
 (function() {
 
     sGis.controls.Circle = function(map, options) {
-        if (!(map instanceof sGis.Map)) utils.error('sGis.Map instance is expected but got ' + map + ' instead');
+        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
         options = options || {};
@@ -107,7 +107,7 @@
         activeLayer: {
             default: null,
             set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
+                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
                 this._activeLayer = layer;
             }
         },

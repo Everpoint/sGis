@@ -6,7 +6,7 @@
 
 $(document).ready(function() {
     
-    utils.css = {
+    sGis.utils.css = {
         transition: document.body.style.transition !== undefined ? {func: 'transition', rule: 'transition'} : 
                     document.body.style.webkitTransition !== undefined ? {func: 'webkitTransition', rule: '-webkit-transition'} : 
                     document.body.style.msTransition !== undefined ? {fund: 'msTransition', rule: '-ms-transition'} :

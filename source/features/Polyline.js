@@ -15,13 +15,13 @@
 
         addPoint: function(point, ring) {
             ring = ring || 0;
-            if (!this._coordinates[ring]) utils.error('The ring with index ' + ring + ' does not exist in feature');
+            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist in feature');
             this.setPoint(ring, this._coordinates[ring].length, point);
         },
 
         removePoint: function(ring, index) {
-            if (!this._coordinates[ring]) utils.error('The ring with index ' + ring + ' does not exist in the feature');
-            if (!this._coordinates[ring][index]) utils.error('The point with specified index ' + index + ' does not exist in the feature');
+            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist in the feature');
+            if (!this._coordinates[ring][index]) sGis.utils.error('The point with specified index ' + index + ' does not exist in the feature');
             this._coordinates[ring].splice(index, 1);
             if (this._coordinates[ring].length === 0) {
                 this._coordinates.splice(ring, 1);
@@ -47,8 +47,8 @@
         },
 
         setRing: function(n, coordinates) {
-            if (!utils.isInteger(n) || n < 0) utils.error('Positive integer is expected for index but got ' + n + ' instead');
-            if (!utils.isArray(coordinates)) utils.error('Array is expected but got ' + coordinates + ' instead');
+            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
+            if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
 
             if (n > this._coordinates.length) n = this._coordinates.length;
             this._coordinates[n] = [];
@@ -58,9 +58,9 @@
         },
 
         setPoint: function(ring, n, point) {
-            if (!isValidPoint(point)) utils.error('Point is expected but got ' + point + ' instead');
-            if (!this._coordinates[ring]) utils.error('The ring with index ' + ring + ' does not exist');
-            if (!utils.isInteger(n) || n < 0) utils.error('Positive integer is expected for index but got ' + n + ' instead');
+            if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
+            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
+            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
 
             if (n > this._coordinates[ring].length) n = this._coordinates[ring].length;
             if (point instanceof sGis.Point) {
@@ -74,9 +74,9 @@
         },
 
         insertPoint: function(ring, n, point) {
-            if (!isValidPoint(point)) utils.error('Point is expected but got ' + point + ' instead');
-            if (!this._coordinates[ring]) utils.error('The ring with index ' + ring + ' does not exist');
-            if (!utils.isInteger(n) || n < 0) utils.error('Positive integer is expected for index but got ' + n + ' instead');
+            if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
+            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
+            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
 
             this._coordinates[ring].splice(n, 0, [0, 0]);
             this.setPoint(ring, n, point);
@@ -86,18 +86,18 @@
             if (center instanceof sGis.Point || center instanceof sGis.feature.Point) {
                 var basePoint = center.projectTo(this.crs),
                     base = [basePoint.x, basePoint.y];
-            } else if (utils.isArray(center) && utils.isNumber(center[0]) && utils.isNumber(center[1])) {
+            } else if (sGis.utils.isArray(center) && sGis.utils.isNumber(center[0]) && sGis.utils.isNumber(center[1])) {
                 base = [parseFloat(center[0]), parseFloat(center[1])];
             } else if (center === undefined) {
                 base = this.centroid;
             } else {
-                utils.error('Unknown format of center point: ' + center);
+                sGis.utils.error('Unknown format of center point: ' + center);
             }
             var coord = this.coordinates,
                 result = [];
             for (var ring = 0, l = coord.length; ring < l; ring++) {
                 var extended = extendCoordinates(coord[ring], base),
-                    transformed = utils.multiplyMatrix(extended, matrix);
+                    transformed = sGis.utils.multiplyMatrix(extended, matrix);
                 result[ring] = collapseCoordinates(transformed, base);
             }
 
@@ -105,7 +105,7 @@
         },
 
         rotate: function(angle, center) {
-            if (!utils.isNumber(angle)) utils.error('Number is expected but got ' + angle + ' instead');
+            if (!sGis.utils.isNumber(angle)) sGis.utils.error('Number is expected but got ' + angle + ' instead');
 
             var sin = Math.sin(angle),
                 cos = Math.cos(angle);
@@ -114,10 +114,10 @@
         },
 
         scale: function(scale, center) {
-            if (utils.isNumber(scale)) {
+            if (sGis.utils.isNumber(scale)) {
                 scale = [scale, scale];
-            } else if (!utils.isArray(scale)) {
-                utils.error('Number or array is expected but got ' + scale + ' instead');
+            } else if (!sGis.utils.isArray(scale)) {
+                sGis.utils.error('Number or array is expected but got ' + scale + ' instead');
             }
             this.transform([[parseFloat(scale[0]), 0, 0], [0, parseFloat(scale[1]), 0], [0, 0, 1]], center);
         },
@@ -127,6 +127,7 @@
         }
     });
 
+    //TODO: use sGis.utils.extendCoordinates
     function extendCoordinates(coord, center) {
         var extended = [];
         for (var i = 0, l = coord.length; i < l; i++) {
@@ -135,6 +136,7 @@
         return extended;
     }
 
+    //TODO: use sGis.utils.collapseCoordinates
     function collapseCoordinates(extended, center) {
         var coord = [];
         for (var i = 0, l = extended.length; i < l; i++) {
@@ -146,13 +148,13 @@
     Object.defineProperties(sGis.feature.Polyline.prototype, {
         coordinates: {
             get: function() {
-                return utils.copyArray(this._coordinates);
+                return sGis.utils.copyArray(this._coordinates);
             },
             set: function(coordinates) {
-                if (!utils.isArray(coordinates)) utils.error('Array is expected but got ' + coordinates + ' instead');
+                if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
 
                 this._coordinates = [[]];
-                if (!utils.isArray(coordinates[0]) || utils.isNumber(coordinates[0][0])) {
+                if (!sGis.utils.isArray(coordinates[0]) || sGis.utils.isNumber(coordinates[0][0])) {
                     // One ring is specified
                     this.setRing(0, coordinates);
                 } else {
@@ -215,7 +217,7 @@
 
             set: function(crs) {
                 if (crs === this.crs) return;
-                if (!(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
 
                 if (this._coordinates) {
                     for (var ring = 0, l = this._coordinates.length; ring < l; ring++) {
@@ -247,7 +249,7 @@
     });
 
     function isValidPoint(point) {
-        return utils.isArray(point) && utils.isNumber(point[0]) && utils.isNumber(point[1]) || (point instanceof sGis.Point);
+        return sGis.utils.isArray(point) && sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]) || (point instanceof sGis.Point);
     }
 
 })();

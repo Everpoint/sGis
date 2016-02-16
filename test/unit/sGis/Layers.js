@@ -41,7 +41,7 @@ $(document).ready(function() {
 
             var callsList = [];
 
-            spyOn(utils, 'requestAnimationFrame').and.callFake(function (f) {
+            spyOn(sGis.utils, 'requestAnimationFrame').and.callFake(function (f) {
                 callsList.push(f);
                 triggerAnimationFrame = function () {
                     callsList.forEach(function(handler) { handler(); });

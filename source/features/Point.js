@@ -4,7 +4,7 @@
 
     sGis.feature.Point = function (point, options) {
         this.__initialize(options);
-        if (!point) utils.error('The point position is not specified');
+        if (!point) sGis.utils.error('The point position is not specified');
 
         this._point = point;
     };
@@ -96,7 +96,7 @@
             },
 
             set: function(coordinates) {
-                if (!utils.isArray(coordinates) || !utils.isNumber(coordinates[0]) || !utils.isNumber(coordinates[1])) utils.error('[x, y] is expected but got ' + coordinates + ' instead');
+                if (!sGis.utils.isArray(coordinates) || !sGis.utils.isNumber(coordinates[0]) || !sGis.utils.isNumber(coordinates[1])) sGis.utils.error('[x, y] is expected but got ' + coordinates + ' instead');
                 this._point = coordinates;
             }
         },

@@ -5,10 +5,10 @@
     var PREFIX = 'sGis-control-edit-';
 
     sGis.controls.Editor = function(map, properties) {
-        if (!(map instanceof sGis.Map)) utils.error('sGis.Map is expected but got ' + map + ' instead');
+        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map is expected but got ' + map + ' instead');
 
         this._map = map;
-        this._id = utils.getGuid();
+        this._id = sGis.utils.getGuid();
 
         this._ns = PREFIX + this._id;
         this._currentState = -1;
@@ -471,7 +471,7 @@
         },
 
         _getAdjustedEventData: function(sGisEvent, feature) {
-            if (sGisEvent.intersectionType && utils.isArray(sGisEvent.intersectionType)) {
+            if (sGisEvent.intersectionType && sGis.utils.isArray(sGisEvent.intersectionType)) {
                 var coordinates = feature.coordinates;
                 var ring = sGisEvent.intersectionType[0];
                 if (feature instanceof sGis.feature.Polygon) {
@@ -719,7 +719,7 @@
                     'vertex': 'allowVertexEditing'
                 };
 
-                if (utils.isString(mode)) mode = [mode];
+                if (sGis.utils.isString(mode)) mode = [mode];
                 for (var i = 0; i < mode.length; i++) {
                     if (props[mode[i]]) this[props[mode[i]]] = true;
                 }

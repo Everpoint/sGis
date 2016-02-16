@@ -2,7 +2,7 @@
 
     sGis.symbol.polyline = {
         Simple: function(style) {
-            utils.init(this, style, true);
+            sGis.utils.init(this, style, true);
         }
     };
 
@@ -65,7 +65,7 @@
                 }
             }
 
-            var simpl = utils.simplify(projected, 0.5);
+            var simpl = sGis.utils.simplify(projected, 0.5);
             feature._cache[resolution] = simpl;
         } else {
             simpl = feature._cache[resolution];

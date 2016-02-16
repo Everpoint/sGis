@@ -25,10 +25,10 @@
             set: function(position) {
                 if (position instanceof sGis.Point) {
                     this._position = position.projectTo(this._crs);
-                } else if (utils.isArray(position) && utils.isNumber(position[0]) && utils.isNumber(position[1])) {
+                } else if (sGis.utils.isArray(position) && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1])) {
                     this._position = new sGis.Point(position[0], position[1], this._crs);
                 } else {
-                    utils.error('Point is expected but got ' + position + ' instead');
+                    sGis.utils.error('Point is expected but got ' + position + ' instead');
                 }
 
                 this.clearCache();
@@ -51,7 +51,7 @@
             },
 
             set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
                 this._crs = crs;
                 this._point = this._point.projectTo(crs);
                 this.clearCache();

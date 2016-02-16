@@ -3,7 +3,7 @@
 (function() {
 
     sGis.DynamicLayer = function(extention) {
-        if (!extention.getImageUrl) utils.error('sGis.DynamicLayer child class must include .getImageUrl(bbox, resolution) method');
+        if (!extention.getImageUrl) sGis.utils.error('sGis.DynamicLayer child class must include .getImageUrl(bbox, resolution) method');
         for (var key in extention) {
             this[key] = extention[key];
         }
@@ -71,7 +71,7 @@
                 return this._layers && this._layers.concat();
             },
             set: function(layers) {
-                if (!utils.isArray(layers)) utils.error('Array is expected but got ' + layers + ' instead');
+                if (!sGis.utils.isArray(layers)) sGis.utils.error('Array is expected but got ' + layers + ' instead');
                 this._layers = layers;
             }
         },
@@ -81,7 +81,7 @@
                 return this._crs;
             },
             set: function(crs) {
-                if (crs && !(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (crs && !(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
                 this._crs = crs;
             }
         },
@@ -92,7 +92,7 @@
             },
 
             set: function(opacity) {
-                if (!utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+                if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
                 opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
                 this._opacity = opacity;
                 if (this._features && this._features[0]) this._features[0].opacity = opacity;

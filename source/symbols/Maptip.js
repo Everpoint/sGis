@@ -2,7 +2,7 @@
 
     sGis.symbol.maptip = {
         Simple: function(style) {
-            utils.init(this, style);
+            sGis.utils.init(this, style);
         }
     };
 
@@ -28,10 +28,10 @@
                 var div = document.createElement('div'),
                     divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];
 
-                if (utils.isNode(feature.content)) {
+                if (sGis.utils.isNode(feature.content)) {
                     div.appendChild(feature.content);
                 } else {
-                    utils.html(div, feature.content);
+                    sGis.utils.html(div, feature.content);
                 }
                 div.style.position = 'absolute';
                 div.style.height = this.height + 'px';

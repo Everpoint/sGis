@@ -2,9 +2,9 @@
 
     var MultiPoint = function(map, options) {
         this._map = map;
-        this._ns = '.' + utils.getGuid();
+        this._ns = '.' + sGis.utils.getGuid();
 
-        utils.init(this, options);
+        sGis.utils.init(this, options);
     };
 
     MultiPoint.prototype = new sGis.Control({
@@ -86,7 +86,7 @@
         activeFeature: {
             get: function() { return this._activeFeature; },
             set: function(feature) {
-                if (!(feature instanceof sGis.feature.MultiPoint) && feature !== null) utils.error('sGis.feature.MultiPoint is expected');
+                if (!(feature instanceof sGis.feature.MultiPoint) && feature !== null) sGis.utils.error('sGis.feature.MultiPoint is expected');
                 if (!this._isActive) return;
 
                 if (this._activeFeature && this._activeFeature !== feature) this.fire('drawingFinish', {geom: this._activeFeature});

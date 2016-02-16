@@ -1,7 +1,7 @@
 (function() {
 
     sGis.geom.Polygon = function (coordinates, options) {
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
@@ -37,7 +37,7 @@
 
         contains: {
             value: function (a, b) {
-                var position = b && isValidPoint([a, b]) ? [a, b] : utils.isArray(a) && isValidPoint(a) ? a : a.x && a.y ? [a.x, a.y] : utils.error('Point coordinates are expecred but got ' + a + ' instead'),
+                var position = b && isValidPoint([a, b]) ? [a, b] : sGis.utils.isArray(a) && isValidPoint(a) ? a : a.x && a.y ? [a.x, a.y] : sGis.utils.error('Point coordinates are expecred but got ' + a + ' instead'),
                     coordinates = this._coordinates;
 
                 return sGis.geotools.contains(coordinates, position, this.width / 2 + 2);
@@ -55,7 +55,7 @@
                 } else if (style === 'image') {
                     this._fillStyle = 'image';
                 } else {
-                    utils.error('Unknown fill style: ' + style);
+                    sGis.utils.error('Unknown fill style: ' + style);
                 }
             }
         },
@@ -66,7 +66,7 @@
             },
 
             set: function (color) {
-                if (!utils.isString(color)) utils.error('Color string is expected, but got ' + color + ' instead');
+                if (!sGis.utils.isString(color)) sGis.utils.error('Color string is expected, but got ' + color + ' instead');
                 this._fillColor = color;
                 this._clearCache();
             }
@@ -78,7 +78,7 @@
             },
 
             set: function (image) {
-                if (!(image instanceof Image)) utils.error('Image is expected but got ' + image + ' istead');
+                if (!(image instanceof Image)) sGis.utils.error('Image is expected but got ' + image + ' istead');
                 this._fillImage = image;
             }
         },
@@ -110,7 +110,7 @@
     });
 
     function isValidPoint(point) {
-        return utils.isArray(point) & utils.isNumber(point[0]) && utils.isNumber(point[1]);
+        return sGis.utils.isArray(point) & sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]);
     }
 
 })();

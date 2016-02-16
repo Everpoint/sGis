@@ -3,9 +3,9 @@
 (function() {
 
     sGis.Point = function(x, y, crs) {
-        if (!utils.isNumber(x) || !utils.isNumber(y)) utils.error('Coordinates are expected but (' + x + ', ' + y + ') is received instead');
+        if (!sGis.utils.isNumber(x) || !sGis.utils.isNumber(y)) sGis.utils.error('Coordinates are expected but (' + x + ', ' + y + ') is received instead');
 
-        if (crs && !(crs instanceof sGis.Crs)) utils.error('CRS is not a child of sGis.Crs');
+        if (crs && !(crs instanceof sGis.Crs)) sGis.utils.error('CRS is not a child of sGis.Crs');
 
         if (!crs || crs === sGis.CRS.geo) {
             this.x = y;
@@ -20,7 +20,7 @@
 
     sGis.Point.prototype = {
         projectTo: function(newCrs) {
-            if (!(newCrs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + newCrs + ' instead');
+            if (!(newCrs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + newCrs + ' instead');
             if (!newCrs.equals(this.crs)) {
                 var positionGeo = this.crs.from(this.x, this.y),
                     positionCrs = newCrs.to(positionGeo.x, positionGeo.y);
@@ -109,10 +109,10 @@
         __setPoint: function(index, point) {
             if (point instanceof sGis.Point) {
                 this.p[index] = point.projectTo(this._crs);
-            } else if (utils.isArray(point)) {
+            } else if (sGis.utils.isArray(point)) {
                 this.p[index] = new sGis.Point(point[0], point[1], this.crs);
             } else {
-                utils.error('Point is expected but got ' + point + ' instead');
+                sGis.utils.error('Point is expected but got ' + point + ' instead');
             }
         }
     };
@@ -134,8 +134,8 @@
             },
 
             set: function(value) {
-                if (!utils.isNumber(value)) utils.error('Number is expected but got ' + value + ' instead');
-                if (value < this.xMin) utils.error('Max value cannot be lower than the min value');
+                if (!sGis.utils.isNumber(value)) sGis.utils.error('Number is expected but got ' + value + ' instead');
+                if (value < this.xMin) sGis.utils.error('Max value cannot be lower than the min value');
                 if (this.p1.x > this.p2.x) {
                     this.p1.x = value;
                 } else {
@@ -150,8 +150,8 @@
             },
 
             set: function(value) {
-                if (!utils.isNumber(value)) utils.error('Number is expected but got ' + value + ' instead');
-                if (value < this.yMin) utils.error('Max value cannot be lower than the min value');
+                if (!sGis.utils.isNumber(value)) sGis.utils.error('Number is expected but got ' + value + ' instead');
+                if (value < this.yMin) sGis.utils.error('Max value cannot be lower than the min value');
                 if (this.p1.y > this.p2.y) {
                     this.p1.y = value;
                 } else {
@@ -166,8 +166,8 @@
             },
 
             set: function(value) {
-                if (!utils.isNumber(value)) utils.error('Number is expected but got ' + value + ' instead');
-                if (value > this.xMax) utils.error('Min value cannot be higher than the max value');
+                if (!sGis.utils.isNumber(value)) sGis.utils.error('Number is expected but got ' + value + ' instead');
+                if (value > this.xMax) sGis.utils.error('Min value cannot be higher than the max value');
                 if (this.p1.x > this.p2.x) {
                     this.p2.x = value;
                 } else {
@@ -182,8 +182,8 @@
             },
 
             set: function(value) {
-                if (!utils.isNumber(value)) utils.error('Number is expected but got ' + value + ' instead');
-                if (value > this.yMax) utils.error('Min value cannot be higher than the max value');
+                if (!sGis.utils.isNumber(value)) sGis.utils.error('Number is expected but got ' + value + ' instead');
+                if (value > this.yMax) sGis.utils.error('Min value cannot be higher than the max value');
                 if (this.p1.y > this.p2.y) {
                     this.p2.y = value;
                 } else {

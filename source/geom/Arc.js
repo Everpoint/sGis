@@ -1,7 +1,7 @@
 (function() {
 
     sGis.geom.Arc = function(center, options) {
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this.center = center;
     };

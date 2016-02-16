@@ -55,7 +55,7 @@
                 } else if (sGis.utils.is.array(point)) {
                     pointCoordinates = point;
                 } else {
-                    utils.error('Invalid format of the point');
+                    sGis.utils.error('Invalid format of the point');
                 }
 
                 return sGis.geotools.contains(this.coordinates, pointCoordinates);

@@ -45,9 +45,9 @@
             },
 
             set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer)) utils.error('Expected sGis.FeatureLayer instance but got ' + layer + ' instead');
-                if (this.isActive) utils.error('Cannot set active layer for an acitve control');
-                if (this._map && this._map.getLayerIndex(layer) === -1) utils.error('The layer does not belong to control\'s map');
+                if (!(layer instanceof sGis.FeatureLayer)) sGis.utils.error('Expected sGis.FeatureLayer instance but got ' + layer + ' instead');
+                if (this.isActive) sGis.utils.error('Cannot set active layer for an acitve control');
+                if (this._map && this._map.getLayerIndex(layer) === -1) sGis.utils.error('The layer does not belong to control\'s map');
                 this._activeLayer = layer;
             }
         },
@@ -63,7 +63,7 @@
                 } else if (bool === false) {
                     this.deactivate();
                 } else {
-                    utils.error('Boolean is expected but got ' + bool + ' instead');
+                    sGis.utils.error('Boolean is expected but got ' + bool + ' instead');
                 }
             }
         },

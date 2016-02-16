@@ -3,11 +3,11 @@
 (function() {
 
     sGis.controls.Point = function(map, options) {
-        if (!(map instanceof sGis.Map)) utils.error('Expected sGis.Map child, but got ' + map + ' instead');
+        if (!(map instanceof sGis.Map)) sGis.utils.error('Expected sGis.Map child, but got ' + map + ' instead');
         this._map = map;
         this._prototype = new sGis.feature.Point([0, 0]);
 
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this._active = false;
 
@@ -84,7 +84,7 @@
                 return this._activeLayer;
             },
             set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
+                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
                 this._activeLayer = layer;
             }
         },

@@ -9,7 +9,7 @@
 
         this.__initialize();
 
-        utils.init(this, options);
+        sGis.utils.init(this, options);
         this._source = source;
     };
 

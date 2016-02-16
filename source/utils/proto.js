@@ -38,7 +38,7 @@
                 if (collisions === 'override') {
                     _define(obj, keys[i], properties[keys[i]]);
                 } else if (collisions !== 'ignore') {
-                    utils.error('Cannot copy property .' + keys[i] + ' - the object already has this property. Use options "ignore" or "override" if this is expected.');
+                    sGis.utils.error('Cannot copy property .' + keys[i] + ' - the object already has this property. Use options "ignore" or "override" if this is expected.');
                 }
             } else {
                 _define(obj, keys[i], properties[keys[i]]);
@@ -107,7 +107,7 @@
             return obj instanceof Function;
         },
         number: function(n) {
-            return !utils.isArray(n) && !isNaN(parseFloat(n)) && isFinite(n);
+            return !sGis.utils.isArray(n) && !isNaN(parseFloat(n)) && isFinite(n);
         },
         string: function(s) {
             return typeof s === 'string';
@@ -118,7 +118,7 @@
     };
 
     function valError(type, obj) {
-        utils.error(type + ' is expected but got ' + obj + ' instead');
+        sGis.utils.error(type + ' is expected but got ' + obj + ' instead');
     }
 
 })();

@@ -1,11 +1,11 @@
 (function() {
 
     sGis.controls.Distance = function(map, options) {
-        if (!(map instanceof sGis.Map)) utils.error('sGis.Map instance is expected but got ' + map + ' instead');
+        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
         this._polylineControl = new sGis.controls.Polyline(map, { activeLayer: options && options.activeLayer, style: {strokeWidth: 2, strokeColor: 'red'} });
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this._polylineControl.addListener('drawingBegin', function() {
             if (this.activeLayer.features.length > 1) this.activeLayer.features = [this.activeLayer.features[this.activeLayer.features.length - 1]];

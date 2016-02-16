@@ -3,13 +3,13 @@
 
     sGis.symbol.editor = {
         Point: function(properties) {
-            utils.init(this, properties);
+            sGis.utils.init(this, properties);
         },
         Polyline: function(properties) {
-            utils.init(this, properties);
+            sGis.utils.init(this, properties);
         },
         Polygon: function(properties) {
-            utils.init(this, properties);
+            sGis.utils.init(this, properties);
         }
     };
 

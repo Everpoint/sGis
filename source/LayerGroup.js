@@ -9,14 +9,14 @@
 
     sGis.LayerGroup.prototype = {
         addLayer: function(layer) {
-            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
-            if (layer === this) utils.error('Cannot add self to the group');
+            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) sGis.utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
+            if (layer === this) sGis.utils.error('Cannot add self to the group');
             if (this._layers.indexOf(layer) !== -1) {
-                utils.error('Cannot add layer to the group: the layer is already in the group');
+                sGis.utils.error('Cannot add layer to the group: the layer is already in the group');
             } else {
                 for (var i = 0, l = this._layers.length; i < l; i++) {
                     if (this._layers[i] instanceof sGis.LayerGroup && this._layers[i].contains(layer) || layer instanceof sGis.LayerGroup && layer.contains(this._layers[i])) {
-                        utils.error('Cannot add layer to the group: the layer is already in the group');
+                        sGis.utils.error('Cannot add layer to the group: the layer is already in the group');
                     }
                 }
 
@@ -26,7 +26,7 @@
         },
 
         removeLayer: function(layer, recurse) {
-            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
+            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) sGis.utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
             var index = this._layers.indexOf(layer);
             if (index !== -1) {
                 this._layers.splice(index, 1);
@@ -41,11 +41,11 @@
                 }
             }
 
-            utils.error('The layer is not in the group');
+            sGis.utils.error('The layer is not in the group');
         },
 
         contains: function(layer) {
-            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
+            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) sGis.utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
 
             for (var i = 0, l = this._layers.length; i < l; i++) {
                 if (this._layers[i] instanceof sGis.LayerGroup && this._layers[i].contains(layer) || this._layers[i] === layer) {
@@ -60,8 +60,8 @@
         },
 
         insertLayer: function(layer, index) {
-            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
-            if (!utils.isInteger(index)) utils.error('Integer is expected but got ' + index + ' instead');
+            if (!(layer instanceof sGis.Layer) && !(layer instanceof sGis.LayerGroup)) sGis.utils.error('sGis.Layer instance is expected but got ' + layer + ' instead');
+            if (!sGis.utils.isInteger(index)) sGis.utils.error('Integer is expected but got ' + index + ' instead');
 
             var currIndex = this._layers.indexOf(layer);
 
@@ -95,7 +95,7 @@
             },
 
             set: function(layers) {
-                if (!utils.isArray(layers)) utils.error('Array is expected but got ' + layers + ' instead');
+                if (!sGis.utils.isArray(layers)) sGis.utils.error('Array is expected but got ' + layers + ' instead');
                 var list = this.layers;
                 for (var i = 0; i < list.length; i++) {
                     this.removeLayer(list[i]);

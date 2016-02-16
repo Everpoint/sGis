@@ -17,7 +17,7 @@
         _resolutionLimits: [-1, -1],
 
         __initialize: function() {
-            this._id = utils.getGuid();
+            this._id = sGis.utils.getGuid();
         },
 
         show: function() {
@@ -44,7 +44,7 @@
             },
 
             set: function(opacity) {
-                if (!utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+                if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
                 opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
                 this._opacity = opacity;
                 this.fire('propertyChange', {property: 'opacity'});
@@ -57,7 +57,7 @@
             },
 
             set: function(name) {
-                if (!utils.isString(name)) utils.error('String is expected but got ' + name + ' instead');
+                if (!sGis.utils.isString(name)) sGis.utils.error('String is expected but got ' + name + ' instead');
                 this._name = name;
                 this.fire('propertyChange', {property: 'name'});
             }
@@ -84,7 +84,7 @@
                 } else if (bool === false) {
                     this.hide();
                 } else {
-                    utils.error('Boolean is expected but got ' + bool + ' instead');
+                    sGis.utils.error('Boolean is expected but got ' + bool + ' instead');
                 }
             }
         },

@@ -3,7 +3,7 @@
 (function() {
 
     sGis.FeatureLayer = function(options) {
-        utils.initializeOptions(this, options);
+        sGis.utils.init(this, options);
         this.__initialize();
 
         this._features = [];
@@ -14,7 +14,7 @@
         _delayedUpdate: true,
 
         getFeatures: function(bbox) {
-            if (!bbox || !(bbox instanceof sGis.Bbox)) utils.error('Expected bbox, but got ' + bbox + 'instead');
+            if (!bbox || !(bbox instanceof sGis.Bbox)) sGis.utils.error('Expected bbox, but got ' + bbox + 'instead');
 
             if (!this._display) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
@@ -32,19 +32,19 @@
             if (features instanceof sGis.Feature) {
                 this._features.push(features);
                 this.fire('featureAdd', {feature: features});
-            } else if (utils.isArray(features)) {
+            } else if (sGis.utils.isArray(features)) {
                 for (var i in features) {
                     this.add(features[i]);
                 }
             } else {
-                utils.error('sGis.Feature instance or their array is expected but got ' + features + 'instead');
+                sGis.utils.error('sGis.Feature instance or their array is expected but got ' + features + 'instead');
             }
         },
 
         remove: function(feature) {
-            if (!(feature instanceof sGis.Feature)) utils.error('sGis.Feature instance is expected but got ' + feature + 'instead');
+            if (!(feature instanceof sGis.Feature)) sGis.utils.error('sGis.Feature instance is expected but got ' + feature + 'instead');
             var index = this._features.indexOf(feature);
-            if (index === -1) utils.error('The feature does not belong to the layer');
+            if (index === -1) sGis.utils.error('The feature does not belong to the layer');
             this._features.splice(index, 1);
             this.fire('featureRemove', {feature: feature});
         },

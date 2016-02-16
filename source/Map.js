@@ -17,7 +17,7 @@
     sGis.Map = function(options) {
         this._initLayerGroup();
         if (options && options.crs) this.crs = options.crs;
-        utils.init(this, options);
+        sGis.utils.init(this, options);
     };
 
     sGis.Map.prototype = {
@@ -95,7 +95,7 @@
          * @param {Number} dy - Offset along Y axis in map coordinates, positive direction is down
          */
         move: function(dx, dy) {
-            if (!utils.isNumber(dx) || !utils.isNumber(dy)) utils.error('Number, Number is expected but got ' + dx + ', ' + dy + ' instead');
+            if (!sGis.utils.isNumber(dx) || !sGis.utils.isNumber(dy)) sGis.utils.error('Number, Number is expected but got ' + dx + ', ' + dy + ' instead');
             var position = this.position;
             position.x += dx;
             position.y += dy;
@@ -408,7 +408,7 @@
                     }
                 }
 
-                utils.requestAnimationFrame(this._autoupdateSize.bind(this));
+                sGis.utils.requestAnimationFrame(this._autoupdateSize.bind(this));
             } else {
                 this._width = this._height = undefined;
             }
@@ -454,7 +454,7 @@
                 return this._crs;
             },
             set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
 
                 var currentCrs = this._crs;
                 this._crs = crs;
@@ -483,7 +483,7 @@
             },
 
             set: function(resolution) {
-                if (!utils.isNumber(resolution) || resolution <= 0) utils.error('Positive number is expected but got ' + resolution + ' instead');
+                if (!sGis.utils.isNumber(resolution) || resolution <= 0) sGis.utils.error('Positive number is expected but got ' + resolution + ' instead');
                 this._resolution = resolution;
                 this.fire('bboxChange');
             }
@@ -511,7 +511,7 @@
             },
 
             set: function(wrapper) {
-                if (!utils.isString(wrapper) && wrapper !== null && !(wrapper instanceof HTMLElement)) utils.error('String or null value expected but got ' + wrapper + ' instead');
+                if (!sGis.utils.isString(wrapper) && wrapper !== null && !(wrapper instanceof HTMLElement)) sGis.utils.error('String or null value expected but got ' + wrapper + ' instead');
                 if (this._wrapper) {
                     this._wrapper.removeChild(this._innerWrapper);
                 }
@@ -519,7 +519,7 @@
                     setDOMstructure(wrapper, this);
                     this._autoupdateSize();
 
-                    this._painter = new utils.Painter(this);
+                    this._painter = new sGis.Painter(this);
                     setEventHandlers(this);
 
                 } else {
@@ -551,13 +551,13 @@
 
             set: function(position) {
                 var point;
-                if (position instanceof sGis.feature.Point || (utils.isArray(position) && position.length === 2 && utils.isNumber(position[0]) && utils.isNumber(position[1]))) {
+                if (position instanceof sGis.feature.Point || (sGis.utils.isArray(position) && position.length === 2 && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1]))) {
                     var coordinates = position.coordinates || position;
                     point = new sGis.Point(coordinates[0], coordinates[1], position.crs || this.crs);
                 } else if (position instanceof sGis.Point) {
                     point = position;
                 } else {
-                    utils.error('sGis.Point or sGis.feature.Point instance is expected but got ' + position + ' instead');
+                    sGis.utils.error('sGis.Point or sGis.feature.Point instance is expected but got ' + position + ' instead');
                 }
 
                 this._position = point.projectTo(this.crs);
@@ -610,9 +610,9 @@
             },
             set: function(resolution) {
                 if (resolution !== null) {
-                    if ((!utils.isNumber(resolution) || resolution <= 0)) utils.error('Positive number is expected but got ' + resolution + ' instead');
+                    if ((!sGis.utils.isNumber(resolution) || resolution <= 0)) sGis.utils.error('Positive number is expected but got ' + resolution + ' instead');
                     var minResolution = this.minResolution;
-                    if (resolution < minResolution) utils.error('maxResolution cannot be less then minResolution');
+                    if (resolution < minResolution) sGis.utils.error('maxResolution cannot be less then minResolution');
                 }
                 this._maxResolution = resolution;
                 if (this.resolution > this.maxResolution) this.resolution = resolution;
@@ -651,7 +651,7 @@
 
     function setDOMstructure(parent, map) {
         var parent = parent instanceof HTMLElement ? parent :document.getElementById(parent);
-        if (!parent) utils.error('The element with ID "' + parent + '" could not be found. Cannot create a Map object');
+        if (!parent) sGis.utils.error('The element with ID "' + parent + '" could not be found. Cannot create a Map object');
 
         var wrapper = document.createElement('div');
         wrapper.map = map;

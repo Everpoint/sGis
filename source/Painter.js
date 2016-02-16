@@ -7,12 +7,12 @@
      * @param {sGis.Map} map for the painter to draw
      * @constructor
      */
-    utils.Painter = function(map) {
+    sGis.Painter = function(map) {
         this._map = map;
         this._mapWrapper = map.layerWrapper;
         this._layerData = {};
         this._bbox = map.bbox;
-        this._id = utils.getGuid();
+        this._id = sGis.utils.getGuid();
 
         var self = this;
         this._map.addListener('bboxChange', function() {
@@ -45,7 +45,7 @@
         this._repaint();
     };
 
-    utils.Painter.prototype = {
+    sGis.Painter.prototype = {
         ignoreEvents: false,
 
         _container: undefined,
@@ -149,7 +149,7 @@
                 }
             }
 
-            utils.requestAnimationFrame(this._repaint.bind(this));
+            sGis.utils.requestAnimationFrame(this._repaint.bind(this));
         },
 
         _setLayerData: function(layer) {
@@ -178,7 +178,7 @@
             container.style.height = '100%';
             container.width = this.width;
             container.height = this.height;
-            container.style[utils.css.transformOrigin.func] = 'left top';
+            container.style[sGis.utils.css.transformOrigin.func] = 'left top';
             container.style.position = 'absolute';
             container.bbox = this._map.bbox;
             this._setContainerTransform(container);
@@ -218,11 +218,11 @@
 
                 var nodeResolution = node.resolution || node.width ? nodeBbox.width / node.width : containerResolution;
 
-                var sx = utils.normolize(nodeResolution / containerResolution);
+                var sx = normalize(nodeResolution / containerResolution);
                 var sy = sx;
 
-                var tx = this._browserAdj(utils.normolize((nodeBbox.p[0].x - containerBbox.p[0].x) / containerResolution));
-                var ty = this._browserAdj(utils.normolize((-nodeBbox.p[1].y + containerBbox.p[1].y) / containerResolution));
+                var tx = this._browserAdj(normalize((nodeBbox.p[0].x - containerBbox.p[0].x) / containerResolution));
+                var ty = this._browserAdj(normalize((-nodeBbox.p[1].y + containerBbox.p[1].y) / containerResolution));
             } else {
                 var sx = 1,
                     sy = 1;
@@ -232,9 +232,9 @@
             }
 
             if (this._useTranslate3d) {
-                node.style[utils.css.transform.func] = 'translate3d(' + tx + 'px, ' + ty + 'px, 0px) scale(' + sx.toPrecision(6) + ', ' + sy.toPrecision(6) + ')';
+                node.style[sGis.utils.css.transform.func] = 'translate3d(' + tx + 'px, ' + ty + 'px, 0px) scale(' + sx.toPrecision(6) + ', ' + sy.toPrecision(6) + ')';
             } else {
-                node.style[utils.css.transform.func] = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + sx.toPrecision(6) + ', ' + sy.toPrecision(6) + ')';
+                node.style[sGis.utils.css.transform.func] = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + sx.toPrecision(6) + ', ' + sy.toPrecision(6) + ')';
             }
 
             if (!node.resolution) node.resolution = nodeResolution;
@@ -420,7 +420,7 @@
         _drawNode: function(render, feature, layer, container) {
             var layerData = this._layerData[layer.id];
             var self = this;
-            if (utils.isImage(render.node) && !render.node.complete) {
+            if (sGis.utils.isImage(render.node) && !render.node.complete) {
                 layerData.loadingFeatureIds.push(feature.id);
                 render.node.onload = function() {
                     self._removeFromLoadingList(feature, layer);
@@ -555,7 +555,7 @@
                 this._drawPolyline(geometry, ctx);
             } else if (geometry instanceof sGis.geom.Arc) {
                 this._drawArc(geometry, ctx);
-            } else if (geometry.node && utils.isImage(geometry.node) && geometry.node.position) {
+            } else if (geometry.node && sGis.utils.isImage(geometry.node) && geometry.node.position) {
                 this._drawImage(geometry.node, ctx);
             }
         },
@@ -663,7 +663,7 @@
         },
 
         _setNodeStyles: function(node, layer) {
-            node.style[utils.css.transformOrigin.func] = 'left top';
+            node.style[sGis.utils.css.transformOrigin.func] = 'left top';
             node.style.position = 'absolute';
             node.style.zIndex = this._layerData[layer.id].zIndex;
         },
@@ -737,7 +737,7 @@
     }
 
 
-    Object.defineProperties(utils.Painter.prototype, {
+    Object.defineProperties(sGis.Painter.prototype, {
         layers: {
             get: function() {
                 return this._map.layers;
@@ -763,10 +763,14 @@
         }
     });
 
-    sGis.utils.proto.setMethods(utils.Painter.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(sGis.Painter.prototype, sGis.IEventHandler);
 
     function toDrawOnCanvas(object) {
         return sGis.useCanvas && (object instanceof sGis.geom.Arc || object instanceof sGis.geom.Polyline || object.renderToCanvas);
+    }
+
+    function normalize(n) {
+        return Math.abs(n - Math.round(n)) < 0.001 ? Math.round(n) : n;
     }
 
 })();

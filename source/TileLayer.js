@@ -31,9 +31,9 @@
 
 
     sGis.TileLayer = function(tileSource, options) {
-        if (!tileSource || !utils.isString(tileSource)) utils.error('URL string is expected but got ' + tileSource + ' instead');
+        if (!tileSource || !sGis.utils.isString(tileSource)) sGis.utils.error('URL string is expected but got ' + tileSource + ' instead');
         this.__initialize();
-        utils.init(this, options);
+        sGis.utils.init(this, options);
 
         this._source = tileSource;
         this._tiles = [];
@@ -54,8 +54,8 @@
         },
 
         getFeatures: function(bbox, resolution) {
-            if (!(bbox instanceof sGis.Bbox)) utils.error('sGis.Bbox instance is expected but got ' + bbox + ' instead');
-            if (!resolution) utils.error('Obligatory parameter resolution is omitted');
+            if (!(bbox instanceof sGis.Bbox)) sGis.utils.error('sGis.Bbox instance is expected but got ' + bbox + ' instead');
+            if (!resolution) sGis.utils.error('Obligatory parameter resolution is omitted');
 
             if (!this._display || bbox.p[0].crs !== this.crs && (!bbox.p[0].crs.from || !this.crs.from)) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
@@ -131,7 +131,7 @@
             },
 
             set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
+                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
                 this._crs = crs;
             }
         },
@@ -154,7 +154,7 @@
             },
 
             set: function(scheme) {
-                if (!(scheme instanceof Object)) utils.error('Object is expected but got ' + scheme + ' instead');
+                if (!(scheme instanceof Object)) sGis.utils.error('Object is expected but got ' + scheme + ' instead');
                 this._tileScheme = scheme;
             }
         },
@@ -192,7 +192,7 @@
             },
 
             set: function(opacity) {
-                if (!utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+                if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
                 opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
                 this._opacity = opacity;
 
@@ -210,7 +210,7 @@
 
     function getScaleLevel(layer, resolution) {
         for (var i in layer._tileScheme.matrix) {
-            if (resolution > layer._tileScheme.matrix[i].resolution && !utils.softEquals(resolution, layer._tileScheme.matrix[i].resolution)) {
+            if (resolution > layer._tileScheme.matrix[i].resolution && !sGis.utils.softEquals(resolution, layer._tileScheme.matrix[i].resolution)) {
                 if (i == 0 && resolution / layer._tileScheme.matrix[0].resolution > 2) return -1;
                 return i === "0" ? 0 : i - 1;
             }

@@ -74,7 +74,7 @@ $(document).ready(function() {
             beforeEach(function() {
                 var callsList = [];
 
-                spyOn(utils, 'requestAnimationFrame').and.callFake(function (f) {
+                spyOn(sGis.utils, 'requestAnimationFrame').and.callFake(function (f) {
                     callsList.push(f);
                     triggerAnimationFrame = function () {
                         callsList.forEach(function(handler) { handler(); });
@@ -159,7 +159,7 @@ $(document).ready(function() {
                 it('should set the .innerWrapper, .layerWrapper and .painter properties', function() {
                     expect(map.innerWrapper).toBeDefined();
                     expect(map.layerWrapper).toBeDefined();
-                    expect(map.painter instanceof utils.Painter).toBe(true);
+                    expect(map.painter instanceof sGis.Painter).toBe(true);
                 });
 
                 it('should add the map DOM elements into the wrapper', function() {

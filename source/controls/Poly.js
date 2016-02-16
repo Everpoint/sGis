@@ -12,7 +12,7 @@
         _featureClass: null,
 
         _initialize: function(map, options) {
-            if (!(map instanceof sGis.Map)) utils.error('Expected sGis.Map child, but got ' + map + ' instead');
+            if (!(map instanceof sGis.Map)) sGis.utils.error('Expected sGis.Map child, but got ' + map + ' instead');
             this._map = map;
 
             options = options || {};
@@ -20,7 +20,7 @@
             this._prototype = new this._featureClass([[]], {style: options.style, symbol: options.symbol});
 
 
-            utils.init(this, options);
+            sGis.utils.init(this, options);
 
             this._active = false;
             var self = this;
@@ -160,7 +160,7 @@
                 return this._activeLayer;
             },
             set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
+                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
                 this._activeLayer = layer;
             }
         },
@@ -189,7 +189,7 @@
             },
 
             set: function(feature) {
-                if (!(feature instanceof this._featureClass)) utils.error('sGis.feature.Polygon instance is expected but got ' + feature + ' instead');
+                if (!(feature instanceof this._featureClass)) sGis.utils.error('sGis.feature.Polygon instance is expected but got ' + feature + ' instead');
                 if (this._activeFeature) {
                     if (feature === this._activeFeature) return;
                     this.canceDrawing();
