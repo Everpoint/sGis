@@ -31,7 +31,7 @@
 
             var keys = Object.keys(options);
             keys.forEach(function(key) {
-                if (setUndefined || object[key] !== undefined && options[key] !== undefined) {
+                if ((setUndefined || object[key] !== undefined) && options[key] !== undefined) {
                     try {
                         object[key] = options[key];
                     } catch (e) {

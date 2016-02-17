@@ -45,7 +45,7 @@
                 this._symbol = new this._defaultSymbol();
             }
 
-            sGis.utils.init(this, options);
+            sGis.utils.init(this, options, true);
         },
 
         setTempSymbol: function(symbol) {
