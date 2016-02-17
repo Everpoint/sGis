@@ -24,7 +24,7 @@
          * Calls sGis.utils.error() in case of exception. It only sets the properties that already exist in the object if not setUndefined parameter is given
          * @param {Object} object
          * @param {Object} options
-         * @param {Boolean} setUndefined
+         * @param {Boolean} [setUndefined]
          */
         init: function(object, options, setUndefined) {
             if (!options) return;
