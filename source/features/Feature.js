@@ -15,6 +15,7 @@
         _attributes: null,
         _crs: sGis.CRS.geo,
         _hidden: false,
+        _symbol: null,
 
         render: function(resolution, crs) {
             if (this._hidden) {

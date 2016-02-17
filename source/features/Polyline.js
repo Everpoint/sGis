@@ -192,21 +192,21 @@
 
         width: {
             get: function() {
-                return this._symbol.strokeWidth;
+                return this._symbol && this._symbol.strokeWidth;
             },
 
             set: function(width) {
-                this._symbol.strokeWidth = width;
+                if (this._symbol) this._symbol.strokeWidth = width;
             }
         },
 
         color: {
             get: function() {
-                return this._symbol.strokeColor;
+                return this._symbol && this._symbol.strokeColor;
             },
 
             set: function(color) {
-                this._symbol.strokeColor = color;
+                if (this._symbol) this._symbol.strokeColor = color;
             }
         },
 
