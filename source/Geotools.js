@@ -188,6 +188,8 @@
      */
     sGis.geotools.isPolygonValid = function(polygon) {
         var coordinates = (polygon instanceof sGis.feature.Polygon || polygon instanceof sGis.geom.Polygon) ? polygon.coordinates : polygon;
+        if (coordinates.length === 0) return false;
+
         for (var ring = 0; ring < coordinates.length; ring++) {
             if (coordinates[ring].length <= 2) return false;
 
