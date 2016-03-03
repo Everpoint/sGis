@@ -1,6 +1,5 @@
-'use strict';
-
 (function() {
+    'use strict';
 
     /**
      *
@@ -14,13 +13,13 @@
      * @constructor
      */
 
-    sGis.Map = function(options) {
+    var Map = function(options) {
         this._initLayerGroup();
         if (options && options.crs) this.crs = options.crs;
         sGis.utils.init(this, options);
     };
 
-    sGis.Map.prototype = {
+    Map.prototype = {
         _crs: sGis.CRS.webMercator,
         _position: new sGis.Point(55.755831, 37.617673).projectTo(sGis.CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
@@ -68,7 +67,7 @@
          */
         moveLayerToIndex: function(layer, index) {
             this._layerGroup.insertLayer(layer, index);
-        },
+       },
 
         /**
          * Moves the layer to the end of the layer list. If the layer is not on the map, it will be added to the map.
@@ -415,7 +414,7 @@
         }
     };
 
-    Object.defineProperties(sGis.Map.prototype, {
+    Object.defineProperties(Map.prototype, {
         /**
          * Returns the bounding box of the map in map coordinates (sGis.Bbox). Read only.
          */
@@ -647,7 +646,7 @@
         }
     });
 
-    sGis.utils.proto.setMethods(sGis.Map.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(Map.prototype, sGis.IEventHandler);
 
     function setDOMstructure(parent, map) {
         var parent = parent instanceof HTMLElement ? parent :document.getElementById(parent);
@@ -903,5 +902,7 @@
         }
         return false;
     }
+
+    sGis.Map = Map;
 
 })();

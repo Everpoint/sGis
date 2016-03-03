@@ -1,14 +1,13 @@
-'use strict';
+sGis.module('geotools', ['math'], function() {
+    'use strict';
 
-(function() {
-    
-    sGis.geotools = {};
+    var geotools = {};
 
-    sGis.geotools.distance = function(a, b) {
+    geotools.distance = function (a, b) {
         if (a.crs.from) {
             var p1 = a.projectTo(sGis.CRS.geo),
                 p2 = b.projectTo(sGis.CRS.geo),
-                d = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(sGis.math.degToRad((p2.y - p1.y) / 2)), 2) + Math.cos(sGis.math.degToRad(p1.y)) * Math.cos(sGis.math.degToRad(p2.y)) * Math.pow(Math.sin(sGis.math.degToRad((p2.x - p1.x) / 2)), 2))),
+                d = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(math.degToRad((p2.y - p1.y) / 2)), 2) + Math.cos(math.degToRad(p1.y)) * Math.cos(math.degToRad(p2.y)) * Math.pow(Math.sin(math.degToRad((p2.x - p1.x) / 2)), 2))),
                 R = 6372795,
                 l = d * R;
         } else {
@@ -18,7 +17,7 @@
         return l;
     };
 
-    sGis.geotools.length = function(geometry, crs) {
+    geotools.length = function (geometry, crs) {
         var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry;
         crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
@@ -35,14 +34,14 @@
 
         for (var ring = 0, l = projected.length; ring < l; ring++) {
             for (var i = 0, m = projected[ring].length - 1; i < m; i++) {
-                length += sGis.geotools.distance(new sGis.Point(projected[ring][i][0], projected[ring][i][1], crs), new sGis.Point(projected[ring][i + 1][0], projected[ring][i + 1][1], crs));
+                length += geotools.distance(new sGis.Point(projected[ring][i][0], projected[ring][i][1], crs), new sGis.Point(projected[ring][i + 1][0], projected[ring][i + 1][1], crs));
             }
         }
 
         return length;
     };
 
-    sGis.geotools.area = function(geometry, crs) {
+    geotools.area = function (geometry, crs) {
         var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry;
         crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
@@ -67,12 +66,12 @@
 
         var area = 0;
         for (var i = 0, l = coord.length - 1; i < l; i++) {
-            area += (coord[i][0] + coord[i+1][0]) * (coord[i][1] - coord[i + 1][1]);
+            area += (coord[i][0] + coord[i + 1][0]) * (coord[i][1] - coord[i + 1][1]);
         }
         return Math.abs(area / 2);
     }
 
-    sGis.geotools.pointToLineProjection = function(point, line) {
+    geotools.pointToLineProjection = function (point, line) {
         if (line[0][0] === line[1][0]) {
             return [line[0][0], point[1]];
         } else if (line[0][1] === line[1][1]) {
@@ -82,7 +81,7 @@
                 ly = line[1][1] - line[0][1],
                 dx = line[0][0] - point[0],
                 dy = line[0][1] - point[1],
-                t = - (dx * lx + dy * ly) / (lx * lx + ly * ly),
+                t = -(dx * lx + dy * ly) / (lx * lx + ly * ly),
                 x = line[0][0] + t * lx,
                 y = line[0][1] + t * ly;
             return [x, y];
@@ -96,7 +95,7 @@
      * @param {Number} [tolerance=0] - the tolerance of check. If the point is out of the polygon, but is closer then tolerance, the returned result will be true.
      * @returns {boolean|Array} - true, if the point is inside of polygon, [ring, index] - index of vertex if the point is closer then 'tolerance' to one of the sides of polygon, false otherwise
      */
-    sGis.geotools.contains = function(polygon, point, tolerance) {
+    geotools.contains = function (polygon, point, tolerance) {
         sGis.utils.validate(polygon[0], 'array');
         sGis.utils.validate(point, 'array');
         tolerance = tolerance || 0;
@@ -109,8 +108,8 @@
                 prevH = points[0][1] > point[1];
 
             for (var i = 1; i < points.length; i++) {
-                if (sGis.geotools.pointToLineDistance(point, [points[i - 1], points[i]]) <= tolerance) {
-                    return [ring, i-1];
+                if (geotools.pointToLineDistance(point, [points[i - 1], points[i]]) <= tolerance) {
+                    return [ring, i - 1];
                 }
 
                 var D = points[i][0] > point[0],
@@ -119,8 +118,8 @@
                 if (H !== prevH //otherwise line does not intersect horizontal line
                     && (D > 0 || prevD > 0) //line is to the left from the point, but we look to the right
                 ) {
-                    if (!(point[1] === points[i][1] && point[1] === points[i-1][1])) { //checks if line is horizontal and has same Y with point
-                        if (sGis.geotools.intersects([[points[i][0], points[i][1]], [points[i - 1][0], points[i - 1][1]]], [point, [Math.max(points[i][0], points[i - 1][0]), point[1]]])) {
+                    if (!(point[1] === points[i][1] && point[1] === points[i - 1][1])) { //checks if line is horizontal and has same Y with point
+                        if (geotools.intersects([[points[i][0], points[i][1]], [points[i - 1][0], points[i - 1][1]]], [point, [Math.max(points[i][0], points[i - 1][0]), point[1]]])) {
                             intersectionCount++;
                         }
                     }
@@ -134,7 +133,7 @@
         return false;
     };
 
-    sGis.geotools.pointToLineDistance = function(point, line) {
+    geotools.pointToLineDistance = function (point, line) {
         var lx = line[1][0] - line[0][0],
             ly = line[1][1] - line[0][1],
             dx = line[0][0] - point[0],
@@ -145,7 +144,7 @@
         return Math.sqrt(Math.pow(lx * t + dx, 2) + Math.pow(ly * t + dy, 2));
     };
 
-    sGis.geotools.intersects = function(line1, line2) {
+    geotools.intersects = function (line1, line2) {
         if (line1[0][0] === line1[1][0]) {
             return line1[0][0] > line2[0][0];
         } else {
@@ -162,12 +161,12 @@
      * @param {[[number, number], [number,number]]} line - the line as two points: [[x1,y1], [x2,y2]]
      * @return {number}
      */
-    sGis.geotools.getLineAngle = function(line) {
+    geotools.getLineAngle = function (line) {
         if (line[0][0] === line[1][0] && line[0][1] === line[1][1]) return NaN;
         var x = line[1][0] - line[0][0];
         var y = line[1][1] - line[0][1];
         var cos = x / Math.sqrt(x * x + y * y);
-        return y >= 0 ? Math.acos(cos): -Math.acos(cos);
+        return y >= 0 ? Math.acos(cos) : -Math.acos(cos);
     };
 
     /**
@@ -177,7 +176,7 @@
      * @param {number} distance - distance
      * @returns {[number, number]}
      */
-    sGis.geotools.getPointFromAngleAndDistance = function(point, angle, distance) {
+    geotools.getPointFromAngleAndDistance = function (point, angle, distance) {
         return [point[0] + Math.cos(angle) * distance, point[1] + Math.sin(angle) * distance];
     };
 
@@ -186,7 +185,7 @@
      * @param {sGis.feature.Polygon|sGis.geom.Polygon|[number,number][][]} polygon  - polygon feature or coordinates
      * @returns {boolean}
      */
-    sGis.geotools.isPolygonValid = function(polygon) {
+    geotools.isPolygonValid = function (polygon) {
         var coordinates = (polygon instanceof sGis.feature.Polygon || polygon instanceof sGis.geom.Polygon) ? polygon.coordinates : polygon;
         if (coordinates.length === 0) return false;
 
@@ -209,7 +208,7 @@
     function hasIntersection(coordinates, line, exc) {
         for (var ring = 0; ring < coordinates.length; ring++) {
             for (var i = 0; i < coordinates[ring].length; i++) {
-                if (ring === exc[0] && (Math.abs(i-exc[1]) < 2 || exc[1] === 0 && i === coordinates[ring].length - 1 || i === 0 && exc[1] === coordinates[ring].length - 1)) continue;
+                if (ring === exc[0] && (Math.abs(i - exc[1]) < 2 || exc[1] === 0 && i === coordinates[ring].length - 1 || i === 0 && exc[1] === coordinates[ring].length - 1)) continue;
 
                 if (intersects([coordinates[ring][i], coordinates[ring][i + 1] || coordinates[ring][0]], line)) return true;
             }
@@ -244,20 +243,29 @@
             (q[1] <= Math.max(p[1], r[1]) && q[1] >= Math.min(p[1], r[1]));
     }
 
-    sGis.math = {
+
+
+    return geotools;
+});
+
+sGis.module('math', [], function() {
+    return {
         /**
          * Converts degrees to radians
          * @param {number} d - degrees
          * @returns {number}
          */
-        degToRad: function(d) { return d / 180 * Math.PI; },
+        degToRad: function (d) {
+            return d / 180 * Math.PI;
+        },
 
         /**
          * Converts radians to degrees
          * @param {number} r - radians
          * @returns {number}
          */
-        radToDeg: function(r) { return r / Math.PI * 180; }
-    }
-
-})();
+        radToDeg: function (r) {
+            return r / Math.PI * 180;
+        }
+    };
+});
