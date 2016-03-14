@@ -17,24 +17,19 @@ sGis.module('geotools', ['math'], function() {
         return l;
     };
 
-    geotools.length = function (geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry;
+    sGis.geotools.length = function(geometry, crs) {
+        var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry,
+            length = 0,
+            ringTemp;
+
         crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
-        var tempFeature = new sGis.feature.Polyline(coord, {crs: crs}),
-            length = 0;
+        for (var ring = 0, l = coord.length; ring < l; ring++) {
+            ringTemp = [].concat(coord[ring]);
+            if (geometry instanceof sGis.feature.Polygon) ringTemp.push(ringTemp[0]);
 
-        if (crs.from) {
-            var projected = tempFeature.projectTo(sGis.CRS.CylindicalEqualArea).coordinates;
-        } else {
-            projected = tempFeature.coordinates;
-        }
-
-        if (geometry instanceof sGis.feature.Polygon) projected.push(projected[0]);
-
-        for (var ring = 0, l = projected.length; ring < l; ring++) {
-            for (var i = 0, m = projected[ring].length - 1; i < m; i++) {
-                length += geotools.distance(new sGis.Point(projected[ring][i][0], projected[ring][i][1], crs), new sGis.Point(projected[ring][i + 1][0], projected[ring][i + 1][1], crs));
+            for (var i = 0, m = ringTemp.length - 1; i < m; i++) {
+                length += sGis.geotools.distance(new sGis.Point(ringTemp[i][0], ringTemp[i][1], crs), new sGis.Point(ringTemp[i + 1][0], ringTemp[i + 1][1], crs));
             }
         }
 
