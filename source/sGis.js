@@ -39,6 +39,11 @@
         if (loadedModules[moduleName]) throw new Error('Module definition conflict: ' + moduleName);
         loadingDefs.push(Array.prototype.slice.call(arguments));
 
+        while (loadModules()) {}
+    };
+
+    function loadModules() {
+        var loaded = 0;
         loadingDefs.slice().forEach(function(def, index) {
             var deps = [];
             for (var i = 0; i < def[1].length; i++) {
@@ -48,11 +53,15 @@
 
             var module = def[2].apply(this, deps);
             loadedModules[def[0]] = module;
-            setModuleReference(module, moduleName);
+            setModuleReference(module, def[0]);
+            loaded ++;
 
             loadingDefs.splice(index, 1);
         });
-    };
+
+        return loaded;
+    }
+
     window.sGis = sGis;
 
     function setModuleReference(module, name) {

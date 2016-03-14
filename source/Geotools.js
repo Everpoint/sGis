@@ -1,4 +1,4 @@
-sGis.module('geotools', ['math'], function() {
+sGis.module('geotools', ['math'], function(math) {
     'use strict';
 
     var geotools = {};
