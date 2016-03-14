@@ -17,7 +17,7 @@ sGis.module('geotools', ['math'], function() {
         return l;
     };
 
-    sGis.geotools.length = function(geometry, crs) {
+    geotools.length = function(geometry, crs) {
         var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry,
             length = 0,
             ringTemp;
