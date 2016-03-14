@@ -29,7 +29,7 @@ sGis.module('geotools', ['math'], function() {
             if (geometry instanceof sGis.feature.Polygon) ringTemp.push(ringTemp[0]);
 
             for (var i = 0, m = ringTemp.length - 1; i < m; i++) {
-                length += sGis.geotools.distance(new sGis.Point(ringTemp[i][0], ringTemp[i][1], crs), new sGis.Point(ringTemp[i + 1][0], ringTemp[i + 1][1], crs));
+                length += geotools.distance(new sGis.Point(ringTemp[i][0], ringTemp[i][1], crs), new sGis.Point(ringTemp[i + 1][0], ringTemp[i + 1][1], crs));
             }
         }
 
