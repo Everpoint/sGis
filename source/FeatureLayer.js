@@ -4,7 +4,6 @@
 
     sGis.FeatureLayer = function(options) {
         sGis.utils.init(this, options);
-        this.__initialize();
 
         this._features = [];
         if (options && options.features) this.add(options.features);

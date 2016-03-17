@@ -1,6 +1,6 @@
-'use strict';
-
 (function() {
+
+    'use strict';
 
     var standardTileScheme = (function() {
         var scheme = {
@@ -29,31 +29,33 @@
         return scheme;
     })();
 
-
-    sGis.TileLayer = function(tileSource, options) {
-        if (!tileSource || !sGis.utils.isString(tileSource)) sGis.utils.error('URL string is expected but got ' + tileSource + ' instead');
-        this.__initialize();
-        sGis.utils.init(this, options);
-
-        this._source = tileSource;
-        this._tiles = [];
-        this._cache = [];
+    var defaults = {
+        tileScheme: standardTileScheme,
+        crs: sGis.CRS.webMercator,
+        cycleX: true,
+        cycleY: false,
+        _cacheSize: 256,
+        transitionTime: sGis.browser.indexOf('Chrome') === 0 ? 0 : 200
     };
 
-    sGis.TileLayer.prototype = new sGis.Layer({
-        _tileScheme: standardTileScheme,
-        _crs: sGis.CRS.webMercator,
-        _cycleX: true,
-        _cycleY: false,
-        _cacheSize: 256,
-        _transitionTime: sGis.browser.indexOf('Chrome') === 0 ? 0 : 200,
+    class TileLayer extends sGis.Layer {
+        constructor(tileSource, options) {
+            if (!tileSource || !sGis.utils.isString(tileSource)) sGis.utils.error('URL string is expected but got ' + tileSource + ' instead');
+            super();
 
-        getTileUrl: function(xIndex, yIndex, scale) {
+            sGis.utils.init(this, options);
+
+            this._source = tileSource;
+            this._tiles = [];
+            this._cache = [];
+        }
+
+        getTileUrl(xIndex, yIndex, scale) {
             var url = this._source;
             return url.replace('{x}', xIndex).replace('{y}', yIndex).replace('{z}', scale);
-        },
+        }
 
-        getFeatures: function(bbox, resolution) {
+        getFeatures(bbox, resolution) {
             if (!(bbox instanceof sGis.Bbox)) sGis.utils.error('sGis.Bbox instance is expected but got ' + bbox + ' instead');
             if (!resolution) sGis.utils.error('Obligatory parameter resolution is omitted');
 
@@ -63,16 +65,16 @@
             var scale = getScaleLevel(this, resolution);
             if (scale < 0) return [];
             var baseBbox = {
-                    minX: this._tileScheme.origin.x,
-                    maxY: this._tileScheme.origin.y,
-                    maxX: this._tileScheme.origin.x + this._tileScheme.tileWidth * this._tileScheme.matrix[0].resolution,
-                    minY: this._tileScheme.origin.y - this._tileScheme.tileHeight * this._tileScheme.matrix[0].resolution
-                };
+                minX: this.tileScheme.origin.x,
+                maxY: this.tileScheme.origin.y,
+                maxX: this.tileScheme.origin.x + this.tileScheme.tileWidth * this.tileScheme.matrix[0].resolution,
+                minY: this.tileScheme.origin.y - this.tileScheme.tileHeight * this.tileScheme.matrix[0].resolution
+            };
 
             var tiles = this._tiles,
                 layerCrs = this.crs,
                 features = [],
-                scaleAdj = bbox.p[0].crs.from ? Math.round(standardTileScheme.matrix[0].resolution / this._tileScheme.matrix[scale].resolution) : 2 << (scale - 1);
+                scaleAdj = bbox.p[0].crs.from ? Math.round(standardTileScheme.matrix[0].resolution / this.tileScheme.matrix[scale].resolution) : 2 << (scale - 1);
 
             bbox = bbox.projectTo(layerCrs);
 
@@ -86,15 +88,15 @@
 
             for (var xIndex = xStartIndex; xIndex < xEndIndex; xIndex++) {
                 var xIndexAdj = xIndex;
-                if (this._cycleX && xIndexAdj < 0) xIndexAdj = scaleAdj === 0 ? 0 : xIndexAdj % scaleAdj + scaleAdj;
-                if (this._cycleX && xIndexAdj >= scaleAdj) xIndexAdj = scaleAdj === 0 ? 0 : xIndexAdj % scaleAdj;
+                if (this.cycleX && xIndexAdj < 0) xIndexAdj = scaleAdj === 0 ? 0 : xIndexAdj % scaleAdj + scaleAdj;
+                if (this.cycleX && xIndexAdj >= scaleAdj) xIndexAdj = scaleAdj === 0 ? 0 : xIndexAdj % scaleAdj;
 
                 if (!tiles[scale][xIndex]) tiles[scale][xIndex] = [];
 
                 for (var yIndex = yStartIndex; yIndex < yEndIndex; yIndex++) {
                     var yIndexAdj= yIndex;
-                    if (this._cycleY && yIndexAdj < 0) yIndexAdj = scaleAdj === 0 ? 0 : yIndexAdj % scaleAdj + scaleAdj;
-                    if (this._cycleY && yIndexAdj >= scaleAdj) yIndexAdj = scaleAdj === 0 ? 0 : yIndexAdj % scaleAdj;
+                    if (this.cycleY && yIndexAdj < 0) yIndexAdj = scaleAdj === 0 ? 0 : yIndexAdj % scaleAdj + scaleAdj;
+                    if (this.cycleY && yIndexAdj >= scaleAdj) yIndexAdj = scaleAdj === 0 ? 0 : yIndexAdj % scaleAdj;
 
                     if (!tiles[scale][xIndex][yIndex]) {
                         var imageBbox = getTileBoundingBox(scale, xIndex, yIndex, this);
@@ -109,124 +111,51 @@
 
             this._cutCache();
             return features;
-        },
+        }
 
-        getObjectType: function() {
-            return 'img';
-        },
-
-        _cutCache: function() {
+        _cutCache() {
             while (this._cache.length > this._cacheSize) {
                 var indexes = this._cache[0].split(',');
                 delete this._tiles[indexes[0]][indexes[1]][indexes[2]];
                 this._cache.shift();
             }
         }
-    });
 
-    Object.defineProperties(sGis.TileLayer.prototype, {
-        crs: {
-            get: function() {
-                return this._crs;
-            },
+        get tileWidth() { return this.tileScheme.tileWidth; }
+        get tileHeight() { return this.tileScheme.tileHeight; }
 
-            set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
-                this._crs = crs;
-            }
-        },
+        get opacity() { return this._opacity; }
+        set opacity(opacity) {
+            if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+            opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
+            this._opacity = opacity;
 
-        tileWidth: {
-            get: function() {
-                return this._tileScheme.tileWidth;
-            }
-        },
-
-        tileHeight: {
-            get: function() {
-                return this._tileScheme.tileHeight;
-            }
-        },
-
-        tileScheme: {
-            get: function() {
-                return this._tileScheme;
-            },
-
-            set: function(scheme) {
-                if (!(scheme instanceof Object)) sGis.utils.error('Object is expected but got ' + scheme + ' instead');
-                this._tileScheme = scheme;
-            }
-        },
-
-        cycleX: {
-            get: function() {
-                return this._cycleX;
-            },
-            set: function(bool) {
-                this._cycleX = bool;
-            }
-        },
-
-        cycleY: {
-            get: function() {
-                return this._cycleY;
-            },
-            set: function(bool) {
-                this._cycleY = bool;
-            }
-        },
-
-        transitionTime: {
-            get: function() {
-                return this._transitionTime;
-            },
-            set: function(time) {
-                this._transitionTime = time;
-            }
-        },
-
-        opacity: {
-            get: function() {
-                return this._opacity;
-            },
-
-            set: function(opacity) {
-                if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
-                opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
-                this._opacity = opacity;
-
-                for (var scale in this._tiles) {
-                    for (var x in this._tiles[scale]) {
-                        for (var y in this._tiles[scale][x]) {
-                            this._tiles[scale][x][y].opacity = opacity;
-                        }
+            for (var scale in this._tiles) {
+                for (var x in this._tiles[scale]) {
+                    for (var y in this._tiles[scale][x]) {
+                        this._tiles[scale][x][y].opacity = opacity;
                     }
                 }
-                this.fire('propertyChange', {property: 'opacity'});
             }
+            this.fire('propertyChange', {property: 'opacity'});
         }
-    });
+    }
 
     function getScaleLevel(layer, resolution) {
-        for (var i in layer._tileScheme.matrix) {
-            if (resolution > layer._tileScheme.matrix[i].resolution && !sGis.utils.softEquals(resolution, layer._tileScheme.matrix[i].resolution)) {
-                if (i == 0 && resolution / layer._tileScheme.matrix[0].resolution > 2) return -1;
+        for (var i in layer.tileScheme.matrix) {
+            if (resolution > layer.tileScheme.matrix[i].resolution && !sGis.utils.softEquals(resolution, layer.tileScheme.matrix[i].resolution)) {
+                if (i == 0 && resolution / layer.tileScheme.matrix[0].resolution > 2) return -1;
                 return i === "0" ? 0 : i - 1;
             }
         }
 
-        if (i == 0 && layer._tileScheme.matrix[0].resolution / resolution > 2) return -1;
+        if (i == 0 && layer.tileScheme.matrix[0].resolution / resolution > 2) return -1;
 
         return i;
     }
 
     function getResolution(layer, scale) {
-        return layer._tileScheme.matrix[scale].resolution;
-    };
-
-    function getTileId(x, y, scale) {
-        return scale + '/' + x + '/' + y;
+        return layer.tileScheme.matrix[scale].resolution;
     }
 
     function getTileBoundingBox(scale, xIndex, yIndex, layer) {
@@ -236,5 +165,9 @@
 
         return new sGis.Bbox(startPoint, endPoint);
     }
+
+    sGis.utils.extend(TileLayer.prototype, defaults);
+
+    sGis.TileLayer = TileLayer;
 
 })();

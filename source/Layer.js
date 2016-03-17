@@ -1,115 +1,53 @@
-'use strict';
-
 (function() {
+    'use strict';
 
-    sGis.Layer = function(extention) {
-        for (var key in extention) {
-            this[key] = extention[key];
-        }
-    };
-
-    sGis.Layer.prototype = {
+    var defaults = {
         _display: true,
         _opacity: 1.0,
-        _needAnimate: sGis.browser.indexOf('Chrome') === 0 ? false : true,
+        needAnimate: sGis.browser.indexOf('Chrome') !== 0,
         _name: null,
-        _delayedUpdate: false,
-        _resolutionLimits: [-1, -1],
+        delayedUpdate: false,
+        _resolutionLimits: [-1, -1]
+    };
 
-        __initialize: function() {
-            this._id = sGis.utils.getGuid();
-        },
-
-        show: function() {
+    class Layer {
+        show() {
             this._display = true;
             this.fire('propertyChange', {property: 'display'});
-        },
+        }
 
-        hide: function() {
+        hide() {
             this._display = false;
             this.fire('propertyChange', {property: 'display'});
         }
-    };
 
-    Object.defineProperties(sGis.Layer.prototype, {
-        id: {
-            get: function() {
-                return this._id;
-            }
-        },
+        get opacity() { return this._opacity; }
+        set opacity(opacity) {
+            if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+            opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
+            this._opacity = opacity;
+            this.fire('propertyChange', {property: 'opacity'});
+        }
 
-        opacity: {
-            get: function() {
-                return this._opacity;
-            },
-
-            set: function(opacity) {
-                if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
-                opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
-                this._opacity = opacity;
-                this.fire('propertyChange', {property: 'opacity'});
-            }
-        },
-
-        name: {
-            get: function() {
-                return this._name ? this._name : this._id;
-            },
-
-            set: function(name) {
-                if (!sGis.utils.isString(name)) sGis.utils.error('String is expected but got ' + name + ' instead');
-                this._name = name;
-                this.fire('propertyChange', {property: 'name'});
-            }
-        },
-
-        needAnimate: {
-            get: function() {
-                return this._needAnimate;
-            },
-
-            set: function(bool) {
-                this._needAnimate = bool;
-            }
-        },
-
-        isDisplayed: {
-            get: function() {
-                return this._display;
-            },
-
-            set: function(bool) {
-                if (bool === true) {
-                    this.show();
-                } else if (bool === false) {
-                    this.hide();
-                } else {
-                    sGis.utils.error('Boolean is expected but got ' + bool + ' instead');
-                }
-            }
-        },
-
-        delayedUpdate: {
-            get: function() {
-                return this._delayedUpdate;
-            },
-
-            set: function(bool) {
-                this._delayedUpdate = bool;
-            }
-        },
-
-        resolutionLimits: {
-            get: function() {
-                return this._resolutionLimits;
-            },
-            set: function(limits) {
-                this._resolutionLimits = limits;
-                this.fire('propertyChange', {property: 'resolutionLimits'});
+        get isDisplayed() { return this._display; }
+        set isDisplayed(bool) {
+            if (bool) {
+                this.show();
+            } else {
+                this.hide();
             }
         }
-    });
 
-    sGis.utils.proto.setMethods(sGis.Layer.prototype, sGis.IEventHandler);
+        get resolutionLimits() { return this._resolutionLimits; }
+        set resolutionLimits(limits) {
+            this._resolutionLimits = limits;
+            this.fire('propertyChange', {property: 'resolutionLimits'});
+        }
+    }
+
+    sGis.utils.extend(Layer.prototype, defaults);
+    sGis.utils.proto.setMethods(Layer.prototype, sGis.IEventHandler);
+
+    sGis.Layer = Layer;
 
 })();

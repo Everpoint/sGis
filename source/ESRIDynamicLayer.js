@@ -1,22 +1,18 @@
-'use strict';
-
 (function() {
+    'use strict';
 
-    sGis.ESRIDynamicLayer = function(source, options) {
-        if (!source) {
-            error('The source of dynamic service is not specified');
-        }
-
-        this.__initialize();
-
-        sGis.utils.init(this, options);
-        this._source = source;
+    var defaults = {
+        additionalParameters: null
     };
 
-    sGis.ESRIDynamicLayer.prototype = new sGis.DynamicLayer({
-        _additionalParameters: null,
+    class ESRIDynamicLayer extends sGis.DynamicLayer {
+        constructor(source, options) {
+            super();
+            sGis.utils.init(this, options);
+            this._source = source;
+        }
 
-        getImageUrl: function(bbox, resolution) {
+        getImageUrl(bbox, resolution) {
             var imgWidth = Math.round((bbox.p[1].x - bbox.p[0].x) / resolution),
                 imgHeight = Math.round((bbox.p[1].y - bbox.p[0].y) / resolution),
                 layersString = getLayersString(this.getDisplayedLayers()),
@@ -44,40 +40,31 @@
                 this._forceUpdate = false;
             }
 
-            if (this._additionalParameters) {
-                url += '&' + this._additionalParameters;
+            if (this.additionalParameters) {
+                url += '&' + this.additionalParameters;
             }
 
             return url;
-        },
+        }
 
-        forceUpdate: function() {
+        forceUpdate() {
             this._forceUpdate = true;
         }
-    });
 
-    Object.defineProperties(sGis.ESRIDynamicLayer.prototype, {
-        layerDefinitions: {
-            set: function(layerDefs) {
-                this._layerDefs = layerDefs;
-                this.fire('propertyChange', {property: 'layerDefinitions'});
-            }
-        },
-
-        additionalParameters: {
-            get: function() {
-                return this._additionalParameters;
-            },
-
-            set: function(param) {
-                this._additionalParameters = param;
-            }
+        get layerDefinitions() { return this._layerDefs; }
+        set layerDefinitions(layerDefs) {
+            this._layerDefs = layerDefs;
+            this.fire('propertyChange', {property: 'layerDefinitions'});
         }
-    });
+    }
 
     function getLayersString(layers) {
         if (!layers || layers.length === 0) return '';
         return 'layers=show:' + layers.join('%2C') + '&';
     }
+
+    sGis.utils.extend(ESRIDynamicLayer.prototype, defaults);
+
+    sGis.ESRIDynamicLayer = ESRIDynamicLayer;
 
 })();
