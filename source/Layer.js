@@ -11,6 +11,10 @@
     };
 
     class Layer {
+        constructor() {
+            this.id = Symbol(this);
+        }
+
         show() {
             this._display = true;
             this.fire('propertyChange', {property: 'display'});

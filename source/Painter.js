@@ -73,7 +73,7 @@
         _updateLayerOrder: function() {
             var layers = this.layers;
             var ids = [];
-            for (var i = 0, len = layers.length; i < len; i ++) {
+            for (let i = 0, len = layers.length; i < len; i ++) {
                 var layerData = this._layerData[layers[i].id];
                 if (layerData) {
                     if (layerData.zIndex !== i * 2) {
@@ -83,9 +83,10 @@
                 ids.push(layers[i].id);
             }
 
-            for (var id in this._layerData) {
-                if (ids.indexOf(id) === -1) {
-                    this._removeLayer(id);
+            var keys = Object.getOwnPropertySymbols(this._layerData);
+            for (let i = 0; i < keys.length; i++) {
+                if (ids.indexOf(keys[i]) === -1) {
+                    this._removeLayer(keys[i]);
                 }
             }
         },

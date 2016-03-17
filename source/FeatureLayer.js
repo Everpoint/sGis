@@ -1,18 +1,20 @@
-'use strict';
-
 (function() {
+    'use strict';
 
-    sGis.FeatureLayer = function(options) {
-        sGis.utils.init(this, options);
-
-        this._features = [];
-        if (options && options.features) this.add(options.features);
+    var defaults = {
+        _delayedUpdate: true
     };
 
-    sGis.FeatureLayer.prototype = new sGis.Layer({
-        _delayedUpdate: true,
+    class FeatureLayer extends sGis.Layer {
+        constructor(options) {
+            super();
+            sGis.utils.init(this, options);
 
-        getFeatures: function(bbox) {
+            this._features = [];
+            if (options && options.features) this.add(options.features);
+        }
+
+        getFeatures(bbox) {
             if (!bbox || !(bbox instanceof sGis.Bbox)) sGis.utils.error('Expected bbox, but got ' + bbox + 'instead');
 
             if (!this._display) return [];
@@ -25,9 +27,9 @@
                 if (!featureBbox || bbox.intersects(featureBbox)) obj.push(this._features[i]);
             }
             return obj;
-        },
+        }
 
-        add: function(features) {
+        add(features) {
             if (features instanceof sGis.Feature) {
                 this._features.push(features);
                 this.fire('featureAdd', {feature: features});
@@ -38,44 +40,41 @@
             } else {
                 sGis.utils.error('sGis.Feature instance or their array is expected but got ' + features + 'instead');
             }
-        },
+        }
 
-        remove: function(feature) {
+        remove(feature) {
             if (!(feature instanceof sGis.Feature)) sGis.utils.error('sGis.Feature instance is expected but got ' + feature + 'instead');
             var index = this._features.indexOf(feature);
             if (index === -1) sGis.utils.error('The feature does not belong to the layer');
             this._features.splice(index, 1);
             this.fire('featureRemove', {feature: feature});
-        },
+        }
 
-        has: function(feature) {
+        has(feature) {
             return this._features.indexOf(feature) !== -1;
-        },
+        }
 
-        moveToTop: function(feature) {
+        moveToTop(feature) {
             var index = this._features.indexOf(feature);
             if (index !== -1) {
                 this._features.splice(index, 1);
                 this._features.push(feature);
             }
         }
-    });
 
-    Object.defineProperties(sGis.FeatureLayer.prototype, {
-        features: {
-            get: function() {
-                return [].concat(this._features);
-            },
-
-            set: function(features) {
-                var currFeatures = this.features;
-                for (var i = 0; i < currFeatures.length; i++) {
-                    this.remove(currFeatures[i]);
-                }
-
-                this.add(features);
+        get features() { return this._features.slice(); }
+        set features(features) {
+            var currFeatures = this.features;
+            for (var i = 0; i < currFeatures.length; i++) {
+                this.remove(currFeatures[i]);
             }
+
+            this.add(features);
         }
-    });
+    }
+
+    sGis.utils.extend(FeatureLayer.prototype, defaults);
+
+    sGis.FeatureLayer = FeatureLayer;
 
 })();
