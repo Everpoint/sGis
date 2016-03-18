@@ -1,15 +1,21 @@
-'use strict';
+sGis.module('feature.Point', [
+    'utils',
+    'Feature',
+    'Crs',
+    'Point',
+    'Bbox',
+    'symbol.point'
+], function(utils, Feature, Crs, Point, Bbox, pointSymbols) {
+    'use strict';
 
-(function () {
-
-    sGis.feature.Point = function (point, options) {
+    var PointF = function (point, options) {
         this.__initialize(options);
         if (!point) sGis.utils.error('The point position is not specified');
 
         this._point = point;
     };
 
-    sGis.feature.Point.prototype = new sGis.Feature({
+    PointF.prototype = new sGis.Feature({
         _defaultSymbol: sGis.symbol.point.Point,
         _crs: sGis.CRS.geo,
 
@@ -18,7 +24,7 @@
                 projected = point.projectTo(crs),
                 coordinates = crs === sGis.CRS.geo ? [projected.y, projected.x] : [projected.x, projected.y];
 
-            var response = new sGis.feature.Point(coordinates, {crs: crs});
+            var response = new PointF(coordinates, {crs: crs});
             if (this._color) response._color = this._color;
             if (this._size) response._size = this._size;
 
@@ -30,7 +36,7 @@
         }
     });
 
-    Object.defineProperties(sGis.feature.Point.prototype, {
+    Object.defineProperties(PointF.prototype, {
         crs: {
             get: function() {
                 return this._crs;
@@ -106,4 +112,6 @@
         }
     });
 
-})();
+    return PointF;
+    
+});

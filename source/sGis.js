@@ -42,27 +42,44 @@
         while (loadModules()) {}
     };
 
+    /**
+     * This function is called each time a new module is loaded. The only argument of the callback is the name of the module.
+     * @type {Function|null}
+     */
+    sGis.module.onLoad = null;
+
     function loadModules() {
         var loaded = 0;
-        loadingDefs.slice().forEach(function(def, index) {
+        var list = loadingDefs.slice();
+        var remains = [];
+        list.forEach(function(def, index) {
             var deps = [];
             for (var i = 0; i < def[1].length; i++) {
-                if (!loadedModules[def[1][i]]) return;
+                if (!loadedModules[def[1][i]]) {
+                    remains.push(def);
+                    // console.log('Tried to load: ' + def[0] + '. Not found: ' + def[1][i]);
+                    return;
+                }
                 deps.push(loadedModules[def[1][i]]);
             }
 
+            if (loadedModules[def[0]]) debugger;
             var module = def[2].apply(this, deps);
             loadedModules[def[0]] = module;
             setModuleReference(module, def[0]);
             loaded ++;
 
-            loadingDefs.splice(index, 1);
+            // console.log('Initialized: ' + def[0]);
+            if (sGis.module.onLoad) sGis.module.onLoad(def[0]);
         });
+        loadingDefs = remains;
 
         return loaded;
     }
 
     window.sGis = sGis;
+
+    window.toload = loadingDefs;
 
     function setModuleReference(module, name) {
         var ns = name.split('.');

@@ -1,14 +1,20 @@
-(function() {
-
+sGis.module('feature.MapTip', [
+    'utils',
+    'Feature',
+    'Point',
+    'symbol.maptip',
+    'Crs'
+], function(utils, Feature, Point, maptipSymbols, Crs) {
+    'use strict';
     var defaultContent = document.createElement('div');
     defaultContent.innerHTML = 'New maptip';
 
-    sGis.feature.Maptip = function(position, options) {
+    var Maptip = function(position, options) {
         this.__initialize(options);
         this.position = position;
     };
 
-    sGis.feature.Maptip.prototype = new sGis.Feature({
+    Maptip.prototype = new sGis.Feature({
         _defaultSymbol: sGis.symbol.maptip.Simple,
         _content: defaultContent,
 
@@ -17,7 +23,7 @@
         }
     });
 
-    Object.defineProperties(sGis.feature.Maptip.prototype, {
+    Object.defineProperties(Maptip.prototype, {
         position: {
             get: function() {
                 return this._position.clone();
@@ -65,4 +71,5 @@
         }
     });
 
-})();
+    return Maptip;
+})

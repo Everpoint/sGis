@@ -1,16 +1,17 @@
-'use strict';
-
-(function() {
-
-    sGis.controls = {};
-
-    sGis.Control = function(extention) {
+sGis.module('Control', [
+    'utils',
+    'FeatureLayer',
+    'IEventHandler'
+], function(utils, FeatureLayer, IEventHandler) {
+    'use strict';
+    
+    var Control = function(extention) {
         for (var key in extention) {
             this[key] = extention[key];
         }
     };
 
-    sGis.Control.prototype = {
+    Control.prototype = {
         _activeLayer: null,
 
         activate: function() {
@@ -31,7 +32,7 @@
         }
     };
 
-    Object.defineProperties(sGis.Control.prototype, {
+    Object.defineProperties(Control.prototype, {
         activeLayer: {
             get: function() {
                 if (this._activeLayer) {
@@ -75,6 +76,8 @@
         }
     });
 
-    sGis.utils.proto.setMethods(sGis.Control.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(Control.prototype, sGis.IEventHandler);
+    
+    return Control;
 
-})();
+});

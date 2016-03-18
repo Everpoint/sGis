@@ -1,6 +1,14 @@
-(function() {
+sGis.module('controls.Distance', [
+    'utils',
+    'utils.proto',
+    'Map',
+    'controls.Polyline',
+    'geotools',
+    'Control'
+], function(utils, proto, Map, Polyline, geotools, Control) {
+    'use strict';
 
-    sGis.controls.Distance = function(map, options) {
+    var Distance = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
@@ -27,14 +35,14 @@
         });
     };
 
-    sGis.controls.Distance.prototype = new sGis.Control({
+    Distance.prototype = new sGis.Control({
         _setActiveStatus: function(bool) {
             this._polylineControl.isActive = bool;
             this._active = bool;
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.Distance.prototype, {
+    sGis.utils.proto.setProperties(Distance.prototype, {
         activeLayer: {
             get: function() {
                 return this._polylineControl.activeLayer;
@@ -73,4 +81,6 @@
 
     addStyleSheet();
 
-})();
+    return Distance;
+    
+});

@@ -1,13 +1,17 @@
-'use strict';
-
-(function() {
-
-    sGis.feature.Image = function(bbox, properties) {
+sGis.module('feature.Image', [
+    'utils',
+    'Feature',
+    'symbol.image',
+    'Crs'
+], function(utils, Feature, imageSymbols, Crs) {
+    'use strict';
+    
+    var ImageF = function(bbox, properties) {
         this.__initialize(properties);
         this.bbox = bbox;
     };
 
-    sGis.feature.Image.prototype = new sGis.Feature({
+    ImageF.prototype = new sGis.Feature({
         _src: null,
         _crs: null,
         _width: 256,
@@ -16,7 +20,7 @@
         _defaultSymbol: sGis.symbol.image.Image
     });
 
-    Object.defineProperties(sGis.feature.Image.prototype, {
+    Object.defineProperties(ImageF.prototype, {
         type: {
             value: 'image'
         },
@@ -112,5 +116,7 @@
             }
         }
     });
-
-})();
+    
+    return ImageF;
+    
+});

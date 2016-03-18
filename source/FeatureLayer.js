@@ -1,4 +1,9 @@
-(function() {
+sGis.module('FeatureLayer', [
+    'utils',
+    'Layer',
+    'Feature',
+    'Bbox'
+], function(utils, Layer, Feature, Bbox) {
     'use strict';
 
     var defaults = {
@@ -75,6 +80,5 @@
 
     sGis.utils.extend(FeatureLayer.prototype, defaults);
 
-    sGis.FeatureLayer = FeatureLayer;
-
-})();
+    return FeatureLayer;
+});

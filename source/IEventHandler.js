@@ -1,12 +1,13 @@
-'use strict';
-
-(function() {
+sGis.module('IEventHandler', [
+    'utils'
+], function(utils) {
+    'use strict';
 
     /**
      * Provides methods for handling events.
      * @mixin
      */
-    sGis.IEventHandler = {
+    var IEventHandler = {
         /**
          * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
          * @param {Object} sGisEvent - event object of the original event
@@ -236,22 +237,22 @@
     };
 
     /**
-     * @alias sGis.IEventHandler.prototype.addListener
+     * @alias IEventHandler.prototype.addListener
      */
-    sGis.IEventHandler.on = sGis.IEventHandler.addListener;
+    IEventHandler.on = IEventHandler.addListener;
 
     /**
-     * @alias sGis.IEventHandler.prototype.removeListener
+     * @alias IEventHandler.prototype.removeListener
      */
-    sGis.IEventHandler.off = sGis.IEventHandler.removeListener;
+    IEventHandler.off = IEventHandler.removeListener;
 
 
     // Deprecated names
-    sGis.IEventHandler.addListner = sGis.IEventHandler.addListener;
-    sGis.IEventHandler.addListners = sGis.IEventHandler.addListeners;
-    sGis.IEventHandler.removeListner = sGis.IEventHandler.removeListener;
-    sGis.IEventHandler.hasListner = sGis.IEventHandler.hasListener;
-    sGis.IEventHandler.hasListners = sGis.IEventHandler.hasListeners;
+    IEventHandler.addListner = IEventHandler.addListener;
+    IEventHandler.addListners = IEventHandler.addListeners;
+    IEventHandler.removeListner = IEventHandler.removeListener;
+    IEventHandler.hasListner = IEventHandler.hasListener;
+    IEventHandler.hasListners = IEventHandler.hasListeners;
 
 
     function getTypes(string) {
@@ -262,4 +263,6 @@
         return string.match(/\.[A-Za-z0-9_-]+/g) || [];
     }
 
-})();
+    return IEventHandler;
+
+});

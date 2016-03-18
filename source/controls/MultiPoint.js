@@ -1,4 +1,12 @@
-(function() {
+sGis.module('feature.MultiPoint', [
+    'utils',
+    'utils.proto',
+    'Control',
+    'FeatureLayer',
+    'symbol.point',
+    'feature.MultiPoint'
+], function(utils, proto, Control, FeatureLayer, pointSymbols, MultiPoint) {
+   'use strict';
 
     var MultiPoint = function(map, options) {
         this._map = map;
@@ -97,6 +105,6 @@
         }
     });
 
-    sGis.controls.MultiPoint = MultiPoint;
+    return MultiPoint;
 
-})();
+});

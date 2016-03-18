@@ -1,10 +1,22 @@
-'use strict';
-
-(function() {
+sGis.module('controls.Editor', [
+    'utils',
+    'utils.proto',
+    'Control',
+    'Map',
+    'Bbox',
+    'geotools',
+    'symbol.point',
+    'FeatureLayer',
+    'feature.Point',
+    'feature.Polyline',
+    'feature.Polygon',
+    'feature.MultiPoint'
+], function(utils, proto, Control, Map, Bbox, geotools, pointSymbols, FeatureLayer, PointF, Polyline, Polygon) {
+    'use strict';
 
     var PREFIX = 'sGis-control-edit-';
 
-    sGis.controls.Editor = function(map, properties) {
+    var Editor = function(map, properties) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map is expected but got ' + map + ' instead');
 
         this._map = map;
@@ -18,7 +30,7 @@
         sGis.utils.init(this, properties);
     };
 
-    sGis.controls.Editor.prototype = new sGis.Control({
+    Editor.prototype = new sGis.Control({
         _translateControlSymbol: sGis.symbol.point.Square,
 
         activate: function() {
@@ -729,7 +741,7 @@
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.Editor.prototype, {
+    sGis.utils.proto.setProperties(Editor.prototype, {
         allowDeletion: true,
         snappingDistance: 7,
         maxStateLength: 32,
@@ -803,8 +815,8 @@
     /**
      * @deprecated
      */
-    sGis.controls.Editor.prototype.deselectFeature = sGis.controls.Editor.prototype.deselect;
-    sGis.controls.Editor.prototype.selectFeature = sGis.controls.Editor.prototype.select;
+    Editor.prototype.deselectFeature = Editor.prototype.deselect;
+    Editor.prototype.selectFeature = Editor.prototype.select;
 
     var selectionSymbols = {
         point: sGis.symbol.editor.Point,
@@ -951,5 +963,7 @@
             }
         }
     };
-
-})();
+    
+    return Editor;
+    
+});

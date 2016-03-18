@@ -1,4 +1,12 @@
-(function() {
+sGis.module('Map', [
+    'utils',
+    'Crs',
+    'Event',
+    'IEventHandler',
+    'Point',
+    'Bbox',
+    'feature.Point'
+], function(utils, Crs, Event, IEventHandler, Point, Bbox, PointF) {
     'use strict';
 
     /**
@@ -67,7 +75,7 @@
          */
         moveLayerToIndex: function(layer, index) {
             this._layerGroup.insertLayer(layer, index);
-       },
+        },
 
         /**
          * Moves the layer to the end of the layer list. If the layer is not on the map, it will be added to the map.
@@ -903,6 +911,6 @@
         return false;
     }
 
-    sGis.Map = Map;
+    return Map;
 
-})();
+});

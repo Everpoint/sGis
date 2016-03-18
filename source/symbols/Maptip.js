@@ -1,12 +1,17 @@
-(function() {
+sGis.module('symbol.maptip', [
+    'utils',
+    'Symbol',
+    'geom.Polygon'
+], function(utils, Symbol, Polygon) {
+    'use strict';
 
-    sGis.symbol.maptip = {
+    var maptipSymbols = {
         Simple: function(style) {
             sGis.utils.init(this, style);
         }
     };
 
-    sGis.symbol.maptip.Simple.prototype = new sGis.Symbol({
+    maptipSymbols.Simple.prototype = new sGis.Symbol({
         _width: 200,
         _height: 200,
         _offset: {x: -100, y: -220},
@@ -54,7 +59,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.maptip.Simple.prototype, {
+    Object.defineProperties(maptipSymbols.Simple.prototype, {
         type: {
             value: 'maptip'
         },
@@ -200,5 +205,12 @@
 
         return [x, y];
     }
+
+    return maptipSymbols;
+    
+});
+
+(function() {
+
 
 })();

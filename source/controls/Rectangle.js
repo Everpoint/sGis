@@ -1,6 +1,14 @@
-(function() {
+sGis.module('controls.Rectangle', [
+    'utils',
+    'utils.proto',
+    'Control',
+    'Map',
+    'FeatureLayer',
+    'feature.Polygon'
+], function(utils, proto, Control, Map, FeatureLayer, Polygon) {
+    'use strict';
 
-    sGis.controls.Rectangle = function(map, options) {
+    var Rectangle = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
@@ -9,7 +17,7 @@
         if (options.activeLayer) this.activeLayer = options.activeLayer;
     };
 
-    sGis.controls.Rectangle.prototype = new sGis.Control({
+    Rectangle.prototype = new sGis.Control({
         activate: function() {
             if (!this._isActive) {
                 var self = this;
@@ -78,7 +86,7 @@
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.Rectangle.prototype, {
+    sGis.utils.proto.setProperties(Rectangle.prototype, {
         isActive: {
             default: false,
             set: function(bool) {
@@ -100,5 +108,7 @@
             set: null
         }
     });
-
-})();
+    
+    return Rectangle;
+    
+});

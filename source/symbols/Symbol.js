@@ -1,14 +1,15 @@
-(function() {
+sGis.module('Symbol', [
+    
+], function() {
+    'use strict';
 
-    sGis.symbol = {};
-
-    sGis.Symbol = function(options) {
+    var Symbol = function(options) {
         for (var i in options) {
             this[i] = options[i];
         }
     };
 
-    sGis.Symbol.fromDescription = function(desc) {
+    Symbol.fromDescription = function(desc) {
         var classDesc = desc.symbolName.split('.');
         var classLink = sGis.symbol[classDesc[0]];
         for (var i = 1; i < classDesc.length; i++) {
@@ -18,7 +19,7 @@
         return new classLink(desc);
     };
 
-    sGis.Symbol.prototype = {
+    Symbol.prototype = {
         setDefaults: function(style) {
             this.defaults = {};
             for (var i in this.style) {
@@ -30,19 +31,24 @@
             }
         }
     };
+    
+    return Symbol;
+    
+});
 
-    Object.defineProperties(sGis.Symbol.prototype, {
+sGis.module('symbol.label', [
+    'utils',
+    'Symbol'
+], function(utils, Symbol) {
+    'use strict';
 
-    });
-
-
-    sGis.symbol.label = {
+    var labelSymbols = {
         Label: function(style) {
             sGis.utils.init(this, style, true);
         }
     };
 
-    sGis.symbol.label.Label.prototype = new sGis.Symbol({
+    labelSymbols.Label.prototype = new sGis.Symbol({
         _width: 200,
         _height: 20,
         _offset: {x: -100, y: -10},
@@ -82,7 +88,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.label.Label.prototype, {
+    Object.defineProperties(labelSymbols.Label.prototype, {
         type: {
             value: 'label'
         },
@@ -132,16 +138,24 @@
             }
         }
     });
+    
+    return labelSymbols;
+    
+});
 
+sGis.module('symbol.image', [
+    'utils',
+    'Symbol'
+], function(utils, Symbol) {
+    'use strict';
 
-
-    sGis.symbol.image = {
+    var imageSymbols = {
         Image: function(style) {
             sGis.utils.init(this, style, true);
         }
     };
 
-    sGis.symbol.image.Image.prototype = new sGis.Symbol({
+    imageSymbols.Image.prototype = new sGis.Symbol({
         _transitionTime: 0,
 
         renderFunction: function(feature, resolution, crs) {
@@ -173,7 +187,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.image.Image.prototype, {
+    Object.defineProperties(imageSymbols.Image.prototype, {
         type: {
             value: 'image'
         },
@@ -188,5 +202,6 @@
         }
     });
 
-
-})();
+    return imageSymbols;
+    
+});

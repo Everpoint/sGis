@@ -1,14 +1,18 @@
-'use strict';
-(function() {
+sGis.module('feature.Abstract', [
+    'Feature'
+], function(Feature) {
+    'use strict';
 
-    sGis.feature.Abstract = function(options) {
+    var Abstract = function(options) {
         this.__initialize(options);
     };
 
-    sGis.feature.Abstract.prototype = new sGis.Feature({
+    Abstract.prototype = new Feature({
         render: function() {
             return [];
         }
     });
 
-})();
+    return Abstract;
+
+});

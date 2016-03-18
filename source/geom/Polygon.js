@@ -1,15 +1,20 @@
-(function() {
+sGis.module('geom.Polygon', [
+    'utils',
+    'geom.Polyline',
+    'utils.svg'
+], function(utils, Polyline, svg) {
+    'use strict';
 
-    sGis.geom.Polygon = function (coordinates, options) {
+    var Polygon = function (coordinates, options) {
         sGis.utils.init(this, options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
     };
 
-    sGis.geom.Polygon.prototype = new sGis.geom.Polyline();
+    Polygon.prototype = new sGis.geom.Polyline();
 
-    Object.defineProperties(sGis.geom.Polygon.prototype, {
+    Object.defineProperties(Polygon.prototype, {
         _fillStyle: {
             value: 'color',
             writable: true
@@ -27,7 +32,7 @@
 
         clone: {
             value: function () {
-                return new sGis.geom.Polygon(this._coordinates, {
+                return new Polygon(this._coordinates, {
                     color: this._color,
                     width: this._width,
                     fillColor: this._fillColor
@@ -113,4 +118,6 @@
         return sGis.utils.isArray(point) & sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]);
     }
 
-})();
+    return Polygon;
+    
+});

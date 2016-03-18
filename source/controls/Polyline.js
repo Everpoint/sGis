@@ -1,16 +1,19 @@
-'use strict';
+sGis.module('controls.Polyline', [
+    'controls.Poly',
+    'feature.Polyline'
+], function(Polyg, PolylineF) {
+    'use strict';
 
-(function() {
-
-    sGis.controls.Polyline = function(map, options) {
+    var Polyline = function(map, options) {
         this._initialize(map, options);
     };
 
-    sGis.controls.Polyline.prototype = new sGis.controls.Poly({
+    Polyline.prototype = new sGis.controls.Poly({
         _featureClass: sGis.feature.Polyline
     });
 
-})();
+    return Polyline;
 
+});
 
 

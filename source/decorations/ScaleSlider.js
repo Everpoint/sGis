@@ -1,8 +1,11 @@
-'use strict';
+sGis.module('decorations.ScaleSlider', [
+    'utils',
+    'utils.proto',
+    'IEventHandler'
+], function(utils, proto, IEventHandler) {
+    'use strict';
 
-(function() {
-
-    sGis.decorations.ScaleSlider = function(map, options) {
+    var ScaleSlider = function(map, options) {
         this._map = map;
         this._createGrid();
         this._createSlider();
@@ -12,7 +15,7 @@
         this._setListeners();
     };
 
-    sGis.decorations.ScaleSlider.prototype = {
+    ScaleSlider.prototype = {
         _gridCss: 'sGis-decorations-scaleSlider-grid',
         _gridWidth: 8,
         _gridHeight: 120,
@@ -130,7 +133,7 @@
         }
     };
 
-    Object.defineProperties(sGis.decorations.ScaleSlider.prototype, {
+    Object.defineProperties(ScaleSlider.prototype, {
         map: {
             get: function() {
                 return this._map;
@@ -231,7 +234,7 @@
         }
     });
 
-    sGis.utils.proto.setMethods(sGis.decorations.ScaleSlider.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(ScaleSlider.prototype, sGis.IEventHandler);
 
     var defaultCss = '.sGis-decorations-scaleSlider-grid {' +
             'border: 1px solid gray; ' +
@@ -251,5 +254,7 @@
     }
 
     document.head.appendChild(styles);
-
-})();
+    
+    return ScaleSlider;
+    
+});

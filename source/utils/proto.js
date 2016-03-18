@@ -1,10 +1,10 @@
-'use strict';
-
-(function() {
-
-    sGis.utils.proto = {};
-
-    sGis.utils.proto.setProperties = function(obj, properties) {
+sGis.module('utils.proto', [
+    'utils'
+], function(utils) {
+    'use strict';
+    
+    var proto = {};
+    proto.setProperties = function(obj, properties) {
         var keys = Object.keys(properties);
         for (var i = 0; i < keys.length; i++)  {
             var key = keys[i];
@@ -24,14 +24,14 @@
 
                 Object.defineProperty(obj, key, {
                     enumerable: enumerable,
-                    get: sGis.utils.proto.getGetter(key, properties[key].get),
-                    set: sGis.utils.proto.getSetter(key, properties[key].set, properties[key].type)
+                    get: proto.getGetter(key, properties[key].get),
+                    set: proto.getSetter(key, properties[key].set, properties[key].type)
                 });
             }
         }
     };
 
-    sGis.utils.proto.setMethods = function(obj, properties, collisions) {
+    proto.setMethods = function(obj, properties, collisions) {
         var keys = Object.keys(properties);
         for (var i = 0; i < keys.length; i++) {
             if (obj.hasOwnProperty(keys[i])) {
@@ -52,7 +52,7 @@
         });
     }
 
-    sGis.utils.proto.getGetter = function(key, getter) {
+    proto.getGetter = function(key, getter) {
         if (getter !== null) {
             return function () {
                 if (getter) {
@@ -64,7 +64,7 @@
         }
     };
 
-    sGis.utils.proto.getSetter = function(key, setter, type) {
+    proto.getSetter = function(key, setter, type) {
         if (setter !== null) {
 
             return function (val) {
@@ -121,4 +121,6 @@
         sGis.utils.error(type + ' is expected but got ' + obj + ' instead');
     }
 
-})();
+    return proto;
+
+});

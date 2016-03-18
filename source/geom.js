@@ -1,8 +1,10 @@
-'use strict';
-
-(function() {
-
-    sGis.Point = function(x, y, crs) {
+sGis.module('Point', [
+    'utils',
+    'Crs'
+], function(utils, Crs) {
+    'use strict';
+    
+    var Point = function(x, y, crs) {
         if (!sGis.utils.isNumber(x) || !sGis.utils.isNumber(y)) sGis.utils.error('Coordinates are expected but (' + x + ', ' + y + ') is received instead');
 
         if (crs && !(crs instanceof sGis.Crs)) sGis.utils.error('CRS is not a child of sGis.Crs');
@@ -18,7 +20,7 @@
         }
     };
 
-    sGis.Point.prototype = {
+    Point.prototype = {
         projectTo: function(newCrs) {
             if (!(newCrs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + newCrs + ' instead');
             if (!newCrs.equals(this.crs)) {
@@ -28,9 +30,9 @@
                 positionCrs = {x: this.x, y: this.y};
             }
             if (newCrs !== sGis.CRS.geo) {
-                return new sGis.Point(positionCrs.x, positionCrs.y, newCrs);
+                return new Point(positionCrs.x, positionCrs.y, newCrs);
             } else {
-                return new sGis.Point(positionCrs.y, positionCrs.x, newCrs);
+                return new Point(positionCrs.y, positionCrs.x, newCrs);
             }
         },
 
@@ -39,7 +41,7 @@
                 this.x = x;
                 this.y = y;
             } else {
-                var newPoint = new sGis.Point(x, y, crs);
+                var newPoint = new Point(x, y, crs);
                 newPoint = newPoint.projectTo(this.crs);
                 this.x = newPoint.x;
                 this.y = newPoint.y;
@@ -59,7 +61,7 @@
         }
     };
 
-    Object.defineProperties(sGis.Point.prototype, {
+    Object.defineProperties(Point.prototype, {
         coordinates: {
             get: function() {
                 return this.getCoordinates();
@@ -71,16 +73,26 @@
         }
     });
 
-    sGis.Bbox = function(point1, point2, crs) {
+    return Point;
+});
+
+sGis.module('Bbox', [
+    'utils',
+    'Crs',
+    'Point'
+], function(utils, Crs, Point) {
+    'use strict';
+
+    var Bbox = function(point1, point2, crs) {
         this._crs = crs || point1.crs || point2.crs || sGis.CRS.geo;
         this.p = [];
         this.p1 = point1;
         this.p2 = point2;
     };
 
-    sGis.Bbox.prototype = {
+    Bbox.prototype = {
         projectTo: function(crs) {
-            return new sGis.Bbox(this.p[0].projectTo(crs), this.p[1].projectTo(crs));
+            return new Bbox(this.p[0].projectTo(crs), this.p[1].projectTo(crs));
         },
 
         clone: function() {
@@ -107,17 +119,17 @@
         },
 
         __setPoint: function(index, point) {
-            if (point instanceof sGis.Point) {
+            if (point instanceof Point) {
                 this.p[index] = point.projectTo(this._crs);
             } else if (sGis.utils.isArray(point)) {
-                this.p[index] = new sGis.Point(point[0], point[1], this.crs);
+                this.p[index] = new Point(point[0], point[1], this.crs);
             } else {
                 sGis.utils.error('Point is expected but got ' + point + ' instead');
             }
         }
     };
 
-    Object.defineProperties(sGis.Bbox.prototype, {
+    Object.defineProperties(Bbox.prototype, {
         crs: {
             get: function() {
                 return this._crs;
@@ -225,6 +237,6 @@
         }
     });
 
-    sGis.geom = {};
+    return Bbox;
 
-})();
+});

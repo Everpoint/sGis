@@ -1,6 +1,11 @@
-(function() {
+sGis.module('symbol.polygon', [
+    'utils',
+    'Symbol',
+    'geom.Polygon'
+], function(utils, Symbol, Polygon) {
+    'use strict';
 
-    sGis.symbol.polygon = {
+     var polygonSymbols = {
         Simple: function(style) {
             sGis.utils.init(this, style, true);
         },
@@ -13,19 +18,19 @@
     };
 
     var defaultBrush =
-       [[255,255,  0,  0,  0,   0,  0,  0,255,255],
-        [255,255,255,  0,  0,   0,  0,  0,  0,255],
-        [255,255,255,255,  0,   0,  0,  0,  0,  0],
-        [  0,255,255,255,255,   0,  0,  0,  0,  0],
-        [  0,  0,255,255,255, 255,  0,  0,  0,  0],
-        [  0,  0,  0,255,255, 255,255,  0,  0,  0],
-        [  0,  0,  0,  0,255, 255,255,255,  0,  0],
-        [  0,  0,  0,  0,  0, 255,255,255,255,  0],
-        [  0,  0,  0,  0,  0,   0,255,255,255,255],
-        [255,  0,  0,  0,  0,   0,  0,255,255,255]];
+        [[255,255,  0,  0,  0,   0,  0,  0,255,255],
+            [255,255,255,  0,  0,   0,  0,  0,  0,255],
+            [255,255,255,255,  0,   0,  0,  0,  0,  0],
+            [  0,255,255,255,255,   0,  0,  0,  0,  0],
+            [  0,  0,255,255,255, 255,  0,  0,  0,  0],
+            [  0,  0,  0,255,255, 255,255,  0,  0,  0],
+            [  0,  0,  0,  0,255, 255,255,255,  0,  0],
+            [  0,  0,  0,  0,  0, 255,255,255,255,  0],
+            [  0,  0,  0,  0,  0,   0,255,255,255,255],
+            [255,  0,  0,  0,  0,   0,  0,255,255,255]];
 
 
-    sGis.symbol.polygon.Simple.prototype = new sGis.Symbol({
+    polygonSymbols.Simple.prototype = new sGis.Symbol({
         _strokeWidth: 1,
         _strokeColor: 'black',
         _fillColor: 'transparent',
@@ -36,7 +41,7 @@
         },
 
         clone: function() {
-            return new sGis.symbol.polygon.Simple({fillColor: this.fillColor, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
+            return new polygonSymbols.Simple({fillColor: this.fillColor, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
         },
 
         getDescription: function() {
@@ -49,7 +54,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.polygon.Simple.prototype, {
+    Object.defineProperties(polygonSymbols.Simple.prototype, {
         type: {
             value: 'polygon'
         },
@@ -83,7 +88,7 @@
     });
 
 
-    sGis.symbol.polygon.BrushFill.prototype = new sGis.Symbol({
+    polygonSymbols.BrushFill.prototype = new sGis.Symbol({
         _strokeWidth: 1,
         _strokeColor: 'black',
         _fillBrush: defaultBrush,
@@ -98,11 +103,11 @@
         },
 
         clone: function() {
-            return new sGis.symbol.polygon.BrushFill({fillBrush: this.fillBrush, fillForeground: this.fillForeground, fillBackground: this.fillBackground, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
+            return new polygonSymbols.BrushFill({fillBrush: this.fillBrush, fillForeground: this.fillForeground, fillBackground: this.fillBackground, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
         }
     });
 
-    Object.defineProperties(sGis.symbol.polygon.BrushFill.prototype, {
+    Object.defineProperties(polygonSymbols.BrushFill.prototype, {
         type: {
             value: 'polygon'
         },
@@ -162,7 +167,7 @@
         }
     });
 
-    sGis.symbol.polygon.ImageFill.prototype = new sGis.Symbol({
+    polygonSymbols.ImageFill.prototype = new sGis.Symbol({
         _strokeWidth: 1,
         _strokeColor: 'black',
         _src: 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
@@ -175,11 +180,11 @@
         },
 
         clone: function() {
-            return new sGis.symbol.polygon.BrushFill({fillImage: this.fillImage, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
+            return new polygonSymbols.BrushFill({fillImage: this.fillImage, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, offset: this.offset});
         }
     });
 
-    Object.defineProperties(sGis.symbol.polygon.ImageFill.prototype, {
+    Object.defineProperties(polygonSymbols.ImageFill.prototype, {
         type: {
             value: 'polygon'
         },
@@ -261,4 +266,6 @@
         return canvas.toDataURL();
     }
 
-})();
+    return polygonSymbols;
+
+});

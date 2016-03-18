@@ -1,7 +1,15 @@
-'use strict';
-(function() {
+sGis.module('symbol.editor', [
+    'utils',
+    'Symbol',
+    'symbol.point',
+    'geom.Point',
+    'geom.Polyline',
+    'geom.Polygon',
+    'geom.Arc'
+], function(Symbol, pointSymbols, Point, Polyline, Polygon) {
+    'use strict';
 
-    sGis.symbol.editor = {
+    var editorSymbols = {
         Point: function(properties) {
             sGis.utils.init(this, properties);
         },
@@ -13,7 +21,7 @@
         }
     };
 
-    sGis.symbol.editor.Point.prototype = new sGis.Symbol({
+    editorSymbols.Point.prototype = new sGis.Symbol({
         _baseSymbol: new sGis.symbol.point.Point(),
         _color: 'rgba(97,239,255,0.5)',
         _haloSize: 5,
@@ -42,7 +50,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.editor.Point.prototype, {
+    Object.defineProperties(editorSymbols.Point.prototype, {
         type: {
             value: 'point'
         },
@@ -75,4 +83,6 @@
         }
     });
 
-})();
+    return editorSymbols;
+    
+});

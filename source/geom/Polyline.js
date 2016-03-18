@@ -1,13 +1,17 @@
-(function() {
-
-    sGis.geom.Polyline = function(coordinates, options) {
+sGis.module('geom.Polyline', [
+    'utils',
+    'utils.svg'
+], function(utils, svg) {
+    'use strict';
+    
+    var Polyline = function(coordinates, options) {
         sGis.utils.init(this, options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
     };
 
-    sGis.geom.Polyline.prototype = {
+    Polyline.prototype = {
         _color: 'black',
         _width: 1,
         ignoreEvents: false,
@@ -19,7 +23,7 @@
         },
 
         clone: function() {
-            return new sGis.geom.Polyline(this._coordinates, {color: this._color, width: this._width});
+            return new Polyline(this._coordinates, {color: this._color, width: this._width});
         },
 
         contains: function(a, b) {
@@ -65,7 +69,7 @@
         _clearCache: function() {
             this._cachedSvg = null;
         },
-        
+
         _getSvgPath: function() {
             var d = '';
             var coordinates = this._coordinates;
@@ -95,7 +99,7 @@
         }
     };
 
-    Object.defineProperties(sGis.geom.Polyline.prototype, {
+    Object.defineProperties(Polyline.prototype, {
         color: {
             get: function() {
                 return this._color;
@@ -201,4 +205,6 @@
         return distance;
     }
 
-})();
+    return Polyline;
+
+});

@@ -1,12 +1,17 @@
-(function() {
+sGis.module('symbol.polyline', [
+    'utils',
+    'Symbol',
+    'geom.Polyline'
+], function(utils, Symbol, Polyline) {
+    'use strict';
 
-    sGis.symbol.polyline = {
+    var polylineSymbols = {
         Simple: function(style) {
             sGis.utils.init(this, style, true);
         }
     };
 
-    sGis.symbol.polyline.Simple.prototype = new sGis.Symbol({
+    polylineSymbols.Simple.prototype = new sGis.Symbol({
         _strokeWidth: 1,
         _strokeColor: 'black',
 
@@ -17,7 +22,7 @@
         },
 
         clone: function() {
-            return new sGis.symbol.polyline.Simple({strokeWidth: this.strokeWidth, strokeColor: this.strokeColor});
+            return new polylineSymbols.Simple({strokeWidth: this.strokeWidth, strokeColor: this.strokeColor});
         },
 
         getDescription: function() {
@@ -29,7 +34,7 @@
         }
     });
 
-    Object.defineProperties(sGis.symbol.polyline.Simple.prototype, {
+    Object.defineProperties(polylineSymbols.Simple.prototype, {
         type: {
             value: 'polyline'
         },
@@ -73,4 +78,6 @@
         return simpl;
     }
 
-})();
+    return polylineSymbols;
+    
+});

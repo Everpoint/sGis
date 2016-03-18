@@ -1,6 +1,12 @@
-﻿(function() {
+﻿sGis.module('controls.BaseLayerSwitch', [
+    'utils',
+    'Control',
+    'Map',
+    'Layer'
+], function(utils, Control, Map, Layer) {
+    'use strict';
 
-    sGis.controls.BaseLayerSwitch = function(map, options) {
+    var BaseLayerSwitch = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
@@ -12,7 +18,7 @@
     };
 
 
-    sGis.controls.BaseLayerSwitch.prototype = new sGis.Control({
+    BaseLayerSwitch.prototype = new sGis.Control({
         _xAlign: 'right',
         _yAlign: 'bottom',
         _xOffset: 32,
@@ -211,7 +217,7 @@
         }
     });
 
-    Object.defineProperties(sGis.controls.BaseLayerSwitch.prototype, {
+    Object.defineProperties(BaseLayerSwitch.prototype, {
         xAlign: {
             get: function() {
                 return this._xAlign;
@@ -293,7 +299,7 @@
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.BaseLayerSwitch.prototype, {
+    sGis.utils.proto.setProperties(BaseLayerSwitch.prototype, {
         layerDescriptions: {
             get: function() {
                 return this._layerDescriptions;
@@ -436,4 +442,6 @@
 
     document.head.appendChild(buttonStyle);
 
-})();
+    return BaseLayerSwitch;
+
+});

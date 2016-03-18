@@ -1,17 +1,23 @@
-'use strict';
-
-(function() {
-
-    sGis.feature.Polygon = function(coordinates, options) {
+sGis.module('feature.Polygon', [
+    'utils',
+    'geotools',
+    'symbol.polygon',
+    'feature.Polyline',
+    'Point',
+    'feature.Point'
+], function(utils, geotools, polygonSymbols, Polyline, Point, PointF) {
+    'use strict';
+    
+    var Polygon = function(coordinates, options) {
         this.__initialize(options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
     };
 
-    sGis.feature.Polygon.prototype = new sGis.feature.Polyline();
+    Polygon.prototype = new sGis.feature.Polyline();
 
-    Object.defineProperties(sGis.feature.Polygon.prototype, {
+    Object.defineProperties(Polygon.prototype, {
         _defaultSymbol: {
             value: sGis.symbol.polygon.Simple
         },
@@ -32,7 +38,7 @@
 
         clone: {
             value: function() {
-                return new sGis.feature.Polygon(this._coordinates, {
+                return new Polygon(this._coordinates, {
                     crs: this._crs,
                     color: this._color,
                     width: this._width,
@@ -63,4 +69,6 @@
         }
     });
 
-})();
+    return Polygon;
+    
+});

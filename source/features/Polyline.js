@@ -1,15 +1,21 @@
-'use strict';
+sGis.module('feature.Polyline', [
+    'utils',
+    'Feature',
+    'symbol.polyline',
+    'Bbox',
+    'Point',
+    'Crs'
+], function(utils, Feature, polylineSymbols, Bbox, Point, Crs) {
+    'use strict';
 
-(function() {
-
-    sGis.feature.Polyline = function(coordinates, options) {
+    var Polyline = function(coordinates, options) {
         this.__initialize(options);
 
         this._coordinates = [[]];
         if (coordinates) this.coordinates = coordinates;
     };
 
-    sGis.feature.Polyline.prototype = new sGis.Feature({
+    Polyline.prototype = new sGis.Feature({
         _defaultSymbol: sGis.symbol.polyline.Simple,
         _cache: {},
 
@@ -37,7 +43,7 @@
         },
 
         clone: function() {
-            return new sGis.feature.Polyline(this._coordinates, {crs: this._crs, color: this._color, width: this._width, symbol: this.originalSymbol});
+            return new Polyline(this._coordinates, {crs: this._crs, color: this._color, width: this._width, symbol: this.originalSymbol});
         },
 
         projectTo: function(crs) {
@@ -145,7 +151,7 @@
         return coord;
     }
 
-    Object.defineProperties(sGis.feature.Polyline.prototype, {
+    Object.defineProperties(Polyline.prototype, {
         coordinates: {
             get: function() {
                 return sGis.utils.copyArray(this._coordinates);
@@ -251,5 +257,7 @@
     function isValidPoint(point) {
         return sGis.utils.isArray(point) && sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]) || (point instanceof sGis.Point);
     }
-
-})();
+    
+    return Polyline;
+    
+});

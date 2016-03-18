@@ -1,14 +1,15 @@
-'use strict';
+sGis.module('Crs', [
 
-(function() {
-
-    sGis.Crs = function(options) {
+], function() {
+    'use strict';
+    
+    var Crs = function(options) {
         for (var i in options) {
             this[i] = options[i];
         }
     };
 
-    sGis.Crs.prototype = {
+    Crs.prototype = {
         getWkidString: function() {
             if (this.ESRIcode) {
                 return {wkid: this.ESRIcode};
@@ -23,9 +24,9 @@
     };
 
     sGis.CRS = {
-        plain: new sGis.Crs({}),
+        plain: new Crs({}),
 
-        geo: new sGis.Crs({
+        geo: new Crs({
             from: function(xCrs, yCrs) {
                 return {x: xCrs, y: yCrs};
             },
@@ -33,7 +34,7 @@
                 return {x: xGeo, y: yGeo};
             }
         }),
-        webMercator: new sGis.Crs({
+        webMercator: new Crs({
             defaultBbox: {
                 minX: -20037508.342789244,
                 maxX: 20037508.342789244,
@@ -59,7 +60,7 @@
                 return {x: X, y: Y};
             }
         }),
-        ellipticalMercator: new sGis.Crs({
+        ellipticalMercator: new Crs({
             defaultBbox: {
                 minX: -20037508.342789244,
                 maxX: 20037508.342789244,
@@ -107,12 +108,12 @@
             }
         }),
 
-        moscowBessel: new sGis.Crs({
+        moscowBessel: new Crs({
             description: {"wkt":"PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"}
         })
     };
 
-//http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html    
+//http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
 
     sGis.CRS.AlbertsEqualArea = function(lat0, lon0, stLat1, stLat2) {
         this._lat0 = toRad(lat0);
@@ -125,7 +126,7 @@
         this._R = 6372795;
     };
 
-    sGis.CRS.AlbertsEqualArea.prototype = new sGis.Crs({
+    sGis.CRS.AlbertsEqualArea.prototype = new Crs({
         to: function(lon, lat) {
             var rlon = toRad(lon),
                 rlat = toRad(lat),
@@ -163,4 +164,7 @@
 
     sGis.CRS.CylindicalEqualArea = new sGis.CRS.AlbertsEqualArea(0, 180, 60, 50);
 
-})();
+    return Crs;
+
+});
+

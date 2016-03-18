@@ -1,16 +1,20 @@
-'use strict';
+sGis.module('controls.Polygon', [
+    'controls.Poly',
+    'feature.Polygon'
+], function(Polyg, PolygonF) {
+    'use strict';
 
-(function() {
+    var Polygon = function(map, options) {
+        this._initialize(map, options);
+    };
 
-sGis.controls.Polygon = function(map, options) {
-    this._initialize(map, options);
-};
+    Polygon.prototype = new sGis.controls.Poly({
+        _featureClass: sGis.feature.Polygon
+    });
 
-sGis.controls.Polygon.prototype = new sGis.controls.Poly({
-    _featureClass: sGis.feature.Polygon
+    return Polygon;
+
 });
-
-})();
 
 
 

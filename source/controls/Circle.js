@@ -1,6 +1,13 @@
-(function() {
+sGis.module('controls.Circle', [
+    'utils',
+    'Map',
+    'FeatureLayer',
+    'feature.Polygon',
+    'Control'
+], function(utils, Map, FeatureLayer, Polygon, Control) {
+    'use strict';
 
-    sGis.controls.Circle = function(map, options) {
+    var Circle = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
@@ -9,7 +16,7 @@
         if (options.activeLayer) this.activeLayer = options.activeLayer;
     };
 
-    sGis.controls.Circle.prototype = new sGis.Control({
+    Circle.prototype = new sGis.Control({
         segmentNo: 36,
 
         activate: function() {
@@ -93,7 +100,7 @@
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.Circle.prototype, {
+    sGis.utils.proto.setProperties(Circle.prototype, {
         isActive: {
             default: false,
             set: function(bool) {
@@ -116,4 +123,6 @@
         }
     });
 
-})();
+    return Circle;
+
+});

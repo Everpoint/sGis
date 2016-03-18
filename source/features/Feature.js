@@ -1,16 +1,18 @@
-'use strict';
+sGis.module('Feature', [
+    'utils',
+    'utils.proto',
+    'Crs',
+    'IEventHandler'
+], function(utils, proto, Crs, IEventHandler) {
+    'use strict';
 
-(function() {
-
-    sGis.feature = {};
-
-    sGis.Feature = function(extention) {
+    var Feature = function(extention) {
         for (var key in extention) {
             this[key] = extention[key];
         }
     };
 
-    sGis.Feature.prototype = {
+    Feature.prototype = {
         _bbox: null,
         _attributes: null,
         _crs: sGis.CRS.geo,
@@ -57,7 +59,7 @@
         }
     };
 
-    Object.defineProperties(sGis.Feature.prototype, {
+    Object.defineProperties(Feature.prototype, {
         id: {
             get: function() {
                 return this._id;
@@ -138,13 +140,12 @@
         }
     });
 
-    sGis.utils.proto.setMethods(sGis.Feature.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(Feature.prototype, sGis.IEventHandler);
 
-    //todo: remove this
-    var id = 0;
-
-    sGis.Feature.getNewId = function() {
+    Feature.getNewId = function() {
         return sGis.utils.getGuid();
     };
+    
+    return Feature;
 
-})();
+});

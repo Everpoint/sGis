@@ -1,13 +1,19 @@
-'use strict';
-
-(function() {
+sGis.module('Painter', [
+    'utils',
+    'utils.proto',
+    'IEventHandler',
+    'geom.Arc',
+    'geom.Polyline',
+    'geom.Polygon'
+], function(utils, IeventHandler, Arc, Polyline, Polygon) {
+    'use strict';
 
     /**
      * Painter object
      * @param {sGis.Map} map for the painter to draw
      * @constructor
      */
-    sGis.Painter = function(map) {
+    var Painter = function(map) {
         this._map = map;
         this._mapWrapper = map.layerWrapper;
         this._layerData = {};
@@ -45,7 +51,7 @@
         this._repaint();
     };
 
-    sGis.Painter.prototype = {
+    Painter.prototype = {
         ignoreEvents: false,
 
         _container: undefined,
@@ -597,7 +603,7 @@
                 ctx.fill();
 
                 //if (patternOffsetX) {
-                    ctx.translate(-patternOffsetX, -patternOffsetY);
+                ctx.translate(-patternOffsetX, -patternOffsetY);
                 //}
             }
 
@@ -729,7 +735,7 @@
             var width = geometry.node.clientWidth || geometry.node.width;
             var height = geometry.node.clientHeight || geometry.node.height;
             intersectionType = geometryPosition[0] < position.x && (geometryPosition[0] + width) > position.x &&
-            geometryPosition[1] < position.y && (geometryPosition[1] + height) > position.y;
+                geometryPosition[1] < position.y && (geometryPosition[1] + height) > position.y;
         } else {
             intersectionType = geometry.contains(position);
         }
@@ -738,7 +744,7 @@
     }
 
 
-    Object.defineProperties(sGis.Painter.prototype, {
+    Object.defineProperties(Painter.prototype, {
         layers: {
             get: function() {
                 return this._map.layers;
@@ -764,7 +770,7 @@
         }
     });
 
-    sGis.utils.proto.setMethods(sGis.Painter.prototype, sGis.IEventHandler);
+    sGis.utils.proto.setMethods(Painter.prototype, sGis.IEventHandler);
 
     function toDrawOnCanvas(object) {
         return sGis.useCanvas && (object instanceof sGis.geom.Arc || object instanceof sGis.geom.Polyline || object.renderToCanvas);
@@ -773,5 +779,6 @@
     function normalize(n) {
         return Math.abs(n - Math.round(n)) < 0.001 ? Math.round(n) : n;
     }
-
-})();
+    
+    return Painter;
+});

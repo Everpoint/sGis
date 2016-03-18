@@ -1,4 +1,8 @@
-(function() {
+sGis.module('DynamicLayer', [
+    'utils',
+    'Layer',
+    'feature.Image'
+], function(utils, Layer, Image) {
     'use strict';
 
     var defaults = {
@@ -72,6 +76,6 @@
 
     sGis.utils.extend(DynamicLayer.prototype, defaults);
 
-    sGis.DynamicLayer = DynamicLayer;
+    return DynamicLayer;
 
-})();
+});

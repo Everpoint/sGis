@@ -1,13 +1,16 @@
-(function() {
+sGis.module('geom.Point', [
+    'utils'
+], function(utils) {
+    'use strict';
 
-    sGis.geom.Point = function(coordinates, attributes) {
+    var Point = function(coordinates, attributes) {
         this.setCoordinates(coordinates);
 
         if (attributes && attributes.color) this.color = attributes.color;
         if (attributes && attributes.size) this.size = attributes.size;
     };
 
-    sGis.geom.Point.prototype = {
+    Point.prototype = {
         _color: 'black',
         _size: 5,
         ignoreEvents: false,
@@ -25,7 +28,7 @@
         },
 
         clone: function() {
-            var point = new sGis.geom.Point(this.getCoordinates()),
+            var point = new Point(this.getCoordinates()),
                 keys = Object.keys(this);
             for (var i in keys) {
                 point[keys[i]] = this[keys[i]];
@@ -41,7 +44,7 @@
         }
     };
 
-    Object.defineProperties(sGis.geom.Point.prototype, {
+    Object.defineProperties(Point.prototype, {
         size: {
             get: function() {
                 return this._size;
@@ -65,4 +68,6 @@
         }
     });
 
-})();
+    return Point;
+    
+});

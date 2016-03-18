@@ -1,12 +1,16 @@
-(function() {
+sGis.module('geom.Arc', [
+    'utils',
+    'utils.svg'
+], function(utils, svg) {
+    'use strict';
 
-    sGis.geom.Arc = function(center, options) {
+    var Arc = function(center, options) {
         sGis.utils.init(this, options);
 
         this.center = center;
     };
 
-    sGis.geom.Arc.prototype = {
+    Arc.prototype = {
         _radius: 5,
         _strokeColor: 'black',
         _strokeWidth: 1,
@@ -25,7 +29,7 @@
         }
     };
 
-    Object.defineProperties(sGis.geom.Arc.prototype, {
+    Object.defineProperties(Arc.prototype, {
         center: {
             get: function() {
                 return this._center;
@@ -127,5 +131,12 @@
             }
         }
     });
+    
+    return Arc;
+    
+});
+
+(function() {
+
 
 })();

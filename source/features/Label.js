@@ -1,17 +1,25 @@
-(function() {
+sGis.module('feature.Label', [
+    'utils',
+    'Feature',
+    'Crs',
+    'Point',
+    'Bbox',
+    'symbol.label'
+], function(utils, Feature, Crs, Point, Bbox, labelSymbols) {
+    'use strict';
 
     var defaultDiv = document.createElement('div');
     defaultDiv.innerHTML = 'New label';
     defaultDiv.style.textAlign = 'center';
 
-    sGis.feature.Label = function(position, options) {
+    var Label = function(position, options) {
         this.__initialize(options);
         this.coordinates = position;
 
         this._resetCache();
     };
 
-    sGis.feature.Label.prototype = new sGis.Feature({
+    Label.prototype = new sGis.Feature({
         _defaultSymbol: sGis.symbol.label.Label,
         _content: defaultDiv.cloneNode(true),
         _crs: sGis.CRS.geo,
@@ -23,7 +31,7 @@
         }
     });
 
-    Object.defineProperties(sGis.feature.Label.prototype, {
+    Object.defineProperties(Label.prototype, {
         coordinates: {
             get: function() {
                 return this._point.getCoordinates();
@@ -88,4 +96,6 @@
         }
     });
 
-})();
+    return Label;
+    
+})

@@ -1,5 +1,10 @@
-(function() {
-
+sGis.module('TileLayer', [
+    'utils',
+    'Layer',
+    'Point',
+    'Bbox',
+    'feature.Image'
+], function(utils, Layer, Point, Bbox, Image) {
     'use strict';
 
     var standardTileScheme = (function() {
@@ -168,6 +173,6 @@
 
     sGis.utils.extend(TileLayer.prototype, defaults);
 
-    sGis.TileLayer = TileLayer;
+    return TileLayer;
 
-})();
+});

@@ -1,8 +1,9 @@
-'use strict';
-
-(function() {
-
-    sGis.utils.svg = {
+sGis.module('utils.svg', [
+    'utils'
+], function(utils) {
+    'use strict';
+    
+    var svg = {
         ns: 'http://www.w3.org/2000/svg',
 
         base: function(properties) {
@@ -89,4 +90,6 @@
         return notSet;
     }
 
-})();
+    return svg;
+
+});

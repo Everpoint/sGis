@@ -1,4 +1,12 @@
-(function() {
+sGis.module('feature.MultiPoint', [
+    'utils.proto',
+    'Crs',
+    'Point',
+    'Bbox',
+    'feature.Point',
+    'symbol.point'
+], function(proto, Crs, Point, Bbox, PointF, pointSymbols) {
+    'use strict';
 
     var MultiPoint = function(coordinates, options) {
         this._coordinates = [];
@@ -84,6 +92,6 @@
         }
     });
 
-    sGis.feature.MultiPoint = MultiPoint;
+    return MultiPoint;
 
-})();
+});

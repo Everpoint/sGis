@@ -1,6 +1,13 @@
-(function() {
+sGis.module('controls.Area', [
+    'Control',
+    'controls.Polygon',
+    'Map',
+    'feature.Label',
+    'geotools'
+], function (Control, PolygonControl, Map, Label, geotools) {
+    'use strict';
 
-    sGis.controls.Area = function(map, options) {
+    var Area = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
 
@@ -26,14 +33,14 @@
         });
     };
 
-    sGis.controls.Area.prototype = new sGis.Control({
+    Area.prototype = new sGis.Control({
         _setActiveStatus: function(bool) {
             this._polygonControl.isActive = bool;
             this._active = bool;
         }
     });
 
-    sGis.utils.proto.setProperties(sGis.controls.Area.prototype, {
+    sGis.utils.proto.setProperties(Area.prototype, {
         activeLayer: {
             get: function() {
                 return this._polygonControl.activeLayer;
@@ -70,4 +77,6 @@
         return s.replace('.', ',');
     }
 
-})();
+    return Area;
+
+});

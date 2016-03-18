@@ -1,11 +1,17 @@
-(function() {
-
-    sGis.PointGroup = function(points) {
+sGis.module('PointGroup', [
+    'utils',
+    'feature.Point',
+    'Point',
+    'Bbox'
+], function(utils, PointF, Point, Bbox) {
+    'use strict';
+    
+    var PointGroup = function(points) {
         this._points = [];
         this.points = points;
     };
 
-    sGis.PointGroup.prototype = {
+    PointGroup.prototype = {
         addPoint: function(point) {
             if (!(point instanceof sGis.feature.Point)) sGis.utils.error('sGis.feature.Point instance is expected but got ' + point + ' instead');
             this._points.push(point);
@@ -58,7 +64,7 @@
         }
     };
 
-    Object.defineProperties(sGis.PointGroup.prototype, {
+    Object.defineProperties(PointGroup.prototype, {
         points: {
             get: function() {
                 return [].concat(this._points);
@@ -153,6 +159,6 @@
         }
     });
 
-
-
-})();
+    return PointGroup;
+    
+});

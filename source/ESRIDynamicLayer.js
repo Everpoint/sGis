@@ -1,4 +1,7 @@
-(function() {
+sGis.module('ESRIDynamicLayer', [
+    'utils',
+    'DynamicLayer'
+], function(utils, DynamicLayer) {
     'use strict';
 
     var defaults = {
@@ -65,6 +68,6 @@
 
     sGis.utils.extend(ESRIDynamicLayer.prototype, defaults);
 
-    sGis.ESRIDynamicLayer = ESRIDynamicLayer;
+    return ESRIDynamicLayer;
 
-})();
+});

@@ -1,11 +1,12 @@
-'use strict';
-
-(function() {
+sGis.module('utils', [
+    'Event'
+], function(Event) {
+    'use strict';
 
     /**
      * @namespace
      */
-    sGis.utils = {
+    var utils = {
 
         /**
          * If the handler sGis.onerror is set, calls this handler with 'message' parameter. Otherwise throws an exception with 'message' description
@@ -21,7 +22,7 @@
 
         /**
          * Sets the values of the properties in 'options' to the 'object'.
-         * Calls sGis.utils.error() in case of exception. It only sets the properties that already exist in the object if not setUndefined parameter is given
+         * Calls utils.error() in case of exception. It only sets the properties that already exist in the object if not setUndefined parameter is given
          * @param {Object} object
          * @param {Object} options
          * @param {Boolean} [setUndefined]
@@ -35,7 +36,7 @@
                     try {
                         object[key] = options[key];
                     } catch (e) {
-                        if (!(e instanceof TypeError)) sGis.utils.error(e);
+                        if (!(e instanceof TypeError)) utils.error(e);
                     }
                 }
             });
@@ -104,7 +105,7 @@
          * @returns {boolean}
          */
         isInteger: function(n) {
-            return sGis.utils.isNumber(n) && Math.round(n) === n;
+            return utils.isNumber(n) && Math.round(n) === n;
         },
 
         /**
@@ -148,7 +149,7 @@
          * @param {Any} s
          */
         validateString: function(s) {
-            if (!sGis.utils.isString(s)) sGis.utils.error('String is expected but got ' + s + ' instead');
+            if (!utils.isString(s)) utils.error('String is expected but got ' + s + ' instead');
         },
 
         /**
@@ -157,7 +158,7 @@
          * @param {Array} allowed
          */
         validateValue: function(v, allowed) {
-            if (allowed.indexOf(v) === -1) sGis.utils.error('Invalid value of the argument: ' + v);
+            if (allowed.indexOf(v) === -1) utils.error('Invalid value of the argument: ' + v);
         },
 
         /**
@@ -165,7 +166,7 @@
          * @param {Any} n
          */
         validateNumber: function(n) {
-            if (!sGis.utils.isNumber(n)) sGis.utils.error('Number is expected but got ' + n + ' instead');
+            if (!utils.isNumber(n)) utils.error('Number is expected but got ' + n + ' instead');
         },
 
         /**
@@ -173,7 +174,7 @@
          * @param n
          */
         validatePositiveNumber: function(n) {
-            if (!sGis.utils.isNumber(n) || n <= 0) sGis.utils.error('Positive number is expected but got ' + n + ' instead');
+            if (!utils.isNumber(n) || n <= 0) utils.error('Positive number is expected but got ' + n + ' instead');
         },
 
         /**
@@ -181,7 +182,7 @@
          * @param b
          */
         validateBool: function(b) {
-            if (b !== true && b !== false) sGis.utils.error('Boolean is expected but got ' + b + ' instead');
+            if (b !== true && b !== false) utils.error('Boolean is expected but got ' + b + ' instead');
         },
 
         /**
@@ -306,8 +307,8 @@
         copyArray: function(arr) {
             var copy = [];
             for (var i = 0, l = arr.length; i < l; i++) {
-                if (sGis.utils.isArray(arr[i])) {
-                    copy[i] = sGis.utils.copyArray(arr[i]);
+                if (utils.isArray(arr[i])) {
+                    copy[i] = utils.copyArray(arr[i]);
                 } else {
                     copy[i] = arr[i];
                 }
@@ -323,10 +324,10 @@
          */
         copyObject: function(obj) {
             if (!(obj instanceof Function) && obj instanceof Object) {
-                var copy = sGis.utils.isArray(obj) ? [] : {};
+                var copy = utils.isArray(obj) ? [] : {};
                 var keys = Object.keys(obj);
                 for (var i = 0; i < keys.length; i++) {
-                    copy[keys[i]] = sGis.utils.copyObject(obj[keys[i]]);
+                    copy[keys[i]] = utils.copyObject(obj[keys[i]]);
                 }
                 return copy;
             } else {
@@ -357,15 +358,18 @@
         }
     };
 
-
-    sGis.Event.add(document, 'DOMContentLoaded', setCssRules);
+    if (document.body) {
+        setCssRules();
+    } else {
+        sGis.Event.add(document, 'DOMContentLoaded', setCssRules);
+    }
 
     function setCssRules() {
         /**
          * Contains prefixed css properties for transition, transform and transformOrigin
          * @type {{transition: {func: string, rule: string}, transform: {func: string, rule: string}, transformOrigin: {func: string, rule: string}}}
          */
-        sGis.utils.css = {
+        utils.css = {
             transition: document.body.style.transition !== undefined ? {func: 'transition', rule: 'transition'} :
                 document.body.style.webkitTransition !== undefined ? {func: 'webkitTransition', rule: '-webkit-transition'} :
                     document.body.style.msTransition !== undefined ? {func: 'msTransition', rule: '-ms-transition'} :
@@ -547,4 +551,6 @@
         };
     }
 
-})();
+    return utils;
+    
+});

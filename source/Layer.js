@@ -1,4 +1,8 @@
-(function() {
+sGis.module('Layer', [
+    'utils',
+    'utils.proto',
+    'IEventHandler'
+], function(utils, IEventHandler) {
     'use strict';
 
     var defaults = {
@@ -52,6 +56,5 @@
     sGis.utils.extend(Layer.prototype, defaults);
     sGis.utils.proto.setMethods(Layer.prototype, sGis.IEventHandler);
 
-    sGis.Layer = Layer;
-
-})();
+    return Layer;
+});

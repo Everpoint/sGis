@@ -1,14 +1,17 @@
-'use strict';
+sGis.module('controls.Poly', [
+    'utils',
+    'Control',
+    'FeatureLayer'
+], function(utils, Control, FeatureLayer) {
+    'use strict';
 
-(function() {
-
-    sGis.controls.Poly = function(extention) {
+    var Poly = function(extention) {
         for (var key in extention) {
             this[key] = extention[key];
         }
     };
 
-    sGis.controls.Poly.prototype = new sGis.Control({
+    Poly.prototype = new sGis.Control({
         _featureClass: null,
 
         _initialize: function(map, options) {
@@ -154,7 +157,7 @@
 
     });
 
-    Object.defineProperties(sGis.controls.Poly.prototype, {
+    Object.defineProperties(Poly.prototype, {
         activeLayer: {
             get: function() {
                 return this._activeLayer;
@@ -243,5 +246,7 @@
         control._map.redrawLayer(control.activeLayer);
         if (geom) control.fire('drawingFinish', { geom: geom, browserEvent: sGisEvent && sGisEvent.browserEvent });
     }
-
-})();
+    
+    return Poly;
+    
+});

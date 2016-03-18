@@ -1,8 +1,12 @@
-'use strict';
+sGis.module('controls.Point', [
+    'utils',
+    'Control',
+    'feature.Point',
+    'FeatureLayer'
+], function(utils, Control, PointF, FeatureLayer) {
+    'use strict';
 
-(function() {
-
-    sGis.controls.Point = function(map, options) {
+    var Point = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('Expected sGis.Map child, but got ' + map + ' instead');
         this._map = map;
         this._prototype = new sGis.feature.Point([0, 0]);
@@ -24,7 +28,7 @@
         };
     };
 
-    sGis.controls.Point.prototype = new sGis.Control({
+    Point.prototype = new sGis.Control({
         startNewFeature: function(point) {
             var feature = new sGis.feature.Point(point.getCoordinates(), {crs: this._map.crs, symbol: this._prototype.symbol, style: this._prototype.style});
             var activeLayer = this.activeLayer;
@@ -65,7 +69,7 @@
         }
     });
 
-    Object.defineProperties(sGis.controls.Point.prototype, {
+    Object.defineProperties(Point.prototype, {
         isActive: {
             get: function() {
                 return this._isActive;
@@ -107,4 +111,6 @@
         }
     });
 
-})();
+    return Point;
+
+});
