@@ -9,7 +9,7 @@ sGis.module('Layer', [
         _display: true,
         _opacity: 1.0,
         needAnimate: sGis.browser.indexOf('Chrome') !== 0,
-        _name: null,
+        name: null,
         delayedUpdate: false,
         _resolutionLimits: [-1, -1]
     };
