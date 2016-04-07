@@ -28,6 +28,7 @@
         _inactiveWidth: 56,
         _inactiveHeight: 56,
         _margin: 8,
+        _imageWidth: 75,
 
         activate: function() {
             this.isActive = true;
@@ -71,7 +72,11 @@
         _addLayerToImageBox: function(layer) {
             if (!this._inactiveLayerBox) {
                 this._inactiveLayerBox = this._getNewInactiveLayerBox();
-                this._container.appendChild(this._inactiveLayerBox);
+                this._scrollContainer = document.createElement("div");
+                this._scrollContainer.className = this.pickerContainerCss+"-scroll";
+                this._scrollContainer.appendChild(this._inactiveLayerBox);
+                this._container.appendChild(this._scrollContainer);
+                this._createScroll();
             }
 
             var index = this.getLayerIndex(layer);
@@ -85,7 +90,71 @@
                 this._inactiveLayerBox.appendChild(this._layerDescriptions[index].image);
             }
 
-            this._updateImagePositions();
+            //this._updateImagePositions();
+        },
+
+        _createScroll: function () {
+            this._next = document.createElement("div");
+            this._prev = document.createElement("div");
+
+            this._next.className = "button everGis-navigation-button everGis-navigation-forward scrollButton";
+            this._prev.className = "button everGis-navigation-button everGis-navigation-back scrollButton";
+            this._next.onclick = this._scrollNext.bind(this);
+            this._prev.onclick = this._scrollPrev.bind(this);
+            this._scrollContainer.onwheel = this._scrollWheel.bind(this);
+            this._container.appendChild(this._next);
+            this._container.appendChild(this._prev);
+        },
+
+        _updateScroll: function () {
+            var maxSize = +getComputedStyle(this._scrollContainer).width.replace("px",""),
+                listSize = this._layerDescriptions.length * 75;
+            if(maxSize < listSize){
+                this._showScroll();
+            } else {
+                this._hideScroll();
+            }
+
+            this._scrollNextLimit = Math.round(maxSize / this._imageWidth);
+        },
+
+        _showScroll: function () {
+            this._next.style.display = "block";
+            this._prev.style.display = "block";
+        },
+
+        _hideScroll: function () {
+            this._next.style.display = "none";
+            this._prev.style.display = "none";
+        },
+
+        _scrollWheel: function (e) {
+            var delta = e.deltaY || e.detail || e.wheelDelta;
+            if(delta>0) {
+                this._scrollNext();
+            } else if (delta<0){
+                this._scrollPrev();
+            }
+            e.stopPropagation();
+        },
+
+        _scrollNext: function (e) {
+            var count = this._layerDescriptions.length,
+                width = this._imageWidth,
+                scrollLimit = this._scrollNextLimit,
+                currentPosition = this._currentPosition | 0,
+                position = Math.max(currentPosition - width, -width *(count - scrollLimit));
+            this._inactiveLayerBox.style.marginLeft = position + 'px';
+            this._currentPosition = position;
+            e&&e.stopPropagation();
+        },
+        _scrollPrev: function (e) {
+            var width = this._imageWidth,
+                currentPosition = this._currentPosition | 0,
+                position = Math.min(currentPosition + width, 0);
+            this._inactiveLayerBox.style.marginLeft = position + 'px';
+            this._currentPosition = position;
+            e&&e.stopPropagation();
         },
 
         _updateImagePositions: function() {
