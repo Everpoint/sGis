@@ -56,7 +56,7 @@ sGis.module('symbol.label', [
         _css: '',
 
         renderFunction: function(feature, resolution, crs) {
-            if (!feature._cache || !sGis.utils.softEquals(resolution, feature._cache[0].resolution)) {
+            if (!feature._cache || !sGis.math.softEquals(resolution, feature._cache[0].resolution)) {
                 var div = document.createElement('div');
                 div.className = this.css;
                 div.appendChild(feature.content);

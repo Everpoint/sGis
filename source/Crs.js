@@ -145,7 +145,7 @@ sGis.module('CRS', [
         /**
          * @deprecated
          */
-        CRS.webMercator.to = (lat,lon) => {
+        CRS.webMercator.to = (lon,lat) => {
             [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
             return {x: x, y: y};
         }

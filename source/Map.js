@@ -141,19 +141,19 @@ sGis.module('Map', [
 
             var resolution;
             if (tileScheme) {
-                var levels = Object.keys(tileScheme.matrix);
+                var levels = Object.keys(tileScheme.levels);
                 for (var i = 0; i < levels.length; i++) {
-                    var ratio = currResolution / tileScheme.matrix[levels[i]].resolution;
+                    var ratio = currResolution / tileScheme.levels[levels[i]].resolution;
                     if (ratio > 0.9) {
                         var newLevel = parseInt(i) + k;
-                        while (!tileScheme.matrix[newLevel]) {
+                        while (!tileScheme.levels[newLevel]) {
                             newLevel += k > 0 ? -1 : 1;
                         }
-                        resolution = tileScheme.matrix[newLevel].resolution;
+                        resolution = tileScheme.levels[newLevel].resolution;
                         break;
                     }
                 }
-                if (!resolution) resolution = tileScheme.matrix[levels[i]] && tileScheme.matrix[levels[i]].resolution || currResolution;
+                if (!resolution) resolution = tileScheme.levels[levels[i]] && tileScheme.levels[levels[i]].resolution || currResolution;
             } else {
                 resolution = currResolution * Math.pow(2, -k);
             }
@@ -179,15 +179,15 @@ sGis.module('Map', [
             if (tileScheme) {
                 var minDifference = Infinity;
                 var index;
-                var levels = Object.keys(tileScheme.matrix);
+                var levels = Object.keys(tileScheme.levels);
                 for (var i = 0; i < levels.length; i++) {
-                    var difference = Math.abs(resolution - tileScheme.matrix[levels[i]].resolution);
+                    var difference = Math.abs(resolution - tileScheme.levels[levels[i]].resolution);
                     if (difference < minDifference) {
                         minDifference = difference;
                         index = levels[i];
                     }
                 }
-                return tileScheme.matrix[index].resolution;
+                return tileScheme.levels[index].resolution;
             } else {
                 return resolution;
             }
@@ -606,11 +606,11 @@ sGis.module('Map', [
                     return this._maxResolution;
                 } else {
                     var tileScheme = this.tileScheme;
-                    if (tileScheme && tileScheme.matrix) {
+                    if (tileScheme && tileScheme.levels) {
                         var maxResolution = 0;
-                        var levels = Object.keys(tileScheme.matrix);
+                        var levels = Object.keys(tileScheme.levels);
                         for (var i = 0; i < levels.length; i++) {
-                            maxResolution = Math.max(maxResolution, tileScheme.matrix[levels[i]].resolution);
+                            maxResolution = Math.max(maxResolution, tileScheme.levels[levels[i]].resolution);
                         }
                         return maxResolution;
                     }
@@ -632,9 +632,9 @@ sGis.module('Map', [
                 var tileScheme = this.tileScheme;
                 if (tileScheme) {
                     var minResolution = Infinity;
-                    var levels = Object.keys(tileScheme.matrix);
+                    var levels = Object.keys(tileScheme.levels);
                     for (var i = 0; i < levels.length; i++) {
-                        minResolution = Math.min(minResolution, tileScheme.matrix[levels[i]].resolution);
+                        minResolution = Math.min(minResolution, tileScheme.levels[levels[i]].resolution);
                     }
 
                     return minResolution;

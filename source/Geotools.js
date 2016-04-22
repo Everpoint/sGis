@@ -244,7 +244,11 @@ sGis.module('geotools', ['math'], function(math) {
 });
 
 sGis.module('math', [], function() {
-    return {
+
+    /**
+     * @namespace sGis.math
+     */
+    var math = {
         /**
          * Converts degrees to radians
          * @param {number} d - degrees
@@ -261,6 +265,20 @@ sGis.module('math', [], function() {
          */
         radToDeg: function (r) {
             return r / Math.PI * 180;
-        }
+        },
+
+        /**
+         * Returns true if a and b differ less then one millionth of a, otherwise false
+         * @param {Number} a
+         * @param {Number} b
+         * @returns {boolean}
+         */
+        softEquals: function softEquals(a, b) {
+            return Math.abs(a - b) < math.tolerance * a;
+        },
+
+        tolerance: 0.000001
     };
+
+    return math;
 });
