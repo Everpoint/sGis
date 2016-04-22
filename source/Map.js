@@ -5,6 +5,7 @@ sGis.module('Map', [
     'IEventHandler',
     'Point',
     'Bbox',
+    'LayerGroup',
     'feature.Point'
 ], function(utils, Crs, Event, IEventHandler, Point, Bbox, PointF) {
     'use strict';

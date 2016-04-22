@@ -2,169 +2,274 @@ sGis.module('Crs', [
 
 ], function() {
     'use strict';
-    
-    var Crs = function(options) {
-        for (var i in options) {
-            this[i] = options[i];
+
+    /**
+     * @class
+     * @alias sGis.Crs
+     * @property {Object} description - description of the crs
+     */
+    class Crs {
+        /**
+         * @constructor
+         * @param {Object} description - description of the crs
+         * @param {Map} [projectionsMap]
+         */
+        constructor(description, projectionsMap) {
+            this.description = description;
+            this._projections = projectionsMap || new Map();
         }
-    };
 
-    Crs.prototype = {
-        getWkidString: function() {
-            if (this.ESRIcode) {
-                return {wkid: this.ESRIcode};
-            } else if (this.description) {
-                return this.description;
+        /**
+         * Returns true if given crs represents the same spatial reference system
+         * @param {sGis.Crs} crs
+         * @returns {boolean}
+         */
+        equals(crs) {
+            if (this === crs || this.description === crs.description) return true;
+
+            if (this.description instanceof Object && crs.description instanceof Object) {
+                return JSON.stringify(this.description) === JSON.stringify(crs.description);
             }
-        },
 
-        equals: function(crs) {
-            return this === crs || this.description && crs.description && (this.description === crs.description || this.description.wkt === crs.description.wkt || this.description.wkid === crs.description.wkid);
+            return false;
         }
-    };
 
-    sGis.CRS = {
-        plain: new Crs({}),
-
-        geo: new Crs({
-            from: function(xCrs, yCrs) {
-                return {x: xCrs, y: yCrs};
-            },
-            to: function(xGeo, yGeo) {
-                return {x: xGeo, y: yGeo};
-            }
-        }),
-        webMercator: new Crs({
-            defaultBbox: {
-                minX: -20037508.342789244,
-                maxX: 20037508.342789244,
-                maxY: 20037508.342789244,
-                minY: -20037508.342789244
-            },
-            ESRIcode: 102113,
-            EPSGcode: 3857,
-            from: function(xCrs, yCrs) {
-                var a = 6378137,
-                    rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-yCrs/a)),
-                    rLong = xCrs / a,
-                    lon = toDeg(rLong),
-                    lat = toDeg(rLat);
-                return {x: lon, y: lat, lon: lon, lat: lat};
-            },
-            to: function(xGeo, yGeo) {
-                var a = 6378137,
-                    rLat = toRad(yGeo),
-                    rLon = toRad(xGeo),
-                    X = a * rLon,
-                    Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2));
-                return {x: X, y: Y};
-            }
-        }),
-        ellipticalMercator: new Crs({
-            defaultBbox: {
-                minX: -20037508.342789244,
-                maxX: 20037508.342789244,
-                maxY: 20037508.34278924,
-                minY: -20037508.34278924
-            },
-            ESRIcode: 54004,
-            EPSGcode: 3395,
-            from: function(xCrs, yCrs) {
-                var a = 6378137,
-                    b = 6356752.3142,
-                    f = (a-b) / a,
-                    e = Math.sqrt(1 - b*b/a/a),
-                    eh = e/2,
-                    pih = Math.PI/2,
-                    ts = Math.exp(-yCrs/a),
-                    phi = pih - 2 * Math.atan(ts),
-                    i = 0,
-                    dphi = 1;
-
-                while (Math.abs(dphi) > 0.000000001 && i++ < 15) {
-                    var con = e * Math.sin(phi);
-                    dphi = pih - 2 * Math.atan(ts * Math.pow((1 - con) / (1 + con), eh)) - phi;
-                    phi += dphi;
-                };
-
-                var rLong = xCrs / a,
-                    rLat = phi,
-                    lon = toDeg(rLong),
-                    lat = toDeg(rLat);
-
-                return {x: lon, y: lat, lon: lon, lat: lat};
-            },
-            to: function(xGeo, yGeo) {
-                var rLat = toRad(yGeo),
-                    rLon = toRad(xGeo),
-                    a = 6378137,
-                    b = 6356752.3142,
-                    f = (a-b) / a,
-                    e = Math.sqrt(2 * f - f * f),
-                    X = a * rLon,
-                    Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e/2)));
-
-                return {x: X, y: Y};
-            }
-        }),
-
-        moscowBessel: new Crs({
-            description: {"wkt":"PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"}
-        })
-    };
-
-//http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
-
-    sGis.CRS.AlbertsEqualArea = function(lat0, lon0, stLat1, stLat2) {
-        this._lat0 = toRad(lat0);
-        this._lon0 = toRad(lon0);
-        this._stLat1 = toRad(stLat1);
-        this._stLat2 = toRad(stLat2);
-        this._n = (Math.sin(this._stLat1) + Math.sin(this._stLat2)) / 2;
-        this._c = Math.pow(Math.cos(this._stLat1), 2) + 2 * this._n * Math.sin(this._stLat1);
-        this._ro0 = Math.sqrt(this._c - 2 * this._n * Math.sin(this._lat0)) / this._n;
-        this._R = 6372795;
-    };
-
-    sGis.CRS.AlbertsEqualArea.prototype = new Crs({
-        to: function(lon, lat) {
-            var rlon = toRad(lon),
-                rlat = toRad(lat),
-                th = this._n * (rlon - this._lon0),
-                ro = Math.sqrt(this._c - 2 * this._n * Math.sin(rlat)) / this._n,
-                x = ro * Math.sin(th) * this._R,
-                y = this._ro0 - ro * Math.cos(th) * this._R;
-
-            return {x: x, y: y};
-        },
-
-        from: function(x, y) {
-            var xRad = x / this._R,
-                yRad = y / this._R,
-//            ro = Math.sqrt(xRad*xRad + Math.pow((this._ro0 - yRad),2)),
-                th = Math.atan(xRad / (this._ro0 - yRad)),
-                ro = xRad / Math.sin(th),
-                rlat = Math.asin((this._c - ro*ro * this._n * this._n) / 2 / this._n),
-                rlon = this._lon0 + th / this._n,
-
-                lat = toDeg(rlat),
-                lon = toDeg(rlon);
-
-            return {x: lon, y: lat, lon: lon, lat: lat};
+        /**
+         * Returns projection function from the current coordinate system to specified. Returned function takes one [x,y] parameter and returns projected [x,y] (corresponding to crs parameter)
+         * @param {sGis.Crs} crs
+         * @returns {Function|null}
+         */
+        projectionTo(crs) {
+            if (this._projections.get(crs)) return this._projections.get(crs);
+            return this._discoverProjectionTo(crs);
         }
-    });
 
-    function toRad(d) {
-        return d * Math.PI / 180;
+        /**
+         * Adds the projection function to the coordinate system
+         * @param {sGis.Crs} crs
+         * @param {Function} func - projection function. Takes [x,y] in current coordinate system and return [x,y] in the target "crs" coordinate system.
+         */
+        setProjectionTo(crs, func) {
+            this._projections.set(crs, func);
+        }
+
+        _discoverProjectionTo(crs) {
+            if (this._discoveryMode) return null;
+
+            this._discoveryMode = true;
+            for (let [ownCrs, func] of this._projections) {
+                if (ownCrs.equals(crs)) {
+                    this._projections.set(crs, func);
+                    break;
+                }
+
+                let innerProjection = ownCrs._discoverProjectionTo(crs);
+                if (innerProjection) {
+                    let result = function([x, y]) { return innerProjection(func([x, y])); };
+                    this._projections.set(crs, result);
+                    break;
+                }
+            }
+            this._discoveryMode = false;
+
+            return this._projections.get(crs) || null;
+        }
+
+        /**
+         * @deprecated
+         */
+        getWkidString() {
+            return this.description;
+        }
     }
-
-    function toDeg(r) {
-        return r * 180 / Math.PI;
-    }
-
-    sGis.CRS.CylindicalEqualArea = new sGis.CRS.AlbertsEqualArea(0, 180, 60, 50);
 
     return Crs;
 
 });
 
+
+sGis.module('CRS', [
+    'Crs',
+    'math'
+], function(Crs, math) {
+
+    /**
+     * @namespace sGis.CRS
+     */
+    var CRS = {
+        plain: new Crs('Plain crs without any projection functions'),
+        wgs84: new Crs({wkid:4326})
+    };
+
+    CRS.geo = new Crs('Native geographical coordinate system. It is same as wgs84, but x is longitude, rather then latitude.');
+    CRS.geo.setProjectionTo(CRS.wgs84, ([x,y]) => [y,x]);
+
+    /**
+     * @deprecated
+     */
+    CRS.geo.from = (x,y) => { return {x: x, y: y}};
+    /**
+     * @deprecated
+     */
+    CRS.geo.to = (x,y) => { return {x: x, y: y}};
+
+    CRS.wgs84.setProjectionTo(CRS.geo, ([x,y]) => [y,x]);
+
+    {
+        let a = 6378137;
+        CRS.webMercator = new Crs({wkid: 102113});
+        CRS.webMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
+            var rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-y / a));
+            var rLong = x / a;
+            var lon = math.radToDeg(rLong);
+            var lat = math.radToDeg(rLat);
+
+            return [lon, lat];
+        });
+        CRS.wgs84.setProjectionTo(CRS.webMercator, ([x,y]) => {
+            var rLon = math.degToRad(x);
+            var rLat = math.degToRad(y);
+            var X = a * rLon;
+            var Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2));
+
+            return [X, Y];
+        });
+
+        /**
+         * @deprecated
+         */
+        CRS.webMercator.from = (x,y) => {
+            [lat, lon] = CRS.webMercator.projectionTo(CRS.geo)([x,y]);
+            return {x: lon, y: lat, lon: lon, lat: lat};
+        };
+        /**
+         * @deprecated
+         */
+        CRS.webMercator.to = (lat,lon) => {
+            [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
+            return {x: x, y: y};
+        }
+    }
+
+    {
+        let a = 6378137;
+        let b = 6356752.3142;
+        let e =  Math.sqrt(1 - b*b/a/a);
+        let eh = e/2;
+        let pih = Math.PI/2;
+
+        CRS.ellipticalMercator = new Crs({wkid: 54004});
+        CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
+            var ts = Math.exp(-y/a);
+            var phi = pih - 2 * Math.atan(ts);
+            var i = 0;
+            var dphi = 1;
+
+            while (Math.abs(dphi) > 0.000000001 && i++ < 15) {
+                let con = e * Math.sin(phi);
+                dphi = pih - 2 * Math.atan(ts * Math.pow((1 - con) / (1 + con), eh)) - phi;
+                phi += dphi;
+            }
+
+            var rLong = x / a,
+                rLat = phi,
+                lon = math.radToDeg(rLong),
+                lat = math.radToDeg(rLat);
+
+            return [lon, lat];
+        });
+        CRS.wgs84.setProjectionTo(CRS.ellipticalMercator, ([x,y]) => {
+            var rLat = math.degToRad(y);
+            var rLon = math.degToRad(x);
+            var X = a * rLon;
+            var Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e/2)));
+
+            return [X, Y];
+        });
+
+        /**
+         * @deprecated
+         */
+        CRS.ellipticalMercator.from = (x,y) => {
+            [lat, lon] = CRS.ellipticalMercator.projectionTo(CRS.geo)([x,y]);
+            return {x: lon, y: lat, lon: lon, lat: lat};
+        };
+        /**
+         * @deprecated
+         */
+        CRS.ellipticalMercator.to = (lat,lon) => {
+            [x, y] = CRS.geo.projectionTo(CRS.ellipticalMercator)([lat,lon]);
+            return {x: x, y: y};
+        }
+    }
+
+    CRS.moscowBessel = new Crs({"wkt":"PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"});
+
+    {
+        //http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
+
+        var R = 6372795;
+        /**
+         * @class
+         * @augments Crs
+         */
+        CRS.AlbertsEqualArea = class extends Crs {
+            constructor(lat0, lon0, stLat1, stLat2) {
+                super('Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2);
+
+                var _lat0 = math.degToRad(lat0);
+                var _lon0 = math.degToRad(lon0);
+                var _stLat1 = math.degToRad(stLat1);
+                var _stLat2 = math.degToRad(stLat2);
+                var _n = (Math.sin(_stLat1) + Math.sin(_stLat2)) / 2;
+                var _c = Math.pow(Math.cos(_stLat1), 2) + 2 * _n * Math.sin(_stLat1);
+                var _ro0 = Math.sqrt(_c - 2 * _n * Math.sin(_lat0)) / _n;
+
+                this.setProjectionTo(CRS.wgs84, ([x,y]) => {
+                    var xRad = x / R;
+                    var yRad = y / R;
+                    var th = Math.atan(xRad / (_ro0 - yRad));
+                    var ro = xRad / Math.sin(th);
+                    var rlat = Math.asin((_c - ro * ro * _n * _n) / 2 / _n);
+                    var rlon = _lon0 + th / _n;
+
+                    var lat = math.radToDeg(rlat);
+                    var lon = math.radToDeg(rlon);
+
+                    return [lon, lat];
+                });
+
+                CRS.wgs84.setProjectionTo(this, ([lon,lat]) => {
+                    var rlon = math.degToRad(lon),
+                        rlat = math.degToRad(lat),
+                        th = _n * (rlat - _lon0),
+                        ro = Math.sqrt(_c - 2 * _n * Math.sin(rlon)) / _n,
+                        x = ro * Math.sin(th) * R,
+                        y = _ro0 - ro * Math.cos(th) * R;
+
+                    return [x, y];
+                });
+            }
+        };
+
+        /**
+         * @deprecated
+         */
+        CRS.AlbertsEqualArea.prototype.from = function(x,y) {
+            [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
+            return {x: lon, y: lat, lon: lon, lat: lat};
+        };
+        /**
+         * @deprecated
+         */
+        CRS.AlbertsEqualArea.prototype.to = function(lat,lon)  {
+            [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
+            return {x: x, y: y};
+        };
+    }
+
+    CRS.cylindicalEqualArea = new CRS.AlbertsEqualArea(0, 180, 60, 50);
+
+    return CRS;
+
+});
