@@ -86,7 +86,7 @@ sGis.module('geotools', ['math'], function(math) {
     /**
      * Checks if a point is located inside a polygon.
      * @param {Number[]} polygon - coordinates of polygon in format [[[x11, y11], [x12, y12], ...], [x21, y21], [x22, y22], ...], ...]. If there is only one counter outer array can be omitted.
-     * @param {[Number, Number]} point - coordinates of the point [x, y]
+     * @param {number[]} point - coordinates of the point [x, y]
      * @param {Number} [tolerance=0] - the tolerance of check. If the point is out of the polygon, but is closer then tolerance, the returned result will be true.
      * @returns {boolean|Array} - true, if the point is inside of polygon, [ring, index] - index of vertex if the point is closer then 'tolerance' to one of the sides of polygon, false otherwise
      */
@@ -153,7 +153,7 @@ sGis.module('geotools', ['math'], function(math) {
 
     /**
      * Returns the angle of line relative to horizon in radians. The value can be from -PI to PI, first point is considered base point for rotation.
-     * @param {[[number, number], [number,number]]} line - the line as two points: [[x1,y1], [x2,y2]]
+     * @param {number[][]} line - the line as two points: [[x1,y1], [x2,y2]]
      * @return {number}
      */
     geotools.getLineAngle = function (line) {
@@ -166,10 +166,10 @@ sGis.module('geotools', ['math'], function(math) {
 
     /**
      * Returns a point at the specified distance and angle relative to horizon from origin point
-     * @param {[number, number]} point - origin point
+     * @param {number[]} point - origin point
      * @param {number} angle - angle in radians
      * @param {number} distance - distance
-     * @returns {[number, number]}
+     * @returns {number[]}
      */
     geotools.getPointFromAngleAndDistance = function (point, angle, distance) {
         return [point[0] + Math.cos(angle) * distance, point[1] + Math.sin(angle) * distance];
@@ -177,7 +177,7 @@ sGis.module('geotools', ['math'], function(math) {
 
     /**
      * Returns false if polygon has self-intersection, segments of zero length or contours with less then 3 points
-     * @param {sGis.feature.Polygon|sGis.geom.Polygon|[number,number][][]} polygon  - polygon feature or coordinates
+     * @param {sGis.feature.Polygon|sGis.geom.Polygon|number[][][]} polygon  - polygon feature or coordinates
      * @returns {boolean}
      */
     geotools.isPolygonValid = function (polygon) {
@@ -252,6 +252,7 @@ sGis.module('math', [], function() {
         /**
          * Converts degrees to radians
          * @param {number} d - degrees
+         * @memberof sGis.math
          * @returns {number}
          */
         degToRad: function (d) {

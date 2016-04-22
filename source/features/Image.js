@@ -17,7 +17,8 @@ sGis.module('feature.Image', [
         _width: 256,
         _height: 256,
         _opacity: 1,
-        _defaultSymbol: sGis.symbol.image.Image
+        _defaultSymbol: sGis.symbol.image.Image,
+        transitionTime: 0
     });
 
     Object.defineProperties(ImageF.prototype, {

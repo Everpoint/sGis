@@ -4,34 +4,88 @@ sGis.module('TileLayer', [
     'Layer',
     'Point',
     'Bbox',
-    'feature.Image'
-], function(utils, TileScheme, Layer, Point, Bbox, Image) {
+    'feature.Image',
+    'CRS'
+], function(utils, TileScheme, Layer, Point, Bbox, ImageF, CRS) {
     'use strict';
 
     var defaults = {
+        /**
+         * Layer's tile scheme.
+         * @type sGis.TileScheme
+         * @memberof sGis.TileLayer
+         * @default sGis.TileScheme.default
+         */
         tileScheme: TileScheme.default,
-        crs: sGis.CRS.webMercator,
+        /**
+         * Layer's coordinate system.
+         * @type sGis.Crs
+         * @memberof sGis.TileLayer.
+         * @default sGis.CRS.webMercator
+         */
+        crs: CRS.webMercator,
+        /**
+         * Whether to repeat the tiles along x axis. Creates the effect of continuous map when sliding horizontally.
+         * @type boolean
+         * @memberof sGis.TileLayer
+         * @default
+         */
         cycleX: true,
+        /**
+         * Whether to repeat the tiles along y axis. Creates the effect of continuous map when sliding vertically.
+         * @type boolean
+         * @memberof sGis.TileLayer
+         * @default
+         */
         cycleY: false,
-        _cacheSize: 256,
-        transitionTime: sGis.browser.indexOf('Chrome') === 0 ? 0 : 200
+        /**
+         * If this value is grater then 0, the tiles will appear with css opacity transition effect. Specified in milliseconds.
+         * @type number
+         * @memberof sGis.TileLayer
+         * @default
+         */
+        transitionTime: 200,
+        _cacheSize: 256
     };
 
+    /**
+     * @class
+     * @alias sGis.TileLayer
+     * @extends sGis.Layer
+     * @extends sGis.IEventHandler
+     */
     class TileLayer extends Layer {
+        /**
+         * @constructor
+         * @param {String} tileSource - Url of the source for tiles in format http(s)://...../..{x}..{y}..{z} - where x an y are indexes of tiles for the scale level z
+         * @param {Object} [options] - Set of properties to override
+         */
         constructor(tileSource, options) {
             super();
             utils.init(this, options);
 
             this._source = tileSource;
-            this._tiles = [];
-            this._cache = [];
+            this._tiles = {};
         }
 
+        /**
+         * Returns url of a tile
+         * @param {Number} xIndex - Index of tile along x axis
+         * @param {Number} yIndex - Index of tile along y axis
+         * @param {Scale} scale - Scale level of the tile
+         * @returns {string}
+         */
         getTileUrl(xIndex, yIndex, scale) {
             var url = this._source;
             return url.replace('{x}', xIndex).replace('{y}', yIndex).replace('{z}', scale);
         }
 
+        /**
+         * Returns the set of tile features for the given bbox.
+         * @param {sGis.Bbox} bbox - Bounding box of the area, which should be fully covered by returned tiles.
+         * @param {Number} resolution - Resolution of tiles to get.
+         * @returns {sGis.Feature[]}
+         */
         getFeatures(bbox, resolution) {
             if (!this._display || !bbox.crs.projectionTo(this.crs)) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
@@ -39,41 +93,47 @@ sGis.module('TileLayer', [
             var level = this.tileScheme.getLevel(resolution);
             if (level < 0) return [];
 
-            var tiles = this._tiles,
-                layerCrs = this.crs,
-                features = [];
+            bbox = bbox.projectTo(this.crs);
 
-            bbox = bbox.projectTo(layerCrs);
+            var layerResolution = this.tileScheme.levels[level].resolution;
+            var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
+            var xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
+            var yStartIndex = Math.floor((this.tileScheme.origin.y - bbox.p[1].y) / this.tileHeight / layerResolution);
+            var yEndIndex = Math.ceil((this.tileScheme.origin.y - bbox.p[0].y) / this.tileHeight / layerResolution);
 
-            var layerResolution = this.tileScheme.levels[level].resolution,
-                xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution),
-                xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution),
-                yStartIndex = Math.floor((this.tileScheme.origin.y - bbox.p[1].y) / this.tileHeight / layerResolution),
-                yEndIndex = Math.ceil((this.tileScheme.origin.y - bbox.p[0].y) / this.tileHeight / layerResolution);
-
-            if (!tiles[level]) tiles[level] = {};
-
+            var tiles = this._tiles;
+            var features = [];
             for (var xIndex = xStartIndex; xIndex < xEndIndex; xIndex++) {
                 var xIndexAdj = this.cycleX ? this._getAdjustedIndex(xIndex, level) : xIndex;
 
-                if (!tiles[level][xIndex]) tiles[level][xIndex] = [];
-
                 for (var yIndex = yStartIndex; yIndex < yEndIndex; yIndex++) {
                     var yIndexAdj = this.cycleY ? this._getAdjustedIndex(yIndex, level) : yIndex;
+                    var tileId = TileLayer.getTileId(level, xIndex, yIndex);
 
-                    if (!tiles[level][xIndex][yIndex]) {
-                        var imageBbox = getTileBoundingBox(level, xIndex, yIndex, this);
+                    if (!tiles[tileId]) {
+                        var imageBbox = this._getTileBbox(level, xIndex, yIndex);
                         var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, level);
-                        tiles[level][xIndex][yIndex] = new sGis.feature.Image(imageBbox, { src: tileUrl, style: { transitionTime: this._transitionTime, renderToCanvas: false }, opacity: this.opacity });
-                        this._cache.push(level + ',' + xIndex + ',' + yIndex);
+                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, transitionTime: this.transitionTime, opacity: this.opacity });
                     }
 
-                    features.push(tiles[level][xIndex][yIndex]);
+                    features.push(tiles[tileId]);
                 }
             }
 
             this._cutCache();
             return features;
+        }
+
+        _getTileBbox(level, xIndex, yIndex) {
+            var resolution = this.tileScheme.levels[level].resolution;
+            var startPoint = new Point(xIndex * this.tileWidth * resolution + this.tileScheme.origin.x, -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin.y, this.crs);
+            var endPoint = new Point((xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin.x, -yIndex * this.tileHeight * resolution + this.tileScheme.origin.y, this.crs);
+
+            return new Bbox(startPoint, endPoint);
+        }
+
+        static getTileId(level, xIndex, yIndex) {
+            return [level, xIndex, yIndex].join(',');
         }
 
         _getAdjustedIndex(index, level) {
@@ -84,46 +144,41 @@ sGis.module('TileLayer', [
         }
 
         _cutCache() {
-            while (this._cache.length > this._cacheSize) {
-                var indexes = this._cache[0].split(',');
-                delete this._tiles[indexes[0]][indexes[1]][indexes[2]];
-                this._cache.shift();
+            var keys = Object.keys(this._tiles);
+            if (keys.length > this._cacheSize) {
+                this._tiles = this._tiles.slice(keys.length - this._cacheSize);
             }
         }
 
+        /**
+         * Width of the tiles in px
+         * @type {number}
+         */
         get tileWidth() { return this.tileScheme.tileWidth; }
+
+        /**
+         * Height of the tiles in px
+         * @type {number}
+         */
         get tileHeight() { return this.tileScheme.tileHeight; }
 
+        /**
+         * Opacity of the layer
+         */
         get opacity() { return this._opacity; }
         set opacity(opacity) {
-            if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
             opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
             this._opacity = opacity;
 
-            for (var scale in this._tiles) {
-                for (var x in this._tiles[scale]) {
-                    for (var y in this._tiles[scale][x]) {
-                        this._tiles[scale][x][y].opacity = opacity;
-                    }
-                }
-            }
+            Object.keys(this._tiles).forEach((key) => {
+                this._tiles[key].opacity = opacity;
+            });
+
             this.fire('propertyChange', {property: 'opacity'});
         }
     }
 
-    function getResolution(layer, scale) {
-        return layer.tileScheme.levels[scale].resolution;
-    }
-
-    function getTileBoundingBox(scale, xIndex, yIndex, layer) {
-        var resolution = getResolution(layer, scale),
-            startPoint = new sGis.Point(xIndex * layer.tileWidth * resolution + layer.tileScheme.origin.x, -(yIndex + 1) * layer.tileHeight * resolution + layer.tileScheme.origin.y, layer.crs),
-            endPoint = new sGis.Point((xIndex + 1) * layer.tileWidth * resolution + layer.tileScheme.origin.x, -yIndex * layer.tileHeight * resolution + layer.tileScheme.origin.y, layer.crs);
-
-        return new sGis.Bbox(startPoint, endPoint);
-    }
-
-    sGis.utils.extend(TileLayer.prototype, defaults);
+    utils.extend(TileLayer.prototype, defaults);
 
     return TileLayer;
 

@@ -6,6 +6,7 @@ sGis.module('IEventHandler', [
     /**
      * Provides methods for handling events.
      * @mixin
+     * @alias sGis.IEventHandler
      */
     var IEventHandler = {
         /**

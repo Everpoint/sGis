@@ -176,7 +176,7 @@ sGis.module('symbol.image', [
                     image.style.opacity = 0;
                     image.style.transition = 'opacity ' + feature.transitionTime / 1000 + 's linear';
 
-                    this._cache[0].onAfterDisplay = function() {
+                    feature._cache[0].onAfterDisplay = function() {
                         setTimeout(function() { image.style.opacity = feature.opacity; }, 0);
                     }
                 } else {

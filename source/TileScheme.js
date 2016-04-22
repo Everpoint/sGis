@@ -3,6 +3,10 @@ sGis.module('TileScheme', [
     'math'
 ], function(utils, math) {
 
+    /**
+     * @class
+     * @alias sGis.TileScheme
+     */
     class TileScheme {
         constructor(parameters) {
             utils.extend(this, parameters);

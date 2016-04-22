@@ -83,6 +83,10 @@ sGis.module('Bbox', [
 ], function(utils, Crs, Point) {
     'use strict';
 
+    /**
+     * @class
+     * @alias sGis.Bbox
+     */
     var Bbox = function(point1, point2, crs) {
         this._crs = crs || point1.crs || point2.crs || sGis.CRS.geo;
         this.p = [];

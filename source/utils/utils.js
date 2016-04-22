@@ -7,7 +7,6 @@ sGis.module('utils', [
      * @namespace sGis.utils
      */
     var utils = {
-
         /**
          * If the handler sGis.onerror is set, calls this handler with 'message' parameter. Otherwise throws an exception with 'message' description
          * @param message
@@ -207,9 +206,9 @@ sGis.module('utils', [
 
         /**
          * Prepares the set of coordinates for matrix operations
-         * @param {[{Number}, {Number}][]} coord
-         * @param {[{Number}, {Number}]} center - the center of the operation
-         * @returns {[{Number}, {Number}, 1][]} extended coordinates
+         * @param {Number[][]} coord
+         * @param {Number[]} center - the center of the operation
+         * @returns {Number[][]} extended coordinates
          * TODO: move to MATH
          */
         extendCoordinates: function(coord, center) {
@@ -222,9 +221,9 @@ sGis.module('utils', [
 
         /**
          * Takes extended coordinates and make them plain again
-         * @param {[{Number}, {Number}, 1][]} extended
-         * @param {[{Number}, {Number}]} center - the center of the operation
-         * @returns {[{Number}, {Number}][]} extended coordinates
+         * @param {Number[][]} extended
+         * @param {Number[]} center - the center of the operation
+         * @returns {Number[][]} extended coordinates
          * TODO: move to MATH
          */
         collapseCoordinates: function(extended, center) {
@@ -237,9 +236,9 @@ sGis.module('utils', [
 
         /**
          * Returns a new array with simplified coordinates
-         * @param {[{Number}, {Number}][][]} points - array of coordinate contours
+         * @param {Number[][][]} points - array of coordinate contours
          * @param tolerance - the tolerance of simplification. Points that are overflow other points or lines with given tolerance will be excluded from the result
-         * @returns {[{Number}, {Number}][][]}
+         * @returns {Number[][][]}
          */
         simplify: function(points, tolerance) {
             var result = [];

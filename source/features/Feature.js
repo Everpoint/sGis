@@ -6,6 +6,11 @@ sGis.module('Feature', [
 ], function(utils, proto, Crs, IEventHandler) {
     'use strict';
 
+    /**
+     * @class sGis.Feature
+     * @param extention
+     * @constructor
+     */
     var Feature = function(extention) {
         for (var key in extention) {
             this[key] = extention[key];
