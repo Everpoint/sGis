@@ -210,10 +210,18 @@ sGis.module('CRS', [
 
         var R = 6372795;
         /**
+         * Class constructor of Alber's equal area projections.
          * @class
          * @augments Crs
          */
-        CRS.AlbertsEqualArea = class extends Crs {
+        CRS.AlbersEqualArea = class extends Crs {
+            /**
+             * @constructor
+             * @param {Number} lat0 - latitude of origin
+             * @param {Number} lon0 - longitude of origin
+             * @param {Number} stLat1 - first standard parallel
+             * @param {Number} stLat2 - second standard parallel
+             */
             constructor(lat0, lon0, stLat1, stLat2) {
                 super('Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2);
 
@@ -255,20 +263,20 @@ sGis.module('CRS', [
         /**
          * @deprecated
          */
-        CRS.AlbertsEqualArea.prototype.from = function(x,y) {
+        CRS.AlbersEqualArea.prototype.from = function(x, y) {
             [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
-        CRS.AlbertsEqualArea.prototype.to = function(lat,lon)  {
+        CRS.AlbersEqualArea.prototype.to = function(lat, lon)  {
             [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };
     }
 
-    CRS.cylindicalEqualArea = new CRS.AlbertsEqualArea(0, 180, 60, 50);
+    CRS.cylindicalEqualArea = new CRS.AlbersEqualArea(0, 180, 60, 50);
 
     return CRS;
 
