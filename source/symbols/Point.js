@@ -157,7 +157,7 @@ sGis.module('symbol.point', [
             return new pointSymbols.Image({size: this.size, color: this.color, source: this.source, anchorPoint: this.anchorPoint, renderToCanvas: this.renderToCanvas});
         },
 
-        getDescriptions: function() {
+        getDescription: function() {
             return {
                 symbolName: 'point.Image',
                 size: this.size,
