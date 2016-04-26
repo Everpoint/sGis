@@ -163,7 +163,9 @@ sGis.module('symbol.point', [
                 size: this.size,
                 source: this.source,
                 anchorPoint: this.anchorPoint,
-                renderToCanvas: this.renderToCanvas
+                renderToCanvas: this.renderToCanvas,
+                imageWidth: this.size,
+                imageHeight: this.size / this._image.width * this._image.height
             }
         }
     });
