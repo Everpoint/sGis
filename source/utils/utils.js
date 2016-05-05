@@ -66,7 +66,7 @@ sGis.module('utils', [
         extend: function(target, source) {
             var keys = Object.keys(source);
             keys.forEach(function(key) {
-                if (target[key] === undefined) target[key] = source[key];
+                target[key] = source[key];
             });
         },
 

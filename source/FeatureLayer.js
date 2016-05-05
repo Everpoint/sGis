@@ -7,7 +7,7 @@ sGis.module('FeatureLayer', [
     'use strict';
 
     var defaults = {
-        _delayedUpdate: true
+        delayedUpdate: true
     };
 
     class FeatureLayer extends sGis.Layer {

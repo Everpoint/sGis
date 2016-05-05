@@ -146,7 +146,10 @@ sGis.module('TileLayer', [
         _cutCache() {
             var keys = Object.keys(this._tiles);
             if (keys.length > this._cacheSize) {
-                this._tiles = this._tiles.slice(keys.length - this._cacheSize);
+                var forDeletion = keys.slice(0, keys.length - this._cacheSize);
+                forDeletion.forEach((key) => {
+                    delete this._tiles[key];
+                });
             }
         }
 

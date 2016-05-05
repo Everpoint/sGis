@@ -7,7 +7,7 @@ sGis.module('DynamicLayer', [
 
     var defaults = {
         _layers: null,
-        _delayedUpdate: true,
+        delayedUpdate: true,
         crs: null,
         _transitionTime: sGis.browser.indexOf('Chrome') === 0 ? 0 : 200
     };
