@@ -139,14 +139,14 @@ sGis.module('CRS', [
          * @deprecated
          */
         CRS.webMercator.from = (x,y) => {
-            [lat, lon] = CRS.webMercator.projectionTo(CRS.geo)([x,y]);
+            var [lat, lon] = CRS.webMercator.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
         CRS.webMercator.to = (lon,lat) => {
-            [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
+            var [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
             return {x: x, y: y};
         }
     }
@@ -191,14 +191,14 @@ sGis.module('CRS', [
          * @deprecated
          */
         CRS.ellipticalMercator.from = (x,y) => {
-            [lat, lon] = CRS.ellipticalMercator.projectionTo(CRS.geo)([x,y]);
+            var [lat, lon] = CRS.ellipticalMercator.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
         CRS.ellipticalMercator.to = (lat,lon) => {
-            [x, y] = CRS.geo.projectionTo(CRS.ellipticalMercator)([lat,lon]);
+            var [x, y] = CRS.geo.projectionTo(CRS.ellipticalMercator)([lat,lon]);
             return {x: x, y: y};
         }
     }
@@ -264,14 +264,14 @@ sGis.module('CRS', [
          * @deprecated
          */
         CRS.AlbersEqualArea.prototype.from = function(x, y) {
-            [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
+            var [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
         CRS.AlbersEqualArea.prototype.to = function(lat, lon)  {
-            [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
+            var [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };
     }
