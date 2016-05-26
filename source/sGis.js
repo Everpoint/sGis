@@ -79,8 +79,6 @@
 
     window.sGis = sGis;
 
-    window.toload = loadingDefs;
-
     function setModuleReference(module, name) {
         var ns = name.split('.');
         var curr = sGis;

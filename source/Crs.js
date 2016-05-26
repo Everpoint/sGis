@@ -45,6 +45,15 @@ sGis.module('Crs', [
         }
 
         /**
+         * Returns true if the current coordinate system can be projected to the given crs
+         * @param {sGis.CRS} crs
+         * @returns {boolean}
+         */
+        canProjectTo(crs) {
+            return this.projectionTo(crs) !== null;
+        }
+
+        /**
          * Adds the projection function to the coordinate system
          * @param {sGis.Crs} crs
          * @param {Function} func - projection function. Takes [x,y] in current coordinate system and return [x,y] in the target "crs" coordinate system.
