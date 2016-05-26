@@ -35,9 +35,17 @@ sGis.module('Crs', [
         }
 
         /**
+         * Projection function
+         * @name sGis.Crs.projection
+         * @function
+         * @param {Number[]} - [x,y] in source crs
+         * @returns {Number[]} - [x,y] in target crs
+         */
+
+        /**
          * Returns projection function from the current coordinate system to specified. Returned function takes one [x,y] parameter and returns projected [x,y] (corresponding to crs parameter)
          * @param {sGis.Crs} crs
-         * @returns {Function|null}
+         * @returns {sGis.Crs.projection|null}
          */
         projectionTo(crs) {
             if (this._projections.get(crs)) return this._projections.get(crs);
@@ -56,7 +64,7 @@ sGis.module('Crs', [
         /**
          * Adds the projection function to the coordinate system
          * @param {sGis.Crs} crs
-         * @param {Function} func - projection function. Takes [x,y] in current coordinate system and return [x,y] in the target "crs" coordinate system.
+         * @param {sGis.Crs.projection} func
          */
         setProjectionTo(crs, func) {
             this._projections.set(crs, func);
