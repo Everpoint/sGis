@@ -28,6 +28,7 @@ sGis.module('Point', [
     };
 
     /**
+     * Simple geographical point
      * @class
      * @alias sGis.Point
      */

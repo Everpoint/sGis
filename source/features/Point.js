@@ -8,6 +8,13 @@ sGis.module('feature.Point', [
 ], function(utils, Feature, Crs, Point, Bbox, pointSymbols) {
     'use strict';
 
+    /**
+     * @class
+     * @alias sGis.feature.Point
+     * @param point
+     * @param options
+     * @constructor
+     */
     var PointF = function (point, options) {
         this.__initialize(options);
         if (!point) sGis.utils.error('The point position is not specified');
