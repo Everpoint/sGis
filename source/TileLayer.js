@@ -167,6 +167,7 @@ sGis.module('TileLayer', [
 
         /**
          * Opacity of the layer
+         * @fires "propertyChange"
          */
         get opacity() { return this._opacity; }
         set opacity(opacity) {

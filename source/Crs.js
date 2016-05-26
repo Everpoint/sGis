@@ -93,6 +93,14 @@ sGis.module('Crs', [
         }
 
         /**
+         * String description of the crs.
+         * @type string
+         */
+        get stringDescription() {
+            return JSON.stringify(this.description);
+        }
+
+        /**
          * @deprecated
          */
         getWkidString() {
