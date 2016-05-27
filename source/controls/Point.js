@@ -6,6 +6,13 @@ sGis.module('controls.Point', [
 ], function(utils, Control, PointF, FeatureLayer) {
     'use strict';
 
+    /**
+     * @class
+     * @alias sGis.controls.Point
+     * @param map
+     * @param options
+     * @constructor
+     */
     var Point = function(map, options) {
         if (!(map instanceof sGis.Map)) sGis.utils.error('Expected sGis.Map child, but got ' + map + ' instead');
         this._map = map;
