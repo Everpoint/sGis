@@ -3,6 +3,8 @@ sGis.module('Crs', [
 ], function() {
     'use strict';
 
+    var identityProjection = ([x,y]) => [x,y];
+
     /**
      * @class
      * @alias sGis.Crs
@@ -64,6 +66,7 @@ sGis.module('Crs', [
 
         _discoverProjectionTo(crs) {
             if (this._discoveryMode) return null;
+            if (this.equals(crs)) return identityProjection;
 
             this._discoveryMode = true;
             for (let [ownCrs, func] of this._projections) {
