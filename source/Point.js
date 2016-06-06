@@ -85,6 +85,11 @@ sGis.module('Point', [
         get crs() {
             return this._crs;
         }
+
+        /** @deprecated */
+        getCoordinates() {
+            return this.coordinates;
+        }
     }
 
     utils.extend(Point.prototype, defaults);
