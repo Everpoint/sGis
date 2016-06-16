@@ -45,7 +45,7 @@ sGis.module('geotools', ['math'], function(math) {
 
 
         if (crs.from) {
-            var projected = tempFeature.projectTo(sGis.CRS.cylindicalEqualArea).coordinates;
+            var projected = tempFeature.projectTo(sGis.CRS.cylindricalEqualArea).coordinates;
         } else {
             projected = tempFeature.coordinates;
         }

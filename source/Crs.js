@@ -121,6 +121,9 @@ sGis.module('CRS', [
         wgs84: new Crs({wkid:4326})
     };
 
+    /**
+     * @alias sGis.CRS.geo
+     */
     CRS.geo = new Crs('Native geographical coordinate system. It is same as wgs84, but x is longitude, rather then latitude.');
     CRS.geo.setProjectionTo(CRS.wgs84, ([x,y]) => [y,x]);
 
@@ -137,6 +140,10 @@ sGis.module('CRS', [
 
     {
         let a = 6378137;
+
+        /**
+         * @alias sGis.CRS.webMercator
+         */
         CRS.webMercator = new Crs({wkid: 102113});
         CRS.webMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
             var rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-y / a));
@@ -178,6 +185,9 @@ sGis.module('CRS', [
         let eh = e/2;
         let pih = Math.PI/2;
 
+        /**
+         * @alias sGis.CRS.ellipticalMercator
+         */
         CRS.ellipticalMercator = new Crs({wkid: 54004});
         CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
             var ts = Math.exp(-y/a);
@@ -233,6 +243,7 @@ sGis.module('CRS', [
          * Class constructor of Alber's equal area projections.
          * @class
          * @augments Crs
+         * @alias sGis.CRS.AlbersEqualArea
          */
         CRS.AlbersEqualArea = class extends Crs {
             /**
@@ -296,7 +307,10 @@ sGis.module('CRS', [
         };
     }
 
-    CRS.cylindicalEqualArea = new CRS.AlbersEqualArea(0, 180, 60, 50);
+    /**
+     * @alias sGis.CRS.cylindricalEqualArea
+     */
+    CRS.cylindricalEqualArea = new CRS.AlbersEqualArea(0, 180, 60, 50);
 
     return CRS;
 
