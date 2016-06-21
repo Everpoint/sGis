@@ -1,15 +1,15 @@
-sGis.module('renderer.domRenderer.LayerRenderer', [
+sGis.module('painter.domPainter.LayerRenderer', [
     'Bbox',
-    'renderer.domRenderer.Canvas',
-    'renderer.domRenderer.SvgRender'
+    'painter.domPainter.Canvas',
+    'painter.domPainter.SvgRender'
 ], (/** sGis.Bbox */ Bbox,
-    /** sGis.renderer.domRenderer.Canvas */ Canvas,
-    /** sGis.renderer.domRenderer.SvgRender */ SvgRender) => {
+    /** sGis.painter.domPainter.Canvas */ Canvas,
+    /** sGis.painter.domPainter.SvgRender */ SvgRender) => {
 
     'use strict';
     
     /**
-     * @alias sGis.renderer.domRenderer.LayerRenderer
+     * @alias sGis.painter.domPainter.LayerRenderer
      */
     class LayerRenderer {
         /**

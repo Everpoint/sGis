@@ -1,4 +1,4 @@
-sGis.module('renderer.domRenderer.Canvas', [
+sGis.module('painter.domPainter.Canvas', [
     'render.Arc',
     'render.Point',
     'render.Polygon',
@@ -9,7 +9,7 @@ sGis.module('renderer.domRenderer.Canvas', [
     'use strict';
 
     /**
-     * @alias sGis.renderer.domRenderer.Canvas
+     * @alias sGis.painter.domPainter.Canvas
      */
     class Canvas {
         constructor() {

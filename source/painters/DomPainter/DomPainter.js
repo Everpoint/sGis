@@ -1,11 +1,11 @@
-sGis.module('renderer.DomRenderer', [
-    'renderer.domRenderer.LayerRenderer',
-    'renderer.domRenderer.Container',
+sGis.module('painter.DomPainter', [
+    'painter.domPainter.LayerRenderer',
+    'painter.domPainter.Container',
     'Point',
     'Bbox',
     'utils'
-], (/** sGis.renderer.domRenderer.LayerRenderer @kind class */ LayerRenderer,
-    /** sGis.renderer.domRenderer.Container */ Container,
+], (/** sGis.painter.domPainter.LayerRenderer @kind class */ LayerRenderer,
+    /** sGis.painter.domPainter.Container */ Container,
     /** sGis.Point */ Point,
     /** sGis.Bbox */ Bbox,
     /** sGis.utils */ utils) => {
@@ -13,7 +13,7 @@ sGis.module('renderer.DomRenderer', [
     'use strict';
     
     /**
-     * @namespace sGis.renderer.domRenderer
+     * @namespace sGis.painter.domPainter
      */
 
     var innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';

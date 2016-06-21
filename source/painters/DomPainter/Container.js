@@ -1,4 +1,4 @@
-sGis.module('renderer.domRenderer.Container', [
+sGis.module('painter.domPainter.Container', [
     
 ], () => {
 

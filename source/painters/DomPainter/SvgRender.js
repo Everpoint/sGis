@@ -1,4 +1,4 @@
-sGis.module('renderer.domRenderer.SvgRender', [
+sGis.module('painter.domPainter.SvgRender', [
     
 ], () => {
     
