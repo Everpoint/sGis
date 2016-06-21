@@ -30,17 +30,17 @@ sGis.module('symbol.editor', [
             var baseRender = this.baseSymbol.renderFunction(feature, resolution, crs);
             var halo;
             for (var i = 0; i < baseRender.length; i++) {
-                if (baseRender[i] instanceof sGis.geom.Arc) {
-                    halo = new sGis.geom.Arc(baseRender[i].center, {fillColor: this.color, radius: parseFloat(baseRender[i].radius) + this.haloSize, strokeColor: 'transparent'});
+                if (baseRender[i] instanceof sGis.render.Arc) {
+                    halo = new sGis.render.Arc(baseRender[i].center, {fillColor: this.color, radius: parseFloat(baseRender[i].radius) + this.haloSize, strokeColor: 'transparent'});
                     break;
-                } else if (baseRender[i] instanceof sGis.geom.Polygon) {
-                    halo = new sGis.geom.Polygon(baseRender[i].coordinates, {color: this.color, fillColor: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
+                } else if (baseRender[i] instanceof sGis.render.Polygon) {
+                    halo = new sGis.render.Polygon(baseRender[i].coordinates, {color: this.color, fillColor: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
                     break;
-                } else if (baseRender[i] instanceof sGis.geom.Polyline) {
-                    halo = new sGis.geom.Polyline(baseRender[i].coordinates, {color: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
+                } else if (baseRender[i] instanceof sGis.render.Polyline) {
+                    halo = new sGis.render.Polyline(baseRender[i].coordinates, {color: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
                     break;
                 } else if (this.baseSymbol instanceof sGis.symbol.point.Image) {
-                    halo = new sGis.geom.Arc([baseRender[i].position[0] + baseRender[i].node.width / 2, baseRender[i].position[1] + baseRender[i].node.height / 2], {fillColor: this.color, radius: this.baseSymbol.size / 2 + this.haloSize, strokeColor: 'transparent'});
+                    halo = new sGis.render.Arc([baseRender[i].position[0] + baseRender[i].node.width / 2, baseRender[i].position[1] + baseRender[i].node.height / 2], {fillColor: this.color, radius: this.baseSymbol.size / 2 + this.haloSize, strokeColor: 'transparent'});
                     break;
                 }
             }

@@ -37,7 +37,7 @@ sGis.module('symbol.polygon', [
 
         renderFunction: function(feature, resolution, crs) {
             var coordinates = getPolylineRenderedCoordinates(feature, resolution, crs);
-            return [new sGis.geom.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillColor: this.fillColor})];
+            return [new sGis.render.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillColor: this.fillColor})];
         },
 
         clone: function() {
@@ -99,7 +99,7 @@ sGis.module('symbol.polygon', [
             if (!this._image) this.fillBrush = this.fillBrush;
             var coordinates = getPolylineRenderedCoordinates(feature, resolution, crs);
 
-            return [new sGis.geom.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillStyle: 'image', fillImage: this._image})];
+            return [new sGis.render.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillStyle: 'image', fillImage: this._image})];
         },
 
         clone: function() {
@@ -176,7 +176,7 @@ sGis.module('symbol.polygon', [
             if (!this._image) this.fillImage = this.fillImage;
             var coordinates = getPolylineRenderedCoordinates(feature, resolution, crs);
 
-            return [new sGis.geom.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillStyle: 'image', fillImage: this._image})];
+            return [new sGis.render.Polygon(coordinates, {color: this.strokeColor, width: this.strokeWidth, fillStyle: 'image', fillImage: this._image})];
         },
 
         clone: function() {

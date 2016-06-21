@@ -28,7 +28,7 @@ sGis.module('symbol.maptip', [
             if (!feature._cache) {
                 var baloonCoordinates = getBaloonCoordinates(feature, position);
 
-                feature._cache = [new sGis.geom.Polygon(baloonCoordinates, {fillColor: 'white'})];
+                feature._cache = [new sGis.render.Polygon(baloonCoordinates, {fillColor: 'white'})];
 
                 var div = document.createElement('div'),
                     divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];

@@ -18,7 +18,7 @@ sGis.module('symbol.polyline', [
         renderFunction: function(feature, resolution, crs) {
             var coordinates = getPolylineRenderedCoordinates(feature, resolution, crs);
 
-            return [new sGis.geom.Polyline(coordinates, {color: this.strokeColor, width: this.strokeWidth})];
+            return [new sGis.render.Polyline(coordinates, {color: this.strokeColor, width: this.strokeWidth})];
         },
 
         clone: function() {

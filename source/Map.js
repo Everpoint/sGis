@@ -32,7 +32,7 @@ sGis.module('Map', [
         _crs: sGis.CRS.webMercator,
         _position: new sGis.Point(55.755831, 37.617673).projectTo(sGis.CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
-        _wrapper: null,
+        // _wrapper: null,
         _tileScheme: null,
 
         _initLayerGroup: function() {
@@ -513,33 +513,33 @@ sGis.module('Map', [
          * Sets and returns the DOM wrapper of the map. Returns DOM Element.
          * Accepted values: {String}, {HTMLElement} or null. If null is assigned, the map is removed from the DOM.
          */
-        wrapper: {
-            get: function() {
-                return this._wrapper;
-            },
-
-            set: function(wrapper) {
-                if (!sGis.utils.isString(wrapper) && wrapper !== null && !(wrapper instanceof HTMLElement)) sGis.utils.error('String or null value expected but got ' + wrapper + ' instead');
-                if (this._wrapper) {
-                    this._wrapper.removeChild(this._innerWrapper);
-                }
-                if (wrapper !== null) {
-                    setDOMstructure(wrapper, this);
-                    this._autoupdateSize();
-
-                    this._painter = new sGis.Painter(this);
-                    setEventHandlers(this);
-
-                } else {
-                    this._wrapper = null;
-                    delete this._layerWrapper;
-                    delete this._innerWrapper;
-                    delete this._painter;
-                }
-
-                this.fire('wrapperSet');
-            }
-        },
+        // wrapper: {
+        //     get: function() {
+        //         return this._wrapper;
+        //     },
+        //
+        //     set: function(wrapper) {
+        //         if (!sGis.utils.isString(wrapper) && wrapper !== null && !(wrapper instanceof HTMLElement)) sGis.utils.error('String or null value expected but got ' + wrapper + ' instead');
+        //         if (this._wrapper) {
+        //             this._wrapper.removeChild(this._innerWrapper);
+        //         }
+        //         if (wrapper !== null) {
+        //             setDOMstructure(wrapper, this);
+        //             this._autoupdateSize();
+        //
+        //             this._painter = new sGis.Painter(this);
+        //             setEventHandlers(this);
+        //
+        //         } else {
+        //             this._wrapper = null;
+        //             delete this._layerWrapper;
+        //             delete this._innerWrapper;
+        //             delete this._painter;
+        //         }
+        //
+        //         this.fire('wrapperSet');
+        //     }
+        // },
 
         innerWrapper: {
             get: function() {

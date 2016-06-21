@@ -35,7 +35,7 @@ sGis.module('symbol.point', [
             var f = feature.projectTo(crs),
                 pxPosition = [f._point[0] / resolution + this.offset.x, - f._point[1] / resolution + this.offset.y];
 
-            var point = new sGis.geom.Arc(pxPosition, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2});
+            var point = new sGis.render.Arc(pxPosition, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2});
             return [point];
         },
 
@@ -243,7 +243,7 @@ sGis.module('symbol.point', [
                     [pxPosition[0] + halfSize + offset.x, pxPosition[1] - halfSize + offset.y]
                 ];
 
-            return [new sGis.geom.Polygon(coordinates, {fillColor: this.fillColor, color: this.strokeColor, width: this.strokeWidth})];
+            return [new sGis.render.Polygon(coordinates, {fillColor: this.fillColor, color: this.strokeColor, width: this.strokeWidth})];
         },
 
         clone: function() {

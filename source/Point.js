@@ -90,6 +90,15 @@ sGis.module('Point', [
         getCoordinates() {
             return this.coordinates;
         }
+
+        /**
+         * Returns true if the target point has the same position and crs as the current one
+         * @param {sGis.Point} point - target point for comparison
+         * @returns {boolean}
+         */
+        equals(point) {
+            return utils.softEquals(point.x, this.x) && utils.softEquals(point.y, this.y) && point.crs.equals(this.crs);
+        }
     }
 
     utils.extend(Point.prototype, defaults);

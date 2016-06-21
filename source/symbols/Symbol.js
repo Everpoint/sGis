@@ -160,28 +160,20 @@ sGis.module('symbol.image', [
 
         renderFunction: function(feature, resolution, crs) {
             if (!feature._cache) {
-                var image = new Image();
-                image.src = feature.src;
-                image.width = feature.width;
-                image.height = feature.height;
-
-                image.bbox = feature.bbox;
-                feature._cache = [{
-                    node: image,
-                    bbox: feature.bbox,
-                    persistent: true
-                }];
-
+                var render = new sGis.render.Image(feature.src, feature.bbox, feature.width, feature.height);
                 if (feature.transitionTime > 0) {
-                    image.style.opacity = 0;
-                    image.style.transition = 'opacity ' + feature.transitionTime / 1000 + 's linear';
-
-                    feature._cache[0].onAfterDisplay = function() {
-                        setTimeout(function() { image.style.opacity = feature.opacity; }, 0);
+                    render.opacity = 0;
+                    render.onAfterDisplayed = function(node) {
+                        setTimeout(function() {
+                            node.style.transition = 'opacity ' + feature.transitionTime / 1000 + 's linear';
+                            node.style.opacity = feature.opacity; 
+                        }, 0);
                     }
                 } else {
-                    image.style.opacity = feature.opacity;
+                    render.opacity = feature.opacity;
                 }
+                
+                feature._cache = [render];
             }
             return feature._cache;
         }
