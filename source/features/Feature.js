@@ -2,8 +2,9 @@ sGis.module('Feature', [
     'utils',
     'utils.proto',
     'Crs',
+    'CRS',
     'IEventHandler'
-], function(utils, proto, Crs, IEventHandler) {
+], function(utils, proto, Crs, CRS, IEventHandler) {
     'use strict';
 
     /**

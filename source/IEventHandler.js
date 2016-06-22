@@ -44,6 +44,7 @@ sGis.module('IEventHandler', [
          * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added.
          * @param {String} eventType - exact name of the event to be triggered.
          * @param {Object} [parameters] - parameters to be transferred to the event object.
+         * @returns {Object} - event object
          */
         fire: function(eventType, parameters) {
             if (this._prohibitedEvents && this._prohibitedEvents.indexOf(eventType) !== -1) return;
@@ -61,6 +62,8 @@ sGis.module('IEventHandler', [
             sGisEvent.isCanceled = function() { return sGisEvent._cancelPropagation === true; };
 
             this.forwardEvent(sGisEvent);
+            
+            return sGisEvent;
         },
 
         /**

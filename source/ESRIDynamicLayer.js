@@ -52,6 +52,7 @@ sGis.module('ESRIDynamicLayer', [
 
         forceUpdate() {
             this._forceUpdate = true;
+            this.fire('propertyChange', {property: 'source'});
         }
 
         get layerDefinitions() { return this._layerDefs; }

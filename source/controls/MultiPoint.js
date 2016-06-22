@@ -34,10 +34,6 @@ sGis.module('feature.MultiPoint', [
 
         deactivate: function() {
             if (this._isActive) {
-                if (this.activeFeature) {
-                    this.cancelDrawing();
-                }
-
                 if (this.activeLayer === this._tempLayer) {
                     this._map.removeLayer(this._tempLayer);
                     this._tempLayer.features = [];

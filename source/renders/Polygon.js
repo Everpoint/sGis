@@ -1,6 +1,6 @@
 sGis.module('render.Polygon', [
     'utils',
-    'geom.Polyline',
+    'render.Polyline',
     'utils.svg'
 ], function(utils, Polyline, svg) {
     'use strict';

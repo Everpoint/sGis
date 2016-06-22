@@ -1,11 +1,13 @@
 sGis.module('painter.DomPainter', [
     'painter.domPainter.LayerRenderer',
     'painter.domPainter.Container',
+    'painter.domPainter.EventDispatcher',
     'Point',
     'Bbox',
     'utils'
 ], (/** sGis.painter.domPainter.LayerRenderer @kind class */ LayerRenderer,
     /** sGis.painter.domPainter.Container */ Container,
+    /** sGis.painter.domPainter.EventDispatcher */ EventDispatcher,
     /** sGis.Point */ Point,
     /** sGis.Bbox */ Bbox,
     /** sGis.utils */ utils) => {
@@ -17,7 +19,7 @@ sGis.module('painter.DomPainter', [
      */
 
     var innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
-    var layerWrapperStyle = 'position: absolute; width: 100%; height: 100%';
+    var layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
 
     class DomRenderer {
         constructor(map, options) {
@@ -32,7 +34,7 @@ sGis.module('painter.DomPainter', [
 
             this._needUpdate = true;
             this._updateAllowed = true;
-
+            
             this._updateLayerList();
             this._setEventListeners();
 
@@ -43,7 +45,10 @@ sGis.module('painter.DomPainter', [
         get wrapper() { return this._wrapper; }
         set wrapper(node) {
             if (this._wrapper) this._clearDOM();
-            this._initDOM(node);
+            if (node) {
+                this._initDOM(node);
+                this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
+            }
         }
         
         _updateLayerList() {
@@ -64,6 +69,7 @@ sGis.module('painter.DomPainter', [
 
         _addLayer(layer, index) {
             this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));
+            this._redrawNeeded = true;
         }
 
         _removeLayer(layer) {
@@ -73,6 +79,17 @@ sGis.module('painter.DomPainter', [
         
         _setEventListeners() {
             this._map.on('layerAdd layerRemove layerOrderChange', this._updateLayerList.bind(this));
+            this._map.on('drag', this._onMapDrag.bind(this));
+            this._map.on('animationStart', this._forbidUpdate.bind(this));
+            this._map.on('animationEnd', this._allowUpdate.bind(this));
+        }
+
+        _forbidUpdate() {
+            this._updateAllowed = false;
+        }
+
+        _allowUpdate() {
+            this._updateAllowed = true;
         }
         
         _repaint() {
@@ -86,10 +103,16 @@ sGis.module('painter.DomPainter', [
 
                 this._updateBbox();
 
+                if (this._updateAllowed) {
+                    this._map.layers.reverse().forEach(layer => {
+                        let renderer = this._layerRenderers.get(layer);
+                        if (this._redrawNeeded || renderer.updateNeeded) {
+                            renderer.update();
+                        }
+                    });
 
-                this._map.layers.reverse().forEach(layer => {
-                    this._layerRenderers.get(layer).update();
-                });
+                    this._redrawNeeded = false;
+                }
             }
 
             utils.requestAnimationFrame(this._repaintBound);
@@ -132,6 +155,8 @@ sGis.module('painter.DomPainter', [
                 });
                 
                 if (this._containers.length > 0 && this._containers[this._containers.length - 1].scale !== 1) this._needUpdate = true;
+
+                this._redrawNeeded = true;
             }
         }
         
@@ -142,6 +167,8 @@ sGis.module('painter.DomPainter', [
         get map() { return this._map; }
         
         get currContainer() { return this._containers[this._containers.length - 1]}
+        get width() { return this._width; }
+        get height() { return this._height; }
 
         _initDOM(node) {
             var wrapper = node instanceof HTMLElement ? node : document.getElementById(node);
@@ -163,6 +190,9 @@ sGis.module('painter.DomPainter', [
             this._innerWrapper = null;
             this._layerWrapper = null;
             this._wrapper = null;
+            
+            this._eventDispatcher.remove();
+            this._eventDispatcher = null;
         }
 
         resolveLayerOverlay() {
@@ -179,6 +209,20 @@ sGis.module('painter.DomPainter', [
                     prevContainerIndex = containerIndex;
                 }
             });
+        }
+        
+        getPointFromPxPosition(x, y) {
+            var resolution = this._map.resolution;
+            var bbox = this.bbox;
+            return new sGis.Point(
+                bbox.xMin + x * resolution,
+                bbox.yMax - y * resolution,
+                bbox.crs
+            );
+        }
+
+        _onMapDrag(sGisEvent) {
+            this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
         }
     }
 

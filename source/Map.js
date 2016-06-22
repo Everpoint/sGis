@@ -217,7 +217,6 @@ sGis.module('Map', [
             var dy = position.y - originalPosition.y;
             var dr = resolution - originalResolution;
             var startTime = Date.now();
-            this._painter.prohibitUpdate();
             this._animationStopped = false;
             this._animationTarget = [position, resolution];
 
@@ -248,7 +247,6 @@ sGis.module('Map', [
         stopAnimation: function() {
             this._animationStopped = true;
             this._animationTarget = null;
-            this._painter.allowUpdate();
             clearInterval(this._animationTimer);
         },
 
@@ -642,11 +640,11 @@ sGis.module('Map', [
             }
         },
 
-        painter: {
-            get: function() {
-                return this._painter;
-            }
-        },
+        // painter: {
+        //     get: function() {
+        //         return this._painter;
+        //     }
+        // },
 
         isDisplayed: {
             get: function() {

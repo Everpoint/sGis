@@ -95,7 +95,7 @@ sGis.module('painter.domPainter.Canvas', [
                 this._ctx.translate(-patternOffsetX, -patternOffsetY);
             }
 
-            ctx.stroke();
+            this._ctx.stroke();
         }
         
         get isEmpty() { return this._isEmpty; }
