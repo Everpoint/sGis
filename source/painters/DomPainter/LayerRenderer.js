@@ -35,12 +35,12 @@ sGis.module('painter.domPainter.LayerRenderer', [
             
             this._bbox = new Bbox([Infinity, Infinity], [Infinity, Infinity]);
             this._featureRenders = new Map();
-            this._outdatedFeatureRenders = new Map();
-            this._renders = new Map();
-            this._containerIndex = new Map();
-            this._loading = [];
+            this._loadingRenders = new Map();
+            this._renderNodeMap = new Map();
+            this._renderContainerMap = new Map();
 
-            this._forDeletion = [];
+            this._outdatedFeatureRenders = new Map();
+            this._rendersForRemoval = new Map();
 
             this._setListeners();
             this.setIndex(index);
@@ -66,7 +66,14 @@ sGis.module('painter.domPainter.LayerRenderer', [
             let zIndex = index*2;
             for (let renders of this._featureRenders.values()) {
                 renders.forEach(render => {
-                    let node = this._renders.get(render);
+                    let node = this._renderNodeMap.get(render);
+                    if (node) node.style.zIndex = zIndex;
+                });
+            }
+
+            for (let renders of this._outdatedFeatureRenders.values()) {
+                renders.forEach(render => {
+                    let node = this._renderNodeMap.get(render);
                     if (node) node.style.zIndex = zIndex;
                 });
             }
@@ -76,14 +83,21 @@ sGis.module('painter.domPainter.LayerRenderer', [
         }
         
         clear() {
-            for (let feature of this._featureRenders.keys()) {
-                this._remove(feature);
+            for (let render of this._loadingRenders.keys()) {
+                this._removeRender(render);
             }
 
-            this._featureRenders.clear();
-            this._renders.clear();
-            this._containerIndex.clear();
-            this._outdatedFeatureRenders.clear();
+            for (let feature of this._outdatedFeatureRenders.keys()) {
+                this._clean(feature);
+            }
+
+            for (let feature of this._featureRenders.keys()) {
+                this._removeRenders(feature);
+            }
+
+            for (let render of this._renderNodeMap.keys()) {
+                this._removeRender(render);
+            }
         }
 
         update() {
@@ -107,7 +121,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
             let newFeatures = this._layer.getFeatures(bbox, this._master.map.resolution);
             
             for (let feature of this._featureRenders.keys()) {
-                if (newFeatures.indexOf(feature) < 0 && this._forDeletion.indexOf(feature) < 0) this._forDeletion.push(feature);
+                if (newFeatures.indexOf(feature) < 0) this._markForRemoval(feature);
             }
 
             this._bbox = bbox;
@@ -132,24 +146,18 @@ sGis.module('painter.domPainter.LayerRenderer', [
             if (!renders) return false;
 
             for (let i = 0; i < renders.length; i++) {
-                if (this._loading.indexOf(renders[i]) > 0) return true;
+                if (this._loadingRenders.has(renders[i])) return true;
             }
+
+            return false;
         }
 
         _draw(feature) {
-            var removeIndex = this._forDeletion.indexOf(feature);
-            if (removeIndex > 0) {
-                this._forDeletion.splice(removeIndex, 1);
-            }
-
             if (this._featureIsLoading(feature)) return;
 
             let renders = feature.render(this._master.map.resolution, this._master.map.crs);
             let prevRenders = this._featureRenders.get(feature);
             if (prevRenders === renders) return;
-
-            this._cleanupFeature(feature);
-            this._outdatedFeatureRenders.set(feature, prevRenders);
 
             let isMixedRender = false;
             for (let i = 1; i < renders.length; i++) {
@@ -159,13 +167,13 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 }
             }
 
+            this._markAsOutdated(feature);
             this._featureRenders.set(feature, renders);
 
             for (let i = 0; i < renders.length; i++) {
                 if (renders[i].isVector) {
                     if (this._useCanvas && !isMixedRender) {
                         this._canvas.draw(renders[i]);
-                        this._cleanupFeature(feature);
                     } else {
                         this._drawNodeRender(new SvgRender(renders[i]), feature);
                     }
@@ -175,17 +183,11 @@ sGis.module('painter.domPainter.LayerRenderer', [
             }
         }
         
-        _drawNodeRender(render, baseFeature) {
-            this._loading.push(render);
+        _drawNodeRender(render, feature) {
+            this._loadingRenders.set(render, 1);
             render.getNode((error, node) => {
-                let loadingIndex = this._loading.indexOf(render);
-                this._cleanupFeature(baseFeature);
-
-                this._loading.splice(loadingIndex, 1);
-
-                if (error || !this._renders.has(render)) {
-                    return;
-                }
+                this._loadingRenders.delete(render);
+                if (error || !this._featureRenders.has(feature) || this._featureRenders.get(feature).indexOf(render) < 0) return;
 
                 node.style.zIndex = this._zIndex;
 
@@ -195,29 +197,17 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 } else if (render.position) {
                     container.addFixedSizeNode(node, render.position);
                 }
-                this._renders.set(render, node);
-                this._containerIndex.set(render, container);
+
+                this._renderNodeMap.set(render, node);
+                this._renderContainerMap.set(render, container);
                 this.currentContainer = container;
 
                 if (render.onAfterDisplayed) render.onAfterDisplayed(node);
 
-                this._clean();
-                this._draw(baseFeature);
+                this._clean(feature);
             });
-
-            this._renders.set(render, null);
         }
 
-        _cleanupFeature(feature) {
-            var renders = this._outdatedFeatureRenders.get(feature);
-            if (renders === undefined) return;
-            renders.forEach(render => {
-                this._removeRender(render);
-            });
-
-            this._outdatedFeatureRenders.delete(feature);
-        }
-        
         get currentContainer() { return this._currentContainer; }
         set currentContainer(container) {
             if (this._currentContainer !== container) {
@@ -226,65 +216,116 @@ sGis.module('painter.domPainter.LayerRenderer', [
             }
         }
 
-        _clean() {
-            if (this._forDeletion.length === 0 || this._loading.length !== 0) return;
+        _clean(feature) {
+            var outdated = this._outdatedFeatureRenders.get(feature);
+            if (outdated) {
+                outdated.forEach(render => {
+                    this._removeRender(render);
+                });
+
+                this._outdatedFeatureRenders.delete(feature);
+            }
+
+            if (this._loadingRenders.size > 0) return;
 
             setTimeout(() => {
-                while(this._forDeletion.length > 0) {
-                    this._remove(this._forDeletion.pop());
+                for (var renders of this._rendersForRemoval.values()) {
+                    renders.forEach(render => {
+                        this._removeRender(render);
+                    });
                 }
+                this._rendersForRemoval.clear();
             }, this._layer.transitionTime || 0);
         }
 
-        _remove(feature) {
-            this._cleanupFeature(feature);
-            this._removeRenders(feature);
+        _markForRemoval(feature) {
+            var forRemoval = this._rendersForRemoval.get(feature) || [];
+
+            var renders = this._featureRenders.get(feature);
+            renders.forEach(render => {
+                forRemoval.push(render);
+            });
+
+            this._rendersForRemoval.set(feature, forRemoval);
+            this._featureRenders.delete(feature);
+        }
+
+        _markAsOutdated(feature) {
+            var renders = this._featureRenders.get(feature);
+            if (!renders) return;
+
+            var outdated = this._outdatedFeatureRenders.get(feature) || [];
+            renders.forEach(render => {
+                outdated.push(render);
+            });
+
+            this._outdatedFeatureRenders.set(feature, outdated);
             this._featureRenders.delete(feature);
         }
 
         _removeRenders(feature) {
             let renders = this._featureRenders.get(feature);
-            if (!renders) return;
 
-            renders.forEach(render => {
-                this._removeRender(render);
-            });
+            if (renders) {
+                renders.forEach(render => {
+                    this._removeRender(render);
+                });
+                this._featureRenders.delete(feature);
+            }
+
+            let outdated = this._outdatedFeatureRenders.get(feature);
+            if (outdated) {
+                outdated.forEach(render => {
+                    this._removeRender(render);
+                });
+                this._outdatedFeatureRenders.delete(feature);
+            }
         }
 
         _removeRender(render) {
-            let node = this._renders.get(render);
+            let node = this._renderNodeMap.get(render);
             if (node === undefined) return;
 
-            let container = this._containerIndex.get(render);
+            let container = this._renderContainerMap.get(render);
             if (container) {
                 if (node) container.removeNode(node);
-                this._containerIndex.delete(render);
+                this._renderContainerMap.delete(render);
             }
 
-            this._renders.delete(render);
+            this._renderNodeMap.delete(render);
         }
 
         moveToLastContainer() {
-            var lastContainer = this._master.currContainer;
+            for (let renders of this._outdatedFeatureRenders.values()) {
+                this._moveRendersToLastContainer(renders);
+            }
+
             for (let renders of this._featureRenders.values()) {
-                renders.forEach(render => {
-                    let node = this._renders.get(render);
-                    if (node) {
-                        let container = this._containerIndex.get(render);
-                        if (container !== lastContainer) {
-                            if (render.bbox) {
-                                lastContainer.addNode(node, render.width, render.height, render.bbox);
-                            } else if (render.position) {
-                                lastContainer.addFixedSizeNode(node, render.position);
-                            }
-                        }
-                    }
-                });
+                this._moveRendersToLastContainer(renders);
             }
             
-            if (this._canvas.node.parent) {
-                lastContainer.addNode(this._canvas.node, this._bbox);
+            if (this._canvas.node.parentNode) {
+                this._master.currContainer.addNode(this._canvas.node, this._bbox);
             }
+        }
+
+        _moveRendersToLastContainer(renders) {
+            var lastContainer = this._master.currContainer;
+            renders.forEach(render => {
+                let node = this._renderNodeMap.get(render);
+                if (node) {
+                    let container = this._renderContainerMap.get(render);
+                    if (container !== lastContainer) {
+                        if (render.bbox) {
+                            lastContainer.addNode(node, render.width, render.height, render.bbox);
+                        } else if (render.position) {
+                            lastContainer.addFixedSizeNode(node, render.position);
+                        }
+                    }
+
+                    this._renderContainerMap.set(render, lastContainer);
+                }
+            });
         }
     }
 

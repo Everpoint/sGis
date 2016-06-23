@@ -376,15 +376,15 @@ sGis.module('Map', [
             },
 
             dragStart: function(sGisEvent) {
-                this._draggingObject = sGisEvent.draggingObject || this;
+                // this._draggingObject = sGisEvent.draggingObject || this;
             },
 
             drag: function(sGisEvent) {
-                this.move(sGisEvent.offset.x, sGisEvent.offset.y);
+                // this.move(sGisEvent.offset.x, sGisEvent.offset.y);
             },
 
             dragEnd: function() {
-                this._draggingObject = null;
+                // this._draggingObject = null;
             },
 
             contextmenu: function(sGisEvent) {
