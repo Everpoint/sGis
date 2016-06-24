@@ -41,7 +41,7 @@ sGis.module('controls.Point', [
             var activeLayer = this.activeLayer;
 
             activeLayer.add(feature);
-            this._map.redrawLayer(activeLayer);
+            this._activeLayer.redraw();
             this.fire('drawingFinish', {geom: feature});
 
             return feature;

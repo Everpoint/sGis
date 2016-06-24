@@ -73,14 +73,14 @@ sGis.module('feature.MultiPoint', [
         _addPoint: function(point) {
             if (!this._activeFeature) return;
             this._activeFeature.addPoint(point);
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
             this.fire('pointAdd');
         },
 
         startNewFeature: function(point) {
             if (!this._isActive) return;
             this.activeFeature = new sGis.feature.MultiPoint([point], {symbol: this.symbol, crs: point.crs});
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
             this.fire('drawingBegin');
             this.fire('pointAdd');
         }

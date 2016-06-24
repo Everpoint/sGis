@@ -72,7 +72,7 @@ sGis.module('controls.Rectangle', [
             this.activeLayer.add(rect);
             this._activeFeature = rect;
 
-            this._map.redrawLayer(this.activeLayer);
+            this.activeLayer.redraw();
         },
 
         _updateRectangle: function(newPoint) {
@@ -82,7 +82,7 @@ sGis.module('controls.Rectangle', [
             coord = [coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]];
 
             this._activeFeature.coordinates = coord;
-            this._map.redrawLayer(this.activeLayer);
+            this.activeLayer.redraw();
         }
     });
 

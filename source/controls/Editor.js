@@ -149,7 +149,7 @@ sGis.module('controls.Editor', [
                 this._setTempSymbol();
                 this._setSnappingLayer();
                 this._saveOriginalState();
-                this._map.redrawLayer(this._activeLayer);
+                this._activeLayer.redraw();
 
                 this.fire('featureSelect', {feature: feature});
             }
@@ -163,7 +163,7 @@ sGis.module('controls.Editor', [
                 this._removeSelectedListeners();
                 this._removeSnappingLayer();
                 this._selectedFeature = null;
-                if (this._map.getLayerIndex(this._activeLayer) !== -1) this._map.redrawLayer(this._activeLayer);
+                if (this._map.getLayerIndex(this._activeLayer) !== -1) this._activeLayer.redraw();
 
                 this.fire('featureDeselect', {feature: feature});
             }
@@ -288,7 +288,7 @@ sGis.module('controls.Editor', [
             if (height < tolerance && yScale < 1) yScale = 1;
 
             this._selectedFeature.scale([xScale, yScale], basePoint);
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
             this._updateTransformControls();
         },
 
@@ -301,7 +301,7 @@ sGis.module('controls.Editor', [
             var angle = alpha2 - alpha1;
 
             this._selectedFeature.rotate(angle, this._rotationBase);
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
             this._updateTransformControls();
 
             this.fire('rotation');
@@ -338,7 +338,7 @@ sGis.module('controls.Editor', [
                         controls.rotationControl.hide();
                     }
                 }
-                this._map.redrawLayer(this._snappingLayer);
+                this._snappingLayer.redraw();
             } else {
                 this._hideTransformControls();
             }
@@ -419,7 +419,7 @@ sGis.module('controls.Editor', [
             } else {
                 this._snappingPoint.hide();
             }
-            this._map.redrawLayer(this._snappingLayer);
+            this._snappingLayer.redraw();
         },
 
         _polylineDblclickHandler: function(sGisEvent, feature) {
@@ -440,7 +440,7 @@ sGis.module('controls.Editor', [
                     }
                 }
 
-                this._map.redrawLayer(this._activeLayer);
+                this._activeLayer.redraw();
                 this._updateTransformControls();
                 sGisEvent.stopPropagation();
                 sGisEvent.preventDefault();
@@ -458,7 +458,7 @@ sGis.module('controls.Editor', [
                 coords.splice(adjustedEvent.index, 1);
                 feature.coordinates = coords;
                 this._saveState();
-                this._map.redrawLayer(this._activeLayer);
+                this._activeLayer.redraw();
             } else {
                 this.deleteSelected();
             }
@@ -533,7 +533,7 @@ sGis.module('controls.Editor', [
 
         _polylineMouseoutHandler: function(sGisEvent, feature) {
             this._snappingPoint.hide();
-            this._map.redrawLayer(this._snappingLayer);
+            this._snappingLayer.redraw();
         },
 
         _polylineDragHandler: function(sGisEvent, feature) {
@@ -563,7 +563,7 @@ sGis.module('controls.Editor', [
             }
 
             this._updateTransformControls();
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
         },
 
         _pointDragHandler: function(sGisEvent, feature) {
@@ -582,7 +582,7 @@ sGis.module('controls.Editor', [
             }
 
             feature.coordinates = projected.projectTo(feature.crs).coordinates;
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
 
             this.fire('featureMove', {feature: feature});
         },
@@ -604,7 +604,7 @@ sGis.module('controls.Editor', [
             }
 
             feature.coordinates = projected.projectTo(feature.crs).coordinates;
-            this._map.redrawLayer(this._activeLayer);
+            this._activeLayer.redraw();
 
             this.fire('featureMove', {feature: feature});
         },
@@ -678,9 +678,9 @@ sGis.module('controls.Editor', [
                 if (coordinates === 'del') {
                     if (this._activeLayer.has(feature)) {
                         this._activeLayer.remove(feature);
-                        this._map.redrawLayer(this._activeLayer);
+                        this._activeLayer.redraw();
                         this._hideTransformControls();
-                        this._map.redrawLayer(this.snappingLayer);
+                        this._snappingLayer.redraw();
                     }
                 } else {
                     if (!this._activeLayer.has(feature)) {
@@ -692,7 +692,7 @@ sGis.module('controls.Editor', [
                     if (this._selectedFeature !== feature) {
                         this.select(feature);
                     } else {
-                        this._map.redrawLayer(this._activeLayer);
+                        this._activeLayer.redraw();
                     }
                     this._updateTransformControls();
                 }

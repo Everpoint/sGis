@@ -22,12 +22,17 @@ sGis.module('painter.domPainter.Canvas', [
         }
         
         reset(bbox, resolution, width, height) {
+            this._ctx.clearRect(0, 0, this._node.width, this._node.height);
+
             this._node.width = width;
             this._node.height = height;
             this._isEmpty = true;
             
             this._ctx.translate(-bbox.xMin / resolution, bbox.yMax / resolution);
         }
+        
+        get width() { return this._node.width; }
+        get height() { return this._node.height; }
         
         draw(render) {
             if (render instanceof Arc) {

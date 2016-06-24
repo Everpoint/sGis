@@ -23,6 +23,8 @@ sGis.module('render.Image', [
             this._width = width;
             this._height = height;
             
+            this._resolution = this._bbox / width;
+            
             this.onAfterDisplayed = onAfterDisplayed;
         }
 
@@ -43,6 +45,10 @@ sGis.module('render.Image', [
         get width() { return this._width; }
         get height() { return this._height; }
         
+        contains(position) {
+            var point = new sGis.Point(position.x * resolution, position.y * resolution, this._bbox.crs);
+            return this._bbox.contains(point);
+        }
     }
     
     utils.extend(ImageRender.prototype, defaults);

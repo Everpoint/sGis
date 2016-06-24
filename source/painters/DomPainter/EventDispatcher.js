@@ -23,22 +23,42 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
         
         _dispatchEvent(name, data) {
+            var sGisEvent;
             
-            
-            return this._master.map.fire(name, data);
+            if (data.position) {
+                var layerRenderers = this._master.layerRenderers;
+                for (var i = layerRenderers.length - 1; i >= 0; i--) {
+                    var details = {};
+                    var targetObject = layerRenderers[i].getEventCatcher(name, data.position, details);
+                    if (targetObject) {
+                        data.intersectionType = details.intersectionType;
+                        sGisEvent = targetObject.fire(name, data);
+                        if (sGisEvent.isCanceled()) return sGisEvent;
+                        break;
+                    }
+                }
+            }
+                
+            if (sGisEvent) {
+                this._master.map.forwardEvent(sGisEvent);
+                return sGisEvent;
+            } else {
+                return this._master.map.fire(name, data);
+            }
         }
 
         _setListeners(baseNode) {
             Event.add(baseNode, 'mousedown', this._onmousedown.bind(this));
             Event.add(baseNode, 'wheel', this._onwheel.bind(this));
             Event.add(baseNode, 'click', this._onclick.bind(this));
+            Event.add(baseNode, 'dblclick', this._ondblclick.bind(this));
+            Event.add(baseNode, 'mousemove', this._onmousemove.bind(this));
+            Event.add(baseNode, 'mouseout', this._onmouseout.bind(this));
+            Event.add(baseNode, 'contextmenu', this._oncontextmenu.bind(this));
+
             // Event.add(baseNode, 'touchstart', ontouchstart);
             // Event.add(baseNode, 'touchmove', ontouchmove);
             // Event.add(baseNode, 'touchend', ontouchend);
-            // Event.add(baseNode, 'dblclick', ondblclick);
-            // Event.add(baseNode, 'mousemove', onmousemove);
-            // Event.add(baseNode, 'mouseout', onmouseout);
-            // Event.add(baseNode, 'contextmenu', oncontextmenu);
         }
 
         _onmousedown(event) {
@@ -46,7 +66,6 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 this._clickCatcher = true;
                 if (event.which === 1) {
                     this._dragPosition = Event.getMouseOffset(event.currentTarget, event);
-                    this._activeObject = event.currentTarget.map;
 
                     Event.add(document, 'mousemove', this._onDocumentMousemove);
                     Event.add(document, 'mouseup', this._onDocumentMouseup);
@@ -79,7 +98,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 }
 
                 this._dragPosition = mousePosition;
-                this._dispatchEvent('drag', {map: map, mouseOffset: mousePosition, position: position, point: point, ctrlKey: event.ctrlKey, offset: {xPx: dxPx, yPx: dyPx, x: this._lastDrag.x, y: this._lastDrag.y}, browserEvent: event});
+                this._draggingObject.fire('drag', {map: map, mouseOffset: mousePosition, position: position, point: point, ctrlKey: event.ctrlKey, offset: {xPx: dxPx, yPx: dyPx, x: this._lastDrag.x, y: this._lastDrag.y}, browserEvent: event});
             }
         }
 
@@ -116,33 +135,40 @@ sGis.module('painter.domPainter.EventDispatcher', [
             return false;
         }
 
+        _getMouseEventDescription(event) {
+            var map = this._master.map;
+            var mouseOffset = Event.getMouseOffset(event.currentTarget, event);
+            var point = this._master.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
+            var position = {x: point.x / map.resolution, y: - point.y / map.resolution};
+            return {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event};
+        }
+
         _onclick(event) {
             if (this._clickCatcher && !isFormElement(event.target)) {
-                var map = this._master.map;
-                var mouseOffset = Event.getMouseOffset(event.currentTarget, event);
-                var point = this._master.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
-                var position = {x: point.x / map.resolution, y: - point.y / map.resolution};
-                this._dispatchEvent('click', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
+                this._dispatchEvent('click', this._getMouseEventDescription(event));
             }
+        }
+
+        _ondblclick(event) {
+            if (!isFormElement(event.target)) {
+                this._clickCatcher = null;
+                this._dispatchEvent('dblclick', this._getMouseEventDescription(event));
+            }
+        }
+
+        _onmousemove(event) {
+            this._dispatchEvent('mousemove', this._getMouseEventDescription(event));
+        }
+
+        _onmouseout(event) {
+            this._dispatchEvent('mouseout', this._getMouseEventDescription(event));
+        }
+
+        _oncontextmenu(event) {
+            this._dispatchEvent('contextmenu', this._getMouseEventDescription(event));
         }
     }
 
-    function onmouseout(event) {
-        var map = event.currentTarget.map,
-            offset = sGis.Event.getMouseOffset(event.currentTarget, event),
-            point = map.getPointFromPxPosition(offset.x, offset.y);
-
-        event.currentTarget.map.fire('mouseout', {position: offset, point: point});
-    }
-
-    function onmousemove(event) {
-        var mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event);
-        var map = event.currentTarget.map;
-        var point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
-        var resolution = map.resolution;
-        var position = {x: point.x / resolution, y: -point.y / resolution};
-        event.currentTarget.map.fire('mousemove', {map: map, mouseOffset: mouseOffset, point: point, position: position, ctrlKey: event.ctrlKey});
-    }
 
     var touchHandler = {scaleChanged: false};
 
@@ -224,25 +250,6 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
     }
 
-    function oncontextmenu(event) {
-        var map = event.currentTarget.map,
-            mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
-            point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
-            position = { x: point.x / map.resolution, y: -point.y / map.resolution };
-        map.fire('contextmenu', { mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position });
-        //event.preventDefault();
-    }
-
-    function ondblclick(event) {
-        if (!isFormElement(event.target)) {
-            mouseHandler.clickCatcher = null;
-            var map = event.currentTarget.map,
-                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
-                point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
-                position = {x: point.x / map.resolution, y: - point.y / map.resolution};
-            map.fire('dblclick', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
-        }
-    }
 
     function isFormElement(e) {
         var formElements = ['BUTTON', 'INPUT', 'LABEL', 'OPTION', 'SELECT', 'TEXTAREA'];

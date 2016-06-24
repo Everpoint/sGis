@@ -50,7 +50,7 @@ sGis.module('controls.Poly', [
                         self.fire('pointAdd');
                     }
 
-                    self._map.redrawLayer(self.activeLayer);
+                    self.activeLayer.redraw();
                 }, 10);
                 sGisEvent.stopPropagation();
                 sGisEvent.preventDefault();
@@ -69,7 +69,7 @@ sGis.module('controls.Poly', [
                     self._activeFeature.setRing(ring, [point]);
                 }
 
-                self._map.redrawLayer(self.activeLayer);
+                self.activeLayer.redraw();
             };
 
             this._dblclickHandler = function(sGisEvent) {
@@ -243,7 +243,7 @@ sGis.module('controls.Poly', [
         control._map.removeListener('dblclick.sGis-polygon');
         control._activeFeature = null;
 
-        control._map.redrawLayer(control.activeLayer);
+        control.activeLayer.redraw();
         if (geom) control.fire('drawingFinish', { geom: geom, browserEvent: sGisEvent && sGisEvent.browserEvent });
     }
     

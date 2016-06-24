@@ -51,6 +51,8 @@ sGis.module('painter.DomPainter', [
             }
         }
         
+        get layerRenderers() { return Array.from(this._layerRenderers.values()); }
+        
         _updateLayerList() {
             var mapLayers = this._map.layers;
             for (let layer of this._layerRenderers.keys()) {

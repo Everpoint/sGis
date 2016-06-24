@@ -69,6 +69,16 @@ sGis.module('Bbox', [
         }
 
         /**
+         * Returns true, if the target point is inside the bbox
+         * @param {sGis.Point} point
+         * @returns {boolean}
+         */
+        contains(point) {
+            var proj = point.projectTo(this.crs);
+            return this.xMin <= proj.x && this.xMax >= proj.x && this.yMin <= proj.y && this.yMax >= proj.y;
+        }
+
+        /**
          * Coordinate system of the bbox
          * @type sGis.Crs
          */

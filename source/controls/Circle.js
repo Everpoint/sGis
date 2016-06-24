@@ -79,7 +79,7 @@ sGis.module('controls.Circle', [
             this.activeLayer.add(circle);
             this._activeFeature = circle;
 
-            this._map.redrawLayer(this.activeLayer);
+            this.activeLayer.redraw();
         },
 
         _updateRectangle: function(newPoint) {
@@ -96,7 +96,7 @@ sGis.module('controls.Circle', [
             }
 
             this._activeFeature.coordinates = coordinates;
-            this._map.redrawLayer(this.activeLayer);
+            this.activeLayer.redraw();
         }
     });
 

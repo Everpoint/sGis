@@ -12,7 +12,9 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
     var defaults = {
         /** @memberof sGis.painter.domPainter.LayerRenderer */
-        delayedUpdateTime: 500
+        delayedUpdateTime: 500,
+
+        listensFor: ['click', 'dblclick', 'dragStart', 'mousemove']
     };
 
     /**
@@ -42,6 +44,8 @@ sGis.module('painter.domPainter.LayerRenderer', [
             this._outdatedFeatureRenders = new Map();
             this._rendersForRemoval = new Map();
 
+            this._setEventCatcherMaps();
+
             this._setListeners();
             this.setIndex(index);
             
@@ -53,6 +57,13 @@ sGis.module('painter.domPainter.LayerRenderer', [
         _setListeners() {
             this._layer.on('propertyChange', () => {
                 this._forceUpdate();
+            });
+        }
+
+        _setEventCatcherMaps() {
+            this._eventCatchers = {};
+            this.listensFor.forEach(eventName => {
+               this._eventCatchers[eventName] = new Map();
             });
         }
         
@@ -98,6 +109,8 @@ sGis.module('painter.domPainter.LayerRenderer', [
             for (let render of this._renderNodeMap.keys()) {
                 this._removeRender(render);
             }
+
+            if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
         }
 
         update() {
@@ -132,10 +145,12 @@ sGis.module('painter.domPainter.LayerRenderer', [
             });
 
             if (this._canvas.isEmpty) {
-                this._master.currContainer.removeNode(this._canvas.node);
+                if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
+                this._canvasContainer = null;
             } else {
                 this._master.currContainer.addNode(this._canvas.node, this._master.width, this._master.height, this._bbox);
                 this.currentContainer = this._master.currContainer;
+                this._canvasContainer = this._master.currContainer;
             }
 
             this._clean();
@@ -170,17 +185,30 @@ sGis.module('painter.domPainter.LayerRenderer', [
             this._markAsOutdated(feature);
             this._featureRenders.set(feature, renders);
 
+            var canvasIsUsed = false;
             for (let i = 0; i < renders.length; i++) {
                 if (renders[i].isVector) {
                     if (this._useCanvas && !isMixedRender) {
                         this._canvas.draw(renders[i]);
+                        canvasIsUsed = true;
                     } else {
                         this._drawNodeRender(new SvgRender(renders[i]), feature);
                     }
                 } else {
                     this._drawNodeRender(renders[i], feature);
                 }
+                this._setFeatureListeners(feature, renders[i]);
             }
+
+            if (canvasIsUsed) this._clean(feature);
+        }
+
+        _setFeatureListeners(feature, render) {
+            this.listensFor.forEach(eventName => {
+                if (!feature.hasListeners(eventName)) return;
+
+                this._eventCatchers[eventName].set(render, feature);
+            });
         }
         
         _drawNodeRender(render, feature) {
@@ -261,6 +289,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
             this._outdatedFeatureRenders.set(feature, outdated);
             this._featureRenders.delete(feature);
+
         }
 
         _removeRenders(feature) {
@@ -283,6 +312,10 @@ sGis.module('painter.domPainter.LayerRenderer', [
         }
 
         _removeRender(render) {
+            this.listensFor.forEach(eventName => {
+                this._eventCatchers[eventName].delete(render);
+            });
+
             let node = this._renderNodeMap.get(render);
             if (node === undefined) return;
 
@@ -305,7 +338,8 @@ sGis.module('painter.domPainter.LayerRenderer', [
             }
             
             if (this._canvas.node.parentNode) {
-                this._master.currContainer.addNode(this._canvas.node, this._bbox);
+                this._master.currContainer.addNode(this._canvas.node, this._canvas.width, this._canvas.height, this._bbox);
+                this._canvasContainer = this._master.currContainer;
             }
         }
 
@@ -326,6 +360,18 @@ sGis.module('painter.domPainter.LayerRenderer', [
                     this._renderContainerMap.set(render, lastContainer);
                 }
             });
+        }
+
+        getEventCatcher(eventName, pxPosition, data) {
+            if (!this._eventCatchers[eventName]) return;
+
+            for (var render of this._eventCatchers[eventName].keys()) {
+                var intersectionType = render.contains && render.contains(pxPosition);
+                if (intersectionType) {
+                    data.intersectionType = intersectionType;
+                    return this._eventCatchers[eventName].get(render);
+                }
+            }
         }
     }
 
