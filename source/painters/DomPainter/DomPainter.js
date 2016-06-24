@@ -82,15 +82,15 @@ sGis.module('painter.DomPainter', [
         _setEventListeners() {
             this._map.on('layerAdd layerRemove layerOrderChange', this._updateLayerList.bind(this));
             this._map.on('drag', this._onMapDrag.bind(this));
-            this._map.on('animationStart', this._forbidUpdate.bind(this));
-            this._map.on('animationEnd', this._allowUpdate.bind(this));
+            this._map.on('animationStart', this.forbidUpdate.bind(this));
+            this._map.on('animationEnd', this.allowUpdate.bind(this));
         }
 
-        _forbidUpdate() {
+        forbidUpdate() {
             this._updateAllowed = false;
         }
 
-        _allowUpdate() {
+        allowUpdate() {
             this._updateAllowed = true;
         }
         

@@ -20,6 +20,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
             this._onDocumentMouseup = this._onDocumentMouseup.bind(this);
 
             this._wheelTimer = 0;
+            this._touchHandler = {dragPrevPosition: {}};
         }
         
         _dispatchEvent(name, data) {
@@ -56,9 +57,9 @@ sGis.module('painter.domPainter.EventDispatcher', [
             Event.add(baseNode, 'mouseout', this._onmouseout.bind(this));
             Event.add(baseNode, 'contextmenu', this._oncontextmenu.bind(this));
 
-            // Event.add(baseNode, 'touchstart', ontouchstart);
-            // Event.add(baseNode, 'touchmove', ontouchmove);
-            // Event.add(baseNode, 'touchend', ontouchend);
+            Event.add(baseNode, 'touchstart', this._ontouchstart.bind(this));
+            Event.add(baseNode, 'touchmove', this._ontouchmove.bind(this));
+            Event.add(baseNode, 'touchend', this._ontouchend.bind(this));
         }
 
         _onmousedown(event) {
@@ -167,89 +168,90 @@ sGis.module('painter.domPainter.EventDispatcher', [
         _oncontextmenu(event) {
             this._dispatchEvent('contextmenu', this._getMouseEventDescription(event));
         }
-    }
 
-
-    var touchHandler = {scaleChanged: false};
-
-    function ontouchstart(event) {
-        if (!event.currentTarget.dragPrevPosition) event.currentTarget.dragPrevPosition = {};
-        for (var i in event.changedTouches) {
-            var touch = event.changedTouches[i];
-            event.currentTarget.dragPrevPosition[touch.identifier] = {x: touch.pageX, y: touch.pageY};
-            event.currentTarget._lastDrag = {x: 0, y: 0};
+        _ontouchstart(event) {
+            for (var i in event.changedTouches) {
+                var touch = event.changedTouches[i];
+                this._touchHandler.dragPrevPosition[touch.identifier] = {x: touch.pageX, y: touch.pageY};
+                this._touchHandler.lastDrag = {x: 0, y: 0};
+            }
         }
-    }
 
-    function ontouchmove(event) {
-        var map = event.currentTarget.map;
-        if (event.touches.length === 1 && event.currentTarget._lastDrag) {
-            var touch = event.targetTouches[0],
-                dxPx = event.currentTarget.dragPrevPosition[touch.identifier].x - touch.pageX,
-                dyPx = event.currentTarget.dragPrevPosition[touch.identifier].y - touch.pageY,
-                resolution = map.resolution,
-                touchOffset = sGis.Event.getMouseOffset(event.currentTarget, touch),
-                point = map.getPointFromPxPosition(touchOffset.x, touchOffset.y),
-                position = {x: point.x / resolution, y: 0 - point.y / resolution};
+        _ontouchmove(event) {
+            var map = this._master.map;
+            if (event.touches.length === 1 && this._touchHandler.lastDrag) {
+                var touch = event.targetTouches[0];
+                var dxPx = this._touchHandler.dragPrevPosition[touch.identifier].x - touch.pageX;
+                var dyPx = this._touchHandler.dragPrevPosition[touch.identifier].y - touch.pageY;
+                var resolution = map.resolution;
+                var touchOffset = Event.getMouseOffset(event.currentTarget, touch);
+                var point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
+                var position = {x: point.x / resolution, y: 0 - point.y / resolution};
 
-            if (event.currentTarget._lastDrag.x === 0 && event.currentTarget._lastDrag.y === 0) {
-                map.fire('dragStart', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: event.currentTarget._lastDrag.x, y: event.currentTarget._lastDrag.y}});
+                if (this._touchHandler.lastDrag.x === 0 && this._touchHandler.lastDrag.y === 0) {
+                    var sGisEvent = this._dispatchEvent('dragStart', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: this._touchHandler.lastDrag.x, y: this._touchHandler.lastDrag.y}});
+                    this._draggingObject = sGisEvent.draggingObject || map;
+                }
+
+                this._touchHandler.lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
+                this._draggingObject.fire('drag', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: this._touchHandler.lastDrag.x, y: this._touchHandler.lastDrag.y}});
+
+                this._touchHandler.dragPrevPosition[touch.identifier].x = touch.pageX;
+                this._touchHandler.dragPrevPosition[touch.identifier].y = touch.pageY;
+            } else if (event.touches.length > 1) {
+                this._master.forbidUpdate();
+                this._touchHandler.lastDrag = null;
+                this._touchHandler.scaleChanged = true;
+
+                var touch1 = event.touches[0];
+                var touch2 = event.touches[1];
+
+                touch1.prevPosition = this._touchHandler.dragPrevPosition[touch1.identifier];
+                touch2.prevPosition = this._touchHandler.dragPrevPosition[touch2.identifier];
+
+                var x11 = touch1.prevPosition.x;
+                var x12 = touch1.pageX;
+                var x21 = touch2.prevPosition.x;
+                var x22 = touch2.pageX;
+                var baseX = (x11 - x12 - x21 + x22) === 0 ? (x11 + x21) / 2 : (x11*x22 - x12*x21) / (x11 - x12 - x21 + x22);
+                var y11 = touch1.prevPosition.y;
+                var y12 = touch1.pageY;
+                var y21 = touch2.prevPosition.y;
+                var y22 = touch2.pageY;
+                var baseY = (y11 - y12 - y21 + y22) === 0 ? (y11 + y21) / 2 : (y11*y22 - y12*y21) / (y11 - y12 - y21 + y22);
+                var len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2));
+                var len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
+
+                map.changeScale(len1/len2, this._master.getPointFromPxPosition(baseX, baseY), true);
+
+                this._touchHandler.dragPrevPosition[touch1.identifier].x = touch1.pageX;
+                this._touchHandler.dragPrevPosition[touch1.identifier].y = touch1.pageY;
+                this._touchHandler.dragPrevPosition[touch2.identifier].x = touch2.pageX;
+                this._touchHandler.dragPrevPosition[touch2.identifier].y = touch2.pageY;
+            }
+            event.preventDefault();
+        }
+
+        _ontouchend(event) {
+            for (var i in event.changedTouches) {
+                delete this._touchHandler.dragPrevPosition[event.changedTouches[i].identifier];
             }
 
-            map._lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
-            map._draggingObject.fire('drag', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: map._lastDrag.x, y: map._lastDrag.y}});
+            this._touchHandler.lastDrag = null;
 
-            event.currentTarget.dragPrevPosition[touch.identifier].x = touch.pageX;
-            event.currentTarget.dragPrevPosition[touch.identifier].y = touch.pageY;
-        } else if (event.touches.length === 2) {
-            map._painter.prohibitUpdate();
-            map._lastDrag = null;
-            touchHandler.scaleChanged = true;
-            var touch1 = event.touches[0],
-                touch2 = event.touches[1];
-
-            touch1.prevPosition = event.currentTarget.dragPrevPosition[touch1.identifier];
-            touch2.prevPosition = event.currentTarget.dragPrevPosition[touch2.identifier];
-
-            var x11 = touch1.prevPosition.x,
-                x12 = touch1.pageX,
-                x21 = touch2.prevPosition.x,
-                x22 = touch2.pageX,
-                baseX = (x11 - x12 - x21 + x22) === 0 ? (x11 + x21) / 2 : (x11*x22 - x12*x21) / (x11 - x12 - x21 + x22),
-                y11 = touch1.prevPosition.y,
-                y12 = touch1.pageY,
-                y21 = touch2.prevPosition.y,
-                y22 = touch2.pageY,
-                baseY = (y11 - y12 - y21 + y22) === 0 ? (y11 + y21) / 2 : (y11*y22 - y12*y21) / (y11 - y12 - y21 + y22),
-                len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2)),
-                len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
-
-            map.changeScale(len1/len2, map.getPointFromPxPosition(baseX, baseY), true);
-
-            event.currentTarget.dragPrevPosition[touch1.identifier].x = touch1.pageX;
-            event.currentTarget.dragPrevPosition[touch1.identifier].y = touch1.pageY;
-            event.currentTarget.dragPrevPosition[touch2.identifier].x = touch2.pageX;
-            event.currentTarget.dragPrevPosition[touch2.identifier].y = touch2.pageY;
-        }
-        event.preventDefault();
-    }
-
-    function ontouchend(event) {
-        for (var i in event.changedTouches) {
-            delete event.currentTarget.dragPrevPosition[event.changedTouches[i].identifier];
-        }
-
-        event.currentTarget._lastDrag = null;
-
-        var map = event.currentTarget.map;
-        if (touchHandler.scaleChanged) {
-            map.adjustResolution();
-            touchHandler.scaleChanged = false;
-        } else {
-            map.fire('dragEnd');
+            var map = this._master.map;
+            if (this._touchHandler.scaleChanged) {
+                map.adjustResolution();
+                this._touchHandler.scaleChanged = false;
+                this._master.allowUpdate();
+            } else {
+                if (this._draggingObject) {
+                    this._draggingObject.fire('dragEnd');
+                    this._draggingObject = null;
+                }
+            }
         }
     }
-
 
     function isFormElement(e) {
         var formElements = ['BUTTON', 'INPUT', 'LABEL', 'OPTION', 'SELECT', 'TEXTAREA'];
