@@ -10,6 +10,7 @@ sGis.module('painter.domPainter.Canvas', [
 
     /**
      * @alias sGis.painter.domPainter.Canvas
+     * @ignore
      */
     class Canvas {
         constructor() {

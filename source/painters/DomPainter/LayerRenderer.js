@@ -19,6 +19,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
     /**
      * @alias sGis.painter.domPainter.LayerRenderer
+     * @ignore
      */
     class LayerRenderer {
         /**
