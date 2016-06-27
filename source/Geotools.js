@@ -177,11 +177,11 @@ sGis.module('geotools', ['math'], function(math) {
 
     /**
      * Returns false if polygon has self-intersection, segments of zero length or contours with less then 3 points
-     * @param {sGis.feature.Polygon|sGis.geom.Polygon|number[][][]} polygon  - polygon feature or coordinates
+     * @param {sGis.feature.Polygon|number[][][]} polygon  - polygon feature or coordinates
      * @returns {boolean}
      */
     geotools.isPolygonValid = function (polygon) {
-        var coordinates = (polygon instanceof sGis.feature.Polygon || polygon instanceof sGis.geom.Polygon) ? polygon.coordinates : polygon;
+        var coordinates = (polygon instanceof sGis.feature.Polygon) ? polygon.coordinates : polygon;
         if (coordinates.length === 0) return false;
 
         for (var ring = 0; ring < coordinates.length; ring++) {

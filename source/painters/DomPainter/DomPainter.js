@@ -223,8 +223,18 @@ sGis.module('painter.DomPainter', [
             );
         }
 
+        getPxPosition(position) {
+            return {
+                x: (position[0] - this.bbox.xMin) / this._map.resolution,
+                y: (this.bbox.yMax - position[1]) / this._map.resolution
+            };
+        }
+
         _onMapDrag(sGisEvent) {
-            this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
+            setTimeout(() => {
+                if (sGisEvent.isCanceled()) return;
+                this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
+            }, 0);
         }
     }
 

@@ -25,7 +25,8 @@ sGis.module('painter.domPainter.EventDispatcher', [
         
         _dispatchEvent(name, data) {
             var sGisEvent;
-            
+
+            var topObject = this._master.map;
             if (data.position) {
                 var layerRenderers = this._master.layerRenderers;
                 for (var i = layerRenderers.length - 1; i >= 0; i--) {
@@ -34,10 +35,20 @@ sGis.module('painter.domPainter.EventDispatcher', [
                     if (targetObject) {
                         data.intersectionType = details.intersectionType;
                         sGisEvent = targetObject.fire(name, data);
-                        if (sGisEvent.isCanceled()) return sGisEvent;
+                        topObject = targetObject;
+                        if (sGisEvent && sGisEvent.isCanceled()) return sGisEvent;
                         break;
                     }
                 }
+            }
+
+            if (name === 'mousemove' && topObject !== this._hoverObject) {
+                if (this._hoverObject && this._hoverObject !== this._master.map) {
+                    this._hoverObject.fire('mouseout', data);
+                }
+
+                topObject.fire('mouseover', data);
+                this._hoverObject = topObject;
             }
                 
             if (sGisEvent) {

@@ -73,14 +73,7 @@ sGis.module('feature.Label', [
             },
 
             set: function(content) {
-                if (sGis.utils.isString(content)) {
-                    var node = document.createTextNode(content);
-                    this._content = node;
-                } else if (sGis.utils.isNode(content)) {
-                    this._content = content;
-                } else {
-                    sGis.utils.error('DOM node is expected but got ' + content + ' instead');
-                }
+                this._content = content;
                 this._resetCache();
             }
         },

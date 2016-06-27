@@ -32,7 +32,6 @@ sGis.module('Map', [
         _crs: sGis.CRS.webMercator,
         _position: new sGis.Point(55.755831, 37.617673).projectTo(sGis.CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
-        // _wrapper: null,
         _tileScheme: null,
 
         _initLayerGroup: function() {
@@ -42,12 +41,6 @@ sGis.module('Map', [
                 self.forwardEvent(sGisEvent);
             });
         },
-
-        /**
-         * @deprecated
-         * Does nothing
-         */
-        updateSize: function() {},
 
         /**
          * Adds a layer to the map
@@ -272,172 +265,22 @@ sGis.module('Map', [
             this.setPosition(this._getScaledPosition(this.resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
         },
 
-        /**
-         * Returns the pixel offset of the point from the left top corner of the map
-         * @param {sGis.Point|Array} point
-         * @returns {object} - {x: X offset, y: Y offset}
-         */
-        getPxPosition: function(point) {
-            var p = point instanceof sGis.Point ? point.projectTo(this.crs) : {x: point[0], y: point[1]},
-                resolution = this.resolution,
-                bbox = this.bbox;
-
-            return {
-                x: (p.x - bbox.p[0].x) / resolution,
-                y: (bbox.p[1].y - p.y) / resolution
-            };
-        },
-
-        /**
-         * Returns a new point, that corresponds to the specified position on the screen
-         * @param {int} x - X offset from the map left side
-         * @param {int} y - Y offset from the map top side
-         * @returns {sGis.Point}
-         */
-        getPointFromPxPosition: function(x, y) {
-            var resolution = this.resolution,
-                bbox = this.bbox;
-            return new sGis.Point(
-                bbox.p[0].x + x * resolution,
-                bbox.p[1].y - y * resolution,
-                this.crs
-            );
-        },
-
-        /**
-         * @deprecated
-         * TODO: remove
-         */
-        update: function() {
-
-        },
-
-        forceUpdate: function() {
-            this.painter.forceUpdate();
-        },
-
-        /**
-         * Updates the specified layer
-         * @param {sGis.Layer} layer
-         */
-        redrawLayer: function(layer) {
-            if (this._painter) this._painter.redrawLayer(layer);
-        },
-
         _defaultHandlers: {
-            bboxChange: function() {
+            bboxChange: function () {
                 var map = this;
                 var CHANGE_END_DELAY = 300;
                 if (map._changeTimer) clearTimeout(map._changeTimer);
-                map._changeTimer = setTimeout((function(map) {return function() {
-                    map.fire('bboxChangeEnd', {map: map});
-                    map._changeTimer = null;
-                };})(map), CHANGE_END_DELAY);
-            },
-
-            bboxChangeEnd: function(mapEvent) {
-
-            },
-
-            animationStart: function(sGisEvent) {
-
-            },
-
-            animationEnd: function(mapEvent) {
-
-            },
-
-            click: function(sGisEvent) {
-
-            },
-
-            dblclick: function(sGisEvent) {
-                this.zoom(2, sGisEvent.point);
-            },
-
-            mousemove: function(sGisEvent) {
-
-            },
-
-            mouseout: function(sGisEvent) {
-
-            },
-
-            layerAdd: function() {
-                this.update();
-            },
-
-            layerRemove: function(sGisEvent) {
-
-            },
-
-            layerOrderChange: function() {
-                this.update();
-            },
-
-            dragStart: function(sGisEvent) {
-                // this._draggingObject = sGisEvent.draggingObject || this;
-            },
-
-            drag: function(sGisEvent) {
-                // this.move(sGisEvent.offset.x, sGisEvent.offset.y);
-            },
-
-            dragEnd: function() {
-                // this._draggingObject = null;
-            },
-
-            contextmenu: function(sGisEvent) {
-
-            }
-        },
-
-        _autoupdateSize: function() {
-            if (this._wrapper) {
-                var width = this._wrapper.clientWidth || this._wrapper.offsetWidth;
-                var height = this._wrapper.clientHeight || this._wrapper.offsetHeight;
-                var changed = width !== this._width || height !== this._height;
-
-                if (changed) {
-                    var resolution = this.resolution;
-                    var dx = (width - this._width) * resolution;
-                    var dy = (height - this._height) * resolution;
-
-                    this._width = width;
-                    this._height = height;
-
-                    if (!isNaN(dx) && !isNaN(dy)) {
-                        this.prohibitEvent('bboxChange');
-                        this.move(dx / 2, -dy / 2);
-                        this.allowEvent('bboxChange');
-                        this.fire('bboxChange', {isSizeChange: true});
-                    }
-                }
-
-                sGis.utils.requestAnimationFrame(this._autoupdateSize.bind(this));
-            } else {
-                this._width = this._height = undefined;
+                map._changeTimer = setTimeout((function (map) {
+                    return function () {
+                        map.fire('bboxChangeEnd', {map: map});
+                        map._changeTimer = null;
+                    };
+                })(map), CHANGE_END_DELAY);
             }
         }
     };
 
     Object.defineProperties(Map.prototype, {
-        /**
-         * Returns the bounding box of the map in map coordinates (sGis.Bbox). Read only.
-         */
-        bbox: {
-            get: function() {
-                var resolution = this.resolution;
-                var halfWidth = this.width / 2 * resolution;
-                var halfHeight = this.height / 2 * resolution;
-                var position = this.position;
-
-                if (halfWidth && halfHeight) {
-                    return new sGis.Bbox([position.x - halfWidth, position.y - halfHeight], [position.x + halfWidth, position.y + halfHeight], position.crs);
-                }
-            }
-        },
-
         /**
          * Returns a copy of the list of layers on the map. The first layer in the list is displayed on the bottom.<br>
          * If assigned, first removes all layers from the map (triggering "layerRemove" event) and then adds layers one by one (triggering "layerAdd" event for each).
@@ -473,12 +316,6 @@ sGis.module('Map', [
             }
         },
 
-        layerWrapper: {
-            get: function() {
-                return this._layerWrapper;
-            }
-        },
-
         /**
          * Returns or sets the resolution of the map. Triggers the "bboxChange" event if assigned. Throws an exception if assigned value is invalid.<br>
          * Valid values are any positive numbers;
@@ -492,56 +329,6 @@ sGis.module('Map', [
                 if (!sGis.utils.isNumber(resolution) || resolution <= 0) sGis.utils.error('Positive number is expected but got ' + resolution + ' instead');
                 this._resolution = resolution;
                 this.fire('bboxChange');
-            }
-        },
-
-        height: {
-            get: function() {
-                return this._height;
-            }
-        },
-
-        width: {
-            get: function() {
-                return this._width;
-            }
-        },
-
-        /**
-         * Sets and returns the DOM wrapper of the map. Returns DOM Element.
-         * Accepted values: {String}, {HTMLElement} or null. If null is assigned, the map is removed from the DOM.
-         */
-        // wrapper: {
-        //     get: function() {
-        //         return this._wrapper;
-        //     },
-        //
-        //     set: function(wrapper) {
-        //         if (!sGis.utils.isString(wrapper) && wrapper !== null && !(wrapper instanceof HTMLElement)) sGis.utils.error('String or null value expected but got ' + wrapper + ' instead');
-        //         if (this._wrapper) {
-        //             this._wrapper.removeChild(this._innerWrapper);
-        //         }
-        //         if (wrapper !== null) {
-        //             setDOMstructure(wrapper, this);
-        //             this._autoupdateSize();
-        //
-        //             this._painter = new sGis.Painter(this);
-        //             setEventHandlers(this);
-        //
-        //         } else {
-        //             this._wrapper = null;
-        //             delete this._layerWrapper;
-        //             delete this._innerWrapper;
-        //             delete this._painter;
-        //         }
-        //
-        //         this.fire('wrapperSet');
-        //     }
-        // },
-
-        innerWrapper: {
-            get: function() {
-                return this._innerWrapper;
             }
         },
 
@@ -638,277 +425,10 @@ sGis.module('Map', [
                     return minResolution;
                 }
             }
-        },
-
-        // painter: {
-        //     get: function() {
-        //         return this._painter;
-        //     }
-        // },
-
-        isDisplayed: {
-            get: function() {
-                return !!(this._height && this._width);
-            }
         }
     });
 
     sGis.utils.proto.setMethods(Map.prototype, sGis.IEventHandler);
-
-    function setDOMstructure(parent, map) {
-        var parent = parent instanceof HTMLElement ? parent :document.getElementById(parent);
-        if (!parent) sGis.utils.error('The element with ID "' + parent + '" could not be found. Cannot create a Map object');
-
-        var wrapper = document.createElement('div');
-        wrapper.map = map;
-        wrapper.style.position = 'relative';
-        wrapper.style.overflow = 'hidden';
-        wrapper.style.width = '100%';
-        wrapper.style.height = '100%';
-        parent.appendChild(wrapper);
-
-        var layerWrapper = document.createElement('div');
-        layerWrapper.style.position = 'absolute';
-        layerWrapper.style.width = '100%';
-        layerWrapper.style.height = '100%';
-        wrapper.appendChild(layerWrapper);
-
-        map._wrapper = parent;
-        map._innerWrapper = wrapper;
-        map._layerWrapper = layerWrapper;
-    }
-
-    function setEventHandlers(map) {
-        sGis.Event.add(map._innerWrapper, 'mousedown', onmousedown);
-        sGis.Event.add(map._innerWrapper, 'wheel', onwheel);
-        sGis.Event.add(map._innerWrapper, 'touchstart', ontouchstart);
-        sGis.Event.add(map._innerWrapper, 'touchmove', ontouchmove);
-        sGis.Event.add(map._innerWrapper, 'touchend', ontouchend);
-        sGis.Event.add(map._innerWrapper, 'click', onclick);
-        sGis.Event.add(map._innerWrapper, 'dblclick', ondblclick);
-        sGis.Event.add(map._innerWrapper, 'mousemove', onmousemove);
-        sGis.Event.add(map._innerWrapper, 'mouseout', onmouseout);
-        sGis.Event.add(map._innerWrapper, 'contextmenu', oncontextmenu);
-        sGis.Event.add(document, 'keydown', function(event) { map.fire('keydown', { browserEvent: event }); });
-        sGis.Event.add(document, 'keypress', function(event) {
-            map.fire('keypress', {browserEvent: event});
-        });
-        sGis.Event.add(document, 'keyup', function(event) {map.fire('keyup', {browserEvent: event});});
-    }
-
-    function onmouseout(event) {
-        var map = event.currentTarget.map,
-            offset = sGis.Event.getMouseOffset(event.currentTarget, event),
-            point = map.getPointFromPxPosition(offset.x, offset.y);
-
-        event.currentTarget.map.fire('mouseout', {position: offset, point: point});
-    }
-
-    function onmousemove(event) {
-        var mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event);
-        var map = event.currentTarget.map;
-        var point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
-        var resolution = map.resolution;
-        var position = {x: point.x / resolution, y: -point.y / resolution};
-        event.currentTarget.map.fire('mousemove', {map: map, mouseOffset: mouseOffset, point: point, position: position, ctrlKey: event.ctrlKey});
-    }
-
-    var touchHandler = {scaleChanged: false};
-
-    function ontouchstart(event) {
-        if (!event.currentTarget.dragPrevPosition) event.currentTarget.dragPrevPosition = {};
-        for (var i in event.changedTouches) {
-            var touch = event.changedTouches[i];
-            event.currentTarget.dragPrevPosition[touch.identifier] = {x: touch.pageX, y: touch.pageY};
-            event.currentTarget._lastDrag = {x: 0, y: 0};
-        }
-    }
-
-    function ontouchmove(event) {
-        var map = event.currentTarget.map;
-        if (event.touches.length === 1 && event.currentTarget._lastDrag) {
-            var touch = event.targetTouches[0],
-                dxPx = event.currentTarget.dragPrevPosition[touch.identifier].x - touch.pageX,
-                dyPx = event.currentTarget.dragPrevPosition[touch.identifier].y - touch.pageY,
-                resolution = map.resolution,
-                touchOffset = sGis.Event.getMouseOffset(event.currentTarget, touch),
-                point = map.getPointFromPxPosition(touchOffset.x, touchOffset.y),
-                position = {x: point.x / resolution, y: 0 - point.y / resolution};
-
-            if (event.currentTarget._lastDrag.x === 0 && event.currentTarget._lastDrag.y === 0) {
-                map.fire('dragStart', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: event.currentTarget._lastDrag.x, y: event.currentTarget._lastDrag.y}});
-            }
-
-            map._lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
-            map._draggingObject.fire('drag', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: map._lastDrag.x, y: map._lastDrag.y}});
-
-            event.currentTarget.dragPrevPosition[touch.identifier].x = touch.pageX;
-            event.currentTarget.dragPrevPosition[touch.identifier].y = touch.pageY;
-        } else if (event.touches.length === 2) {
-            map._painter.prohibitUpdate();
-            map._lastDrag = null;
-            touchHandler.scaleChanged = true;
-            var touch1 = event.touches[0],
-                touch2 = event.touches[1];
-
-            touch1.prevPosition = event.currentTarget.dragPrevPosition[touch1.identifier];
-            touch2.prevPosition = event.currentTarget.dragPrevPosition[touch2.identifier];
-
-            var x11 = touch1.prevPosition.x,
-                x12 = touch1.pageX,
-                x21 = touch2.prevPosition.x,
-                x22 = touch2.pageX,
-                baseX = (x11 - x12 - x21 + x22) === 0 ? (x11 + x21) / 2 : (x11*x22 - x12*x21) / (x11 - x12 - x21 + x22),
-                y11 = touch1.prevPosition.y,
-                y12 = touch1.pageY,
-                y21 = touch2.prevPosition.y,
-                y22 = touch2.pageY,
-                baseY = (y11 - y12 - y21 + y22) === 0 ? (y11 + y21) / 2 : (y11*y22 - y12*y21) / (y11 - y12 - y21 + y22),
-                len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2)),
-                len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
-
-            map.changeScale(len1/len2, map.getPointFromPxPosition(baseX, baseY), true);
-
-            event.currentTarget.dragPrevPosition[touch1.identifier].x = touch1.pageX;
-            event.currentTarget.dragPrevPosition[touch1.identifier].y = touch1.pageY;
-            event.currentTarget.dragPrevPosition[touch2.identifier].x = touch2.pageX;
-            event.currentTarget.dragPrevPosition[touch2.identifier].y = touch2.pageY;
-        }
-        event.preventDefault();
-    }
-
-    function ontouchend(event) {
-        for (var i in event.changedTouches) {
-            delete event.currentTarget.dragPrevPosition[event.changedTouches[i].identifier];
-        }
-
-        event.currentTarget._lastDrag = null;
-
-        var map = event.currentTarget.map;
-        if (touchHandler.scaleChanged) {
-            map.adjustResolution();
-            touchHandler.scaleChanged = false;
-        } else {
-            map.fire('dragEnd');
-        }
-    }
-
-    function onclick(event) {
-        if (mouseHandler.clickCatcher && !isFormElement(event.target)) {
-            var map = event.currentTarget.map,
-                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
-                point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
-                position = {x: point.x / map.resolution, y: - point.y / map.resolution};
-            map.fire('click', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
-        }
-    }
-
-    function oncontextmenu(event) {
-        var map = event.currentTarget.map,
-            mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
-            point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
-            position = { x: point.x / map.resolution, y: -point.y / map.resolution };
-        map.fire('contextmenu', { mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position });
-        //event.preventDefault();
-    }
-
-    function ondblclick(event) {
-        if (!isFormElement(event.target)) {
-            mouseHandler.clickCatcher = null;
-            var map = event.currentTarget.map,
-                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event),
-                point = map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y),
-                position = {x: point.x / map.resolution, y: - point.y / map.resolution};
-            map.fire('dblclick', {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event});
-        }
-    }
-
-    var wheelTimer = 0;
-    var minDelay = 50;
-    function onwheel(event) {
-        var time = Date.now();
-        if (time - wheelTimer > minDelay) {
-            wheelTimer = time;
-            var map = event.currentTarget.map,
-                wheelDirection = sGis.Event.getWheelDirection(event),
-                mouseOffset = sGis.Event.getMouseOffset(event.currentTarget, event);
-
-            map.zoom(wheelDirection, map.getPointFromPxPosition(mouseOffset.x, mouseOffset.y));
-        }
-        event.preventDefault();
-        return false;
-    }
-
-    var mouseHandler = {
-        dragPosition: null,
-        activeObject: null,
-        clickCatcher: null
-    };
-
-    function onmousedown(event) {
-        if (!isFormElement(event.target)) {
-            mouseHandler.clickCatcher = true;
-            if (event.which === 1) {
-                mouseHandler.dragPosition = sGis.Event.getMouseOffset(event.currentTarget, event);
-                mouseHandler.activeObject = event.currentTarget.map;
-
-                sGis.Event.add(document, 'mousemove', onDocumentMousemove);
-                sGis.Event.add(document, 'mouseup', onDocumentMouseup);
-
-                document.ondragstart = function() {return false;};
-                document.body.onselectstart = function() {return false;};
-            }
-            return false;
-        }
-    }
-
-    function onDocumentMousemove(event) {
-        var map = mouseHandler.activeObject,
-            mousePosition = sGis.Event.getMouseOffset(map._wrapper, event),
-            dxPx = mouseHandler.dragPosition.x - mousePosition.x,
-            dyPx = mouseHandler.dragPosition.y - mousePosition.y,
-            resolution = map.resolution,
-            point = map.getPointFromPxPosition(mousePosition.x, mousePosition.y),
-            position = {x: point.x / resolution, y: - point.y / resolution};
-
-        if (Math.abs(dxPx) > 2 || Math.abs(dyPx) > 2 || !mouseHandler.clickCatcher) {
-            map._lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
-
-            if (mouseHandler.clickCatcher) {
-                mouseHandler.clickCatcher = null;
-                var originalPoint = map.getPointFromPxPosition(mouseHandler.dragPosition.x, mouseHandler.dragPosition.y);
-                var originalPosition = {x: originalPoint.x / resolution, y: - originalPoint.y / resolution};
-                map.fire('dragStart', {map: map, mouseOffset: mousePosition, position: originalPosition, point: originalPoint, ctrlKey: event.ctrlKey, offset: {xPx: dxPx, yPx: dyPx, x: map._lastDrag.x, y: map._lastDrag.y}, browserEvent: event});
-            }
-
-            mouseHandler.dragPosition = mousePosition;
-            map._draggingObject.fire('drag', {map: map, mouseOffset: mousePosition, position: position, point: point, ctrlKey: event.ctrlKey, offset: {xPx: dxPx, yPx: dyPx, x: map._lastDrag.x, y: map._lastDrag.y}, browserEvent: event});
-        }
-    }
-
-    function onDocumentMouseup(event) {
-        var map = mouseHandler.activeObject;
-        sGis.Event.remove(document, 'mousemove', onDocumentMousemove);
-        sGis.Event.remove(document, 'mouseup', onDocumentMouseup);
-        document.ondragstart = null;
-        document.body.onselectstart = null;
-
-        if (mouseHandler.activeObject._draggingObject) mouseHandler.activeObject._draggingObject.fire('dragEnd', {browserEvent: event});
-
-        map._draggingObject = null;
-        map._lastDrag = null;
-
-        mouseHandler.activeObject._draggingObject = null;
-        mouseHandler.activeObject = null;
-    }
-
-    function isFormElement(e) {
-        var formElements = ['BUTTON', 'INPUT', 'LABEL', 'OPTION', 'SELECT', 'TEXTAREA'];
-        for (var i = 0; i < formElements.length; i++) {
-            if (e.tagName === formElements[i]) return true;
-        }
-        return false;
-    }
 
     return Map;
 

@@ -51,6 +51,10 @@ sGis.module('Layer', [
             this._resolutionLimits = limits;
             this.fire('propertyChange', {property: 'resolutionLimits'});
         }
+
+        redraw() {
+            this.fire('propertyChange', {property: 'content'});
+        }
     }
 
     sGis.utils.extend(Layer.prototype, defaults);

@@ -31,18 +31,15 @@ sGis.module('controls.Poly', [
             this._clickHandler = function(sGisEvent) {
                 setTimeout(function() {
                     if (Date.now() - self._dblClickTime < 30) return;
-                    var pxPosition = sGisEvent.mouseOffset,
-                        point = self._map.getPointFromPxPosition(pxPosition.x, pxPosition.y);
-
                     if (self._activeFeature) {
                         if (sGisEvent.ctrlKey) {
                             self.startNewRing();
                         } else {
-                            self._activeFeature.addPoint(point, self._activeFeature.coordinates.length - 1);
+                            self._activeFeature.addPoint(sGisEvent.point, self._activeFeature.coordinates.length - 1);
                         }
                         self.fire('pointAdd');
                     } else {
-                        self.startNewFeature(point);
+                        self.startNewFeature(sGisEvent.point);
 
                         self._activeFeature.prohibitEvent('click');
 
@@ -57,16 +54,13 @@ sGis.module('controls.Poly', [
             };
 
             this._mousemoveHandler = function(sGisEvent) {
-                var pxPosition = sGisEvent.mouseOffset,
-                    point = self._map.getPointFromPxPosition(pxPosition.x, pxPosition.y),
-                    ring = self._activeFeature.coordinates.length - 1;
-
+                var ring = self._activeFeature.coordinates.length - 1;
                 self._activeFeature.removePoint(ring, self._activeFeature.coordinates[ring].length - 1);
 
                 if (self._activeFeature.coordinates.length > ring) {
-                    self._activeFeature.addPoint(point, ring);
+                    self._activeFeature.addPoint(sGisEvent.point, ring);
                 } else {
-                    self._activeFeature.setRing(ring, [point]);
+                    self._activeFeature.setRing(ring, [sGisEvent.point]);
                 }
 
                 self.activeLayer.redraw();

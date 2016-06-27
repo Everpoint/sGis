@@ -1,6 +1,6 @@
 sGis.module('Symbol', [
-    
-], function() {
+    'render.HtmlElement'
+], function(HtmlElement) {
     'use strict';
 
     var Symbol = function(options) {
@@ -57,34 +57,14 @@ sGis.module('symbol.label', [
 
         renderFunction: function(feature, resolution, crs) {
             if (!feature._cache || !sGis.math.softEquals(resolution, feature._cache[0].resolution)) {
-                var div = document.createElement('div');
-                div.className = this.css;
-                div.appendChild(feature.content);
-                div.style.position = 'absolute';
-                div.style.height = this.height + 'px';
-                div.style.width = this.width + 'px';
-
+                var html = '<div style="width:' + this.width + 'px; height:' + this.height + 'px; text-align:' + this.align + ';">' + feature.content + '</div>';
                 var point = feature.point.projectTo(crs);
-                div.position = [point.x / resolution + this.offset.x, -point.y / resolution + this.offset.y];
-                div.style.pointerEvents = 'none';
-                div.style.cursor = 'inherit';
-                div.style.textAlign = this.align;
+                var position = [point.x / resolution + this.offset.x, -point.y / resolution + this.offset.y];
 
-                feature._cache = [{node: div, position: div.position, resolution: resolution, onAfterDisplay: this._getBboxSetter(point, resolution, div, feature)}];
+                feature._cache = [new sGis.render.HtmlElement(html, position)];
             }
 
             return feature._cache;
-        },
-
-        _getBboxSetter: function(center, resolution, node, feature) {
-            return function() {
-                var width = node.offsetWidth * resolution / 2;
-                var height = node.offsetHeight * resolution / 2;
-                var offset = feature.symbol.offset;
-
-                var bbox = new sGis.Bbox([center.x - width + offset.x, center.y - height + offset.y], [center.x + width + offset.x, center.y + height + offset.y], center.crs);
-                feature.currentBbox = bbox;
-            }
         }
     });
 

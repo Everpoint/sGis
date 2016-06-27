@@ -1,6 +1,6 @@
 sGis.module('utils.Color', [
-
-], () => {
+    'utils'
+], (utils) => {
 
     'use strict';
 

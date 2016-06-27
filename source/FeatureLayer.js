@@ -76,10 +76,6 @@ sGis.module('FeatureLayer', [
 
             this.add(features);
         }
-        
-        redraw() {
-            this.fire('propertyChange', {property: 'content'});
-        }
     }
 
     sGis.utils.extend(FeatureLayer.prototype, defaults);

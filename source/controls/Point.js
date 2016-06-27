@@ -25,10 +25,7 @@ sGis.module('controls.Point', [
         var self = this;
 
         this._addPoint = function(sGisEvent) {
-            var pxPosition = sGisEvent.mouseOffset,
-                point = self._map.getPointFromPxPosition(pxPosition.x, pxPosition.y);
-
-            self.startNewFeature(point);
+            self.startNewFeature(sGisEvent.point);
 
             sGisEvent.stopPropagation();
             sGisEvent.preventDefault();
