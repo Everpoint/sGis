@@ -57,18 +57,21 @@ sGis.module('render.Image', [
         /**
          * Bbox that will contain image.
          * @type sGis.Bbox
+         * @readonly
          */
         get bbox() { return this._bbox; }
 
         /**
          * Width of the image.
          * @type Number
+         * @readonly
          */
         get width() { return this._width; }
 
         /**
          * Height of the image.
          * @type Number
+         * @readonly
          */
         get height() { return this._height; }
 

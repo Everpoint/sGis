@@ -55,6 +55,7 @@ sGis.module('render.Point', [
         /**
          *  The rendered (px) coordinates of the point in [x, y] format
          *  @type Number[]
+         *  @readonly
          */
         get coordinates() { return this._coord; }
     }

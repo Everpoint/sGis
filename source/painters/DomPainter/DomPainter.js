@@ -5,7 +5,7 @@ sGis.module('painter.DomPainter', [
     'Point',
     'Bbox',
     'utils'
-], (/** sGis.painter.domPainter.LayerRenderer @kind class */ LayerRenderer,
+], (/** sGis.painter.domPainter.LayerRenderer */ LayerRenderer,
     /** sGis.painter.domPainter.Container */ Container,
     /** sGis.painter.domPainter.EventDispatcher */ EventDispatcher,
     /** sGis.Point */ Point,
@@ -21,7 +21,15 @@ sGis.module('painter.DomPainter', [
     var innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
     var layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
 
+    /**
+     * @alias sGis.painter.DomPainter
+     */
     class DomRenderer {
+        /**
+         * @constructor
+         * @param {sGis.Map} map - the map to be drawn.
+         * @param {Object} options - key-value list of properties to be assigned to the instance.
+         */
         constructor(map, options) {
             this._map = map;
             utils.init(this, options);
@@ -42,15 +50,19 @@ sGis.module('painter.DomPainter', [
             this._repaint();
         }
 
+        /**
+         * DOM element, inside of which the map will be drawn. If null is given, the map will not be drawn.
+         * @type HTMLElement
+         */
         get wrapper() { return this._wrapper; }
-        set wrapper(node) {
+        set wrapper(/** HTMLElement */ node) {
             if (this._wrapper) this._clearDOM();
             if (node) {
                 this._initDOM(node);
                 this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
             }
         }
-        
+
         get layerRenderers() { return Array.from(this._layerRenderers.values()); }
         
         _updateLayerList() {
@@ -86,10 +98,16 @@ sGis.module('painter.DomPainter', [
             this._map.on('animationEnd', this.allowUpdate.bind(this));
         }
 
+        /**
+         * Prevents the map to be redrawn.
+         */
         forbidUpdate() {
             this._updateAllowed = false;
         }
 
+        /**
+         * Allows redrawing of the map again after .forbidUpdate() has been called.
+         */
         allowUpdate() {
             this._updateAllowed = true;
         }
@@ -139,6 +157,11 @@ sGis.module('painter.DomPainter', [
             this._height = this._wrapper ? this._wrapper.clientHeight || this._wrapper.offsetHeight : 0;
         }
 
+        /**
+         * Returns true is the map is currently displayed in the DOM>
+         * @type Boolean
+         * @readonly
+         */
         get isDisplayed() { return this._width && this._height; }
         
         _updateBbox() {
@@ -161,15 +184,38 @@ sGis.module('painter.DomPainter', [
                 this._redrawNeeded = true;
             }
         }
-        
+
+        /**
+         * Current bbox of the map drawn by this painter.
+         * @type sGis.Bbox
+         * @readonly
+         */
         get bbox() {
             if (!this._bbox) this._updateBbox();
             return this._bbox;
         }
+
+        /**
+         * The map this painter draws.
+         * @type sGis.Map
+         * @readonly
+         */
         get map() { return this._map; }
-        
+
         get currContainer() { return this._containers[this._containers.length - 1]}
+
+        /**
+         * Width of the map on the screen in pixels.
+         * @type Number
+         * @readonly
+         */
         get width() { return this._width; }
+
+        /**
+         * Height of the map on the screen in pixels.
+         * @type Number
+         * @readonly
+         */
         get height() { return this._height; }
 
         _initDOM(node) {
@@ -212,7 +258,13 @@ sGis.module('painter.DomPainter', [
                 }
             });
         }
-        
+
+        /**
+         * Returns the point in map coordinates, that is located at the given offset from the left top corner of the map.
+         * @param {Number} x
+         * @param {Number} y
+         * @returns {sGis.Point}
+         */
         getPointFromPxPosition(x, y) {
             var resolution = this._map.resolution;
             var bbox = this.bbox;
@@ -223,6 +275,11 @@ sGis.module('painter.DomPainter', [
             );
         }
 
+        /**
+         * For the given point, returns the px offset on the screen from the left top corner of the map.
+         * @param {Number[]} position - point in the map coordinates [x, y]
+         * @returns {{x: number, y: number}}
+         */
         getPxPosition(position) {
             return {
                 x: (position[0] - this.bbox.xMin) / this._map.resolution,

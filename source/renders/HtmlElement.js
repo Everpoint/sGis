@@ -34,7 +34,9 @@ sGis.module('render.HtmlElement', [
         }
 
         /**
-         * @type {Number[]} position - position of the render in [x, y] format.
+         * Position of the render in [x, y] format
+         * @type Number[]
+         * @readonly
          */
         get position() { return this._position; }
         
