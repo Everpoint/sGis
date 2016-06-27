@@ -72,8 +72,8 @@ sGis.module('painter.domPainter.Canvas', [
             this._ctx.beginPath();
             this._ctx.lineCap = 'round';
             this._ctx.lineJoin = 'round';
-            this._ctx.lineWidth = render.width;
-            this._ctx.strokeStyle = render.color;
+            this._ctx.lineWidth = render.strokeWidth;
+            this._ctx.strokeStyle = render.strokeColor;
 
             for (var ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
                 this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);

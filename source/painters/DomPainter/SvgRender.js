@@ -39,8 +39,8 @@ sGis.module('painter.domPainter.SvgRender', [
             path.d = path.d.replace(/ M/g, ' Z M');
 
             this._node = this._getPathNode({
-                stroke: this._baseRender.color,
-                'stroke-width': this._baseRender.width,
+                stroke: this._baseRender.strokeColor,
+                'stroke-width': this._baseRender.strokeWidth,
                 fill: this._baseRender.fillStyle === 'color' ? this._baseRender.fillColor : undefined,
                 fillImage: this._baseRender.fillStyle === 'image' ? this._baseRender.fillImage : undefined,
                 width: path.width,
@@ -57,8 +57,8 @@ sGis.module('painter.domPainter.SvgRender', [
         _setPolylineNode() {
             var path = this._getSvgPath();
             this._node = this._getPathNode({
-                stroke: this._baseRender.color,
-                'stroke-width': this._baseRender.width,
+                stroke: this._baseRender.strokeColor,
+                'stroke-width': this._baseRender.strokeWidth,
                 fill: 'transparent',
                 width: path.width,
                 height: path.height,
