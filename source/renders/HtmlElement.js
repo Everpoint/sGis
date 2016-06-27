@@ -8,6 +8,12 @@ sGis.module('render.HtmlElement', [
      * @alias sGis.renders.HtmlElement
      */
     class HtmlElement {
+        /**
+         * @constructor
+         * @param {String} htmlText - the inner html value of html element
+         * @param {Number[]} position - projected position of render in [x, y] format
+         * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM
+         */
         constructor(htmlText, position, onAfterDisplayed) {
             this._htmlText = htmlText;
             this._position = position;
@@ -16,15 +22,27 @@ sGis.module('render.HtmlElement', [
 
         static get isVector() { return false; }
 
+        /**
+         * Returns HTML div element as the second parameter to callback function 
+         * @param {Function} callback - callback function that will be called after node is ready
+         */
         getNode(callback) {
             var node = document.createElement('div');
             node.innerHTML = this._htmlText;
             this._lastNode = node;
             callback(null, node);
         }
-        
+
+        /**
+         * @type {Number[]} position - position of the render in [x, y] format.
+         */
         get position() { return this._position; }
         
+        /**
+         * Returns true if 'position' is inside the rendered element.
+         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
+         * @returns {boolean}
+         */
         contains(position) {
             var width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
             var height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;
