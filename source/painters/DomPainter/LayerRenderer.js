@@ -29,7 +29,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
          * @param index
          * @param useCanvas
          */
-        constructor(master, layer, index, useCanvas = false) {
+        constructor(master, layer, index, useCanvas = true) {
             this._master = master;
             this._layer = layer;
             this._useCanvas = useCanvas;
@@ -200,7 +200,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 this._setFeatureListeners(feature, renders[i]);
             }
 
-            if (canvasIsUsed) this._clean(feature);
+            if (canvasIsUsed || renders.length === 0) this._clean(feature);
         }
 
         _setFeatureListeners(feature, render) {

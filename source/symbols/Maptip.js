@@ -1,8 +1,9 @@
 sGis.module('symbol.maptip', [
     'utils',
     'Symbol',
-    'geom.Polygon'
-], function(utils, Symbol, Polygon) {
+    'render.Polygon',
+    'render.HtmlElement'
+], function(utils, Symbol, Polygon, HtmlElement) {
     'use strict';
 
     var maptipSymbols = {
@@ -30,25 +31,11 @@ sGis.module('symbol.maptip', [
 
                 feature._cache = [new sGis.render.Polygon(baloonCoordinates, {fillColor: 'white'})];
 
-                var div = document.createElement('div'),
-                    divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];
+                var divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];
 
-                if (sGis.utils.isNode(feature.content)) {
-                    div.appendChild(feature.content);
-                } else {
-                    sGis.utils.html(div, feature.content);
-                }
-                div.style.position = 'absolute';
-                div.style.height = this.height + 'px';
-                div.style.width = this.width + 'px';
-                div.style.backgroundColor = 'white';
-                div.style.overflow = 'auto';
-                div.position = divPosition;
 
-                var divRender = {
-                    node: div,
-                    position: position
-                };
+                var html = '<div style="width:' + this.width + 'px; height:' + this.height + 'px; background-color:white; overflow:auto;">' + feature.content + '</div>';
+                var divRender = new sGis.render.HtmlElement(html, divPosition);
 
                 feature._cache.push(divRender);
 

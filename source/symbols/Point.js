@@ -2,7 +2,8 @@ sGis.module('symbol.point', [
     'utils',
     'utils.proto',
     'Symbol',
-    'geom.Polygon'
+    'render.Polygon',
+    'render.HtmlElement'
 ], function(utils, Symbol, Polygon) {
     'use strict';
 
@@ -119,38 +120,12 @@ sGis.module('symbol.point', [
         _renderToCanvas: true,
 
         renderFunction: function(feature, resolution, crs) {
-            if (!this._image) this.source = this.source; //creates the image and saves to cache
-
             var f = feature.projectTo(crs);
             var pxPosition = [f._point[0] / resolution, - f._point[1] / resolution];
-            var imageCache = this._image;
+            var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
 
-            //if (imageCache.complete) {
-            var image = new Image();
-            image.src = this.source;
-
-            var k = this.size / image.width;
-            image.width = this.size;
-
-            if (imageCache.width) {
-                image.height = this.size / imageCache.width * imageCache.height;
-            } else {
-                var self = this;
-                imageCache.onload = function() {
-                    image.height = self.size / imageCache.width * imageCache.height;
-                }
-            }
-
-
-            image.position = [pxPosition[0] - this.anchorPoint.x * k, pxPosition[1] - this.anchorPoint.y * k];
-
-            var render = {
-                node: image,
-                position: image.position,
-                persistent: true,
-                renderToCanvas: this.renderToCanvas
-            };
-            return [render];
+            var html = '<image src="' + this.source + '" width="' + this.width + '" height="' + this.height +'"></image>';
+            return [new sGis.render.HtmlElement(html, renderPosition)];
         },
 
         clone: function() {
@@ -180,8 +155,6 @@ sGis.module('symbol.point', [
                 return this._source;
             },
             set: function(source) {
-                this._image = new Image();
-                this._image.src = source;
                 this._source = source;
             }
         },

@@ -77,6 +77,9 @@
         return loaded;
     }
 
+    sGis.loadedModules = loadedModules;
+    sGis.loadingDefs = loadingDefs;
+
     window.sGis = sGis;
 
     function setModuleReference(module, name) {

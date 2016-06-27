@@ -20,16 +20,16 @@ sGis.module('render.HtmlElement', [
             var node = document.createElement('div');
             node.innerHTML = this._htmlText;
             this._lastNode = node;
-            return node;
+            callback(null, node);
         }
         
         get position() { return this._position; }
         
         contains(position) {
-            var widht = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
+            var width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
             var height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;
             
-            return this._position.x < position.x && this._position.y > position.y && this._position.x + width > position.x && this._position.y - height > position.y;
+            return this._position[0] < position.x && this._position[1] < position.y && this._position[0] + width > position.x && this._position[1] + height > position.y;
         }
     }
 

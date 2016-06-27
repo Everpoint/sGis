@@ -26,10 +26,10 @@ sGis.module('painter.domPainter.SvgRender', [
         _setNode() {
             if (this._baseRender instanceof Arc) {
                 this._setArcNode();
-            } else if (this._baseRender instanceof Polyline) {
-                this._setPolylineNode();
             } else if (this._baseRender instanceof Polygon) {
                 this._setPolygonNode();
+            } else if (this._baseRender instanceof Polyline) {
+                this._setPolylineNode();
             }
         }
         

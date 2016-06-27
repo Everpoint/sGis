@@ -1,4 +1,4 @@
-sGis.module('feature.MapTip', [
+sGis.module('feature.Maptip', [
     'utils',
     'Feature',
     'Point',
