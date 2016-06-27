@@ -92,7 +92,7 @@ sGis.module('render.Polygon', [
          * @returns {boolean}
          */
         contains(position) {
-            return geotools.contains(this.coordinates, position, this.width / 2 + this.lineContainsTolerance);
+            return geotools.contains(this.coordinates, position, this.strokeWidth / 2 + this.lineContainsTolerance);
         }
     }
     

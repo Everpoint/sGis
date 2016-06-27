@@ -68,7 +68,7 @@ sGis.module('render.Polyline', [
         contains(position) {
             for (var ring = 0, l = this.coordinates.length; ring < l; ring++) {
                 for (var i = 1, m = this.coordinates[ring].length; i < m; i++) {
-                    if (geotools.pointToLineDistance(position, [this.coordinates[ring][i-1], this.coordinates[ring][i]]) < this.width / 2 + this.lineContainsTolerance) return [ring, i - 1];
+                    if (geotools.pointToLineDistance(position, [this.coordinates[ring][i-1], this.coordinates[ring][i]]) < this.strokeWidth / 2 + this.lineContainsTolerance) return [ring, i - 1];
                 }
             }
             return false;

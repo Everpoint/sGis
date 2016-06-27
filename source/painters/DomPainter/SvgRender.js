@@ -167,10 +167,10 @@ sGis.module('painter.domPainter.SvgRender', [
                 }
             }
 
-            var width = xmax - x + this._baseRender.width;
-            var height = ymax - y + this._baseRender.width;
-            x -= this._baseRender.width / 2;
-            y -= this._baseRender.width / 2;
+            var width = xmax - x + this._baseRender.strokeWidth;
+            var height = ymax - y + this._baseRender.strokeWidth;
+            x -= this._baseRender.strokeWidth / 2;
+            y -= this._baseRender.strokeWidth / 2;
             d = d.trim();
 
             return {width: width, height: height, x: x, y: y, d: d};
