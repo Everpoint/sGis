@@ -94,43 +94,6 @@ sGis.module('render.Arc', [
                 this._fillColor = color;
                 this._resetCache();
             }
-        },
-        svg: {
-            get: function() {
-                var r2 = this._radius * 2 + this._strokeWidth;
-                if (!this._cachedSvg) {
-                    this._cachedSvg = sGis.utils.svg.circle({
-                        r: this._radius,
-                        cx: this.center[0],
-                        cy: this.center[1],
-                        stroke: this._strokeColor,
-                        'stroke-width': this._strokeWidth,
-                        fill: this._fillColor,
-
-                        width: r2,
-                        height: r2,
-                        viewBox: [
-                            this._center[0] - this._radius - this._strokeWidth / 2,
-                            this._center[1] - this._radius - this._strokeWidth / 2,
-                            r2,
-                            r2
-                        ].join(' ')
-                    });
-                }
-
-                return this._cachedSvg;
-            }
-        },
-
-        node: {
-            get: function() {
-                var svg = this.svg;
-                var x = this._center[0] - this._radius - this._strokeWidth / 2;
-                var y = this._center[1] - this._radius - this._strokeWidth / 2;
-
-                svg.position = [x, y];
-                return svg;
-            }
         }
     });
     

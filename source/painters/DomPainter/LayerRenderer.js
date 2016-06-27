@@ -29,11 +29,11 @@ sGis.module('painter.domPainter.LayerRenderer', [
          * @param index
          * @param useCanvas
          */
-        constructor(master, layer, index, useCanvas = true) {
+        constructor(master, layer, index, useCanvas = false) {
             this._master = master;
             this._layer = layer;
             this._useCanvas = useCanvas;
-            if (useCanvas) this._canvas = new Canvas();
+            this._canvas = new Canvas();
             
             this._bbox = new Bbox([Infinity, Infinity], [Infinity, Infinity]);
             this._featureRenders = new Map();
@@ -192,7 +192,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
                         this._canvas.draw(renders[i]);
                         canvasIsUsed = true;
                     } else {
-                        this._drawNodeRender(new SvgRender(renders[i]), feature);
+                        this._drawNodeRender(renders[i], feature);
                     }
                 } else {
                     this._drawNodeRender(renders[i], feature);
@@ -213,17 +213,18 @@ sGis.module('painter.domPainter.LayerRenderer', [
         
         _drawNodeRender(render, feature) {
             this._loadingRenders.set(render, 1);
-            render.getNode((error, node) => {
+
+            var callback = (error, node) => {
                 this._loadingRenders.delete(render);
-                if (error || !this._featureRenders.has(feature) || this._featureRenders.get(feature).indexOf(render) < 0) return;
+                if (error || !this._featureRenders.has(feature) || !render.baseRender && this._featureRenders.get(feature).indexOf(render) < 0 || render.baseRender && this._featureRenders.get(feature).indexOf(render.baseRender) < 0) return;
 
                 node.style.zIndex = this._zIndex;
 
                 let container = this._master.currContainer;
                 if (render.bbox) {
                     container.addNode(node, render.width, render.height, render.bbox);
-                } else if (render.position) {
-                    container.addFixedSizeNode(node, render.position);
+                } else if (render.position || svgRender.position) {
+                    container.addFixedSizeNode(node, render.position || svgRender.position);
                 }
 
                 this._renderNodeMap.set(render, node);
@@ -233,7 +234,14 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 if (render.onAfterDisplayed) render.onAfterDisplayed(node);
 
                 this._clean(feature);
-            });
+            };
+
+            if (render.getNode) {
+                render.getNode(callback);
+            } else {
+                var svgRender = new SvgRender(render);
+                svgRender.getNode(callback);
+            }
         }
 
         get currentContainer() { return this._currentContainer; }

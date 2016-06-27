@@ -17,22 +17,22 @@ sGis.module('painter.domPainter.Canvas', [
         }
         
         _setNode() {
-            this._node = document.createElement('canvas');
-            this._ctx = this._node.getContext('2d');
+            this._svgNode = document.createElement('canvas');
+            this._ctx = this._svgNode.getContext('2d');
         }
         
         reset(bbox, resolution, width, height) {
-            this._ctx.clearRect(0, 0, this._node.width, this._node.height);
+            this._ctx.clearRect(0, 0, this._svgNode.width, this._svgNode.height);
 
-            this._node.width = width;
-            this._node.height = height;
+            this._svgNode.width = width;
+            this._svgNode.height = height;
             this._isEmpty = true;
             
             this._ctx.translate(-bbox.xMin / resolution, bbox.yMax / resolution);
         }
         
-        get width() { return this._node.width; }
-        get height() { return this._node.height; }
+        get width() { return this._svgNode.width; }
+        get height() { return this._svgNode.height; }
         
         draw(render) {
             if (render instanceof Arc) {
@@ -105,7 +105,7 @@ sGis.module('painter.domPainter.Canvas', [
         
         get isEmpty() { return this._isEmpty; }
         
-        get node() { return this._node; }
+        get node() { return this._svgNode; }
     }
     
     return Canvas;
