@@ -30,7 +30,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 var layerRenderers = this._master.layerRenderers;
                 for (var i = layerRenderers.length - 1; i >= 0; i--) {
                     var details = {};
-                    var targetObject = layerRenderers[i].getEventCatcher(name, data.position, details);
+                    var targetObject = layerRenderers[i].getEventCatcher(name, [data.position.x, data.position.y], details);
                     if (targetObject) {
                         data.intersectionType = details.intersectionType;
                         sGisEvent = targetObject.fire(name, data);

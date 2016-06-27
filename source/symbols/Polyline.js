@@ -1,7 +1,7 @@
 sGis.module('symbol.polyline', [
     'utils',
     'Symbol',
-    'geom.Polyline'
+    'render.Polyline'
 ], function(utils, Symbol, Polyline) {
     'use strict';
 

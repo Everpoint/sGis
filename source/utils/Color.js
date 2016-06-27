@@ -1,5 +1,5 @@
 sGis.module('utils.Color', [
-    
+
 ], () => {
 
     'use strict';
@@ -356,6 +356,8 @@ sGis.module('utils.Color', [
         yellowgreen: "9acd32",
         transparent: '0000'
     };
+
+    sGis.utils.Color = Color;
 
     return Color;
 

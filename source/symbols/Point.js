@@ -3,8 +3,9 @@ sGis.module('symbol.point', [
     'utils.proto',
     'Symbol',
     'render.Polygon',
-    'render.HtmlElement'
-], function(utils, Symbol, Polygon) {
+    'render.HtmlElement',
+    'utils.Color'
+], function(utils, Symbol, Polygon, HtmlElement, Color) {
     'use strict';
 
     var pointSymbols = {

@@ -74,11 +74,12 @@
         });
         loadingDefs = remains;
 
+        sGis.loadingDefs = loadingDefs;
+
         return loaded;
     }
 
     sGis.loadedModules = loadedModules;
-    sGis.loadingDefs = loadingDefs;
 
     window.sGis = sGis;
 

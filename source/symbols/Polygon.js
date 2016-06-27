@@ -1,7 +1,7 @@
 sGis.module('symbol.polygon', [
     'utils',
     'Symbol',
-    'geom.Polygon'
+    'render.Polygon'
 ], function(utils, Symbol, Polygon) {
     'use strict';
 

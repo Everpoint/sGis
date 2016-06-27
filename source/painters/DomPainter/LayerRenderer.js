@@ -205,7 +205,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
         _setFeatureListeners(feature, render) {
             this.listensFor.forEach(eventName => {
-                if (!feature.hasListeners(eventName)) return;
+                if (!feature.hasListeners(eventName) || render.ignoreEvents) return;
 
                 this._eventCatchers[eventName].set(render, feature);
             });

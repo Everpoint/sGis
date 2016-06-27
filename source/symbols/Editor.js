@@ -2,11 +2,11 @@ sGis.module('symbol.editor', [
     'utils',
     'Symbol',
     'symbol.point',
-    'geom.Point',
-    'geom.Polyline',
-    'geom.Polygon',
-    'geom.Arc'
-], function(Symbol, pointSymbols, Point, Polyline, Polygon) {
+    'render.Point',
+    'render.Polyline',
+    'render.Polygon',
+    'render.Arc'
+], function(Symbol, pointSymbols, Point, Polyline, Polygon, Arc) {
     'use strict';
 
     var editorSymbols = {
