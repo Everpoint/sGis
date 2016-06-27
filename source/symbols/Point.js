@@ -359,25 +359,19 @@ sGis.module('symbol.point', [
 
         renderFunction: function(feature, resolution, crs) {
             if (this._masked) {
-                var image = new Image();
-                image.src = this._masked.src;
-                image.width = this.size;
                 var k = this._masked.width / this.size;
-                image.height = this._masked.height / k;
+                var height = this._masked.height / k;
 
                 var f = feature.projectTo(crs);
                 var pxPosition = [f._point[0] / resolution, -f._point[1] / resolution];
+                var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
 
-                image.position = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
-
-                var render = {
-                    node: image,
-                    position: image.position,
-                    persistent: true,
-                    renderToCanvas: this.renderToCanvas
-                };
+                var html = '<img src="' + this._masked.src + '" width="' + this.size + '" height="' + height + '">';
+                var render = new sGis.render.HtmlElement(html, renderPosition);
 
                 return [render];
+            } else {
+                return [];
             }
         },
 
