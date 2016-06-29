@@ -354,6 +354,27 @@ sGis.module('utils', [
             }
 
             return c;
+        },
+        
+        setCssClasses: function(desc) {
+            var classes = Object.keys(desc).map(key => {return utils._getCssText(key, desc[key]);});
+            utils._setStyleNode(classes.join('\n'));
+        },
+        
+        _getCssText: function(className, styles) {
+            return '.' + className + '{' + styles + '}';
+        },
+        
+        _setStyleNode: function(text) {
+            var node = document.createElement('style');
+            node.type = 'text/css';
+            if (node.styleSheet) {
+                node.styleSheet.cssText = text;
+            } else {
+                node.appendChild(document.createTextNode(text));
+            }
+
+            document.head.appendChild(node);
         }
     };
 

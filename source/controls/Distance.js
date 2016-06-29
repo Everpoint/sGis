@@ -20,7 +20,7 @@ sGis.module('controls.Distance', [
 
             var feature = this.activeLayer.features[this.activeLayer.features.length - 1],
                 coord = feature.coordinates[0],
-                label = new sGis.feature.Label(coord[1], { content: '', style: { offset: { x: 2, y: -22 }, css: 'sGis-distanceLabel', width: 100 }, crs: map.crs });
+                label = new sGis.feature.Label(coord[1], { symbol: new sGis.symbol.label.Label({css: 'sGis-symbol-label-center-top sGis-distanceLabel'}), crs: map.crs });
 
             this.activeLayer.add(label);
 

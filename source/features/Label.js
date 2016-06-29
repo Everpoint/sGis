@@ -21,7 +21,7 @@ sGis.module('feature.Label', [
 
     Label.prototype = new sGis.Feature({
         _defaultSymbol: sGis.symbol.label.Label,
-        _content: defaultDiv.cloneNode(true),
+        _content: '',
         _crs: sGis.CRS.geo,
         currentBbox: null,
 

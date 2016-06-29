@@ -10,6 +10,9 @@ sGis.module('FeatureLayer', [
         delayedUpdate: true
     };
 
+    /**
+     * @alias sGis.FeatureLayer
+     */
     class FeatureLayer extends sGis.Layer {
         constructor(options) {
             super();

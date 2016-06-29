@@ -32,7 +32,7 @@ sGis.module('painter.DomPainter', [
          */
         constructor(map, options) {
             this._map = map;
-            utils.init(this, options);
+            utils.init(this, options, true);
 
             this._layerRenderers = new Map();
             this._containers = [];
@@ -51,11 +51,11 @@ sGis.module('painter.DomPainter', [
         }
 
         /**
-         * DOM element, inside of which the map will be drawn. If null is given, the map will not be drawn.
-         * @type HTMLElement
+         * DOM element, inside of which the map will be drawn. If null is given, the map will not be drawn. If string is given, an element with given id will be searched.
+         * @type HTMLElement|String
          */
         get wrapper() { return this._wrapper; }
-        set wrapper(/** HTMLElement */ node) {
+        set wrapper(/** HTMLElement|String */ node) {
             if (this._wrapper) this._clearDOM();
             if (node) {
                 this._initDOM(node);

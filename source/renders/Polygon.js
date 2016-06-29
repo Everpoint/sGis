@@ -80,6 +80,10 @@ sGis.module('render.Polygon', [
          * @param {Object} [options] - key-value list of any properties of sGis.render.Polygon
          */
         constructor(coordinates, options) {
+            if (!coordinates) coordinates = [];
+            if (!utils.isArray(coordinates[0])) coordinates = [coordinates];
+            if (!utils.isArray(coordinates[0][0])) coordinates = [coordinates];
+            
             utils.init(this, options);
             this.coordinates = coordinates;
         }

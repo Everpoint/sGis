@@ -98,9 +98,6 @@ sGis.module('Feature', [
             },
 
             set: function(symbol) {
-                if (!(symbol instanceof sGis.Symbol)) sGis.utils.error('sGis.Symbol instance is expected but got ' + symbol + ' instead');
-                //if (symbol.type !==  this.type) utils.error('sGis.feature.Point object requere symbol of the type "' + this.type + '" but got ' + symbol.type + ' instead');
-
                 this._symbol = symbol;
             }
         },
