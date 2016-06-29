@@ -30,21 +30,29 @@ sGis.module('symbol.label', [
          */
         constructor(options) {
             utils.init(this, options);
+            this._lastRendered = {};
         }
 
         /**
          * @implementation
          */
         renderFunction(feature, resolution, crs) {
-            if (!feature._cache || !math.softEquals(resolution, feature._cache[0].resolution)) {
-                var html = '<div' +  (this.css ? ' class="' + this.css + '"' : '') + '>' + feature.content + '</div>';
-                var point = feature.point.projectTo(crs);
-                var position = [point.x / resolution, -point.y / resolution];
-    
-                feature._cache = [new HtmlElement(html, position)];
+            if (this._lastRendered.feature === feature && math.softEquals(resolution, this._lastRendered.resolution ) && this._lastRendered.crs === crs){
+                return this._lastRendered.renders;
             }
-    
-            return feature._cache;
+
+            var html = '<div' +  (this.css ? ' class="' + this.css + '"' : '') + '>' + feature.content + '</div>';
+            var point = feature.point.projectTo(crs);
+            var position = [point.x / resolution, -point.y / resolution];
+
+            this._lastRendered = {
+                feature: feature,
+                resolution: resolution,
+                crs: crs,
+                renders: [new HtmlElement(html, position)]
+            };
+
+            return this._lastRendered.renders;
         }
     }
     
