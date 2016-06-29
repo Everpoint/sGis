@@ -1,153 +1,73 @@
 sGis.module('Feature', [
     'utils',
-    'utils.proto',
-    'Crs',
     'CRS',
     'IEventHandler'
-], function(utils, proto, Crs, CRS, IEventHandler) {
+], function(utils, CRS, IEventHandler) {
+
     'use strict';
 
-    /**
-     * @class sGis.Feature
-     * @param extention
-     * @constructor
-     */
-    var Feature = function(extention) {
-        for (var key in extention) {
-            this[key] = extention[key];
-        }
-    };
+    var defaults = {
+        attributes: [],
 
-    Feature.prototype = {
-        _bbox: null,
-        _attributes: null,
-        _crs: sGis.CRS.geo,
-        _hidden: false,
+        _crs: CRS.geo,
         _symbol: null,
-
-        render: function(resolution, crs) {
-            if (this._hidden) {
-                return [];
-            } else {
-                return this.symbol.renderFunction(this, resolution, crs);
-            }
-        },
-
-        hide: function() {
-            this._hidden = true;
-        },
-
-        show: function() {
-            this._hidden = false;
-        },
-
-        __initialize: function(options) {
-            if (options && options.id) {
-                this.id = options.id;
-                delete options.id;
-            } else {
-                this._id = sGis.utils.getGuid();
-            }
-
-            if (!options || !options.symbol && this._defaultSymbol) {
-                this._symbol = new this._defaultSymbol();
-            }
-
-            sGis.utils.init(this, options, true);
-        },
-
-        setTempSymbol: function(symbol) {
-            this._tempSymbol = symbol;
-        },
-
-        clearTempSymbol: function() {
-            this._tempSymbol = null;
-        }
+        _hidden: false
     };
 
-    Object.defineProperties(Feature.prototype, {
-        id: {
-            get: function() {
-                return this._id;
-            },
-
-            set: function(id) {
-                this._id = id;
+    class Feature {
+        constructor(properties = {}) {
+            if (properties.crs){
+                this._crs = properties.crs;
+                delete properties.crs;
             }
-        },
-
-        attributes: {
-            get: function() {
-                return this._attributes;
-            },
-
-            set: function(attributes) {
-                this._attributes = attributes;
-            }
-        },
-
-        crs: {
-            get: function() {
-                return this._crs;
-            }
-        },
-
-        symbol: {
-            get: function() {
-                return this._tempSymbol || this._symbol;
-            },
-
-            set: function(symbol) {
-                this._symbol = symbol;
-            }
-        },
-
-        style: {
-            get: function() {
-                return this.symbol;
-            },
-
-            set: function(style) {
-                var keys = Object.keys(style);
-                for (var i = 0; i < keys.length; i++) {
-                    this._symbol[keys[i]] = style[keys[i]];
-                }
-            }
-        },
-
-        hidden: {
-            get: function() {
-                return this._hidden;
-            },
-            set: function(bool) {
-                if (bool === true) {
-                    this.hide();
-                } else if (bool === false) {
-                    this.show();
-                } else {
-                    sGis.utils.error('Boolean is expected but got ' + bool + ' instead');
-                }
-            }
-        },
-
-        isTempSymbolSet: {
-            get: function() {
-                return !!this._tempSymbol;
-            }
-        },
-
-        originalSymbol: {
-            get: function() {
-                return this._symbol;
-            }
+            
+            utils.init(this, properties);
+            this.attributes = [];
         }
-    });
 
-    sGis.utils.proto.setMethods(Feature.prototype, sGis.IEventHandler);
+        render(resolution, crs) {
+            if (this._hidden || !this.symbol) return [];
+            if (!this._needToRender(resolution, crs)) return this._rendered.renders;
 
-    Feature.getNewId = function() {
-        return sGis.utils.getGuid();
-    };
+            this._rendered = {
+                resolution: resolution,
+                crs: crs,
+                renders: this.symbol.renderFunction(this, resolution, crs)
+            };
+
+            return this._rendered.renders;
+        }
+
+        _needToRender(resolution, crs) {
+            return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs;
+        }
+
+        redraw() {
+            delete this._rendered;
+        }
+
+        hide() { this._hidden = true; }
+        show() { this._hidden = false; }
+
+        setTempSymbol(symbol) { this._tempSymbol = symbol; }
+        clearTempSymbol() { this._tempSymbol = null; }
+        
+        get isTempSymbolSet() { return !!this._tempSymbol; }
+        get originalSymbol() { return this._symbol; }
+        
+        get crs() { return this._crs; }
+        
+        get symbol() { return this._tempSymbol || this._symbol; }
+        set symbol(symbol) {
+            this._symbol = symbol;
+            this.redraw();
+        }
+        
+        get hidden() { return this._hidden; }
+    }
+
+    utils.extend(Feature.prototype, IEventHandler);
+    utils.extend(Feature.prototype, defaults);
     
     return Feature;
 
