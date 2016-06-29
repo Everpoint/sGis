@@ -26,10 +26,10 @@ sGis.module('symbol.label', [
     class Label {
         /**
          * @constructor
-         * @param {Object} options - key-value list of the properties to be assigned to the instance
+         * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
          */
-        constructor(options) {
-            utils.init(this, options);
+        constructor(properties) {
+            utils.init(this, properties);
             this._lastRendered = {};
         }
 

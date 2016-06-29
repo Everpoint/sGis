@@ -16,6 +16,13 @@ sGis.module('feature.Image', [
             super(properties);
             this.bbox = bbox;
         }
+
+        /**
+         * @override
+         */
+        _needToRender(resolution, crs) {
+            return !this._rendered
+        }
         
         get src() { return this._src; }
         set src(src) {
@@ -27,10 +34,6 @@ sGis.module('feature.Image', [
     utils.extend(ImageF.prototype, defaults);
 
     Object.defineProperties(ImageF.prototype, {
-        type: {
-            value: 'image'
-        },
-
         bbox: {
             get: function() {
                 return this._bbox.projectTo(this.crs);

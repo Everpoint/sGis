@@ -65,14 +65,6 @@ sGis.module('feature.MultiPoint', [
     utils.extend(MultiPoint.prototype, defaults);
 
     sGis.utils.proto.setProperties(MultiPoint.prototype, {
-        crs: {
-            default: sGis.CRS.geo,
-            set: function(crs) {
-                this._coordinates = this._coordinates.map(function(point) { return new sGis.Point(point[0], point[1], this._crs).projectTo(crs); }, this);
-                this._crs = crs;
-            }
-        },
-
         bbox: {
             get: function() {
                 if (this._coordinates.length === 0) {
