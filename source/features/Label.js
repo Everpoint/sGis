@@ -8,28 +8,19 @@ sGis.module('feature.Label', [
 ], function(utils, Feature, Crs, Point, Bbox, labelSymbols) {
     'use strict';
 
-    var defaultDiv = document.createElement('div');
-    defaultDiv.innerHTML = 'New label';
-    defaultDiv.style.textAlign = 'center';
-
-    var Label = function(position, options) {
-        this.__initialize(options);
-        this.coordinates = position;
-
-        this._resetCache();
+    var defaults = {
+        _content: '',
+        _symbol: new labelSymbols.Label()
     };
 
-    Label.prototype = new sGis.Feature({
-        _defaultSymbol: sGis.symbol.label.Label,
-        _content: '',
-        _crs: sGis.CRS.geo,
-        currentBbox: null,
-
-        _resetCache: function() {
-            this.currentBbox = null;
-            this._cache = null;
+    class Label extends Feature {
+        constructor(position, properties) {
+            super(properties);
+            this.coordinates = position;
         }
-    });
+    }
+    
+    utils.extend(Label.prototype, defaults);
 
     Object.defineProperties(Label.prototype, {
         coordinates: {
@@ -45,25 +36,12 @@ sGis.module('feature.Label', [
                 } else {
                     sGis.utils.error('Coordinates are expected but got ' + point + ' instead');
                 }
-                this._resetCache();
             }
         },
 
         point: {
             get: function() {
                 return this._point.clone();
-            }
-        },
-
-        crs: {
-            get: function() {
-                return this._crs;
-            },
-
-            set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
-                if (this._point) this._point = this._point.projectTo(crs);
-                this._crs = crs;
             }
         },
 
@@ -74,21 +52,15 @@ sGis.module('feature.Label', [
 
             set: function(content) {
                 this._content = content;
-                this._resetCache();
+                this.redraw();
             }
         },
 
         type: {
             value: 'label'
-        },
-
-        bbox: {
-            get: function() {
-                return this.currentBbox || new sGis.Bbox(this._point, this._point);
-            }
         }
     });
 
     return Label;
     
-})
+});

@@ -16,13 +16,14 @@ sGis.module('Feature', [
 
     class Feature {
         constructor(properties = {}) {
-            if (properties.crs){
-                this._crs = properties.crs;
-                delete properties.crs;
+            var copy = utils.extend({}, properties);
+            if (copy.crs){
+                this._crs = copy.crs;
+                delete copy.crs;
             }
-            
-            utils.init(this, properties);
+
             this.attributes = [];
+            utils.init(this, copy, true);
         }
 
         render(resolution, crs) {

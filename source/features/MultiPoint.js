@@ -1,56 +1,68 @@
 sGis.module('feature.MultiPoint', [
+    'utils',
     'utils.proto',
     'Crs',
     'Point',
     'Bbox',
+    'Feature',
     'feature.Point',
     'symbol.point'
-], function(proto, Crs, Point, Bbox, PointF, pointSymbols) {
+], function(utils, proto, Crs, Feature, Point, Bbox, PointF, pointSymbols) {
     'use strict';
 
-    var MultiPoint = function(coordinates, options) {
-        this._coordinates = [];
-        this.__initialize(options);
-
-        this.coordinates = coordinates;
+    var defaults = {
+        _symbol: new sGis.symbol.point.Point()
     };
 
-    MultiPoint.prototype = new sGis.Feature({
-        _defaultSymbol: sGis.symbol.point.Point,
-        _crs: sGis.CRS.geo,
+    class MultiPoint extends Feature {
+        constructor(coordinates, properties) {
+            super(properties);
+            this._coordinates = [];
+            if (coordinates) this.coordinates = coordinates;
+        }
 
-        projectTo: function(crs) {
+        projectTo(crs) {
             var projected = [];
             this._coordinates.forEach(function(point) {
                 projected.push(new sGis.Point(point[0], point[1], this._crs).projectTo(crs).coordinates);
             }, this);
 
             return new MultiPoint(projected, {symbol: this.symbol, crs: crs});
-        },
+        }
 
-        clone: function() {
+        clone() {
             return this.projectTo(this._crs);
-        },
+        }
 
-        addPoint: function(point) {
+        addPoint(point) {
             if (point instanceof sGis.Point || point instanceof sGis.feature.Point) {
                 this._coordinates.push(point.projectTo(this._crs).coordinates);
             } else {
                 this._coordinates.push([point[0], point[1]]);
             }
-        },
-
-        render: function(resolution, crs) {
-            if (this._hidden) {
-                return [];
-            } else {
-                var rendered = [];
-                this._coordinates.forEach(function(point) { rendered = rendered.concat(new sGis.feature.Point(point, {crs: this._crs, symbol: this.symbol}).render(resolution, crs))}, this);
-
-                return rendered;
-            }
         }
-    });
+
+        render(resolution, crs) {
+            if (this._hidden || !this.symbol) return [];
+            if (!this._needToRender(resolution, crs)) return this._rendered.renders;
+
+            var renders = [];
+            this._coordinates.forEach(point => {
+                var f = new Point(point, {crs: this._crs, symbol: this.symbol});
+                renders = renders.concat(f.render(arguments));
+            });
+            
+            this._rendered = {
+                resolution: resolution,
+                crs: crs,
+                renders: renders
+            };
+
+            return this._rendered.renders;
+        }
+    }
+    
+    utils.extend(MultiPoint.prototype, defaults);
 
     sGis.utils.proto.setProperties(MultiPoint.prototype, {
         crs: {

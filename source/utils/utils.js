@@ -68,6 +68,7 @@ sGis.module('utils', [
             keys.forEach(function(key) {
                 target[key] = source[key];
             });
+            return target;
         },
 
         /**

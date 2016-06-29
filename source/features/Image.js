@@ -1,42 +1,34 @@
 sGis.module('feature.Image', [
     'utils',
     'Feature',
-    'symbol.image',
-    'Crs'
-], function(utils, Feature, imageSymbols, Crs) {
+    'symbol.image'
+], function(utils, Feature, imageSymbols) {
+    
     'use strict';
     
-    var ImageF = function(bbox, properties) {
-        this.__initialize(properties);
-        this.bbox = bbox;
-    };
-
-    ImageF.prototype = new sGis.Feature({
+    var defaults = {
         _src: null,
-        _crs: null,
-        _width: 256,
-        _height: 256,
-        _opacity: 1,
-        _defaultSymbol: sGis.symbol.image.Image,
-        transitionTime: 0
-    });
+        _symbol: new imageSymbols.image.Image()
+    };
+    
+    class ImageF extends Feature {
+        constructor(bbox, properties) {
+            super(properties);
+            this.bbox = bbox;
+        }
+        
+        get src() { return this._src; }
+        set src(src) {
+            this._src = src;
+            this.redraw();
+        }
+    }
+    
+    utils.extend(ImageF.prototype, defaults);
 
     Object.defineProperties(ImageF.prototype, {
         type: {
             value: 'image'
-        },
-
-        src: {
-            get: function() {
-                return this._src;
-            },
-            set: function(source) {
-                if (!sGis.utils.isString(source) && source !== null) sGis.utils.error('String is expected but got ' + source + ' instead');
-                if (this._src !== source) {
-                    this._src = source;
-                    this._cache = null;
-                }
-            }
         },
 
         bbox: {
@@ -58,61 +50,6 @@ sGis.module('feature.Image', [
                 if (!this._bbox || !this._bbox.equals(adjBbox)) {
                     this._bbox = adjBbox;
                     this._cache = null;
-                }
-            }
-        },
-
-        crs: {
-            get: function() {
-                return this._bbox && this._bbox.crs || this._crs;
-            },
-            set: function(crs) {
-                if (this._crs !== crs) {
-                    if (this._bbox) {
-                        this._bbox.crs = crs;
-                    }
-                    this._crs = crs;
-                    this._cache = null;
-                }
-            }
-        },
-
-        cache: {
-            get: function() {
-                return this._cache;
-            }
-        },
-
-        width: {
-            get: function() {
-                return this._width;
-            },
-            set: function(width) {
-                if (this._width !== width) {
-                    this._width = width;
-                    this._cache = null;
-                }
-            }
-        },
-        height: {
-            get: function() {
-                return this._height;
-            },
-            set: function(height) {
-                if (this._height !== height) {
-                    this._height = height;
-                    this._cache = null;
-                }
-            }
-        },
-        opacity: {
-            get: function() {
-                return this._opacity;
-            },
-            set: function(opacity) {
-                if (this._opacity !== opacity) {
-                    this._opacity = opacity;
-                    if (this._cache && this._cache[0].node) this._cache[0].node.style.opacity = opacity;
                 }
             }
         }

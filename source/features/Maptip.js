@@ -2,26 +2,24 @@ sGis.module('feature.Maptip', [
     'utils',
     'Feature',
     'Point',
-    'symbol.maptip',
-    'Crs'
-], function(utils, Feature, Point, maptipSymbols, Crs) {
-    'use strict';
-    var defaultContent = document.createElement('div');
-    defaultContent.innerHTML = 'New maptip';
+    'symbol.maptip'
+], function(utils, Feature, Point, maptipSymbols) {
 
-    var Maptip = function(position, options) {
-        this.__initialize(options);
-        this.position = position;
+    'use strict';
+
+    var defaults = {
+        _content: '',
+        _symbol: new maptipSymbols.Simple()
     };
 
-    Maptip.prototype = new sGis.Feature({
-        _defaultSymbol: sGis.symbol.maptip.Simple,
-        _content: defaultContent,
-
-        clearCache: function() {
-            this._cache = null;
+    class Maptip extends Feature {
+        constructor(position, properties) {
+            super(properties);
+            this.position = position;
         }
-    });
+    }
+
+    utils.extend(Maptip.prototype, defaults);
 
     Object.defineProperties(Maptip.prototype, {
         position: {
@@ -37,7 +35,7 @@ sGis.module('feature.Maptip', [
                     sGis.utils.error('Point is expected but got ' + position + ' instead');
                 }
 
-                this.clearCache();
+                this.redraw();
             }
         },
 
@@ -47,20 +45,7 @@ sGis.module('feature.Maptip', [
             },
             set: function(content) {
                 this._content = content;
-                this.clearCache();
-            }
-        },
-
-        crs: {
-            get: function() {
-                return this._crs;
-            },
-
-            set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
-                this._crs = crs;
-                this._point = this._point.projectTo(crs);
-                this.clearCache();
+                this.redraw();
             }
         },
 
@@ -72,4 +57,5 @@ sGis.module('feature.Maptip', [
     });
 
     return Maptip;
-})
+
+});

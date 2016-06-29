@@ -6,27 +6,20 @@ sGis.module('feature.Point', [
     'Bbox',
     'symbol.point'
 ], function(utils, Feature, Crs, /**sGis.Point*/ Point, Bbox, pointSymbols) {
+
     'use strict';
 
-    /**
-     * @class
-     * @alias sGis.feature.Point
-     * @param point
-     * @param options
-     * @constructor
-     */
-    var PointF = function (point, options) {
-        this.__initialize(options);
-        if (!point) sGis.utils.error('The point position is not specified');
-
-        this._point = point;
+    var defaults = {
+        _symbol: new sGis.symbol.point.Point()
     };
 
-    PointF.prototype = new sGis.Feature({
-        _defaultSymbol: sGis.symbol.point.Point,
-        _crs: sGis.CRS.geo,
+    class PointF extends Feature {
+        constructor(point, properties) {
+            super(properties);
+            this._point = point;
+        }
 
-        projectTo: function(crs) {
+        projectTo(crs) {
             var point = new sGis.Point(this._point[0], this._point[1], this._crs),
                 projected = point.projectTo(crs),
                 coordinates = crs === sGis.CRS.geo ? [projected.y, projected.x] : [projected.x, projected.y];
@@ -36,24 +29,16 @@ sGis.module('feature.Point', [
             if (this._size) response._size = this._size;
 
             return response;
-        },
+        }
 
-        clone: function() {
+        clone() {
             return this.projectTo(this._crs);
         }
-    });
+    }
+
+    utils.extend(PointF.prototype, defaults);
 
     Object.defineProperties(PointF.prototype, {
-        crs: {
-            get: function() {
-                return this._crs;
-            },
-
-            set: function(crs) {
-                this._crs = crs;
-            }
-        },
-
         bbox: {
             get: function() {
                 var point = new sGis.Point(this._point[0], this._point[1], this._crs);
