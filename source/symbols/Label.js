@@ -7,7 +7,10 @@ sGis.module('symbol.label', [
 
     var defaults = {
         /**
-         * Css class to be added to the label node
+         * Css class to be added to the label node. sGis library provides 9 predefined classes that can be used for labels:
+         * sGis-symbol-label-left-top, sGis-symbol-label-left-middle, sGis-symbol-label-left-bottom,
+         * sGis-symbol-label-center-top, sGis-symbol-label-center-middle, sGis-symbol-label-center-bottom,
+         * sGis-symbol-label-right-top, sGis-symbol-label-right-middle, sGis-symbol-label-right-bottom
          * @type String
          * @memberof sGis.symbol.label.Label
          * @instance
