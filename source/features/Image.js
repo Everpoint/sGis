@@ -5,13 +5,22 @@ sGis.module('feature.Image', [
 ], function(utils, Feature, imageSymbols) {
     
     'use strict';
-    
+
     var defaults = {
         _src: null,
         _symbol: new imageSymbols.image.Image()
     };
-    
+
+    /**
+     * @alias sGis.feature.Image
+     * @extends sGis.Feature
+     */
     class ImageF extends Feature {
+        /**
+         * @constructor
+         * @param {sGis.Bbox} bbox - bbox that the image will fit 
+         * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
+         */
         constructor(bbox, properties) {
             super(properties);
             this.bbox = bbox;
@@ -21,11 +30,16 @@ sGis.module('feature.Image', [
          * @override
          */
         _needToRender(resolution, crs) {
-            return !this._rendered
+            return !this.getRenderCache();
         }
-        
+
+        /**
+         * Source of the image. Can be html address or data:url string.
+         * @type String
+         * @default null
+         */
         get src() { return this._src; }
-        set src(src) {
+        set src(/** String */ src) {
             this._src = src;
             this.redraw();
         }

@@ -46,6 +46,10 @@ sGis.module('Feature', [
             if (this._hidden || !this.symbol) return [];
             if (!this._needToRender(resolution, crs)) return this._rendered.renders;
 
+            /**
+             * @type {{resolution: Number, crs: sGis.Crs, renders: sGis.IRender[]}}
+             * @private
+             */
             this._rendered = {
                 resolution: resolution,
                 crs: crs,
@@ -57,6 +61,14 @@ sGis.module('Feature', [
 
         _needToRender(resolution, crs) {
             return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs;
+        }
+
+        /**
+         * Returns the cached render of the feature.
+         * @returns {{resolution: Number, crs: sGis.Crs, renders: sGis.IRender[]}}
+         */
+        getRenderCache() {
+            return this._rendered;
         }
 
         /**

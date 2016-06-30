@@ -23,10 +23,7 @@ sGis.module('symbol.label', [
             utils.init(this, properties);
             this._lastRendered = {};
         }
-
-        /**
-         * @implementation
-         */
+        
         renderFunction(feature, resolution, crs) {
             if (this._lastRendered.feature === feature && math.softEquals(resolution, this._lastRendered.resolution ) && this._lastRendered.crs === crs){
                 return this._lastRendered.renders;

@@ -9,7 +9,7 @@
  */
 
 /**
- * This function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map.
+ * This function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map. If the symbol cannot render provided feature, empty array is returned.
  * @method renderFunction
  * @memberof sGis.ISymbol
  * @instance
