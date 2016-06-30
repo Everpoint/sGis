@@ -26,8 +26,6 @@ sGis.module('DynamicLayer', [
                 var url = this.getImageUrl(bbox, resolution);
                 this._features[0].src = url;
                 this._features[0].bbox = bbox;
-                this._features[0].width = bbox.width / resolution;
-                this._features[0].height = bbox.height / resolution;
             }
 
             return this._features;

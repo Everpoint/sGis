@@ -24,7 +24,7 @@ sGis.module('symbol.image', [
         renderFunction(/** sGis.feature.Image */ feature) {
             if (!feature.src) return [];
 
-            var render = new sGis.render.Image(feature.src, feature.bbox, this.width, this.height);
+            var render = new sGis.render.Image(feature.src, feature.bbox);
             if (this.transitionTime > 0) {
                 render.opacity = 0;
                 render.onAfterDisplayed = (node) => {
@@ -40,24 +40,6 @@ sGis.module('symbol.image', [
             return [render];
         }
     }
-
-    /**
-     * Width of the image.
-     * @member {Number} width
-     * @memberof sGis.symbol.image.Image
-     * @instance
-     * @default 256
-     */
-    ImageSymbol.prototype.width = 256;
-
-    /**
-     * Height of the image.
-     * @member {Number} height
-     * @memberof sGis.symbol.image.Image
-     * @instance
-     * @default 256
-     */
-    ImageSymbol.prototype.height = 256;
 
     /**
      * Time in ms of the image to fade in to the map.
