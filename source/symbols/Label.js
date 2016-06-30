@@ -3,7 +3,12 @@ sGis.module('symbol.label', [
     'math',
     'render.HtmlElement'
 ], function(utils, math, HtmlElement) {
+
     'use strict';
+
+    /**
+     * @namespace sGis.symbol.label
+     */
 
     /**
      * @implements sGis.ISymbol

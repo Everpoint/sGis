@@ -18,3 +18,7 @@
  * @param {sGis.Crs} crs - the target crs of the render
  * @returns {sGis.IRender[]}
  */
+
+/**
+ * @namespace sGis.symbol
+ */
