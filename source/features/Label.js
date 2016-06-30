@@ -51,6 +51,15 @@ sGis.module('feature.Label', [
             this.redraw();
         }
     }
+
+    /**
+     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
+     * @member symbol
+     * @memberof sGis.feature.Label
+     * @type sGis.ISymbol
+     * @instance
+     * @default new sGis.symbol.label.Label()
+     */
     
     utils.extend(Label.prototype, defaults);
 
