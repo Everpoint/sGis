@@ -6,16 +6,11 @@ sGis.module('Feature', [
 
     'use strict';
 
-    var defaults = {
-        /**
-         * Custom attributes of the feature.
-         * @type Object
-         * @memberof sGis.Feature
-         * @instance
-         * @default {}
-         */
-        attributes: {},
+    /**
+     * @namespace sGis.feature
+     */
 
+    var defaults = {
         _crs: CRS.geo,
         _symbol: null,
         _hidden: false
@@ -38,7 +33,6 @@ sGis.module('Feature', [
                 delete copy.crs;
             }
 
-            this.attributes = {};
             utils.init(this, copy, true);
         }
 

@@ -5,20 +5,6 @@ sGis.module('symbol.label', [
 ], function(utils, math, HtmlElement) {
     'use strict';
 
-    var defaults = {
-        /**
-         * Css class to be added to the label node. sGis library provides 9 predefined classes that can be used for labels:
-         * sGis-symbol-label-left-top, sGis-symbol-label-left-middle, sGis-symbol-label-left-bottom,
-         * sGis-symbol-label-center-top, sGis-symbol-label-center-middle, sGis-symbol-label-center-bottom,
-         * sGis-symbol-label-right-top, sGis-symbol-label-right-middle, sGis-symbol-label-right-bottom
-         * @type String
-         * @memberof sGis.symbol.label.Label
-         * @instance
-         * @default "sGis-symbol-label-center-top"
-         */
-        css: 'sGis-symbol-label-center-top'
-    };
-
     /**
      * @implements sGis.ISymbol
      * @alias sGis.symbol.label.Label
@@ -40,7 +26,6 @@ sGis.module('symbol.label', [
             if (this._lastRendered.feature === feature && math.softEquals(resolution, this._lastRendered.resolution ) && this._lastRendered.crs === crs){
                 return this._lastRendered.renders;
             }
-
             var html = '<div' +  (this.css ? ' class="' + this.css + '"' : '') + '>' + feature.content + '</div>';
             var point = feature.point.projectTo(crs);
             var position = [point.x / resolution, -point.y / resolution];
@@ -55,9 +40,19 @@ sGis.module('symbol.label', [
             return this._lastRendered.renders;
         }
     }
-    
-    utils.extend(Label.prototype, defaults);
 
+    /**
+     * Css class to be added to the label node. sGis library provides 9 predefined classes that can be used for labels:
+     * sGis-symbol-label-left-top, sGis-symbol-label-left-middle, sGis-symbol-label-left-bottom,
+     * sGis-symbol-label-center-top, sGis-symbol-label-center-middle, sGis-symbol-label-center-bottom,
+     * sGis-symbol-label-right-top, sGis-symbol-label-right-middle, sGis-symbol-label-right-bottom
+     * @member {String} css
+     * @memberof sGis.symbol.label.Label
+     * @instance
+     * @default "sGis-symbol-label-center-top"
+     */
+    Label.prototype.css = 'sGis-symbol-label-center-top';
+    
     utils.setCssClasses({
         'sGis-symbol-label-left-top': 'transform:translate(-120%,-120%);',
         'sGis-symbol-label-left-middle': 'transform:translate(-120%,-50%);',

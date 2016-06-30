@@ -470,4 +470,4 @@ sGis.module('symbol.point', [
     
     return pointSymbols;
     
-})
+});
