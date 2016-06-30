@@ -8,7 +8,7 @@ sGis.module('feature.Image', [
 
     var defaults = {
         _src: null,
-        _symbol: new imageSymbols.image.Image()
+        _symbol: new imageSymbols.Image()
     };
 
     /**
@@ -28,6 +28,7 @@ sGis.module('feature.Image', [
 
         /**
          * @override
+         * @private
          */
         _needToRender(resolution, crs) {
             return !this.getRenderCache();
@@ -43,35 +44,29 @@ sGis.module('feature.Image', [
             this._src = src;
             this.redraw();
         }
+
+        /**
+         * Bbox that the image will fit
+         * @type sGis.Bbox
+         */
+        get bbox() { return this._bbox; }
+        set bbox(/** sGis.Bbox */ bbox) {
+            this._bbox = bbox.projectTo(this.crs);
+            this.redraw();
+        }
     }
-    
+
+    /**
+     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
+     * @member symbol
+     * @memberof sGis.feature.Image
+     * @type sGis.ISymbol
+     * @instance
+     * @default new sGis.symbol.image.Image()
+     */
+
     utils.extend(ImageF.prototype, defaults);
 
-    Object.defineProperties(ImageF.prototype, {
-        bbox: {
-            get: function() {
-                return this._bbox.projectTo(this.crs);
-            },
-            set: function(bbox) {
-                var adjBbox;
-                if (bbox instanceof sGis.Bbox) {
-                    if (this._crs) {
-                        adjBbox = bbox.projectTo(this._crs);
-                    } else {
-                        adjBbox = bbox;
-                        this._crs = bbox.crs;
-                    }
-                } else {
-                    adjBbox = new sGis.Bbox(bbox[0], bbox[1], this._crs || sGis.CRS.geo);
-                }
-                if (!this._bbox || !this._bbox.equals(adjBbox)) {
-                    this._bbox = adjBbox;
-                    this._cache = null;
-                }
-            }
-        }
-    });
-    
     return ImageF;
     
 });

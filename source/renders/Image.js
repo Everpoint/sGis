@@ -29,9 +29,7 @@ sGis.module('render.Image', [
         constructor(src, bbox, width, height, onAfterDisplayed) {
             this._src = src;
             this._bbox = bbox;
-            this._width = width;
-            this._height = height;
-            
+
             this._resolution = this._bbox / width;
             
             this.onAfterDisplayed = onAfterDisplayed;
@@ -45,8 +43,6 @@ sGis.module('render.Image', [
          */
         getNode(callback) {
             var node = new Image();
-            node.width = this._width;
-            node.height = this._height;
             node.style.opacity = this.opacity;
             node.onload = function() { callback(null, node); };
             node.onerror = function() { callback('Failed to load image', null); };

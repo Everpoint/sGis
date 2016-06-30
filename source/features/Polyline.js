@@ -46,10 +46,11 @@ sGis.module('feature.Polyline', [
             return new Polyline(this._coordinates, {crs: this._crs, color: this._color, width: this._width, symbol: this.originalSymbol});
         }
 
-        projectTo(crs) {
-            var projected = this.clone();
-            projected.crs = crs;
-            return projected;
+        projectTo(/** sGis.Crs */ crs) {
+            var projected = this._coordinates.map(ring => {
+                return ring.map(point => { return this.crs.projectionTo(crs)(point); });
+            });
+            return new Polyline(projected, { crs: crs, symbol: this.symbol });
         }
 
         setRing(n, coordinates) {

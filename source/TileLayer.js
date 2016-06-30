@@ -66,6 +66,7 @@ sGis.module('TileLayer', [
 
             this._source = tileSource;
             this._tiles = {};
+            this._setSymbol();
         }
 
         /**
@@ -113,7 +114,7 @@ sGis.module('TileLayer', [
                     if (!tiles[tileId]) {
                         var imageBbox = this._getTileBbox(level, xIndex, yIndex);
                         var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, level);
-                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, transitionTime: this.transitionTime, opacity: this.opacity });
+                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, symbol: this._symbol });
                     }
 
                     features.push(tiles[tileId]);
@@ -178,7 +179,19 @@ sGis.module('TileLayer', [
                 this._tiles[key].opacity = opacity;
             });
 
+            this._setSymbol();
+
             this.fire('propertyChange', {property: 'opacity'});
+        }
+
+        get transitionTime() { return this._transitionTime; }
+        set transitionTime(time) {
+            this._transitionTime = time;
+            this._setSymbol();
+        }
+
+        _setSymbol() {
+            this._symbol = new sGis.symbol.image.Image({transitionTime: this.transitionTime, opacity: this.opacity});
         }
     }
 
