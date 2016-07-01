@@ -1,15 +1,15 @@
 sGis.module('feature.Polygon', [
     'utils',
     'geotools',
-    'symbol.polygon',
+    'symbol.polygon.Simple',
     'feature.Polyline',
     'Point',
     'feature.Point'
-], function(utils, geotools, polygonSymbols, Polyline, Point, PointF) {
+], function(utils, geotools, PolygonSymbol, Polyline, Point, PointF) {
     'use strict';
 
     var defaults = {
-        _symbol: new sGis.symbol.polygon.Simple()
+        _symbol: new PolygonSymbol()
     };
 
     class Polygon extends Polyline {

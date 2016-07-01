@@ -25,11 +25,11 @@ sGis.module('symbol.polyline.Simple', [
         }
 
         renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
-            var coordinates = this._getRenderedCoordinates(feature, resolution, crs);
+            var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
             return [new Polyline(coordinates, {strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
         }
 
-        _getRenderedCoordinates(feature, resolution, crs) {
+        static _getRenderedCoordinates(feature, resolution, crs) {
             var projected = feature.projectTo(crs).coordinates;
             
             return projected.map(ring => {
