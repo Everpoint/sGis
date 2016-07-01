@@ -1,6 +1,6 @@
 sGis.module('symbol.polygon.Simple', [
     'Symbol',
-    'symbol.polygon.Simple',
+    'symbol.polyline.Simple',
     'render.Polygon',
     'serializer.symbolSerializer'
 ], function(Symbol, PolylineSymbol, PolygonRender, symbolSerializer) {
@@ -27,7 +27,7 @@ sGis.module('symbol.polygon.Simple', [
 
         renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
-            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth , fillColor: this.fillColor })];
+            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillColor: this.fillColor })];
         }
     }
 
