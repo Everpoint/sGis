@@ -6,6 +6,10 @@ sGis.module('symbol.label.Label', [
     'use strict';
 
     /**
+     * @namespace sGis.symbol.label
+     */
+
+    /**
      * Symbol of simple html text label.
      * @alias sGis.symbol.label.Label
      * @extends sGis.Symbol

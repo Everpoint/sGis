@@ -4,8 +4,11 @@ sGis.module('symbol.maptip', [
     'render.Polygon',
     'render.HtmlElement'
 ], function(utils, Symbol, Polygon, HtmlElement) {
-    'use strict';
 
+    'use strict';
+    
+    
+    
     var maptipSymbols = {
         Simple: function(style) {
             sGis.utils.init(this, style);
