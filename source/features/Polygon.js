@@ -7,19 +7,19 @@ sGis.module('feature.Polygon', [
     'feature.Point'
 ], function(utils, geotools, polygonSymbols, Polyline, Point, PointF) {
     'use strict';
-    
+
     var defaults = {
         _symbol: new sGis.symbol.polygon.Simple()
     };
-    
+
     class Polygon extends Polyline {
         constructor(coordinates, properties) {
             super(coordinates, properties);
         }
     }
-    
+
     utils.extend(Polygon.prototype, defaults);
-    
+
     Object.defineProperties(Polygon.prototype, {
         type: {
             value: 'polygon'
@@ -69,5 +69,5 @@ sGis.module('feature.Polygon', [
     });
 
     return Polygon;
-    
+
 });

@@ -1,9 +1,19 @@
 sGis.module('render.Image', [
-
-], () => {
+    'utils'
+], (utils) => {
 
     'use strict';
-
+    
+    var defaults = {
+        /**
+         * Opacity of the image
+         * @instance
+         * @memberof sGis.render.ImageRender
+         * @default 1
+         */
+        opacity: 1
+    };
+    
     /**
      * @alias sGis.render.ImageRender
      */
@@ -12,12 +22,18 @@ sGis.module('render.Image', [
          * @constructor
          * @param {String} src - the source of the image.
          * @param {sGis.Bbox} bbox - bbox that will contain image. The rendered image will be adjusted to fit the given bbox.
+         * @param {Number} width - width of the image. For best quality should equal the width of the actual image.
+         * @param {Number} height - height of the image. For best quality should equal the height fo the actual image.
          * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM.
          */
-        constructor(src, bbox, onAfterDisplayed) {
+        constructor(src, bbox, width, height, onAfterDisplayed) {
             this._src = src;
             this._bbox = bbox;
-
+            this._width = width;
+            this._height = height;
+            
+            this._resolution = this._bbox / width;
+            
             this.onAfterDisplayed = onAfterDisplayed;
         }
 
@@ -29,6 +45,8 @@ sGis.module('render.Image', [
          */
         getNode(callback) {
             var node = new Image();
+            node.width = this._width;
+            node.height = this._height;
             node.style.opacity = this.opacity;
             node.onload = function() { callback(null, node); };
             node.onerror = function() { callback('Failed to load image', null); };
@@ -44,6 +62,20 @@ sGis.module('render.Image', [
         get bbox() { return this._bbox; }
 
         /**
+         * Width of the image.
+         * @type Number
+         * @readonly
+         */
+        get width() { return this._width; }
+
+        /**
+         * Height of the image.
+         * @type Number
+         * @readonly
+         */
+        get height() { return this._height; }
+
+        /**
          * Returns true if 'position' is inside the rendered element.
          * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
          * @returns {boolean}
@@ -53,16 +85,9 @@ sGis.module('render.Image', [
             return this._bbox.contains(point);
         }
     }
-
-    /**
-     * Opacity of the image
-     * @member {Number} opacity
-     * @instance
-     * @memberof sGis.render.ImageRender
-     * @default 1
-     */
-    ImageRender.prototype.opacity = 1;
-
+    
+    utils.extend(ImageRender.prototype, defaults);
+    
     return ImageRender;
     
 });

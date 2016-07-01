@@ -11,7 +11,7 @@ sGis.module('feature.Polyline', [
     var defaults = {
         _symbol: new sGis.symbol.polyline.Simple()
     };
-    
+
     class Polyline extends Feature {
         constructor(coordinates, properties) {
             super(properties);
@@ -56,7 +56,7 @@ sGis.module('feature.Polyline', [
         setRing(n, coordinates) {
             if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
             if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
-    
+
             if (n > this._coordinates.length) n = this._coordinates.length;
             this._coordinates[n] = [];
             for (var i = 0, l = coordinates.length; i < l; i++) {
@@ -68,7 +68,7 @@ sGis.module('feature.Polyline', [
             if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
             if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
             if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
-    
+
             if (n > this._coordinates[ring].length) n = this._coordinates[ring].length;
             if (point instanceof sGis.Point) {
                 var projected = point.projectTo(this.crs);
@@ -84,7 +84,7 @@ sGis.module('feature.Polyline', [
             if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
             if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
             if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
-    
+
             this._coordinates[ring].splice(n, 0, [0, 0]);
             this.setPoint(ring, n, point);
         }
@@ -108,16 +108,16 @@ sGis.module('feature.Polyline', [
                     transformed = sGis.utils.multiplyMatrix(extended, matrix);
                 result[ring] = collapseCoordinates(transformed, base);
             }
-    
+
             this.coordinates = result;
         }
 
         rotate(angle, center) {
             if (!sGis.utils.isNumber(angle)) sGis.utils.error('Number is expected but got ' + angle + ' instead');
-    
+
             var sin = Math.sin(angle),
                 cos = Math.cos(angle);
-    
+
             this.transform([[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center);
         }
 
@@ -134,9 +134,9 @@ sGis.module('feature.Polyline', [
             this.transform([[1, 0 ,0], [0, 1, 1], [x, y, 1]]);
         }
     }
-    
+
     utils.extend(Polyline.prototype, defaults);
-    
+
     //TODO: use sGis.utils.extendCoordinates
     function extendCoordinates(coord, center) {
         var extended = [];
@@ -234,7 +234,7 @@ sGis.module('feature.Polyline', [
     function isValidPoint(point) {
         return sGis.utils.isArray(point) && sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]) || (point instanceof sGis.Point);
     }
-    
+
     return Polyline;
-    
+
 });

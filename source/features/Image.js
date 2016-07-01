@@ -3,7 +3,7 @@ sGis.module('feature.Image', [
     'Feature',
     'symbol.image'
 ], function(utils, Feature, imageSymbols) {
-    
+
     'use strict';
 
     var defaults = {
@@ -18,7 +18,7 @@ sGis.module('feature.Image', [
     class ImageF extends Feature {
         /**
          * @constructor
-         * @param {sGis.Bbox} bbox - bbox that the image will fit 
+         * @param {sGis.Bbox} bbox - bbox that the image will fit
          * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
          */
         constructor(bbox, properties) {
@@ -68,5 +68,5 @@ sGis.module('feature.Image', [
     utils.extend(ImageF.prototype, defaults);
 
     return ImageF;
-    
+
 });

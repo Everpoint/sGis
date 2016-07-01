@@ -1,66 +1,53 @@
-sGis.module('symbol.image', [
-    'utils'
-], (/** sGis.utils */ utils) => {
+sGis.module('symbol.image.Image', [
+    'Symbol',
+    'serializer.symbolSerializer'
+], (Symbol, symbolSerializer) => {
 
-    'use strict';
-
-    /**
-     * @namespace sGis.symbol.image
-     */
-
-    /**
-     * @alias sGis.symbol.image.Image
-     * @implements sGis.ISymbol
-     */
-    class ImageSymbol {
-        /**
-         * @constructor
-         * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
-         */
-        constructor(properties) {
-            utils.init(this, properties);
+    var imageSymbols = {
+        Image: function(style) {
+            sGis.utils.init(this, style, true);
         }
-
-        renderFunction(/** sGis.feature.Image */ feature) {
-            if (!feature.src) return [];
-
-            var render = new sGis.render.Image(feature.src, feature.bbox);
-            if (this.transitionTime > 0) {
-                render.opacity = 0;
-                render.onAfterDisplayed = (node) => {
-                    setTimeout(() => {
-                        node.style.transition = 'opacity ' + this.transitionTime / 1000 + 's linear';
-                        node.style.opacity = this.opacity;
-                    }, 0);
-                }
-            } else {
-                render.opacity = this.opacity;
-            }
-
-            return [render];
-        }
-    }
-
-    /**
-     * Time in ms of the image to fade in to the map.
-     * @member {Number} transitionTime
-     * @memberof sGis.symbol.image.Image
-     * @instance
-     * @default 0
-     */
-    ImageSymbol.prototype.transitionTime = 0;
-
-    /**
-     * Opacity of the image from 0 to 1.
-     * @member {Number} opacity
-     * @memberof sGis.symbol.image.Image
-     * @instance
-     * @default 1
-     */
-    ImageSymbol.prototype.opacity = 1;
-
-    return {
-        Image: ImageSymbol
     };
+
+    imageSymbols.Image.prototype = new sGis.Symbol({
+        _transitionTime: 0,
+
+        renderFunction: function(feature, resolution, crs) {
+            if (!feature._cache) {
+                var render = new sGis.render.Image(feature.src, feature.bbox, feature.width, feature.height);
+                if (feature.transitionTime > 0) {
+                    render.opacity = 0;
+                    render.onAfterDisplayed = function(node) {
+                        setTimeout(function() {
+                            node.style.transition = 'opacity ' + feature.transitionTime / 1000 + 's linear';
+                            node.style.opacity = feature.opacity;
+                        }, 0);
+                    }
+                } else {
+                    render.opacity = feature.opacity;
+                }
+
+                feature._cache = [render];
+            }
+            return feature._cache;
+        }
+    });
+
+    Object.defineProperties(imageSymbols.Image.prototype, {
+        type: {
+            value: 'image'
+        },
+
+        transitionTime: {
+            get: function() {
+                return this._transitionTime;
+            },
+            set: function(time) {
+                this._transitionTime = time;
+            }
+        }
+    });
+
+    return imageSymbols;
     
 });

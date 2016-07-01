@@ -51,7 +51,7 @@ sGis.module('feature.MultiPoint', [
                 var f = new Point(point, {crs: this._crs, symbol: this.symbol});
                 renders = renders.concat(f.render(arguments));
             });
-            
+
             this._rendered = {
                 resolution: resolution,
                 crs: crs,
@@ -61,7 +61,7 @@ sGis.module('feature.MultiPoint', [
             return this._rendered.renders;
         }
     }
-    
+
     utils.extend(MultiPoint.prototype, defaults);
 
     sGis.utils.proto.setProperties(MultiPoint.prototype, {

@@ -60,7 +60,7 @@ sGis.module('controls.Distance', [
                 this._setActiveStatus(bool);
             }
         }
-    });
+    })
 
     function formatNumber(n) {
         var s;

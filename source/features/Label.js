@@ -1,14 +1,13 @@
 sGis.module('feature.Label', [
     'utils',
     'Feature',
-    'Point',
-    'symbol.label'
-], function(utils, Feature, Point, labelSymbols) {
+    'symbol.label.Label'
+], function(utils, Feature, LabelSymbol) {
     'use strict';
 
     var defaults = {
         _content: '',
-        _symbol: new labelSymbols.Label()
+        _symbol: new LabelSymbol()
     };
 
     /**

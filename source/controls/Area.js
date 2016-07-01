@@ -18,7 +18,7 @@ sGis.module('controls.Area', [
             if (this.activeLayer.features.length > 1) this.activeLayer.features = [this.activeLayer.features[this.activeLayer.features.length - 1]];
 
             var feature = this._activeLayer.features[this._activeLayer.features.length - 1],
-                label = new sGis.feature.Label(feature.centroid, { crs: feature.crs, symbol: new sGis.symbol.label.Label({ css: 'sGis-symbol-label-center-middle sGis-distanceLabel' }) });
+                label = new sGis.feature.Label(feature.centroid, { content: '', crs: feature.crs, style: { css: 'sGis-distanceLabel', offset: { x: -50, y: -10 }, width: 120 } });
 
             this.activeLayer.add(label);
 

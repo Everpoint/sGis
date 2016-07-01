@@ -222,7 +222,9 @@ sGis.module('geotools', ['math'], function(math) {
         if (o1 === 0 && onSegment(l1[0], l2[0], l1[1])) return true;
         if (o2 === 0 && onSegment(l1[0], l2[1], l1[1])) return true;
         if (o3 === 0 && onSegment(l2[1], l1[0], l2[1])) return true;
-        return !!(o4 === 0 && onSegment(l2[1], l1[1], l2[1]));
+        if (o4 === 0 && onSegment(l2[1], l1[1], l2[1])) return true;
+
+        return false;
     }
 
     function orient(p, q, r) {

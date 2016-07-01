@@ -144,7 +144,7 @@ sGis.module('Feature', [
 
     utils.extend(Feature.prototype, IEventHandler);
     utils.extend(Feature.prototype, defaults);
-    
+
     return Feature;
 
 });
