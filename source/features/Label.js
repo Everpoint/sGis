@@ -28,17 +28,22 @@ sGis.module('feature.Label', [
         }
 
         /**
-         * Anchor point of the label
-         * @type {Number[]|sGis.Point}
+         * Position of the label
+         * @type {sGis.Point}
+         */
+        get point() { return this._point; }
+        set point(/** sGis.Point */ point) {
+            this._point = point.projectTo(this.crs);
+            this.redraw();
+        }
+
+        /**
+         * Position of the label
+         * @type {Number[]}
          */
         get coordinates() { return this._point; }
-        set coordinates(/** Number[]|sGis.Point */ point) {
-            if (point instanceof Point) {
-                this._point = point.projectTo(this.crs)
-            } else {
-                this._point = point;
-            }
-            this.redraw();
+        set coordinates(/** Number[] */ point) {
+            this.point = new sGis.Point(point[0], point[1], this.crs);
         }
 
         /**
@@ -52,17 +57,8 @@ sGis.module('feature.Label', [
         }
     }
 
-    /**
-     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
-     * @member symbol
-     * @memberof sGis.feature.Label
-     * @type sGis.ISymbol
-     * @instance
-     * @default new sGis.symbol.label.Label()
-     */
-    
     utils.extend(Label.prototype, defaults);
 
     return Label;
-    
+
 });

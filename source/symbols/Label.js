@@ -1,53 +1,35 @@
-sGis.module('symbol.label', [
-    'utils',
-    'math',
+sGis.module('symbol.label.Label', [
+    'Symbol',
     'render.HtmlElement'
-], function(utils, math, HtmlElement) {
-
+], function(Symbol, HtmlElement) {
+    
     'use strict';
 
     /**
-     * @namespace sGis.symbol.label
-     */
-
-    /**
-     * @implements sGis.ISymbol
+     * Symbol of simple html text label.
      * @alias sGis.symbol.label.Label
+     * @extends sGis.Symbol
      */
-    class Label {
+    class Label extends Symbol {
         /**
          * @constructor
-         * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
+         * @param {Object} properties - key-value list of the properties to be assigned to the instance.
          */
         constructor(properties) {
-            utils.init(this, properties);
-            this._lastRendered = {};
+            super(properties);
         }
-        
-        renderFunction(feature, resolution, crs) {
-            if (this._lastRendered.feature === feature && math.softEquals(resolution, this._lastRendered.resolution ) && this._lastRendered.crs === crs){
-                return this._lastRendered.renders;
-            }
+
+        renderFunction(/** sGis.feature.Label */ feature, resolution, crs) {
             var html = '<div' +  (this.css ? ' class="' + this.css + '"' : '') + '>' + feature.content + '</div>';
             var point = feature.point.projectTo(crs);
             var position = [point.x / resolution, -point.y / resolution];
 
-            this._lastRendered = {
-                feature: feature,
-                resolution: resolution,
-                crs: crs,
-                renders: [new HtmlElement(html, position)]
-            };
-
-            return this._lastRendered.renders;
+            return [new HtmlElement(html, position)];
         }
     }
-
+    
     /**
-     * Css class to be added to the label node. sGis library provides 9 predefined classes that can be used for labels:
-     * sGis-symbol-label-left-top, sGis-symbol-label-left-middle, sGis-symbol-label-left-bottom,
-     * sGis-symbol-label-center-top, sGis-symbol-label-center-middle, sGis-symbol-label-center-bottom,
-     * sGis-symbol-label-right-top, sGis-symbol-label-right-middle, sGis-symbol-label-right-bottom
+     * Css class to be added to the label node.
      * @member {String} css
      * @memberof sGis.symbol.label.Label
      * @instance
@@ -67,8 +49,6 @@ sGis.module('symbol.label', [
         'sGis-symbol-label-right-bottom': 'transform:translate(20%,20%);'
     });
 
-    return {
-        Label: Label
-    };
-
+    return Label
+    
 });
