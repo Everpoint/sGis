@@ -12,6 +12,10 @@ sGis.module('feature.Polygon', [
         _symbol: new PolygonSymbol()
     };
 
+    /**
+     * @alias sGis.feature.Polygon
+     * @extends sGis.feature.Polyline
+     */
     class Polygon extends Polyline {
         constructor(coordinates, properties) {
             super(coordinates, properties);
