@@ -1,37 +1,49 @@
 sGis.module('Symbol', [
-    'render.HtmlElement'
-], function(HtmlElement) {
+    'utils',
+    'serializer.symbolSerializer'
+], function(utils, symbolSerializer) {
+
     'use strict';
 
-    var Symbol = function(options) {
-        for (var i in options) {
-            this[i] = options[i];
-        }
-    };
+    /**
+     * @namespace sGis.symbol
+     */
 
-    Symbol.fromDescription = function(desc) {
-        var classDesc = desc.symbolName.split('.');
-        var classLink = sGis.symbol[classDesc[0]];
-        for (var i = 1; i < classDesc.length; i++) {
-            classLink = classLink[classDesc[i]];
+    /**
+     * Empty symbol, base class for all other symbol classes. If this symbol is assigned to a feature, the feature will not be rendered.
+     * @alias sGis.Symbol
+     */
+    class Symbol {
+        /**
+         * @constructor
+         * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
+         */
+        constructor(properties) {
+            utils.init(this, properties);
         }
 
-        return new classLink(desc);
-    };
-
-    Symbol.prototype = {
-        setDefaults: function(style) {
-            this.defaults = {};
-            for (var i in this.style) {
-                Object.defineProperty(this.defaults, i, {
-                    get: this.style[i].get,
-                    set: this.style[i].set
-                });
-                this.defaults[i] = style && style[i] ? style[i] : this.style[i].defaultValue;
-            }
+        /**
+         * This function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map.
+         * If the symbol cannot render provided feature, empty array is returned.
+         * @param {sGis.Feature} feature - feature to be drawn.
+         * @param {Number} resolution - resolution of the render.
+         * @param {sGis.Crs} crs - target coordinate system of the render.
+         * @returns {sGis.IRender[]}
+         */
+        renderFunction(feature, resolution, crs) {
+            return [];
         }
-    };
-    
+
+        /**
+         * Returns a copy of the symbol. Only essential properties are copied.
+         * @returns {sGis.Symbol}
+         */
+        clone() {
+            var desc = symbolSerializer.serialize(this);
+            return symbolSerializer.deserialize(desc);
+        }
+    }
+
     return Symbol;
     
 });
