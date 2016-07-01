@@ -6,6 +6,11 @@ sGis.module('symbol.image.Image', [
 
     'use strict';
 
+    /**
+     * Symbol for image with size bound by feature bbox.
+     * @alias sGis.symbol.image.Image
+     * @extends sGis.Symbol
+     */
     class ImageSymbol extends Symbol {
         /**
          * @constructor
@@ -34,8 +39,20 @@ sGis.module('symbol.image.Image', [
         }
     }
 
+    /**
+     * Transition (fade in) time of the image node in ms.
+     * @member {Number} transitionTime
+     * @memberof sGis.feature.image.Image
+     * @default 0
+     */
     ImageSymbol.prototype.transitionTime = 0;
 
+    /**
+     * Opacity of the image.
+     * @member {Number} transitionTime
+     * @memberof sGis.feature.image.Image
+     * @default 1
+     */
     ImageSymbol.prototype.opacity = 1;
 
     symbolSerializer.registerSymbol(ImageSymbol, 'image.Image', ['transitionTime', 'opacity']);
