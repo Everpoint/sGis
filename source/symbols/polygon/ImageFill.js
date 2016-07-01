@@ -19,7 +19,7 @@ sGis.module('symbol.polygon.ImageFill', [
          */
         constructor(properties) {
             super(properties);
-            this._updateBrush();
+            if (!this._image) this.src = this._src;
         }
 
         renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
