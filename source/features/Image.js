@@ -2,13 +2,13 @@ sGis.module('feature.Image', [
     'utils',
     'Feature',
     'symbol.image.Image'
-], function(utils, Feature, imageSymbols) {
+], function(utils, Feature, ImageSymbol) {
 
     'use strict';
 
     var defaults = {
         _src: null,
-        _symbol: new imageSymbols.Image()
+        _symbol: new ImageSymbol()
     };
 
     /**

@@ -1,7 +1,7 @@
 sGis.module('init', [
     'sGis',
     'Map',
-    'painters.DomPainter'
+    'painter.DomPainter'
 ], (sGis, Map, Painter) => {
 
     'use strict';

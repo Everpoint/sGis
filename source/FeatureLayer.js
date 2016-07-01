@@ -16,10 +16,9 @@ sGis.module('FeatureLayer', [
     class FeatureLayer extends sGis.Layer {
         constructor(options) {
             super();
-            sGis.utils.init(this, options);
 
             this._features = [];
-            if (options && options.features) this.add(options.features);
+            sGis.utils.init(this, options);
         }
 
         getFeatures(bbox) {

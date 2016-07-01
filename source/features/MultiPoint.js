@@ -6,7 +6,7 @@ sGis.module('feature.MultiPoint', [
     'Bbox',
     'Feature',
     'feature.Point',
-    'symbol.point'
+    'symbol.point.Point'
 ], function(utils, proto, Crs, Feature, Point, Bbox, PointF, pointSymbols) {
     'use strict';
 

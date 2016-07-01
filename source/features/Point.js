@@ -4,7 +4,7 @@ sGis.module('feature.Point', [
     'Crs',
     'Point',
     'Bbox',
-    'symbol.point.Simple'
+    'symbol.point.Point'
 ], function(utils, Feature, Crs, /**sGis.Point*/ Point, Bbox, PointSymbol) {
 
     'use strict';
