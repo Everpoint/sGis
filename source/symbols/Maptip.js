@@ -1,115 +1,96 @@
-sGis.module('symbol.maptip', [
+sGis.module('symbol.maptip.Simple', [
     'utils',
     'Symbol',
     'render.Polygon',
     'render.HtmlElement'
-], function(utils, Symbol, Polygon, HtmlElement) {
+], function(utils, Symbol, PolygonRender, HtmlElement) {
 
     'use strict';
-    
-    
-    
-    var maptipSymbols = {
-        Simple: function(style) {
-            sGis.utils.init(this, style);
+
+    /**
+     * @namespace sGis.symbol.maptip
+     */
+
+    /**
+     * Balloon over a map with html content.
+     * @alias sGis.symbol.maptip.Simple
+     * @extends sGis.Symbol
+     */
+    class MaptipSymbol extends Symbol {
+        /**
+         * @constructor
+         * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
+         */
+        constructor(properties) {
+            super(properties);
         }
-    };
 
-    maptipSymbols.Simple.prototype = new sGis.Symbol({
-        _width: 200,
-        _height: 200,
-        _offset: {x: -100, y: -220},
+        renderFunction(/** sGis.feature.Maptip */ feature, resolution, crs) {
+            var point = feature.position.projectTo(crs);
+            var position = [Math.round(point.x / resolution), - Math.round(point.y / resolution)];
 
-        renderFunction: function(feature, resolution, crs) {
-            if (this._changed || this._cacheResolution !== resolution) {
-                feature.clearCache();
-                this._changed = false;
-            }
+            var balloonCoordinates = getBalloonCoordinates(feature, position);
+            var balloon = new PolygonRender(balloonCoordinates, {fillColor: 'white'});
 
-            var point = feature.position.projectTo(crs),
-                position = [Math.round(point.x / resolution), - Math.round(point.y / resolution)];
+            var divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];
+            var html = '<div style="width:' + this.width + 'px; height:' + this.height + 'px; background-color:white; overflow:auto;">' + feature.content + '</div>';
+            var divRender = new HtmlElement(html, divPosition);
 
-            if (!feature._cache) {
-                var baloonCoordinates = getBaloonCoordinates(feature, position);
-
-                feature._cache = [new sGis.render.Polygon(baloonCoordinates, {fillColor: 'white'})];
-
-                var divPosition = [position[0] + this.offset.x, position[1] + this.offset.y];
-
-
-                var html = '<div style="width:' + this.width + 'px; height:' + this.height + 'px; background-color:white; overflow:auto;">' + feature.content + '</div>';
-                var divRender = new sGis.render.HtmlElement(html, divPosition);
-
-                feature._cache.push(divRender);
-
-                this._cacheResolution = resolution;
-            }
-
-            return feature._cache;
+            return [balloon, divRender];
         }
-    });
+    }
+    
+    /**
+     * Width of the balloon.
+     * @member {Number} width
+     * @memberof sGis.symbol.maptip.Simple
+     * @instance
+     * @default 200
+     */
+    MaptipSymbol.prototype.width = 200;
 
-    Object.defineProperties(maptipSymbols.Simple.prototype, {
-        type: {
-            value: 'maptip'
-        },
+    /**
+     * Height of the balloon.
+     * @member {Number} height
+     * @memberof sGis.symbol.maptip.Simple
+     * @instance
+     * @default 200
+     */
+    MaptipSymbol.prototype.height = 200;
 
-        width: {
-            get: function() {
-                return this._width;
-            },
-            set: function(width) {
-                this._width = width;
-                this._changed = true;
-            }
-        },
+    /**
+     * Offset of the balloon from the position of the maptip feature. The arrow of the balloon will point to the feature position, and the left top corner of the rectangle will be offseted by this value.
+     * @member {Object} offset
+     * @memberof sGis.symbol.maptip.Simple
+     * @instance
+     * @default {x: -100, y: -220}
+     */
+    MaptipSymbol.prototype.offset = { x: -100, y: -220 };
 
-        height: {
-            get: function() {
-                return this._height;
-            },
-            set: function(height) {
-                this._height = height;
-                this._changed = true;
-            }
-        },
+    function getBalloonCoordinates(feature, position) {
+        var balloonSquare = getBalloonSquare(feature, position);
 
-        offset: {
-            get: function() {
-                return this._offset;
-            },
-            set: function(offset) {
-                this._offset = offset;
-                this._changed = true;
-            }
-        }
-    });
+        if (isInside(position, balloonSquare)) return balloonSquare;
 
-
-    function getBaloonCoordinates(feature, position) {
-        var baloonSquare = getBaloonSquare(feature, position);
-
-        if (isInside(position, baloonSquare)) return baloonSquare;
-
-        var tailBase = getTailBasePoint(position, baloonSquare),
+        var tailBase = getTailBasePoint(position, balloonSquare),
             startIndex = tailBase.index,
-            tailBaseLine = getTailBaseLine(tailBase, baloonSquare),
+            tailBaseLine = getTailBaseLine(tailBase, balloonSquare),
             contour = [position, tailBaseLine[0]];
 
-        if (!isOnTheLine(tailBaseLine[0], [baloonSquare[startIndex], baloonSquare[(startIndex + 1) % 4]])) startIndex++;
+        if (!isOnTheLine(tailBaseLine[0], [balloonSquare[startIndex], balloonSquare[(startIndex + 1) % 4]])) startIndex++;
         for (var i = 1; i <= 4; i++) {
-            contour.push(baloonSquare[(startIndex + i) % 4]);
-            if (isOnTheLine(tailBaseLine[1], [baloonSquare[(startIndex + i) % 4], baloonSquare[(startIndex + i + 1) % 4]])) break;
+            contour.push(balloonSquare[(startIndex + i) % 4]);
+            if (isOnTheLine(tailBaseLine[1], [balloonSquare[(startIndex + i) % 4], balloonSquare[(startIndex + i + 1) % 4]])) break;
         }
 
         contour.push(tailBaseLine[1]);
         return contour;
     }
 
-    function getTailBaseLine(tailBase, baloonSquare) {
+    function getTailBaseLine(tailBase, balloonSquare) {
         var point = tailBase.point,
             index = tailBase.index,
-            square = baloonSquare.concat([baloonSquare[0]]),
+            square = balloonSquare.concat([balloonSquare[0]]),
             side = index % 2,
             opSide = (side + 1) % 2,
             direction = index < 2 ? 1 : -1,
@@ -139,7 +120,7 @@ sGis.module('symbol.maptip', [
         return baseLine;
     }
 
-    function getBaloonSquare(feature, position) {
+    function getBalloonSquare(feature, position) {
         var offset = feature.style.offset,
             x = position[0] + offset.x,
             y = position[1] + offset.y,
@@ -196,11 +177,6 @@ sGis.module('symbol.maptip', [
         return [x, y];
     }
 
-    return maptipSymbols;
+    return MaptipSymbol;
     
 });
-
-(function() {
-
-
-})();

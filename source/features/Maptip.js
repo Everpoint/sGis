@@ -2,16 +2,20 @@ sGis.module('feature.Maptip', [
     'utils',
     'Feature',
     'Point',
-    'symbol.maptip'
-], function(utils, Feature, Point, maptipSymbols) {
+    'symbol.maptip.Simple'
+], function(utils, Feature, Point, MaptipSymbol) {
 
     'use strict';
 
     var defaults = {
         _content: '',
-        _symbol: new maptipSymbols.Simple()
+        _symbol: new MaptipSymbol()
     };
 
+    /**
+     * @alias sGis.feature.Maptip
+     * @extends sGis.Feature
+     */
     class Maptip extends Feature {
         constructor(position, properties) {
             super(properties);
