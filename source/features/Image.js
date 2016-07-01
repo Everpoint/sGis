@@ -1,7 +1,7 @@
 sGis.module('feature.Image', [
     'utils',
     'Feature',
-    'symbol.image'
+    'symbol.image.Image'
 ], function(utils, Feature, imageSymbols) {
 
     'use strict';
