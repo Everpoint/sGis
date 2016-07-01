@@ -7,10 +7,6 @@ sGis.module('symbol.point.Square', [
     'use strict';
 
     /**
-     * @namespace sGis.symbol.point
-     */
-
-    /**
      * Symbol of point drawn as a square.
      * @alias sGis.symbol.point.Square
      * @extends sGis.Symbol
