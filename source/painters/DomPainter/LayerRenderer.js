@@ -75,7 +75,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
         setIndex(index) {
             if (index === this._index) return;
 
-            let zIndex = index*2;
+            let zIndex = index*2+1;
             for (let renders of this._featureRenders.values()) {
                 renders.forEach(render => {
                     let node = this._renderNodeMap.get(render);
@@ -89,6 +89,8 @@ sGis.module('painter.domPainter.LayerRenderer', [
                     if (node) node.style.zIndex = zIndex;
                 });
             }
+            
+            this._canvas.setIndex(index*2);
 
             this._index = index;
             this._zIndex = zIndex;
@@ -139,7 +141,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
             }
 
             this._bbox = bbox;
-            this._canvas.reset(bbox, this._master.map.resolution, this._master.width, this._master.height);
+            this._resetCanvas(bbox);
 
             newFeatures.forEach(feature => {
                 this._draw(feature);
@@ -149,12 +151,17 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
                 this._canvasContainer = null;
             } else {
+                if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
                 this._master.currContainer.addNode(this._canvas.node, this._master.width, this._master.height, this._bbox);
                 this.currentContainer = this._master.currContainer;
                 this._canvasContainer = this._master.currContainer;
             }
 
             this._clean();
+        }
+
+        _resetCanvas(bbox) {
+            this._canvas.reset(bbox, this._master.map.resolution, this._master.width, this._master.height);
         }
 
         _featureIsLoading(feature) {
@@ -172,26 +179,28 @@ sGis.module('painter.domPainter.LayerRenderer', [
             if (this._featureIsLoading(feature)) return;
 
             let renders = feature.render(this._master.map.resolution, this._master.map.crs);
-            let prevRenders = this._featureRenders.get(feature);
-            if (prevRenders === renders) return;
 
             let isMixedRender = false;
+            var canvasIsUsed = this._useCanvas && renders[0] && renders[0].isVector;
             for (let i = 1; i < renders.length; i++) {
+                if (this._useCanvas && renders[i] && renders[i].isVector) canvasIsUsed = true;
                 if (renders[i].isVector !== renders[i-1].isVector) {
                     isMixedRender = true;
                     break;
                 }
             }
+            if (isMixedRender) canvasIsUsed = false;
+
+            let prevRenders = this._featureRenders.get(feature);
+            if (!canvasIsUsed && prevRenders === renders) return;
 
             this._markAsOutdated(feature);
             this._featureRenders.set(feature, renders);
 
-            var canvasIsUsed = false;
             for (let i = 0; i < renders.length; i++) {
                 if (renders[i].isVector) {
                     if (this._useCanvas && !isMixedRender) {
                         this._canvas.draw(renders[i]);
-                        canvasIsUsed = true;
                     } else {
                         this._drawNodeRender(renders[i], feature);
                     }

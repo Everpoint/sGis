@@ -18,22 +18,22 @@ sGis.module('painter.domPainter.Canvas', [
         }
         
         _setNode() {
-            this._svgNode = document.createElement('canvas');
-            this._ctx = this._svgNode.getContext('2d');
+            this._canvasNode = document.createElement('canvas');
+            this._ctx = this._canvasNode.getContext('2d');
         }
         
         reset(bbox, resolution, width, height) {
-            this._ctx.clearRect(0, 0, this._svgNode.width, this._svgNode.height);
+            this._ctx.clearRect(0, 0, this._canvasNode.width, this._canvasNode.height);
 
-            this._svgNode.width = width;
-            this._svgNode.height = height;
+            this._canvasNode.width = width;
+            this._canvasNode.height = height;
             this._isEmpty = true;
             
             this._ctx.translate(-bbox.xMin / resolution, bbox.yMax / resolution);
         }
         
-        get width() { return this._svgNode.width; }
-        get height() { return this._svgNode.height; }
+        get width() { return this._canvasNode.width; }
+        get height() { return this._canvasNode.height; }
         
         draw(render) {
             if (render instanceof Arc) {
@@ -47,6 +47,10 @@ sGis.module('painter.domPainter.Canvas', [
             }
             
             this._isEmpty = false;
+        }
+        
+        setIndex(index) {
+            this._canvasNode.style.zIndex = index;
         }
 
         _drawArc(render) {
@@ -106,7 +110,7 @@ sGis.module('painter.domPainter.Canvas', [
         
         get isEmpty() { return this._isEmpty; }
         
-        get node() { return this._svgNode; }
+        get node() { return this._canvasNode; }
     }
     
     return Canvas;

@@ -257,6 +257,8 @@ sGis.module('painter.DomPainter', [
                     prevContainerIndex = containerIndex;
                 }
             });
+
+            this._removeEmptyContainers();
         }
 
         /**
