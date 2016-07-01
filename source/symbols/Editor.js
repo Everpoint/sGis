@@ -1,46 +1,60 @@
-sGis.module('symbol.editor', [
+sGis.module('symbol.Editor', [
     'utils',
     'Symbol',
-    'symbol.point',
+    'symbol.point.Point',
+    'symbol.point.Image',
     'render.Point',
     'render.Polyline',
     'render.Polygon',
     'render.Arc'
-], function(Symbol, pointSymbols, Point, Polyline, Polygon, Arc) {
+], function(Symbol, PointSymbol, PointImageSymbol, PointRender, PolylineRender, PolygonRender, ArcRender) {
+    
     'use strict';
 
-    var editorSymbols = {
-        Point: function(properties) {
-            sGis.utils.init(this, properties);
-        },
-        Polyline: function(properties) {
-            sGis.utils.init(this, properties);
-        },
-        Polygon: function(properties) {
-            sGis.utils.init(this, properties);
+    /**
+     * Symbol of a highlighted feature for editor.
+     * @alias sGis.symbol.Editor
+     * @extends sGis.Symbol
+     */
+    class EditorSymbol extends Symbol {
+        /**
+         * @constructor
+         * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
+         */
+        constructor(properties) {
+            super(properties);
         }
-    };
 
-    editorSymbols.Point.prototype = new sGis.Symbol({
-        _baseSymbol: new sGis.symbol.point.Point(),
-        _color: 'rgba(97,239,255,0.5)',
-        _haloSize: 5,
-
-        renderFunction: function(feature, resolution, crs) {
+        renderFunction(feature, resolution, crs) {
             var baseRender = this.baseSymbol.renderFunction(feature, resolution, crs);
             var halo;
             for (var i = 0; i < baseRender.length; i++) {
-                if (baseRender[i] instanceof sGis.render.Arc) {
-                    halo = new sGis.render.Arc(baseRender[i].center, {fillColor: this.color, radius: parseFloat(baseRender[i].radius) + this.haloSize, strokeColor: 'transparent'});
+                if (baseRender[i] instanceof ArcRender) {
+                    halo = new ArcRender(baseRender[i].center, {
+                        fillColor: this.color,
+                        radius: parseFloat(baseRender[i].radius) + this.haloSize,
+                        strokeColor: 'transparent'
+                    });
                     break;
-                } else if (baseRender[i] instanceof sGis.render.Polygon) {
-                    halo = new sGis.render.Polygon(baseRender[i].coordinates, {color: this.color, fillColor: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
+                } else if (baseRender[i] instanceof PolygonRender) {
+                    halo = new PolygonRender(baseRender[i].coordinates, {
+                        strokeColor: this.color,
+                        fillColor: this.color,
+                        strokeWidth: parseFloat(baseRender[i].width) + 2 * this.haloSize
+                    });
                     break;
-                } else if (baseRender[i] instanceof sGis.render.Polyline) {
-                    halo = new sGis.render.Polyline(baseRender[i].coordinates, {color: this.color, width: parseFloat(baseRender[i].width) + 2 * this.haloSize});
+                } else if (baseRender[i] instanceof PolylineRender) {
+                    halo = new PolylineRender(baseRender[i].coordinates, {
+                        strokeColor: this.color,
+                        strokeWidth: parseFloat(baseRender[i].width) + 2 * this.haloSize
+                    });
                     break;
-                } else if (this.baseSymbol instanceof sGis.symbol.point.Image) {
-                    halo = new sGis.render.Arc([baseRender[i].position[0] + baseRender[i].node.width / 2, baseRender[i].position[1] + baseRender[i].node.height / 2], {fillColor: this.color, radius: this.baseSymbol.size / 2 + this.haloSize, strokeColor: 'transparent'});
+                } else if (this.baseSymbol instanceof PointImageSymbol) {
+                    halo = new sGis.render.Arc([baseRender[i].position[0] + baseRender[i].node.width / 2, baseRender[i].position[1] + baseRender[i].node.height / 2], {
+                        fillColor: this.color,
+                        radius: this.baseSymbol.size / 2 + this.haloSize,
+                        strokeColor: 'transparent'
+                    });
                     break;
                 }
             }
@@ -48,41 +62,35 @@ sGis.module('symbol.editor', [
             if (halo) baseRender.unshift(halo);
             return baseRender;
         }
-    });
+    }
 
-    Object.defineProperties(editorSymbols.Point.prototype, {
-        type: {
-            value: 'point'
-        },
+    /**
+     * Base symbol of the feature. Used to render original feature with the highlight.
+     * @member {sGis.Symbol} baseSymbol
+     * @memberof sGis.symbol.Editor
+     * @instance
+     * @default new sGis.symbol.point.Point()
+     */
+    EditorSymbol.prototype.baseSymbol = new PointSymbol();
 
-        baseSymbol: {
-            get: function() {
-                return this._baseSymbol;
-            },
-            set: function(baseSymbol) {
-                this._baseSymbol = baseSymbol;
-            }
-        },
+    /**
+     * Color of the halo (highlight). Can be any valid css color string.
+     * @member {String} color
+     * @memberof sGis.symbol.Editor
+     * @instance
+     * @default "rgba(97,239,255,0.5)"
+     */
+    EditorSymbol.prototype.color = 'rgba(97,239,255,0.5)';
 
-        color: {
-            get: function() {
-                return this._color;
-            },
-            set: function(color) {
-                this._color = color;
-            }
-        },
-
-        haloSize: {
-            get: function() {
-                return this._haloSize;
-            },
-            set: function(size) {
-                this._haloSize = size;
-            }
-        }
-    });
-
-    return editorSymbols;
+    /**
+     * Size of the halo around the feature.
+     * @member {Number} haloSize
+     * @memberof sGis.symbol.Editor
+     * @instance
+     * @default
+     */
+    EditorSymbol.prototype.haloSize = 5;
+    
+    return EditorSymbol;
     
 });

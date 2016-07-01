@@ -5,13 +5,14 @@ sGis.module('controls.Editor', [
     'Map',
     'Bbox',
     'geotools',
-    'symbol.point',
+    'symbol.point.Point',
     'FeatureLayer',
     'feature.Point',
     'feature.Polyline',
     'feature.Polygon',
-    'feature.MultiPoint'
-], function(utils, proto, Control, Map, Bbox, geotools, pointSymbols, FeatureLayer, PointF, Polyline, Polygon) {
+    'feature.MultiPoint',
+    'symbol.Editor'
+], function(utils, proto, Control, Map, Bbox, geotools, pointSymbols, FeatureLayer, PointF, Polyline, Polygon, EditorSymbol) {
     'use strict';
 
     var PREFIX = 'sGis-control-edit-';
@@ -819,9 +820,9 @@ sGis.module('controls.Editor', [
     Editor.prototype.selectFeature = Editor.prototype.select;
 
     var selectionSymbols = {
-        point: sGis.symbol.editor.Point,
-        polyline: sGis.symbol.editor.Point,
-        polygon: sGis.symbol.editor.Point
+        point: EditorSymbol,
+        polyline: EditorSymbol,
+        polygon: EditorSymbol
     };
 
     var snapping = {
