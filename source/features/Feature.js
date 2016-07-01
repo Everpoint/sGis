@@ -90,7 +90,7 @@ sGis.module('Feature', [
 
         /**
          * Sets a temporary symbol for the feature. This symbol is used instead of the original symbol until cleared.
-         * @param {sGis.ISymbol} symbol
+         * @param {sGis.Symbol} symbol
          */
         setTempSymbol(symbol) {
             this._tempSymbol = symbol;
@@ -113,7 +113,7 @@ sGis.module('Feature', [
 
         /**
          * Returns the original symbol of the feature. If temporary symbol is not set, the returned value will be same as value of the .symbol property.
-         * @returns {sGis.ISymbol}
+         * @returns {sGis.Symbol}
          */
         get originalSymbol() { return this._symbol; }
 
@@ -126,10 +126,10 @@ sGis.module('Feature', [
 
         /**
          * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
-         * @type sGis.ISymbol
+         * @type sGis.Symbol
          */
         get symbol() { return this._tempSymbol || this._symbol; }
-        set symbol(/** sGis.ISymbol */ symbol) {
+        set symbol(/** sGis.Symbol */ symbol) {
             this._symbol = symbol;
             this.redraw();
         }
