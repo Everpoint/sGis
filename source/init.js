@@ -13,6 +13,7 @@ sGis.module('init', [
      */
     function init(properties) {
         var map = new Map();
+        if (properties.crs) map.crs = properties.crs;
 
         var painter = new Painter(map);
         if (properties.wrapper) painter.wrapper = properties.wrapper;

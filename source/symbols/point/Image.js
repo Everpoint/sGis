@@ -46,7 +46,7 @@ sGis.module('symbol.point.Image', [
      * @instance
      * @default 32
      */
-    ImageSymbol.prototype.height = 10;
+    ImageSymbol.prototype.height = 32;
 
     /**
      * Anchor point of the image in the {x: dx, y: dy} format. If set to {x: 0, y: 0}, image's left top corner will be at the feature position.<br>
