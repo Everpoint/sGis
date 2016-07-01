@@ -86,7 +86,7 @@ sGis.module('render.Arc', [
             return Math.sqrt(distance2) < this.radius + 2;
         }
 
-        static get isVector() { return true; }
+        get isVector() { return true; }
     }
     
     utils.extend(Arc.prototype, defaults);

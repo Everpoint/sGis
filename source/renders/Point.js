@@ -38,7 +38,7 @@ sGis.module('render.Point', [
             utils.init(this, properties);
         }
         
-        static get isVector() { return true; }
+        get isVector() { return true; }
 
         /**
          * Returns true if 'position' is inside the rendered arc.

@@ -78,7 +78,7 @@ sGis.module('utils', [
          * @returns {boolean}
          */
         softEquals: function(a, b) {
-            return (Math.abs(a - b) < 0.000001 * a);
+            return (Math.abs(a - b) < 0.000001 * Math.abs(a));
         },
 
         /**

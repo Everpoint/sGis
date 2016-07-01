@@ -58,7 +58,7 @@ sGis.module('render.Polyline', [
             this.coordinates = coordinates;
         }
 
-        static get isVector() { return true; }
+        get isVector() { return true; }
 
         /**
          * Returns true if 'position' is inside the rendered polygon.
