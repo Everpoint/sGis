@@ -21,7 +21,21 @@ sGis.module('feature.Maptip', [
             super(properties);
             this.position = position;
         }
+        
+        get position() { return this._position; }
+        set position(point) {
+            
+        }
     }
+
+    /**
+     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
+     * @member symbol
+     * @memberof sGis.feature.Maptip
+     * @type sGis.Symbol
+     * @instance
+     * @default new sGis.symbol.Maptip()
+     */
 
     utils.extend(Maptip.prototype, defaults);
 
