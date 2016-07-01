@@ -1,83 +1,64 @@
-sGis.module('symbol.polyline', [
-    'utils',
+sGis.module('symbol.polyline.Simple', [
     'Symbol',
-    'render.Polyline'
-], function(utils, Symbol, Polyline) {
+    'render.Polyline',
+    'serializer.symbolSerializer'
+], function(Symbol, Polyline, symbolSerializer) {
+    
     'use strict';
 
-    var polylineSymbols = {
-        Simple: function(style) {
-            sGis.utils.init(this, style, true);
+    /**
+     * @namespace sGis.symbol.polyline
+     */
+
+    /**
+     * Symbol of polyline drawn as simple line
+     * @alias sGis.symbol.polyline.Simple
+     * @extends sGis.Symbol
+     */
+    class PolylineSymbol extends Symbol {
+        /**
+         * @constructor
+         * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+         */
+        constructor(properties) {
+            super(properties);
         }
-    };
 
-    polylineSymbols.Simple.prototype = new sGis.Symbol({
-        _strokeWidth: 1,
-        _strokeColor: 'black',
-
-        renderFunction: function(feature, resolution, crs) {
-            var coordinates = getPolylineRenderedCoordinates(feature, resolution, crs);
-
-            return [new sGis.render.Polyline(coordinates, {color: this.strokeColor, width: this.strokeWidth})];
-        },
-
-        clone: function() {
-            return new polylineSymbols.Simple({strokeWidth: this.strokeWidth, strokeColor: this.strokeColor});
-        },
-
-        getDescription: function() {
-            return {
-                symbolName: 'polyline.Simple',
-                strokeWidth: this.strokeWidth,
-                strokeColor: this.strokeColor,
-            }
+        renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
+            var coordinates = this._getRenderedCoordinates(feature, resolution, crs);
+            return [new Polyline(coordinates, {strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
         }
-    });
 
-    Object.defineProperties(polylineSymbols.Simple.prototype, {
-        type: {
-            value: 'polyline'
-        },
-
-        strokeWidth: {
-            get: function() {
-                return this._strokeWidth;
-            },
-            set: function(width) {
-                this._strokeWidth = width;
-            }
-        },
-
-        strokeColor: {
-            get: function() {
-                return this._strokeColor;
-            },
-            set: function(color) {
-                this._strokeColor = color;
-            }
-        }
-    });
-
-
-    function getPolylineRenderedCoordinates(feature, resolution, crs) {
-        if (!feature._cache[resolution]) {
+        _getRenderedCoordinates(feature, resolution, crs) {
             var projected = feature.projectTo(crs).coordinates;
-
-            for (var ring = 0, l = projected.length; ring < l; ring++) {
-                for (var i = 0, m = projected[ring].length; i < m; i++) {
-                    projected[ring][i][0] /= resolution;
-                    projected[ring][i][1] /= -resolution;
-                }
-            }
-
-            var simpl = sGis.utils.simplify(projected, 0.5);
-            feature._cache[resolution] = simpl;
-        } else {
-            simpl = feature._cache[resolution];
+            
+            return projected.map(ring => {
+                return ring.map(point => {
+                    return [point[0] / resolution, point[1] / -resolution];
+                });
+            });
         }
-        return simpl;
     }
 
-    return polylineSymbols;
+    /**
+     * Stroke color of the line. Can be any valid css color string.
+     * @member {String} strokeColor
+     * @memberof sGis.symbol.polyline.Simple
+     * @instance
+     * @default "black"
+     */
+    PolylineSymbol.prototype.strokeColor = 'black';
+
+    /**
+     * Stroke width of the line.
+     * @member {Number} strokeWidth
+     * @memberof sGis.symbol.polyline.Simple
+     * @default 1
+     */
+    PolylineSymbol.prototype.strokeWidth = 1;
+
+    symbolSerializer.registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth']);
+
+    return PolylineSymbol;
     
 });

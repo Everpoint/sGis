@@ -1,15 +1,15 @@
 sGis.module('feature.Polyline', [
     'utils',
     'Feature',
-    'symbol.polyline',
+    'symbol.polyline.Simple',
     'Bbox',
     'Point',
     'Crs'
-], function(utils, Feature, polylineSymbols, Bbox, Point, Crs) {
+], function(utils, Feature, PolylineSymbol, Bbox, Point, Crs) {
     'use strict';
 
     var defaults = {
-        _symbol: new sGis.symbol.polyline.Simple()
+        _symbol: new PolylineSymbol()
     };
 
     class Polyline extends Feature {
