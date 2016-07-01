@@ -1,53 +1,45 @@
 sGis.module('symbol.image.Image', [
     'Symbol',
+    'render.Image',
     'serializer.symbolSerializer'
-], (Symbol, symbolSerializer) => {
+], (Symbol, ImageRender, symbolSerializer) => {
 
-    var imageSymbols = {
-        Image: function(style) {
-            sGis.utils.init(this, style, true);
+    'use strict';
+
+    class ImageSymbol extends Symbol {
+        /**
+         * @constructor
+         * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+         */
+        constructor(properties) {
+            super(properties);
         }
-    };
 
-    imageSymbols.Image.prototype = new sGis.Symbol({
-        _transitionTime: 0,
+        renderFunction(/** sGis.feature.Image */ feature, resolution, crs) {
+            var render = new ImageRender(feature.src, feature.bbox);
 
-        renderFunction: function(feature, resolution, crs) {
-            if (!feature._cache) {
-                var render = new sGis.render.Image(feature.src, feature.bbox, feature.width, feature.height);
-                if (feature.transitionTime > 0) {
-                    render.opacity = 0;
-                    render.onAfterDisplayed = function(node) {
-                        setTimeout(function() {
-                            node.style.transition = 'opacity ' + feature.transitionTime / 1000 + 's linear';
-                            node.style.opacity = feature.opacity;
-                        }, 0);
-                    }
-                } else {
-                    render.opacity = feature.opacity;
+            if (this.transitionTime > 0) {
+                render.opacity = 0;
+                render.onAfterDisplayed = (node) => {
+                    setTimeout(() => {
+                        node.style.transition = 'opacity ' + this.transitionTime / 1000 + 's linear';
+                        node.style.opacity = this.opacity;
+                    }, 0);
                 }
-
-                feature._cache = [render];
+            } else {
+                render.opacity = this.opacity;
             }
-            return feature._cache;
+
+            return [render];
         }
-    });
+    }
 
-    Object.defineProperties(imageSymbols.Image.prototype, {
-        type: {
-            value: 'image'
-        },
+    ImageSymbol.prototype.transitionTime = 0;
 
-        transitionTime: {
-            get: function() {
-                return this._transitionTime;
-            },
-            set: function(time) {
-                this._transitionTime = time;
-            }
-        }
-    });
+    ImageSymbol.prototype.opacity = 1;
 
-    return imageSymbols;
+    symbolSerializer.registerSymbol(ImageSymbol, 'image.Image', ['transitionTime', 'opacity']);
+
+    return ImageSymbol;
     
 });

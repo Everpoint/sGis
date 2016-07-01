@@ -60,7 +60,7 @@ sGis.module('feature.Image', [
      * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
      * @member symbol
      * @memberof sGis.feature.Image
-     * @type sGis.ISymbol
+     * @type sGis.Symbol
      * @instance
      * @default new sGis.symbol.image.Image()
      */

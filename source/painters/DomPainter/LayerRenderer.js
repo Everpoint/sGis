@@ -223,7 +223,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
                 let container = this._master.currContainer;
                 if (render.bbox) {
-                    container.addNode(node, render.width, render.height, render.bbox);
+                    container.addNode(node, render.width || node.height, render.height || node.height, render.bbox);
                 } else if (render.position || svgRender.position) {
                     container.addFixedSizeNode(node, render.position || svgRender.position);
                 }
@@ -360,7 +360,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
                     let container = this._renderContainerMap.get(render);
                     if (container !== lastContainer) {
                         if (render.bbox) {
-                            lastContainer.addNode(node, render.width, render.height, render.bbox);
+                            lastContainer.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                         } else if (render.position) {
                             lastContainer.addFixedSizeNode(node, render.position);
                         }

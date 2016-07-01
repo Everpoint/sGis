@@ -1,7 +1,8 @@
 sGis.module('symbol.label.Label', [
+    'utils',
     'Symbol',
     'render.HtmlElement'
-], function(Symbol, HtmlElement) {
+], function(utils, Symbol, HtmlElement) {
     
     'use strict';
 

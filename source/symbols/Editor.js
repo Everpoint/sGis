@@ -1,5 +1,4 @@
 sGis.module('symbol.Editor', [
-    'utils',
     'Symbol',
     'symbol.point.Point',
     'symbol.point.Image',
