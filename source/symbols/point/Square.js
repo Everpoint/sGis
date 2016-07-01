@@ -85,7 +85,7 @@ sGis.module('symbol.point.Square', [
      */
     SquareSymbol.prototype.strokeWidth = 1;
 
-    symbolSerializer.registerSymbol(SquareSymbol, 'point.Point', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth']);
+    symbolSerializer.registerSymbol(SquareSymbol, 'point.Square', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth']);
 
     return SquareSymbol;
 
