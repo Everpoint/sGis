@@ -4,15 +4,19 @@ sGis.module('feature.Point', [
     'Crs',
     'Point',
     'Bbox',
-    'symbol.point'
-], function(utils, Feature, Crs, /**sGis.Point*/ Point, Bbox, pointSymbols) {
+    'symbol.point.Simple'
+], function(utils, Feature, Crs, /**sGis.Point*/ Point, Bbox, PointSymbol) {
 
     'use strict';
 
     var defaults = {
-        _symbol: new sGis.symbol.point.Point()
+        _symbol: new PointSymbol()
     };
 
+    /**
+     * @alias sGis.feature.Point
+     * @extends sGis.Feature
+     */
     class PointF extends Feature {
         constructor(point, properties) {
             super(properties);
