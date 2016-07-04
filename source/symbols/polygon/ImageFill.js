@@ -28,6 +28,7 @@ sGis.module('symbol.polygon.ImageFill', [
                 return [];
             }
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+            if (!coordinates) return [];
             return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._image })];
         }
 

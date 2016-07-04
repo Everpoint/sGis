@@ -102,6 +102,12 @@ sGis.module('feature.Point', [
                 this._point = coordinates;
             }
         },
+        
+        position: {
+            get: function() {
+                return this._point;
+            }
+        },
 
         type: {
             value: 'point'

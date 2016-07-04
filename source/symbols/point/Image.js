@@ -21,6 +21,8 @@ sGis.module('symbol.point.Image', [
         }
 
         renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
+            if (feature.position === undefined) return [];
+
             var f = feature.projectTo(crs);
             var pxPosition = [f._point[0] / resolution, - f._point[1] / resolution];
             var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];

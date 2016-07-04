@@ -232,7 +232,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
                 let container = this._master.currContainer;
                 if (render.bbox) {
-                    container.addNode(node, render.width || node.height, render.height || node.height, render.bbox);
+                    container.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                 } else if (render.position || svgRender.position) {
                     container.addFixedSizeNode(node, render.position || svgRender.position);
                 }

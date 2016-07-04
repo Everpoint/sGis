@@ -24,7 +24,7 @@ sGis.module('serializer.symbolSerializer', [
                 var desc = symbolDescriptions[keys[i]];
 
                 if (symbol instanceof desc.Constructor) {
-                    var serialized = {name: keys[i]};
+                    var serialized = {symbolName: keys[i]};
                     desc.properties.forEach(prop => {
                         serialized[prop] = symbol[prop];
                     });
@@ -36,9 +36,9 @@ sGis.module('serializer.symbolSerializer', [
         },
         
         deserialize: (desc) => {
-            if (!symbolDescriptions[desc.name]) utils.error('Unknown type of symbol.');
-            var symbol = new symbolDescriptions[desc.name].Constructor();
-            symbolDescriptions[desc.name].properties.forEach(prop => { symbol[prop] = desc[prop]; });
+            if (!symbolDescriptions[desc.symbolName]) utils.error('Unknown type of symbol.');
+            var symbol = new symbolDescriptions[desc.symbolName].Constructor();
+            symbolDescriptions[desc.symbolName].properties.forEach(prop => { symbol[prop] = desc[prop]; });
             
             return symbol;
         }

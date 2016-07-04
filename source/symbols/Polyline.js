@@ -1,8 +1,9 @@
 sGis.module('symbol.polyline.Simple', [
+    'utils',
     'Symbol',
     'render.Polyline',
     'serializer.symbolSerializer'
-], function(Symbol, Polyline, symbolSerializer) {
+], function(utils, Symbol, Polyline, symbolSerializer) {
     
     'use strict';
 
@@ -26,10 +27,12 @@ sGis.module('symbol.polyline.Simple', [
 
         renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+            if (!coordinates) return [];
             return [new Polyline(coordinates, {strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
         }
 
         static _getRenderedCoordinates(feature, resolution, crs) {
+            if (!feature.coordinates || !utils.isArray(feature.coordinates) || !utils.isArray(feature.coordinates[0])) return null;
             var projected = feature.projectTo(crs).coordinates;
             
             return projected.map(ring => {

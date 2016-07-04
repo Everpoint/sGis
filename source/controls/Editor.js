@@ -12,7 +12,7 @@ sGis.module('controls.Editor', [
     'feature.Polygon',
     'feature.MultiPoint',
     'symbol.Editor'
-], function(utils, proto, Control, Map, Bbox, geotools, pointSymbols, FeatureLayer, PointF, Polyline, Polygon, EditorSymbol) {
+], function(utils, proto, Control, Map, Bbox, geotools, pointSymbols, FeatureLayer, PointF, Polyline, Polygon, MultiPoint, EditorSymbol) {
     'use strict';
 
     var PREFIX = 'sGis-control-edit-';

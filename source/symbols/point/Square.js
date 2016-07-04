@@ -21,6 +21,8 @@ sGis.module('symbol.point.Square', [
         }
 
         renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
+            if (feature.position === undefined) return [];
+
             var f = feature.projectTo(crs);
             var pxPosition = [f._point[0] / resolution, - f._point[1] / resolution];
             var halfSize = this.size / 2;

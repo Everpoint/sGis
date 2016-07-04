@@ -27,6 +27,8 @@ sGis.module('symbol.point.MaskedImage', [
         }
 
         renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
+            if (feature.position === undefined) return [];
+
             if (!this._isLoaded()) return [];
 
             var f = feature.projectTo(crs);

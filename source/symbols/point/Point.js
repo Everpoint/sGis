@@ -25,8 +25,10 @@ sGis.module('symbol.point.Point', [
         }
 
         renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
+            if (feature.position === undefined) return [];
+            
             var f = feature.projectTo(crs);
-            var pxPosition = [f.coordinates[0] / resolution + this.offset.x, - f.coordinates[1] / resolution + this.offset.y];
+            var pxPosition = [f.position[0] / resolution + this.offset.x, - f.position[1] / resolution + this.offset.y];
 
             var point = new ArcRender(pxPosition, { fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2 });
             return [point];

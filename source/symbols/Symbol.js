@@ -19,7 +19,7 @@ sGis.module('Symbol', [
          * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
          */
         constructor(properties) {
-            utils.init(this, properties);
+            utils.init(this, properties, true);
         }
 
         /**
