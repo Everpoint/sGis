@@ -44,8 +44,6 @@ sGis.module('Symbol', [
         }
     }
 
-    symbolSerializer.registerSymbol(Symbol, 'Symbol', []);
-
     return Symbol;
     
 });

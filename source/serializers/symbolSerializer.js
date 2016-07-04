@@ -3,9 +3,16 @@ sGis.module('serializer.symbolSerializer', [
 ], (utils) => {
     
     'use strict';
+
+    /**
+     * @namespace sGis.serializer
+     */
     
     var symbolDescriptions = {};
 
+    /**
+     * @alias sGis.serializer.symbolSerializer
+     */
     return {
         registerSymbol: (constructor, description, properties) => {
             symbolDescriptions[description] = {Constructor: constructor, properties: properties};
@@ -21,7 +28,7 @@ sGis.module('serializer.symbolSerializer', [
                     desc.properties.forEach(prop => {
                         serialized[prop] = symbol[prop];
                     });
-                    return desc;
+                    return serialized;
                 }
             }
 
