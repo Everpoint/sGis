@@ -7,7 +7,6 @@ sGis.module('painter.domPainter.Container', [
     class Container {
         constructor(wrapper, bbox, resolution, onEmpty) {
             this._onEmpty = onEmpty;
-            this._isEmpty = true;
             this._bbox = bbox;
             this._resolution = resolution;
 
@@ -25,7 +24,7 @@ sGis.module('painter.domPainter.Container', [
             if (this._container.parentNode) this._container.parentNode.removeChild(this._container);
         }
         
-        get isEmpty() { return this._isEmpty; }
+        get isEmpty() { return this._container.childElementCount === 0; }
         get scale() { return this._scale; }
 
         updateTransform(parentBbox, parentResolution) {

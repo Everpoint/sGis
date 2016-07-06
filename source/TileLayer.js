@@ -5,8 +5,9 @@ sGis.module('TileLayer', [
     'Point',
     'Bbox',
     'feature.Image',
-    'CRS'
-], function(utils, TileScheme, Layer, Point, Bbox, ImageF, CRS) {
+    'CRS',
+    'symbol.image.Image'
+], function(utils, TileScheme, Layer, Point, Bbox, ImageF, CRS, ImageSymbol) {
     'use strict';
 
     var defaults = {
@@ -44,7 +45,7 @@ sGis.module('TileLayer', [
          * @memberof sGis.TileLayer
          * @default
          */
-        transitionTime: 200,
+        _transitionTime: 200,
         _cacheSize: 256
     };
 
@@ -62,7 +63,10 @@ sGis.module('TileLayer', [
          */
         constructor(tileSource, options) {
             super();
+            this._updateSymbol();
+
             utils.init(this, options);
+
 
             this._source = tileSource;
             this._tiles = {};
@@ -113,7 +117,7 @@ sGis.module('TileLayer', [
                     if (!tiles[tileId]) {
                         var imageBbox = this._getTileBbox(level, xIndex, yIndex);
                         var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, level);
-                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, transitionTime: this.transitionTime, opacity: this.opacity });
+                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, symbol: this._symbol });
                     }
 
                     features.push(tiles[tileId]);
@@ -173,12 +177,29 @@ sGis.module('TileLayer', [
         set opacity(opacity) {
             opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
             this._opacity = opacity;
+            this._symbol.opacity = opacity;
 
-            Object.keys(this._tiles).forEach((key) => {
-                this._tiles[key].opacity = opacity;
-            });
+            this._clearFeaturesCache();
 
             this.fire('propertyChange', {property: 'opacity'});
+        }
+
+        _updateSymbol() {
+            this._symbol = new ImageSymbol({opacity: this.opacity, transitionTime: this.transitionTime})
+        }
+
+        get transitionTime() { return this._transitionTime; }
+        set transitionTime(time) {
+            this._transitionTime = this._symbol.transitionTime = time;
+            this._clearFeaturesCache();
+
+            this.fire('propertyChange', {property: 'transitionTime'});
+        }
+
+        _clearFeaturesCache() {
+            Object.keys(this._tiles).forEach((key) => {
+                this._tiles[key].redraw();
+            });
         }
     }
 
