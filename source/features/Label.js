@@ -42,7 +42,7 @@ sGis.module('feature.Label', [
          */
         get coordinates() { return this._point; }
         set coordinates(/** Number[] */ point) {
-            this.point = new sGis.Point(point[0], point[1], this.crs);
+            this.point = new sGis.Point(point, this.crs);
         }
 
         /**

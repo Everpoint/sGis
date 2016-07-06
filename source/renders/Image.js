@@ -48,7 +48,7 @@ sGis.module('render.Image', [
          * @returns {boolean}
          */
         contains(position) {
-            var point = new sGis.Point(position.x * resolution, position.y * resolution, this._bbox.crs);
+            var point = new sGis.Point([position.x * resolution, position.y * resolution], this._bbox.crs);
             return this._bbox.contains(point);
         }
     }

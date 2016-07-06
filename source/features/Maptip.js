@@ -48,7 +48,7 @@ sGis.module('feature.Maptip', [
                 if (position instanceof sGis.Point) {
                     this._position = position.projectTo(this._crs);
                 } else if (sGis.utils.isArray(position) && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1])) {
-                    this._position = new sGis.Point(position[0], position[1], this._crs);
+                    this._position = new sGis.Point(position, this._crs);
                 } else {
                     sGis.utils.error('Point is expected but got ' + position + ' instead');
                 }

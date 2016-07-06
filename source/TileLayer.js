@@ -126,10 +126,10 @@ sGis.module('TileLayer', [
 
         _getTileBbox(level, xIndex, yIndex) {
             var resolution = this.tileScheme.levels[level].resolution;
-            var startPoint = new Point(xIndex * this.tileWidth * resolution + this.tileScheme.origin.x, -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin.y, this.crs);
-            var endPoint = new Point((xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin.x, -yIndex * this.tileHeight * resolution + this.tileScheme.origin.y, this.crs);
+            var startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin.x, -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin.y], this.crs);
+            var endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin.x, -yIndex * this.tileHeight * resolution + this.tileScheme.origin.y], this.crs);
 
-            return new Bbox(startPoint, endPoint);
+            return new Bbox(startPoint.position, endPoint.position, this.crs);
         }
 
         static getTileId(level, xIndex, yIndex) {

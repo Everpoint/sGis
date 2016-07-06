@@ -84,7 +84,7 @@ sGis.module('controls.Circle', [
 
         _updateRectangle: function(newPoint) {
             var center = this._activeFeature.center;
-            var newCoord = newPoint.coordinates;
+            var newCoord = newPoint.position;
             var radius = Math.sqrt(Math.pow(center[0] - newCoord[0], 2) + Math.pow(center[1] - newCoord[1], 2));
             var coordinates = [];
             for (var i = 0; i < this.segmentNo; i++) {

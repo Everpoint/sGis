@@ -40,7 +40,7 @@ sGis.module('render.Polyline', [
          * @memberof sGis.render.Polygon
          * @default 2
          */
-        lineContainsTolerance: 2
+        lineContainsTolerance: 4
     };
 
     class Polyline {

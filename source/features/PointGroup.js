@@ -84,14 +84,14 @@ sGis.module('PointGroup', [
                     crs = this.crs;
                 for (var i = 0, len = this._points.length; i < len; i++) {
                     var point = this._points[i] === crs ? this._points[i] : this._points[i].projectTo(crs);
-                    coord.push(point.coordinates);
+                    coord.push(point.position);
                 }
                 return coord;
             },
 
             set: function(coordinates) {
                 var crs = this.crs;
-                if (!crs) sGis.utils.error('Cannot assing coordinates to empty group');
+                if (!crs) sGis.utils.error('Cannot assign coordinates to empty group');
 
                 for (var i = 0, len = coordinates.length; i < len; i++) {
                     if (!this._points[i]) this._points[i] = this._points[0].clone();
@@ -131,7 +131,7 @@ sGis.module('PointGroup', [
                         ymin = sGis.utils.min(yArray),
                         ymax = sGis.utils.max(yArray);
 
-                    return new sGis.Bbox(new sGis.Point(xmin, ymin, crs), new sGis.Point(xmax, ymax, crs));
+                    return new sGis.Bbox([xmin, ymin], [xmax, ymax], crs);
                 } else {
                     return undefined;
                 }

@@ -30,7 +30,7 @@ sGis.module('Map', [
 
     Map.prototype = {
         _crs: sGis.CRS.webMercator,
-        _position: new sGis.Point(55.755831, 37.617673).projectTo(sGis.CRS.webMercator),
+        _position: new sGis.Point([55.755831, 37.617673]).projectTo(sGis.CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
         _tileScheme: null,
 
@@ -224,7 +224,7 @@ sGis.module('Map', [
                     var x = self._easeFunction(time, originalPosition.x, dx, self._animationTime);
                     var y = self._easeFunction(time, originalPosition.y, dy, self._animationTime);
                     var r = self._easeFunction(time, originalResolution, dr, self._animationTime);
-                    self.setPosition(new sGis.Point(x, y, self.crs), r);
+                    self.setPosition(new sGis.Point([x, y], self.crs), r);
                 }
             }, 1000 / 60);
         },
@@ -234,7 +234,7 @@ sGis.module('Map', [
             basePoint = basePoint ? basePoint.projectTo(this.crs) : position;
             var resolution = this.resolution;
             var scalingK = newResolution / resolution;
-            return new sGis.Point((position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y, position.crs);
+            return new sGis.Point([(position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y], position.crs);
         },
 
         stopAnimation: function() {
@@ -309,7 +309,7 @@ sGis.module('Map', [
                 this._crs = crs;
 
                 if (currentCrs !== crs && (!currentCrs.to || !crs.to)) {
-                    this.setPosition(new sGis.Point(0, 0, crs), 1);
+                    this.setPosition(new sGis.Point([0, 0], crs), 1);
                 } else {
                     this.position = this.position.projectTo(crs);
                 }
@@ -346,7 +346,7 @@ sGis.module('Map', [
                 var point;
                 if (position instanceof sGis.feature.Point || (sGis.utils.isArray(position) && position.length === 2 && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1]))) {
                     var coordinates = position.coordinates || position;
-                    point = new sGis.Point(coordinates[0], coordinates[1], position.crs || this.crs);
+                    point = new sGis.Point([coordinates[0], coordinates[1]], position.crs || this.crs);
                 } else if (position instanceof sGis.Point) {
                     point = position;
                 } else {

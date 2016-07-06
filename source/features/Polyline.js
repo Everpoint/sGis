@@ -38,12 +38,14 @@ sGis.module('feature.Polyline', [
             }
             this._cache = {};
             this._bbox = null;
+            this.redraw();
         }
 
         removeRing(ring) {
             if (this._coordinates.length > 1 && this._coordinates[ring]) {
                 this._coordinates.splice(ring, 1);
             }
+            this.redraw();
         }
 
         clone() {
@@ -82,6 +84,7 @@ sGis.module('feature.Polyline', [
             }
             this._bbox = null;
             this._cache = {};
+            this.redraw();
         }
 
         insertPoint(ring, n, point) {
@@ -114,6 +117,7 @@ sGis.module('feature.Polyline', [
             }
 
             this.coordinates = result;
+            this.redraw();
         }
 
         rotate(angle, center) {
@@ -194,7 +198,7 @@ sGis.module('feature.Polyline', [
                             if (point2[1] < this._coordinates[ring][i][1]) point2[1] = this._coordinates[ring][i][1];
                         }
                     }
-                    this._bbox = new sGis.Bbox(new sGis.Point(point1[0], point1[1], this._crs), new sGis.Point(point2[0], point2[1], this._crs));
+                    this._bbox = new sGis.Bbox(point1, point2, this._crs);
                 }
                 return this._bbox;
             }

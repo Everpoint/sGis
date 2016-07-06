@@ -37,7 +37,7 @@ sGis.module('painter.DomPainter', [
             this._layerRenderers = new Map();
             this._containers = [];
 
-            this._position = new Point(Infinity, Infinity);
+            this._position = new Point([Infinity, Infinity]);
             this._resolution = Infinity;
 
             this._needUpdate = true;
@@ -270,9 +270,9 @@ sGis.module('painter.DomPainter', [
         getPointFromPxPosition(x, y) {
             var resolution = this._map.resolution;
             var bbox = this.bbox;
-            return new sGis.Point(
+            return new sGis.Point([
                 bbox.xMin + x * resolution,
-                bbox.yMax - y * resolution,
+                bbox.yMax - y * resolution],
                 bbox.crs
             );
         }

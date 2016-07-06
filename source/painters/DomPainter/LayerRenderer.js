@@ -194,7 +194,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
             let prevRenders = this._featureRenders.get(feature);
             if (!canvasIsUsed && prevRenders === renders) return;
 
-            this._markAsOutdated(feature);
+            if (prevRenders !== renders) this._markAsOutdated(feature);
             this._featureRenders.set(feature, renders);
 
             for (let i = 0; i < renders.length; i++) {

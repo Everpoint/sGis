@@ -39,19 +39,19 @@ sGis.module('symbol.Editor', [
                     halo = new PolygonRender(baseRender[i].coordinates, {
                         strokeColor: this.color,
                         fillColor: this.color,
-                        strokeWidth: parseFloat(baseRender[i].width) + 2 * this.haloSize
+                        strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
                     });
                     break;
                 } else if (baseRender[i] instanceof PolylineRender) {
                     halo = new PolylineRender(baseRender[i].coordinates, {
                         strokeColor: this.color,
-                        strokeWidth: parseFloat(baseRender[i].width) + 2 * this.haloSize
+                        strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
                     });
                     break;
                 } else if (this.baseSymbol instanceof PointImageSymbol) {
                     halo = new sGis.render.Arc([baseRender[i].position[0] + baseRender[i].node.width / 2, baseRender[i].position[1] + baseRender[i].node.height / 2], {
                         fillColor: this.color,
-                        radius: this.baseSymbol.size / 2 + this.haloSize,
+                        radius: this.baseSymbol.width / 2 + this.haloSize,
                         strokeColor: 'transparent'
                     });
                     break;

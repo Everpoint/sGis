@@ -121,6 +121,7 @@ sGis.module('Feature', [
          * Coordinate system of the feature.
          * @readonly
          * @type sGis.Crs
+         * @default sGis.CRS.geo
          */
         get crs() { return this._crs; }
 

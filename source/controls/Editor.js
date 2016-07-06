@@ -413,7 +413,7 @@ sGis.module('controls.Editor', [
             var symbol = adjustedEvent.type === 'line' ? this._snappingPointSymbol : adjustedEvent.type === 'vertex' ? this._snappingVertexSymbol : null;
 
             if (symbol) {
-                this._snappingPoint.coordinates = adjustedEvent.point;
+                this._snappingPoint.position = adjustedEvent.point;
                 this._snappingPoint.symbol = symbol;
 
                 this._snappingPoint.show();
@@ -496,7 +496,7 @@ sGis.module('controls.Editor', [
                 var index;
                 var snappingDistance = this.snappingDistance * this._map.resolution;
                 for (var i = 1; i < coordinates[ring].length; i++) {
-                    var distance = sGis.geotools.pointToLineDistance(sGisEvent.point.coordinates, [coordinates[ring][i - 1], coordinates[ring][i]]);
+                    var distance = sGis.geotools.pointToLineDistance(sGisEvent.point.position, [coordinates[ring][i - 1], coordinates[ring][i]]);
                     if (distance < snappingDistance) {
                         for (var j = 0; j < 2; j++) {
                             if (Math.abs(coordinates[ring][i - 1 + j][0] - sGisEvent.point.x) < snappingDistance && Math.abs(coordinates[ring][i - 1 + j][1] - sGisEvent.point.y) < snappingDistance) {
@@ -508,7 +508,7 @@ sGis.module('controls.Editor', [
                         }
 
                         if (!snappingPoint) {
-                            snappingPoint = sGis.geotools.pointToLineProjection(sGisEvent.point.coordinates, [coordinates[ring][i - 1], coordinates[ring][i]]);
+                            snappingPoint = sGis.geotools.pointToLineProjection(sGisEvent.point.position, [coordinates[ring][i - 1], coordinates[ring][i]]);
                             snappingType = 'line';
                             index = i - 1;
                         }
@@ -888,7 +888,7 @@ sGis.module('controls.Editor', [
                     if (feature instanceof sGis.feature.Polygon) coordinates[ring].push(coordinates[ring][0]);
 
                     for (var j = 1; j < coordinates[ring].length; j++) {
-                        var projection = sGis.geotools.pointToLineProjection(point.coordinates, [coordinates[ring][j-1], coordinates[ring][j]]);
+                        var projection = sGis.geotools.pointToLineProjection(point.position, [coordinates[ring][j-1], coordinates[ring][j]]);
 
                         if (Math.abs(projection[0] - point.x) < distance && Math.abs(projection[1] - point.y) < distance) {
                             return projection;
@@ -945,7 +945,7 @@ sGis.module('controls.Editor', [
             }
 
             for (var i = 0; i < lines.length; i++) {
-                var projection = sGis.geotools.pointToLineProjection(point.coordinates, lines[i]);
+                var projection = sGis.geotools.pointToLineProjection(point.position, lines[i]);
                 var dx = projection[0] - lines[i][0][0];
                 var dy = projection[1] - lines[i][0][1];
                 if (Math.abs(dx) < distance && Math.abs(dy) < distance) {

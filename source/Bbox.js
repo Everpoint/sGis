@@ -17,17 +17,14 @@ sGis.module('Bbox', [
     class Bbox {
         /**
          * @constructor
-         * @param {sGis.Point|number[]} point1
-         * @param {sGis.Point|number[]} point2
+         * @param {Number[]} point1
+         * @param {Number[]} point2
          * @param {sGis.Crs} [crs=sGis.CRS.geo]
          */
         constructor(point1, point2, crs)
         {
-            this._crs = crs || point1.crs || point2.crs || this._crs;
-
-            var p1 = point1 instanceof Point ? point1.projectTo(this._crs).coordinates : point1;
-            var p2 = point2 instanceof Point ? point2.projectTo(this._crs).coordinates : point2;
-            this._p = [Math.min(p1[0], p2[0]), Math.min(p1[1], p2[1]), Math.max(p1[0], p2[0]), Math.max(p1[1], p2[1])];
+            this._crs = crs;
+            this._p = [Math.min(point1[0], point2[0]), Math.min(point1[1], point2[1]), Math.max(point1[0], point2[0]), Math.max(point1[1], point2[1])];
         }
 
         /**
@@ -36,7 +33,9 @@ sGis.module('Bbox', [
          * @returns {sGis.Bbox}
          */
         projectTo(crs) {
-            return new Bbox(new Point(this._p[0], this._p[1], this._crs), new Point(this._p[2], this._p[3], this._crs), crs);
+            var projected1 = new Point(this._p.slice(0,2), this._crs).projectTo(crs).position;
+            var projected2 = new Point(this._p.slice(2,4), this._crs).projectTo(crs).position;
+            return new Bbox(projected1, projected2, crs);
         }
 
         /**
@@ -54,8 +53,8 @@ sGis.module('Bbox', [
          */
         equals(bbox) {
             var target = bbox.coordinates;
-            for (var i = 0; i < 4; i++) if (this._p[i] !== target[i]) return false;
-            return this._crs === bbox.crs;
+            for (var i = 0; i < 4; i++) if (!utils.softEquals(this._p[i], target[i])) return false;
+            return this._crs.equals(bbox.crs);
         }
 
         /**
@@ -142,11 +141,11 @@ sGis.module('Bbox', [
         get p() { return [this.p1, this.p2]; }
 
         /** @deprecated */
-        get p1() { return new Point(this._p[0], this._p[1], this._crs); }
+        get p1() { return new Point([this._p[0], this._p[1]], this._crs); }
         set p1(point){ this._setPoint(0, point); }
 
         /** @deprecated */
-        get p2() { return new Point(this._p[2], this._p[3]); }
+        get p2() { return new Point([this._p[2], this._p[3]]); }
         set p2(point) { this._setPoint(1, point); }
 
         /** @deprecated */
