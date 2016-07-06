@@ -34,7 +34,7 @@ sGis.module('controls.Point', [
 
     Point.prototype = new sGis.Control({
         startNewFeature: function(point) {
-            var feature = new sGis.feature.Point(point.getCoordinates(), {crs: this._map.crs, symbol: this._prototype.symbol, style: this._prototype.style});
+            var feature = new sGis.feature.Point(point.position, {crs: this._map.crs, symbol: this._prototype.symbol, style: this._prototype.style});
             var activeLayer = this.activeLayer;
 
             activeLayer.add(feature);

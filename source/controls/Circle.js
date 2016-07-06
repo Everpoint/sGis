@@ -67,7 +67,7 @@ sGis.module('controls.Circle', [
         },
 
         _startDrawing: function(point) {
-            var center = point.getCoordinates();
+            var center = point.position;
             var coordinates = [];
             for (var i = 0; i < this.segmentNo; i++) {
                 coordinates.push(center);

@@ -23,8 +23,8 @@ sGis.module('symbol.point.Image', [
         renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
             if (feature.position === undefined) return [];
 
-            var f = feature.projectTo(crs);
-            var pxPosition = [f._point[0] / resolution, - f._point[1] / resolution];
+            var position = feature.projectTo(crs).position;
+            var pxPosition = [position[0] / resolution, - position[1] / resolution];
             var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
 
             var html = '<img src="' + this.source + '"' + (this.width > 0 ? ' width="' + this.width + '"' : '') + (this.height > 0 ? ' height="' + this.height + '"' : '') + '>';

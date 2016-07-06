@@ -66,7 +66,7 @@ sGis.module('controls.Rectangle', [
         },
 
         _startDrawing: function(point) {
-            var coord = point.getCoordinates(),
+            var coord = point.position,
                 rect = new sGis.feature.Polygon([coord, coord, coord, coord], { crs: point.crs });
 
             this.activeLayer.add(rect);
@@ -77,7 +77,7 @@ sGis.module('controls.Rectangle', [
 
         _updateRectangle: function(newPoint) {
             var coord = this._activeFeature.coordinates[0],
-                pointCoord = newPoint.getCoordinates();
+                pointCoord = newPoint.position;
 
             coord = [coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]];
 
