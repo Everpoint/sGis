@@ -83,11 +83,48 @@ sGis.module('render.Arc', [
             var dx = position.x - this.center[0];
             var dy = position.y - this.center[1];
             var distance2 = dx * dx + dy * dy;
-            return Math.sqrt(distance2) < this.radius + 2;
+
+            return distance2 < (this.radius + 2)*(this.radius + 2);
         }
 
         get isVector() { return true; }
     }
+
+    /**
+     * Start angle of the sector.
+     * @member {Number} startAngle
+     * @memberof sGis.render.Arc
+     * @instance
+     * @default 0
+     */
+    Arc.prototype.startAngle = 0;
+
+    /**
+     * End angle of the sector.
+     * @member {Number} endAngle
+     * @memberof sGis.render.Arc
+     * @instance
+     * @default 2 * Math.PI
+     */
+    Arc.prototype.endAngle = 2 * Math.PI;
+
+    /**
+     * Shows whether the arc is a sector of a circle rather then simple arc. Set to false if you need to draw a circle, for sector has all its boundaries outlined.
+     * @member {Boolean} isSector
+     * @memberof sGis.render.Arc
+     * @instance
+     * @default false
+     */
+    Arc.prototype.isSector = false;
+
+    /**
+     * Direction of the arc.
+     * @member {Boolean} clockwise
+     * @memberof sGis.render.Arc
+     * @instance
+     * @default true
+     */
+    Arc.prototype.clockwise = true;
     
     utils.extend(Arc.prototype, defaults);
     

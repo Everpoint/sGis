@@ -62,7 +62,13 @@ sGis.module('painter.domPainter.Canvas', [
             this._ctx.strokeStyle = render.strokeColor;
             this._ctx.fillStyle = render.fillColor;
 
-            this._ctx.arc(center[0], center[1], render.radius, 0, Math.PI * 2);
+            if (render.isSector) {
+                this._ctx.moveTo(center[0], center[1]);
+            }
+            this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.endAngle, !render.clockwise);
+            if (render.isSector) {
+                this._ctx.lineTo(center[0], center[1]);
+            }
             this._ctx.fill();
             this._ctx.stroke();
         }
