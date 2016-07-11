@@ -19,3 +19,15 @@
  * @member {sGis.Point} point
  * @memberof sGis.IPoint
  */
+
+/**
+ * X coordinate
+ * @member {Number} x
+ * @memberof sGis.IPoint
+ */
+
+/**
+ * Y coordinate
+ * @member {Number} y
+ * @memberof sGis.IPoint
+ */

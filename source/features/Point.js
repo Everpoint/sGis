@@ -9,11 +9,8 @@ sGis.module('feature.Point', [
 
     'use strict';
 
-    var defaults = {
-        _symbol: new PointSymbol()
-    };
-
     /**
+     * Simple geographical point.
      * @alias sGis.feature.Point
      * @extends sGis.Feature
      * @implements sGis.IPoint
@@ -32,7 +29,9 @@ sGis.module('feature.Point', [
         clone() {
             return this.projectTo(this.crs);
         }
-        
+
+        get bbox() { return new Bbox(this._position, this._position, this.crs); }
+
         get position() { return [].concat(this._position); }
         set position(position) {
             this._position = position;
@@ -41,8 +40,6 @@ sGis.module('feature.Point', [
         
         get point() { return new sGis.Point(this.position, this.crs); }
         set point(point) { this.position = point.projectTo(this.crs).position; }
-
-        get bbox() { return new Bbox(this._position, this._position, this.crs); }
 
         get x() { return this._position[0]; }
         set x(x) {
@@ -56,8 +53,8 @@ sGis.module('feature.Point', [
             this.redraw();
         }
     }
-
-    utils.extend(PointF.prototype, defaults);
+    
+    PointF.prototype._symbol = new PointSymbol(); 
 
     return PointF;
 
