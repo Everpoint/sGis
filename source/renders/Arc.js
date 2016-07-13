@@ -76,12 +76,12 @@ sGis.module('render.Arc', [
 
         /**
          * Returns true if 'position' is inside the rendered arc.
-         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
+         * @param {Number[]} position - position in the rendered (px) coordinates in [x,y] format.
          * @returns {boolean}
          */
         contains(position) {
-            var dx = position.x - this.center[0];
-            var dy = position.y - this.center[1];
+            var dx = position[0] - this.center[0];
+            var dy = position[1] - this.center[1];
             var distance2 = dx * dx + dy * dy;
 
             return distance2 < (this.radius + 2)*(this.radius + 2);
