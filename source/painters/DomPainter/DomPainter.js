@@ -242,6 +242,8 @@ sGis.module('painter.DomPainter', [
             this._eventDispatcher.remove();
             this._eventDispatcher = null;
         }
+        
+        get innerWrapper() { return this._innerWrapper; }
 
         resolveLayerOverlay() {
             var prevContainerIndex = 0;

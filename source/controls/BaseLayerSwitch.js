@@ -6,9 +6,12 @@
 ], function(utils, Control, Map, Layer) {
     'use strict';
 
-    var BaseLayerSwitch = function(map, options) {
+    var BaseLayerSwitch = function(painter, options) {
+        var map = painter.map;
+
         if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
         this._map = map;
+        this._painter = painter;
 
         sGis.utils.init(this, options);
         this._container = this._getNewControlContainer();
@@ -429,11 +432,11 @@
             default: true,
             set: function(bool) {
                 if (bool) {
-                    if (this._map.innerWrapper) this._map.innerWrapper.appendChild(this._container);
+                    if (this._painter.innerWrapper) this._painter.innerWrapper.appendChild(this._container);
                     this._isActive = true;
                     this.fire('activate');
                 } else {
-                    if (this._map.innerWrapper && this._container.parentNode) this._map.innerWrapper.removeChild(this._container);
+                    if (this._painter.innerWrapper && this._container.parentNode) this._painter.innerWrapper.removeChild(this._container);
                     this._isActive = false;
                     this.fire('deactivate');
                 }
