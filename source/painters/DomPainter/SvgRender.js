@@ -25,7 +25,11 @@ sGis.module('painter.domPainter.SvgRender', [
         
         _setNode() {
             if (this._baseRender instanceof Arc) {
-                this._setArcNode();
+                if (this._baseRender.startAngle == 0 || this._baseRender.endAngle == 2*Math.PI) {
+                    this._setArcNode();
+                } else {
+                    this._setSegmentNode();
+                }
             } else if (this._baseRender instanceof Polygon) {
                 this._setPolygonNode();
             } else if (this._baseRender instanceof Polyline) {
@@ -107,6 +111,44 @@ sGis.module('painter.domPainter.SvgRender', [
             svg.appendChild(path);
 
             return svg;
+        }
+
+        _setSegmentNode() {
+            var path = this._getSegment();
+            this._node = this._getPathNode({
+                stroke: this._baseRender.strokeColor,
+                'stroke-width': this._baseRender.strokeWidth,
+                fill: this._baseRender.fillColor,
+                width: path.width,
+                height: path.height,
+                x: path.x,
+                y: path.y,
+                viewBox: [path.x, path.y, path.width, path.height].join(' '),
+                d: path.d
+            });
+
+            this._position = [path.x, path.y];
+        }
+        
+        _getSegment() {
+            var r = this._baseRender.radius;
+            var r2 = r * 2 + this._baseRender.strokeWidth;
+            var x = this._baseRender.center[0];
+            var y = this._baseRender.center[1];
+
+            var x1 = x + r * Math.cos(this._baseRender.startAngle);
+            var y1 = y + r * Math.sin(this._baseRender.startAngle);
+
+            var x2 = x + r * Math.cos(this._baseRender.endAngle);
+            var y2 = y + r * Math.sin(this._baseRender.endAngle);
+
+            var largeFlag = Math.abs(this._baseRender.endAngle - this._baseRender.startAngle) % (Math.PI * 2) > Math.PI ? 1 : 0;
+
+            var path = `M ${x},${y} L ${x1},${y1} A ${r},${r} 0 ${largeFlag} 1 ${x2},${y2}`;
+            var x0 = x - r - this._baseRender.strokeWidth / 2;
+            var y0 = y - r - this._baseRender.strokeWidth / 2;
+
+            return {x: x0, y: y0, width: r2, height: r2, d: path};
         }
 
         _setArcNode() {
