@@ -351,7 +351,7 @@ sGis.module('controls.Editor', [
         },
 
         _setTempSymbol: function() {
-            this._selectedFeature.setTempSymbol(new selectionSymbols[this._selectedFeature.type]({baseSymbol: this._selectedFeature.symbol}));
+            this._selectedFeature.setTempSymbol(new selectionSymbol({baseSymbol: this._selectedFeature.symbol}));
         },
 
         _clearTempSymbol: function() {
@@ -582,7 +582,7 @@ sGis.module('controls.Editor', [
                 projected.y = sGisEvent.point.y;
             }
 
-            feature.coordinates = projected.projectTo(feature.crs).coordinates;
+            feature.position = projected.projectTo(feature.crs).position;
             this._activeLayer.redraw();
 
             this.fire('featureMove', {feature: feature});
@@ -819,11 +819,7 @@ sGis.module('controls.Editor', [
     Editor.prototype.deselectFeature = Editor.prototype.deselect;
     Editor.prototype.selectFeature = Editor.prototype.select;
 
-    var selectionSymbols = {
-        point: EditorSymbol,
-        polyline: EditorSymbol,
-        polygon: EditorSymbol
-    };
+    var selectionSymbol = EditorSymbol;
 
     var snapping = {
         /**
