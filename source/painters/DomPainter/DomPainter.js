@@ -166,7 +166,7 @@ sGis.module('painter.DomPainter', [
         
         _updateBbox() {
             let mapPosition = this._map.position;
-            if (!mapPosition.equals(this._position) || !utils.softEquals(this._map.resolution, this._resolution)) {
+            if (!mapPosition.equals(this._position) || !utils.softEquals(this._map.resolution, this._resolution) || this._bboxWidth !== this._width || this._bboxHeight !== this._height) {
                 this._position = mapPosition;
                 this._resolution = this._map.resolution;
 
@@ -180,6 +180,9 @@ sGis.module('painter.DomPainter', [
                 });
                 
                 if (this._containers.length > 0 && this._containers[this._containers.length - 1].scale !== 1) this._needUpdate = true;
+
+                this._bboxWidth = this._width;
+                this._bboxHeight = this._height;
 
                 this._redrawNeeded = true;
             }
