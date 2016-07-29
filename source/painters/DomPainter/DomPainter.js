@@ -93,6 +93,7 @@ sGis.module('painter.DomPainter', [
         _setEventListeners() {
             this._map.on('layerAdd layerRemove layerOrderChange', this._updateLayerList.bind(this));
             this._map.on('drag', this._onMapDrag.bind(this));
+            this._map.on('dblclick', this._onMapDblClick.bind(this));
             this._map.on('animationStart', this.forbidUpdate.bind(this));
             this._map.on('animationEnd', this.allowUpdate.bind(this));
         }
@@ -297,6 +298,13 @@ sGis.module('painter.DomPainter', [
             setTimeout(() => {
                 if (sGisEvent.isCanceled()) return;
                 this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
+            }, 0);
+        }
+
+        _onMapDblClick(sGisEvent) {
+            setTimeout(() => {
+                if (sGisEvent.isCanceled()) return;
+                this._map.animateSetResolution(this._map.resolution/2, sGisEvent.point);
             }, 0);
         }
     }
