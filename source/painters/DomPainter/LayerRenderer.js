@@ -25,6 +25,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
         /**
          * @constructor
          * @alias sGis.renderers.domRenderer.LayerRenderer.constructor
+         * @mixes sGis.IEventHandler
          * @param master
          * @param layer
          * @param index
@@ -177,6 +178,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
         _draw(feature) {
             if (this._featureIsLoading(feature)) return;
+            this._removeForRemoval(feature);
 
             let renders = feature.render(this._master.map.resolution, this._master.map.crs);
 
@@ -222,11 +224,16 @@ sGis.module('painter.domPainter.LayerRenderer', [
         }
         
         _drawNodeRender(render, feature) {
+            if (this._loadingRenders.has(render)) return;
+
             this._loadingRenders.set(render, 1);
 
             var callback = (error, node) => {
                 this._loadingRenders.delete(render);
-                if (error || !this._featureRenders.has(feature) || !render.baseRender && this._featureRenders.get(feature).indexOf(render) < 0 || render.baseRender && this._featureRenders.get(feature).indexOf(render.baseRender) < 0) return;
+                if (error || !this._featureRenders.has(feature)
+                    || !render.baseRender && this._featureRenders.get(feature).indexOf(render) < 0
+                    || render.baseRender && this._featureRenders.get(feature).indexOf(render.baseRender) < 0
+                    || this._outdatedFeatureRenders.has(render) || this._rendersForRemoval.has(render)) return;
 
                 node.style.zIndex = this._zIndex;
 
@@ -238,6 +245,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 }
 
                 this._renderNodeMap.set(render, node);
+
                 this._renderContainerMap.set(render, container);
                 this.currentContainer = container;
 
@@ -294,6 +302,13 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
             this._rendersForRemoval.set(feature, forRemoval);
             this._featureRenders.delete(feature);
+        }
+
+        _removeForRemoval(feature) {
+            var renders = this._rendersForRemoval.get(feature);
+            if (renders && !this._featureRenders.has(feature)) {
+                renders.forEach(render => { this._removeRender(render); });
+            }
         }
 
         _markAsOutdated(feature) {
@@ -365,17 +380,16 @@ sGis.module('painter.domPainter.LayerRenderer', [
             var lastContainer = this._master.currContainer;
             renders.forEach(render => {
                 let node = this._renderNodeMap.get(render);
-                if (node) {
-                    let container = this._renderContainerMap.get(render);
+                let container = this._renderContainerMap.get(render);
+                if (node && container) {
                     if (container !== lastContainer) {
                         if (render.bbox) {
                             lastContainer.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                         } else if (render.position) {
                             lastContainer.addFixedSizeNode(node, render.position);
                         }
+                        this._renderContainerMap.set(render, lastContainer);
                     }
-
-                    this._renderContainerMap.set(render, lastContainer);
                 }
             });
         }
