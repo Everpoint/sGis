@@ -83,7 +83,6 @@ sGis.module('painter.DomPainter', [
 
         _addLayer(layer, index) {
             this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));
-            this._redrawNeeded = true;
         }
 
         _removeLayer(layer) {
