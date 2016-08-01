@@ -26,6 +26,7 @@ sGis.module('painter.domPainter.Container', [
         
         get isEmpty() { return this._container.childElementCount === 0; }
         get scale() { return this._scale; }
+        get crs() { return this._bbox.crs; }
 
         updateTransform(parentBbox, parentResolution) {
             if (parentBbox.crs !== this._bbox.crs) parentBbox = parentBbox.projectTo(this._bbox.crs);

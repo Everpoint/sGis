@@ -146,10 +146,14 @@ sGis.module('painter.DomPainter', [
             // Check all containers except the last one, for we never remove it
             for (let i = this._containers.length - 2; i >= 0; i--) {
                 if (this._containers[i].isEmpty) {
-                    this._containers[i].remove();
-                    this._containers.splice(i, 1);
+                    this._removeContainer(i);
                 }
             }
+        }
+
+        _removeContainer(i) {
+            this._containers[i].remove();
+            this._containers.splice(i, 1);
         }
 
         _updateSize() {
@@ -176,7 +180,12 @@ sGis.module('painter.DomPainter', [
                 this._bbox = new Bbox([mapPosition.x - dx, mapPosition.y - dy], [mapPosition.x + dx, mapPosition.y + dy], mapPosition.crs);
 
                 this._containers.forEach(container => {
-                    container.updateTransform(this._bbox, this._resolution);
+                    if (container.crs.canProjectTo(mapPosition.crs)) {
+                        container.updateTransform(this._bbox, this._resolution);
+                    } else {
+                        this._removeContainer(this._containers.indexOf(container));
+                        if (this._containers.length === 0) this._setNewContainer();
+                    }
                 });
                 
                 if (this._containers.length > 0 && this._containers[this._containers.length - 1].scale !== 1) this._needUpdate = true;

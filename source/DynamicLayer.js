@@ -16,7 +16,15 @@ sGis.module('DynamicLayer', [
         getFeatures(bbox, resolution) {
             if (!this._display || this._layers && this._layers.length === 0) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
-
+            
+            if (this.crs) {
+                if (bbox.crs.canProjectTo(this.crs)) {
+                    bbox = bbox.projectTo(this.crs);
+                } else {
+                    return [];
+                }
+            }
+            
             if (this._features && this._features[0].crs !== bbox.crs) this._features = null;
 
             if (!this._features) this._createFeature(bbox);
@@ -34,7 +42,7 @@ sGis.module('DynamicLayer', [
         }
 
         _createFeature(bbox) {
-            var feature = new sGis.feature.Image(bbox, { opacity: this.opacity, style: { transitionTime: this._transitionTime, renderToCanvas: false }});
+            var feature = new sGis.feature.Image(bbox, { crs: this.crs, opacity: this.opacity, style: { transitionTime: this._transitionTime, renderToCanvas: false }});
             this._features = [feature];
         }
 
@@ -72,6 +80,9 @@ sGis.module('DynamicLayer', [
             if (this._features && this._features[0]) this._features[0].opacity = opacity;
             this.fire('propertyChange', {property: 'opacity'});
         }
+        
+        get crs() { return this._crs; }
+        set crs(crs) { this._crs = crs; }
     }
 
     sGis.utils.extend(DynamicLayer.prototype, defaults);

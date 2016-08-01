@@ -117,7 +117,7 @@ sGis.module('TileLayer', [
                     if (!tiles[tileId]) {
                         var imageBbox = this._getTileBbox(level, xIndex, yIndex);
                         var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, level);
-                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, symbol: this._symbol });
+                        tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, symbol: this._symbol, crs: this.crs });
                     }
 
                     features.push(tiles[tileId]);

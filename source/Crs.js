@@ -188,7 +188,7 @@ sGis.module('CRS', [
         /**
          * @alias sGis.CRS.ellipticalMercator
          */
-        CRS.ellipticalMercator = new Crs({wkid: 54004});
+        CRS.ellipticalMercator = new Crs({wkid: 667});
         CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
             var ts = Math.exp(-y/a);
             var phi = pih - 2 * Math.atan(ts);
