@@ -52,6 +52,16 @@ sGis.module('Map', [
         },
 
         /**
+         * Adds a layer to the map
+         * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
+         * @param {number} index - inserted index
+         * @fires sGis.Map#layerAdd || sGis.Map#layerOrderChange
+         */
+        insertLayer: function(layer, index) {
+            this._layerGroup.insertLayer(layer, index);
+        },
+
+        /**
          * Removes the layer from the map
          * @param {sGis.Layer} layer - the layer to be removed. If the layer is not on the map, an exception will be thrown.
          * @fires sGis.Map#layerRemove
@@ -66,6 +76,7 @@ sGis.module('Map', [
          * @param {Number} index - new index of the layer.
          * @fires sGis.Map#layerOrderChange - in case the layer is on the map
          * @fires sGis.Map#layerAdd - in case the layer is not on the map
+         * @deprecated
          */
         moveLayerToIndex: function(layer, index) {
             this._layerGroup.insertLayer(layer, index);
