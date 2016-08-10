@@ -68,7 +68,7 @@ sGis.module('controls.Poly', [
 
             this._dblclickHandler = function(sGisEvent) {
                 finishDrawing(self, sGisEvent);
-                sGisEvent.preventDefault();
+                sGisEvent.stopPropagation();
                 self._dblClickTime = Date.now();
             };
         },

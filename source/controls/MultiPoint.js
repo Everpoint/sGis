@@ -66,7 +66,7 @@ sGis.module('feature.MultiPoint', [
                 self._isDblClick = false;
             }, 0);
 
-            sGisEvent.preventDefault();
+            sGisEvent.stopPropagation();
             this.deactivate();
         },
 
