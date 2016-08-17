@@ -288,6 +288,10 @@ sGis.module('Map', [
                     };
                 })(map), CHANGE_END_DELAY);
             }
+        },
+        
+        getLayers: function(recurse) {
+            return this._layerGroup.getLayers(recurse);
         }
     };
 

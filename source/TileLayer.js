@@ -91,13 +91,14 @@ sGis.module('TileLayer', [
          * @returns {sGis.Feature[]}
          */
         getFeatures(bbox, resolution) {
-            if (!this._display || !bbox.crs.projectionTo(this.crs)) return [];
+            let ownCrs = this.crs || bbox.crs;
+            if (!this._display || !bbox.crs.projectionTo(ownCrs)) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
 
             var level = this.tileScheme.getLevel(resolution);
             if (level < 0) return [];
 
-            bbox = bbox.projectTo(this.crs);
+            bbox = bbox.projectTo(ownCrs);
 
             var layerResolution = this.tileScheme.levels[level].resolution;
             var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);

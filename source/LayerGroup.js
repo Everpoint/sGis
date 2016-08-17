@@ -7,6 +7,9 @@ sGis.module('LayerGroup', [
     var LayerGroup = function(layers) {
         this._layers = [];
         this.layers = layers || [];
+
+        var self = this;
+        this._forwardEvent = function(sGisEvent) { self.fire(sGisEvent.eventType, sGisEvent); }
     };
 
     LayerGroup.prototype = {
@@ -23,6 +26,7 @@ sGis.module('LayerGroup', [
                 }
 
                 this._layers.push(layer);
+                if (layer instanceof LayerGroup) this._setForwardListeners(layer);
                 this.fire('layerAdd', {layer: layer});
             }
         },
@@ -32,6 +36,7 @@ sGis.module('LayerGroup', [
             var index = this._layers.indexOf(layer);
             if (index !== -1) {
                 this._layers.splice(index, 1);
+                if (layer instanceof LayerGroup) this._removeForwardListeners(layer);
                 this.fire('layerRemove', {layer: layer});
                 return;
             } else if (recurse) {
@@ -44,6 +49,14 @@ sGis.module('LayerGroup', [
             }
 
             sGis.utils.error('The layer is not in the group');
+        },
+
+        _setForwardListeners: function(layerGroup) {
+            layerGroup.on('layerAdd layerRemove layerOrderChange', this._forwardEvent);
+        },
+
+        _removeForwardListeners: function(layerGroup) {
+            layerGroup.off('layerAdd layerRemove layerOrderChange', this._forwardEvent);
         },
 
         contains: function(layer) {
@@ -85,6 +98,18 @@ sGis.module('LayerGroup', [
             this._layers.splice(index, 0, layer);
             var event = added ? 'layerAdd' : 'layerOrderChange';
             this.fire(event, {layer: layer});
+        },
+
+        getLayers: function(recurse) {
+            let layers = [];
+            this._layers.forEach(layer => {
+                if (recurse && layer instanceof LayerGroup) {
+                    layers = layers.concat(layer.getLayers(recurse));
+                } else {
+                    layers.push(layer);
+                }
+            });
+            return layers;
         }
     };
 

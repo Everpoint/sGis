@@ -66,7 +66,7 @@ sGis.module('painter.DomPainter', [
         get layerRenderers() { return Array.from(this._layerRenderers.values()); }
         
         _updateLayerList() {
-            var mapLayers = this._map.layers;
+            var mapLayers = this._map.getLayers(true);
             for (let layer of this._layerRenderers.keys()) {
                 if (mapLayers.indexOf(layer) < 0) this._removeLayer(layer);
             }
@@ -124,7 +124,7 @@ sGis.module('painter.DomPainter', [
                 this._updateBbox();
 
                 if (this._updateAllowed) {
-                    this._map.layers.reverse().forEach(layer => {
+                    this._map.getLayers(true).reverse().forEach(layer => {
                         let renderer = this._layerRenderers.get(layer);
                         if (this._redrawNeeded || renderer.updateNeeded) {
                             renderer.update();
@@ -259,7 +259,7 @@ sGis.module('painter.DomPainter', [
 
         resolveLayerOverlay() {
             var prevContainerIndex = 0;
-            this._map.layers.forEach(layer => {
+            this._map.getLayers(true).forEach(layer => {
                 let renderer = this._layerRenderers.get(layer);
                 if (!renderer) return;
                 
