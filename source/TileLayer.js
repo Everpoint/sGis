@@ -50,10 +50,8 @@ sGis.module('TileLayer', [
     };
 
     /**
-     * @class
      * @alias sGis.TileLayer
      * @extends sGis.Layer
-     * @extends sGis.IEventHandler
      */
     class TileLayer extends Layer {
         /**
@@ -73,7 +71,7 @@ sGis.module('TileLayer', [
          * Returns url of a tile
          * @param {Number} xIndex - Index of tile along x axis
          * @param {Number} yIndex - Index of tile along y axis
-         * @param {Scale} scale - Scale level of the tile
+         * @param {Number} scale - Scale level of the tile
          * @returns {string}
          */
         getTileUrl(xIndex, yIndex, scale) {
@@ -161,10 +159,6 @@ sGis.module('TileLayer', [
          */
         get tileHeight() { return this.tileScheme.tileHeight; }
 
-        /**
-         * Opacity of the layer
-         * @fires "propertyChange"
-         */
         get opacity() { return this._opacity; }
         set opacity(opacity) {
             opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
@@ -180,8 +174,13 @@ sGis.module('TileLayer', [
             this._symbol = new ImageSymbol({opacity: this.opacity, transitionTime: this.transitionTime})
         }
 
+        /**
+         * Time of fade in animation for the tiles
+         * @type {Number}
+         * @default 200
+         */
         get transitionTime() { return this._transitionTime; }
-        set transitionTime(time) {
+        set transitionTime(/** Number */ time) {
             this._transitionTime = this._symbol.transitionTime = time;
             this._clearFeaturesCache();
 
