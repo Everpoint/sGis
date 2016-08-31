@@ -2,7 +2,7 @@ sGis.module('Bbox', [
     'utils',
     'CRS',
     'Point'
-], function(/**sGis.utils*/ utils, /**sGis.CRS*/ CRS, /** sGis.Point */ Point) {
+], function(/**sGis.utils*/ utils, /**sGis.CRS*/ CRS, /** sGis.Point.constructor */ Point) {
     'use strict';
 
     var defaults = {
@@ -63,8 +63,8 @@ sGis.module('Bbox', [
          * @returns {boolean}
          */
         intersects(bbox) {
-            var proj = bbox.projectTo(this._crs);
-            return this.xMax > proj.xMin && this.xMin < proj.xMax && this.yMax > proj.yMin && this.yMin < proj.yMax;
+            var projected = bbox.projectTo(this._crs);
+            return this.xMax > projected.xMin && this.xMin < projected.xMax && this.yMax > projected.yMin && this.yMin < projected.yMax;
         }
 
         /**
@@ -73,8 +73,8 @@ sGis.module('Bbox', [
          * @returns {boolean}
          */
         contains(point) {
-            var proj = point.projectTo(this.crs);
-            return this.xMin <= proj.x && this.xMax >= proj.x && this.yMin <= proj.y && this.yMax >= proj.y;
+            var projected = point.projectTo(this.crs);
+            return this.xMin <= projected.x && this.xMax >= projected.x && this.yMin <= projected.y && this.yMax >= projected.y;
         }
 
         /**

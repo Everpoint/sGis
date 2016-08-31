@@ -120,6 +120,7 @@ sGis.module('symbol.polygon.BrushFill', [
      * Stroke width of the outline.
      * @member {Number} strokeWidth
      * @memberof sGis.symbol.polygon.BrushFill
+     * @instance
      * @default 1
      */
     PolygonSymbol.prototype.strokeWidth = 1;

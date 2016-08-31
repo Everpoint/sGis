@@ -15,7 +15,7 @@ sGis.module('Point', [
          */
         _crs: CRS.geo
     };
-
+    
     /**
      * Simple geographical point
      * @class
@@ -84,5 +84,10 @@ sGis.module('Point', [
 
     utils.extend(Point.prototype, defaults);
 
+    /**
+     * @typedef {function(Number, Number, {sGis.Crs})} sGis.Point.constructor
+     * @returns sGis.Point
+     */
+    
     return Point;
 });
