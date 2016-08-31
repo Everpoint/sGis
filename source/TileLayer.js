@@ -62,11 +62,8 @@ sGis.module('TileLayer', [
          * @param {Object} [options] - Set of properties to override
          */
         constructor(tileSource, options) {
-            super();
+            super(options);
             this._updateSymbol();
-
-            utils.init(this, options);
-
 
             this._source = tileSource;
             this._tiles = {};
@@ -84,15 +81,9 @@ sGis.module('TileLayer', [
             return url.replace('{x}', xIndex).replace('{y}', yIndex).replace('{z}', scale);
         }
 
-        /**
-         * Returns the set of tile features for the given bbox.
-         * @param {sGis.Bbox} bbox - Bounding box of the area, which should be fully covered by returned tiles.
-         * @param {Number} resolution - Resolution of tiles to get.
-         * @returns {sGis.Feature[]}
-         */
         getFeatures(bbox, resolution) {
             let ownCrs = this.crs || bbox.crs;
-            if (!this._display || !bbox.crs.projectionTo(ownCrs)) return [];
+            if (!this.isDisplayed || !bbox.crs.projectionTo(ownCrs)) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
 
             var level = this.tileScheme.getLevel(resolution);

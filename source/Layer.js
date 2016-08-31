@@ -17,6 +17,24 @@ sGis.module('Layer', [
      */
     class Layer {
         /**
+         * @constructor
+         * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
+         */
+        constructor(properties) {
+            utils.init(this, properties);
+        }
+        
+        /**
+         * Returns the array of features to be drawn for given parameters.
+         * @param {sGis.Bbox} bbox - bounding box of the area to get features from
+         * @param {Number} resolution - current resolution 
+         * @returns {sGis.Feature[]}
+         */
+        getFeatures(bbox, resolution) {
+            return [];
+        }
+        
+        /**
          * Whether the layer is drawn to map
          * @type Boolean
          * @default true
@@ -50,9 +68,11 @@ sGis.module('Layer', [
          * @default 1
          * @fires sGis.Layer#propertyChange
          */
-        get opacity() { return this._opacity; }
-        set opacity(/** Number */ opacity) {
-            if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
+        get opacity() { return this.getOpacity(); }
+        set opacity(/** Number */ opacity) { this.setOpacity(opacity); }
+        
+        getOpacity() { return this._opacity; }
+        setOpacity(opacity) {
             opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
             this._opacity = opacity;
             this.fire('propertyChange', {property: 'opacity'});
@@ -100,5 +120,10 @@ sGis.module('Layer', [
      * @type {Object}
      * @mixes sGisEvent
      * @prop {String} property - the name of the property that has been changed
+     */
+
+    /**
+     * @typedef {function(Object)} sGis.Layer.constructor
+     * @returns sGis.Layer
      */
 });

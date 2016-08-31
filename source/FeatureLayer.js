@@ -13,7 +13,7 @@ sGis.module('FeatureLayer', [
     /**
      * @alias sGis.FeatureLayer
      */
-    class FeatureLayer extends sGis.Layer {
+    class FeatureLayer extends Layer {
         constructor(options) {
             super();
 
@@ -24,7 +24,7 @@ sGis.module('FeatureLayer', [
         getFeatures(bbox) {
             if (!bbox || !(bbox instanceof sGis.Bbox)) sGis.utils.error('Expected bbox, but got ' + bbox + 'instead');
 
-            if (!this._display) return [];
+            if (!this.isDisplayed) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
 
             var obj = [];

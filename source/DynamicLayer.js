@@ -1,20 +1,29 @@
 sGis.module('DynamicLayer', [
     'utils',
     'Layer',
-    'feature.Image'
-], function(utils, Layer, Image) {
+    'feature.Image',
+    'symbol.image.Image'
+], function(utils, /** sGis.Layer.constructor */ Layer, Image, ImageSymbol) {
     'use strict';
 
-    var defaults = {
-        _layers: null,
-        delayedUpdate: true,
-        crs: null,
-        _transitionTime: sGis.browser.indexOf('Chrome') === 0 ? 0 : 200
-    };
+    /**
+     * Represents a layer that is fully drawn by server and is displayed as an image overlay.
+     * @alias sGis.DynamicLayer
+     * @extends sGis.Layer
+     */
+    class DynamicLayer extends Layer {
+        /**
+         * @constructor
+         * @param {String} url - base part of the map service url
+         * @param {Object} [properties] - key-value set of properties to be assigned to the instance
+         */
+        constructor(url, properties) {
+            super(properties);
+            this._url = url;
+        }
 
-    class DynamicLayer extends sGis.Layer {
         getFeatures(bbox, resolution) {
-            if (!this._display || this._layers && this._layers.length === 0) return [];
+            if (!this.isDisplayed) return [];
             if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
             
             if (this.crs) {
@@ -32,6 +41,8 @@ sGis.module('DynamicLayer', [
             var height = bbox.height / resolution;
             if (this._forceUpdate || !this._features[0].bbox.equals(bbox) || this._features[0].width !== width || this._features[0].height !== height) {
                 var url = this.getImageUrl(bbox, resolution);
+                if (url == null) return [];
+
                 this._features[0].src = url;
                 this._features[0].bbox = bbox;
                 this._features[0].width = bbox.width / resolution;
@@ -41,51 +52,99 @@ sGis.module('DynamicLayer', [
             return this._features;
         }
 
+        /**
+         * Returns the full url of a layer image
+         * @param {sGis.Bbox} bbox - bounding box of the area to be drawn
+         * @param {Number} resolution - resolution of the map
+         * @returns {string}
+         */
+        getImageUrl(bbox, resolution) {
+            var imgWidth = Math.round((bbox.xMax - bbox.xMin) / resolution);
+            var imgHeight = Math.round((bbox.yMax - bbox.yMin) / resolution);
+            var sr = encodeURIComponent(bbox.crs.wkid || JSON.stringify(bbox.crs.description));
+
+            var url = this._url + 'export?' +
+                'dpi=96&' +
+                'transparent=true&' +
+                'bbox='+
+                bbox.xMin + '%2C' +
+                bbox.yMin + '%2C' +
+                bbox.xMax + '%2C' +
+                bbox.yMax + '&' +
+                'bboxSR=' + sr + '&' +
+                'imageSR=' + sr + '&' +
+                'size=' + imgWidth + '%2C' + imgHeight + '&' +
+                'f=image';
+
+            if (this._forceUpdate) {
+                url += '&ts=' + new Date().valueOf();
+                this._forceUpdate = false;
+            }
+
+            if (this.additionalParameters){
+                var keys = Object.keys(this.additionalParameters);
+                keys.forEach(key => {
+                    url += `&${key}=${this.additionalParameters[key]}`;
+                });
+            }
+
+            return url;
+        }
+
+        /**
+         * Ensures update of the layer image
+         */
+        forceUpdate() {
+            this._forceUpdate = true;
+            this.fire('propertyChange', {property: 'source'});
+        }
+
         _createFeature(bbox) {
-            var feature = new sGis.feature.Image(bbox, { crs: this.crs || bbox.crs, opacity: this.opacity, style: { transitionTime: this._transitionTime, renderToCanvas: false }});
+            var feature = new Image(bbox, { crs: this.crs || bbox.crs, opacity: this.opacity});
             this._features = [feature];
+            this._updateSymbol();
         }
 
-        showSubLayer(id) {
-            if (this._serverConnector) {
-                this._serverConnector.showLayer(id);
-            }
-        }
-
-        hideSubLayer(id) {
-            if (this._serverConnector) {
-                this._serverConnector.hideLayer(id);
-            }
-        }
-
-        showLayers(layerArray) {
-            this.layers = layerArray;
-        }
-
-        getDisplayedLayers() {
-            return this._layers;
-        }
-
-        get layers() { return this._layers && this._layers.concat(); }
-        set layers(layers) {
-            if (!sGis.utils.isArray(layers)) sGis.utils.error('Array is expected but got ' + layers + ' instead');
-            this._layers = layers;
-        }
-
-        get opacity() { return this._opacity; }
+        get opacity() { return this.getOpacity(); }
         set opacity(opacity) {
-            if (!sGis.utils.isNumber(opacity)) error('Expected a number but got "' + opacity + '" instead');
-            opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
-            this._opacity = opacity;
-            if (this._features && this._features[0]) this._features[0].opacity = opacity;
-            this.fire('propertyChange', {property: 'opacity'});
+            this.setOpacity(opacity);
+            this._updateSymbol();
         }
-        
+
+        /**
+         * Coordinate system of the layer
+         * @type {sGis.Crs}
+         * @default null
+         */
         get crs() { return this._crs; }
-        set crs(crs) { this._crs = crs; }
+        set crs(/** sGis.Crs */ crs) { this._crs = crs; }
+
+        /**
+         * Base url of the service
+         * @type {String}
+         */
+        get url() { return this._url; }
+        
+        _updateSymbol() {
+            if (this._features) this._features[0].symbol = new ImageSymbol({ opacity: this.opacity });
+        }
     }
 
-    sGis.utils.extend(DynamicLayer.prototype, defaults);
+    /**
+     * Additional url parameters to be added to the image url as a key-value set.
+     * @member {Object} additionalParameters
+     * @memberof sGis.DynamicLayer
+     * @instance
+     * @default {}
+     */
+    DynamicLayer.prototype.additionalParameters = {};
+
+    /**
+     * @default true
+     */
+    DynamicLayer.prototype.delayedUpdate = true;
+
+    DynamicLayer.prototype._crs = null;
 
     return DynamicLayer;
 

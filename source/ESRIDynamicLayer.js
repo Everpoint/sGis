@@ -9,20 +9,20 @@ sGis.module('ESRIDynamicLayer', [
     };
 
     class ESRIDynamicLayer extends sGis.DynamicLayer {
-        constructor(source, options) {
-            super();
-            sGis.utils.init(this, options);
-            this._source = source;
+        constructor(url, options) {
+            super(url, options);
         }
 
         getImageUrl(bbox, resolution) {
+            if (this._layers && this._layers.length === 0) return null;
+            
             var imgWidth = Math.round((bbox.p[1].x - bbox.p[0].x) / resolution),
                 imgHeight = Math.round((bbox.p[1].y - bbox.p[0].y) / resolution),
                 layersString = getLayersString(this.getDisplayedLayers()),
                 sr = encodeURIComponent(bbox.p[0].crs.ESRIcode || JSON.stringify(bbox.p[0].crs.description)),
                 layerDefs = this._layerDefs ? '&layerDefs=' + encodeURIComponent(this._layerDefs) + '&' : '',
 
-                url = this._source + 'export?' +
+                url = this.url + 'export?' +
                     'dpi=96&' +
                     'transparent=true&' +
                     'format=png8&' +
@@ -50,9 +50,30 @@ sGis.module('ESRIDynamicLayer', [
             return url;
         }
 
-        forceUpdate() {
-            this._forceUpdate = true;
-            this.fire('propertyChange', {property: 'source'});
+        showSubLayer(id) {
+            if (this._serverConnector) {
+                this._serverConnector.showLayer(id);
+            }
+        }
+
+        hideSubLayer(id) {
+            if (this._serverConnector) {
+                this._serverConnector.hideLayer(id);
+            }
+        }
+
+        showLayers(layerArray) {
+            this.layers = layerArray;
+        }
+
+        getDisplayedLayers() {
+            return this._layers;
+        }
+
+        get layers() { return this._layers && this._layers.concat(); }
+        set layers(layers) {
+            if (!sGis.utils.isArray(layers)) sGis.utils.error('Array is expected but got ' + layers + ' instead');
+            this._layers = layers;
         }
 
         get layerDefinitions() { return this._layerDefs; }
