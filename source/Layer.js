@@ -13,12 +13,14 @@ sGis.module('Layer', [
     /**
      * Base class for all map layers.
      * @alias sGis.Layer
+     * @mixes sGis.IEventHandler
      */
     class Layer {
         /**
          * Whether the layer is drawn to map
          * @type Boolean
          * @default true
+         * @fires sGis.Layer#propertyChange
          */
         get isDisplayed() { return this._isDisplayed; }
         set isDisplayed(/** Boolean */ bool) {
@@ -28,6 +30,7 @@ sGis.module('Layer', [
 
         /**
          * Makes the layer visible
+         * @fires sGis.Layer#propertyChange
          */
         show() {
             this.isDisplayed = true;
@@ -35,6 +38,7 @@ sGis.module('Layer', [
 
         /**
          * Makes the layer invisible
+         * @fires sGis.Layer#propertyChange
          */
         hide() {
             this.isDisplayed = false;
@@ -44,6 +48,7 @@ sGis.module('Layer', [
          * Opacity of the layer. It sets the opacity of all objects in this layer. Valid values: [0..1].
          * @type Number
          * @default 1
+         * @fires sGis.Layer#propertyChange
          */
         get opacity() { return this._opacity; }
         set opacity(/** Number */ opacity) {
@@ -57,6 +62,8 @@ sGis.module('Layer', [
          * Min and max resolution between which the layer will be displayed. Must be in [min, max] format. Negative and 0 values are treated as no limit.
          * @type Number[]
          * @default [-1, -1]
+         * @fires sGis.Layer#propertyChange
+         * @fires sGis.Layer#propertyChange
          */
         get resolutionLimits() { return this._resolutionLimits; }
         set resolutionLimits(/** Number[] */ limits) {
@@ -66,6 +73,7 @@ sGis.module('Layer', [
 
         /**
          * Forces redrawing of the layer
+         * @fires sGis.Layer#propertyChange
          */
         redraw() {
             this.fire('propertyChange', {property: 'content'});
@@ -85,4 +93,12 @@ sGis.module('Layer', [
     sGis.utils.extend(Layer.prototype, IEventHandler);
 
     return Layer;
+
+    /**
+     * A property of the layer has changed. Fired when redrawing is required.
+     * @event sGis.Layer#propertyChange
+     * @type {Object}
+     * @mixes sGisEvent
+     * @prop {String} property - the name of the property that has been changed
+     */
 });
