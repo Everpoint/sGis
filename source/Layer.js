@@ -12,6 +12,7 @@ sGis.module('Layer', [
 
     /**
      * Base class for all map layers.
+     * @alias sGis.Layer
      */
     class Layer {
         /**

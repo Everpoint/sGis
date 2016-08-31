@@ -4,6 +4,17 @@ sGis.module('IEventHandler', [
     'use strict';
 
     /**
+     * Base of all sGis library events
+     * @name sGisEvent
+     * @mixin
+     * @type {Object}
+     * @prop {String} eventType - name of the event
+     * @prop {Object} sourceObject - object that triggered the event
+     * @prop {Function} stopPropagation - prevents event to be handled by any further handlers
+     * @prop {Function} isCanceled - returns true if the .stopPropagation() method was called
+     */
+    
+    /**
      * Provides methods for handling events.
      * @mixin
      * @alias sGis.IEventHandler

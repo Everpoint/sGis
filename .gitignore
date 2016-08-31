@@ -53,3 +53,6 @@ node_modules/
 
 # compilations
 dist/
+
+# documentation
+docs/
