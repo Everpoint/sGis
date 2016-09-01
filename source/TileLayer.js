@@ -80,10 +80,9 @@ sGis.module('TileLayer', [
         }
 
         getFeatures(bbox, resolution) {
-            let ownCrs = this.crs || bbox.crs;
-            if (!this.isDisplayed || !bbox.crs.projectionTo(ownCrs)) return [];
-            if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
+            if (!this.checkVisibility(resolution)) return [];
 
+            let ownCrs = this.crs || bbox.crs;
             var level = this.tileScheme.getLevel(resolution);
             if (level < 0) return [];
 

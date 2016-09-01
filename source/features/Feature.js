@@ -1,8 +1,9 @@
 sGis.module('Feature', [
     'utils',
     'CRS',
+    'Bbox',
     'IEventHandler'
-], function(utils, CRS, IEventHandler) {
+], function(utils, CRS, Bbox, IEventHandler) {
 
     'use strict';
 
@@ -141,6 +142,8 @@ sGis.module('Feature', [
          * @readonly
          */
         get hidden() { return this._hidden; }
+        
+        get bbox() { return new Bbox([Math.MIN_VALUE, Math.MIN_VALUE], [Math.MAX_VALUE, Math.MAX_VALUE], this.crs); }
     }
 
     utils.extend(Feature.prototype, IEventHandler);

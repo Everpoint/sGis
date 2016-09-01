@@ -23,8 +23,7 @@ sGis.module('DynamicLayer', [
         }
 
         getFeatures(bbox, resolution) {
-            if (!this.isDisplayed) return [];
-            if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
+            if (!this.checkVisibility(resolution)) return [];
             
             if (this.crs) {
                 if (bbox.crs.canProjectTo(this.crs)) {

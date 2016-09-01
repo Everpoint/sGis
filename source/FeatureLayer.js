@@ -1,66 +1,85 @@
 sGis.module('FeatureLayer', [
     'utils',
-    'Layer',
-    'Feature',
-    'Bbox'
-], function(utils, Layer, Feature, Bbox) {
+    'Layer'
+], function(utils, Layer) {
     'use strict';
 
-    var defaults = {
-        delayedUpdate: true
-    };
-
     /**
+     * A layer that contains arbitrary set of vector objects 
      * @alias sGis.FeatureLayer
      */
     class FeatureLayer extends Layer {
-        constructor(options) {
-            super();
+        /**
+         * @constructor
+         * @param {Object} [properties] - key-value set of properties to be assigned to the instance
+         */
+        constructor(properties) {
+            if (properties.features) {
+                var features = properties.features;
+                delete properties.features;
+            }
+            super(properties);
 
-            this._features = [];
-            sGis.utils.init(this, options);
+            /**
+             * @type {sGis.Feature[]}
+             * @private
+             */
+            this._features = features || [];
         }
 
-        getFeatures(bbox) {
-            if (!bbox || !(bbox instanceof sGis.Bbox)) sGis.utils.error('Expected bbox, but got ' + bbox + 'instead');
-
-            if (!this.isDisplayed) return [];
-            if (this.resolutionLimits[0] >= 0 && resolution < this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution > this.resolutionLimits[1]) return [];
+        getFeatures(bbox, resolution) {
+            if (!this.checkVisibility(resolution)) return [];
 
             var obj = [];
-            for (var i in this._features) {
-                if (!this._features[i].crs.equals(bbox.p[0].crs) && !(this._features[i].crs.to && bbox.p[0].crs.to)) continue;
-                var featureBbox = this._features[i].bbox;
-                if (!featureBbox || bbox.intersects(featureBbox)) obj.push(this._features[i]);
-            }
+            this._features.forEach(feature => {
+                if (feature.crs.canProjectTo(bbox.crs) && feature.bbox.intersects(bbox)) obj.push(feature);
+            });
+
             return obj;
         }
 
+        /**
+         * Adds a feature or an array of features to the layer
+         * @param {sGis.Feature|sGis.Feature[]} features - features to add
+         * @fires sGis.FeatureLayer#featureAdd - for each feature to be added
+         */
         add(features) {
-            if (features instanceof sGis.Feature) {
+            if (Array.isArray(features)) {
+                features.forEach(feature => {
+                    this.add(feature);
+                });
+            } else {
                 this._features.push(features);
                 this.fire('featureAdd', {feature: features});
-            } else if (sGis.utils.isArray(features)) {
-                for (var i in features) {
-                    this.add(features[i]);
-                }
-            } else {
-                sGis.utils.error('sGis.Feature instance or their array is expected but got ' + features + 'instead');
             }
         }
 
+        /**
+         * Removes a feature from the layer
+         * @param {sGis.Feature} feature - feature to be removed
+         * @throws if the feature is not in the layer
+         * @fires sGis.FeatureLayer#featureRemove
+         */
         remove(feature) {
-            if (!(feature instanceof sGis.Feature)) sGis.utils.error('sGis.Feature instance is expected but got ' + feature + 'instead');
             var index = this._features.indexOf(feature);
-            if (index === -1) sGis.utils.error('The feature does not belong to the layer');
+            if (index === -1) utils.error('The feature does not belong to the layer');
             this._features.splice(index, 1);
             this.fire('featureRemove', {feature: feature});
         }
 
+        /**
+         * Returns true if the given feature is in the layer
+         * @param {sGis.Feature} feature
+         * @returns {boolean}
+         */
         has(feature) {
             return this._features.indexOf(feature) !== -1;
         }
 
+        /**
+         * Moves the given feature to the top of the layer (end of the list). If the feature is not in the layer, the command is ignored
+         * @param {sGis.Feature} feature
+         */
         moveToTop(feature) {
             var index = this._features.indexOf(feature);
             if (index !== -1) {
@@ -69,8 +88,15 @@ sGis.module('FeatureLayer', [
             }
         }
 
+        /**
+         * List of features in the layer. If assigned, it removes all features and add new ones, firing all the respective events.
+         * @type {sGis.Feature[]}
+         * @default []
+         * @fires sGis.FeatureLayer#featureAdd
+         * @fires sGis.FeatureLayer#featureRemove
+         */
         get features() { return this._features.slice(); }
-        set features(features) {
+        set features(/** sGis.Feature[] */ features) {
             var currFeatures = this.features;
             for (var i = 0; i < currFeatures.length; i++) {
                 this.remove(currFeatures[i]);
@@ -80,7 +106,27 @@ sGis.module('FeatureLayer', [
         }
     }
 
-    sGis.utils.extend(FeatureLayer.prototype, defaults);
+    /**
+     * @default true
+     */
+    FeatureLayer.prototype.delayedUpdate = true;
 
     return FeatureLayer;
+
+    /**
+     * A feature has been added to the layer
+     * @event sGis.FeatureLayer#featureAdd
+     * @type {Object}
+     * @mixes sGisEvent
+     * @prop {sGis.Feature} feature - feature that is added to the layer
+     */
+
+    /**
+     * A feature has been removed from the layer
+     * @event sGis.FeatureLayer#featureRemove
+     * @type {Object}
+     * @mixes sGisEvent
+     * @prop {sGis.Feature} feature - feature that is removed from the layer
+     */
+
 });

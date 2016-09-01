@@ -47,6 +47,15 @@ sGis.module('Layer', [
         }
 
         /**
+         * Return true if the layer is displayed and the resolution is inside the limits
+         * @param resolution
+         * @returns {Boolean|*|boolean}
+         */
+        checkVisibility(resolution) {
+            return this._isDisplayed && this.resolutionLimits[0] >= 0 && resolution >= this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution <= this.resolutionLimits[1];
+        }
+
+        /**
          * Makes the layer visible
          * @fires sGis.Layer#propertyChange
          */
@@ -79,7 +88,7 @@ sGis.module('Layer', [
         }
 
         /**
-         * Min and max resolution between which the layer will be displayed. Must be in [min, max] format. Negative and 0 values are treated as no limit.
+         * Min and max resolution between which the layer will be displayed. Must be in [min, max] format. Negative values are treated as no limit.
          * @type Number[]
          * @default [-1, -1]
          * @fires sGis.Layer#propertyChange
