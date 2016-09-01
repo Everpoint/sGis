@@ -52,7 +52,7 @@ sGis.module('Layer', [
          * @returns {Boolean|*|boolean}
          */
         checkVisibility(resolution) {
-            return this._isDisplayed && this.resolutionLimits[0] >= 0 && resolution >= this.resolutionLimits[0] || this.resolutionLimits[1] > 0 && resolution <= this.resolutionLimits[1];
+            return this._isDisplayed && (this.resolutionLimits[0] < 0 || resolution >= this.resolutionLimits[0]) && (this.resolutionLimits[1] < 0 || resolution <= this.resolutionLimits[1]);
         }
 
         /**

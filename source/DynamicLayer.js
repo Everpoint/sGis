@@ -14,12 +14,12 @@ sGis.module('DynamicLayer', [
     class DynamicLayer extends Layer {
         /**
          * @constructor
-         * @param {String} url - base part of the map service url
+         * @param {function(sGis.Bbox, Number)} getUrlDelegate
          * @param {Object} [properties] - key-value set of properties to be assigned to the instance
          */
-        constructor(url, properties) {
+        constructor(getUrlDelegate, properties) {
             super(properties);
-            this._url = url;
+            this._getUrl = getUrlDelegate;
         }
 
         getFeatures(bbox, resolution) {
@@ -39,8 +39,12 @@ sGis.module('DynamicLayer', [
             var width  = bbox.width / resolution;
             var height = bbox.height / resolution;
             if (this._forceUpdate || !this._features[0].bbox.equals(bbox) || this._features[0].width !== width || this._features[0].height !== height) {
-                var url = this.getImageUrl(bbox, resolution);
+                var url = this._getUrl(bbox, resolution);
                 if (url == null) return [];
+                if (this._forceUpdate) {
+                    url += '&ts=' + Date.now();
+                    this._forceUpdate = false;
+                }
 
                 this._features[0].src = url;
                 this._features[0].bbox = bbox;
@@ -49,45 +53,6 @@ sGis.module('DynamicLayer', [
             }
 
             return this._features;
-        }
-
-        /**
-         * Returns the full url of a layer image
-         * @param {sGis.Bbox} bbox - bounding box of the area to be drawn
-         * @param {Number} resolution - resolution of the map
-         * @returns {string}
-         */
-        getImageUrl(bbox, resolution) {
-            var imgWidth = Math.round((bbox.xMax - bbox.xMin) / resolution);
-            var imgHeight = Math.round((bbox.yMax - bbox.yMin) / resolution);
-            var sr = encodeURIComponent(bbox.crs.wkid || JSON.stringify(bbox.crs.description));
-
-            var url = this._url + 'export?' +
-                'dpi=96&' +
-                'transparent=true&' +
-                'bbox='+
-                bbox.xMin + '%2C' +
-                bbox.yMin + '%2C' +
-                bbox.xMax + '%2C' +
-                bbox.yMax + '&' +
-                'bboxSR=' + sr + '&' +
-                'imageSR=' + sr + '&' +
-                'size=' + imgWidth + '%2C' + imgHeight + '&' +
-                'f=image';
-
-            if (this._forceUpdate) {
-                url += '&ts=' + new Date().valueOf();
-                this._forceUpdate = false;
-            }
-
-            if (this.additionalParameters){
-                var keys = Object.keys(this.additionalParameters);
-                keys.forEach(key => {
-                    url += `&${key}=${this.additionalParameters[key]}`;
-                });
-            }
-
-            return url;
         }
 
         /**

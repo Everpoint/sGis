@@ -13,7 +13,7 @@ sGis.module('FeatureLayer', [
          * @constructor
          * @param {Object} [properties] - key-value set of properties to be assigned to the instance
          */
-        constructor(properties) {
+        constructor(properties = {}) {
             if (properties.features) {
                 var features = properties.features;
                 delete properties.features;
