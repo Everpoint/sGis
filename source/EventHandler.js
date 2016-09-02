@@ -16,10 +16,12 @@ sGis.module('EventHandler', [
     
     /**
      * Provides methods for handling events.
-     * @mixin
      * @alias sGis.EventHandler
      */
-    var mixin = (Base) => class extends Base {
+    class EventListener {
+        constructor() {
+            this._setHandlerList();
+        }
         /**
          * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
          * @param {Object} sGisEvent - event object of the original event
@@ -37,17 +39,6 @@ sGis.module('EventHandler', [
                     handlerList[i].handler.call(this, sGisEvent);
                     if (sGisEvent._cancelPropagation) break;
                 }
-            }
-
-            if (sGisEvent._cancelDefault) {
-                if (sGisEvent.browserEvent) {
-                    sGisEvent.browserEvent.preventDefault();
-                }
-                return;
-            }
-
-            if (this._defaultHandlers && this._defaultHandlers[eventType] !== undefined) {
-                this._defaultHandlers[eventType].call(this, sGisEvent);
             }
         }
 
@@ -90,8 +81,6 @@ sGis.module('EventHandler', [
             if (types.length < 1) sGis.utils.error('No event type is specified');
 
             var namespaces = getNamespaces(description);
-
-            if (!this._eventHandlers) this._setHandlerList();
 
             for (var i = 0; i < types.length; i++) {
                 if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];
@@ -145,17 +134,6 @@ sGis.module('EventHandler', [
                         }
                     }
                 }
-            }
-        }
-
-        /**
-         * Sets the given handlers for the events.
-         * @param {Object} handlers - handlers list in format { eventDescription : handlerFunction, ... }
-         */
-        addListeners (handlers) {
-            var types = Object.keys(handlers);
-            for (var i = 0; i < types.length; i++) {
-                this.addListener(types[i], handlers[types[i]]);
             }
         }
 
@@ -249,29 +227,16 @@ sGis.module('EventHandler', [
         _setHandlerList () {
             Object.defineProperty(this, '_eventHandlers', { value: {}, configurable: true });
         }
-    };
 
-    let EventListener = mixin(Object);
-    EventListener.mixin = mixin;
-    
-    /**
-     * @alias EventHandler.prototype.addListener
-     */
-    EventListener.prototype.on = EventListener.prototype.addListener;
-
-    /**
-     * @alias EventHandler.prototype.removeListener
-     */
-    EventListener.prototype.off = EventListener.prototype.removeListener;
-
-
-    // Deprecated names
-    EventListener.prototype.addListner = EventListener.prototype.addListener;
-    EventListener.prototype.addListners = EventListener.prototype.addListeners;
-    EventListener.prototype.removeListner = EventListener.prototype.removeListener;
-    EventListener.prototype.hasListner = EventListener.prototype.hasListener;
-    EventListener.prototype.hasListners = EventListener.prototype.hasListeners;
-
+        /**
+         * @alias EventHandler.prototype.addListener
+         */
+        on() { this.addListener.apply(this, arguments); }
+        /**
+         * @alias EventHandler.prototype.removeListener
+         */
+        off() { this.removeListener.apply(this, arguments); }
+    }
 
     function getTypes(string) {
         return string.replace(/\.[A-Za-z0-9_-]+/g, '').match(/[A-Za-z0-9_-]+/g) || [];

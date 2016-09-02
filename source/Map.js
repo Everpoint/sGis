@@ -15,19 +15,6 @@ sGis.module('Map', [
         _position: new sGis.Point([55.755831, 37.617673]).projectTo(sGis.CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
         _animationTime: 300,
-        _defaultHandlers: {
-            bboxChange: function () {
-                var map = this;
-                var CHANGE_END_DELAY = 300;
-                if (map._changeTimer) clearTimeout(map._changeTimer);
-                map._changeTimer = setTimeout((function (map) {
-                    return function () {
-                        map.fire('bboxChangeEnd', {map: map});
-                        map._changeTimer = null;
-                    };
-                })(map), CHANGE_END_DELAY);
-            }
-        },
         _tileScheme: null
     };
     
@@ -49,7 +36,23 @@ sGis.module('Map', [
             super();
             this._initLayerGroup();
             if (properties && properties.crs) this.crs = properties.crs;
-            sGis.utils.init(this, properties);
+            utils.init(this, properties);
+            
+            this._listenForBboxChange();
+        }
+        
+        _listenForBboxChange () {
+            this.on('bboxChange', function () {
+                var map = this;
+                var CHANGE_END_DELAY = 300;
+                if (map._changeTimer) clearTimeout(map._changeTimer);
+                map._changeTimer = setTimeout((function (map) {
+                    return function () {
+                        map.fire('bboxChangeEnd', {map: map});
+                        map._changeTimer = null;
+                    };
+                })(map), CHANGE_END_DELAY);
+            });
         }
         
         _initLayerGroup () {

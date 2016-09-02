@@ -14,18 +14,7 @@ sGis.module('decorations.ScaleSlider', [
         _sliderCss: 'sGis-decorations-scaleSlider-slider',
         _sliderWidth: 25,
         _sliderHeight: 10,
-        _eventNamespace: '.sGis-decorations-scaleSlider',
-
-        _defaultHandlers: {
-            drag: function(sGisEvent) {
-                this._moveSlider(sGisEvent.offset.yPx);
-            },
-
-            dragEnd: function() {
-                this._map.painter.allowUpdate();
-                this._map.adjustResolution();
-            }
-        }
+        _eventNamespace: '.sGis-decorations-scaleSlider'
     };
     
     class ScaleSlider extends EventHandler {
@@ -52,6 +41,15 @@ sGis.module('decorations.ScaleSlider', [
 
         _setListeners () {
             this._map.on('wrapperSet', this.updateDisplay.bind(this));
+
+            this.on('drag', function() {
+                this._moveSlider(sGisEvent.offset.yPx);
+            });
+
+            this.on('dragEnd', function() {
+                this._map.painter.allowUpdate();
+                this._map.adjustResolution();
+            });
         }
 
         _createGrid () {

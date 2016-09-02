@@ -2,8 +2,8 @@ describe('EventHandler', function () {
     var object;
     var f = function() {};
     beforeEach(function () {
-        object = {};
-        sGis.utils.extend(object, sGis.IEventHandler);
+        class c extends sGis.EventHandler {}
+        object = new c();
     });
 
     describe('methods', function () {
@@ -63,15 +63,16 @@ describe('EventHandler', function () {
             });
         });
 
-        describe('.addListner()', function() {
-            it('should be alias for .addListener', function() {
-                expect(object.addListner).toBe(object.addListener);
-            });
-        });
-
         describe('.on()', function() {
             it('should be alias for .addListener', function() {
-                expect(object.on).toBe(object.addListener);
+                let arg;
+                object.addListener = function() {
+                    arg = Array.prototype.slice.apply(arguments);
+                };
+                
+                let req = ['event', () => {}];
+                object.on.apply(object, req);
+                expect(arg).toEqual(req);
             });
         });
 
@@ -213,15 +214,16 @@ describe('EventHandler', function () {
             });
         });
 
-        describe('.removeListner()', function() {
-            it('should be alias for .removeListener', function() {
-                expect(object.removeListner).toBe(object.removeListener);
-            });
-        });
-
         describe('.off()', function() {
             it('should be alias for .removeListener', function() {
-                expect(object.off).toBe(object.removeListener);
+                let arg;
+                object.removeListener = function() {
+                    arg = Array.prototype.slice.apply(arguments);
+                };
+
+                let req = ['event', () => {}];
+                object.off.apply(object, req);
+                expect(arg).toEqual(req);
             });
         });
 
@@ -253,12 +255,6 @@ describe('EventHandler', function () {
 
             it('should throw an exception if the handler is not given', function() {
                 expect(function() { object.hasListner('event'); }).toThrow();
-            });
-        });
-
-        describe('.hasListner()', function() {
-            it('should be alias for .hasListener', function() {
-                expect(object.hasListner).toBe(object.hasListener);
             });
         });
 
@@ -313,12 +309,6 @@ describe('EventHandler', function () {
                 object.on('event.ns', f);
                 expect(object.hasListeners('.ns1 .ns')).toBe(true);
                 expect(object.hasListeners('event.ns1 .ns')).toBe(true);
-            });
-        });
-
-        describe('.hasListners()', function() {
-            it('should be alias for .hasListeners', function() {
-                expect(object.hasListners).toBe(object.hasListeners);
             });
         });
 
