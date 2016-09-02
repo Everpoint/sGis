@@ -19,9 +19,6 @@ sGis.module('EventHandler', [
      * @alias sGis.EventHandler
      */
     class EventListener {
-        constructor() {
-            this._setHandlerList();
-        }
         /**
          * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
          * @param {Object} sGisEvent - event object of the original event
@@ -81,6 +78,7 @@ sGis.module('EventHandler', [
             if (types.length < 1) sGis.utils.error('No event type is specified');
 
             var namespaces = getNamespaces(description);
+            if (!this._eventHandlers) this._setHandlerList();
 
             for (var i = 0; i < types.length; i++) {
                 if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];
@@ -100,6 +98,7 @@ sGis.module('EventHandler', [
             var types = getTypes(description);
             if (types.length !== 1) sGis.utils.error('Only one event type can be specified with .once() method');
             var namespaces = getNamespaces(description);
+            if (!this._eventHandlers) this._setHandlerList();
 
             if (!this._eventHandlers) this._setHandlerList();
             if (!this._eventHandlers[types[0]]) this._eventHandlers[types[0]] = [];
