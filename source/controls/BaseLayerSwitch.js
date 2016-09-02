@@ -110,6 +110,7 @@
         },
 
         _updateScroll: function () {
+            if (!this._scrollContainer) return;
             var maxSize = +getComputedStyle(this._scrollContainer).width.replace("px",""),
                 listSize = this._layerDescriptions.length * 75;
             if(maxSize < listSize){
