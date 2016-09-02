@@ -1,4 +1,4 @@
-sGis.module('IEventHandler', [
+sGis.module('EventHandler', [
     'utils'
 ], function(utils) {
     'use strict';
@@ -17,14 +17,14 @@ sGis.module('IEventHandler', [
     /**
      * Provides methods for handling events.
      * @mixin
-     * @alias sGis.IEventHandler
+     * @alias sGis.EventHandler
      */
-    var IEventHandler = {
+    var mixin = (Base) => class extends Base {
         /**
          * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
          * @param {Object} sGisEvent - event object of the original event
          */
-        forwardEvent: function(sGisEvent) {
+        forwardEvent (sGisEvent) {
             if (this._prohibitedEvents && this._prohibitedEvents.indexOf(sGisEvent.eventType) !== -1) return;
             var eventType = sGisEvent.eventType;
             if (this._eventHandlers && this._eventHandlers[eventType]) {
@@ -49,7 +49,7 @@ sGis.module('IEventHandler', [
             if (this._defaultHandlers && this._defaultHandlers[eventType] !== undefined) {
                 this._defaultHandlers[eventType].call(this, sGisEvent);
             }
-        },
+        }
 
         /**
          * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added.
@@ -57,7 +57,7 @@ sGis.module('IEventHandler', [
          * @param {Object} [parameters] - parameters to be transferred to the event object.
          * @returns {Object} - event object
          */
-        fire: function(eventType, parameters) {
+        fire (eventType, parameters) {
             if (this._prohibitedEvents && this._prohibitedEvents.indexOf(eventType) !== -1) return;
 
             var sGisEvent = {};
@@ -75,14 +75,14 @@ sGis.module('IEventHandler', [
             this.forwardEvent(sGisEvent);
             
             return sGisEvent;
-        },
+        }
 
         /**
          * Sets a listener for the given event type.
          * @param {String} description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either..
          * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
          */
-        addListener: function(description, handler) {
+        addListener (description, handler) {
             if (!(handler instanceof Function)) sGis.utils.error('Function is expected but got ' + handler + ' instead');
             if (!sGis.utils.isString(description)) sGis.utils.error('String is expected but got ' + description + ' instead');
 
@@ -97,14 +97,14 @@ sGis.module('IEventHandler', [
                 if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];
                 this._eventHandlers[types[i]].push({handler: handler, namespaces: namespaces});
             }
-        },
+        }
 
         /**
          * Sets a one time handler for the given event. This handler is removed from the list of handlers just before it is called.
          * @param {String} description - description of the event. Can contain <s>ONLY ONE EVENT TYPE</s> and any number of namespaces (namespaces start with .).
          * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
          */
-        once: function(description, handler) {
+        once (description, handler) {
             if (!(handler instanceof Function)) sGis.utils.error('Function is expected but got ' + handler + ' instead');
             if (!sGis.utils.isString(description)) sGis.utils.error('String is expected but got ' + description + ' instead');
 
@@ -115,14 +115,14 @@ sGis.module('IEventHandler', [
             if (!this._eventHandlers) this._setHandlerList();
             if (!this._eventHandlers[types[0]]) this._eventHandlers[types[0]] = [];
             this._eventHandlers[types[0]].push({handler: handler, namespaces: namespaces, oneTime: true});
-        },
+        }
 
         /**
          * Removes the given handlers from the event listener list.
          * @param {String} description - description of the event. Can contain any number of type names and namespaces, but must have at least one of either.
          * @param {Function} [handler] - handler to be removed. If no handler is specified, all handlers from the given namespaces will be removed. If no handler and namespace are specified, error will be thrown.
          */
-        removeListener: function(description, handler) {
+        removeListener (description, handler) {
             if (!sGis.utils.isString(description)) sGis.utils.error('Expected the name of the event and handler function, but got (' + description + ', ' + handler + ') instead');
 
             var types = getTypes(description);
@@ -146,37 +146,37 @@ sGis.module('IEventHandler', [
                     }
                 }
             }
-        },
+        }
 
         /**
          * Sets the given handlers for the events.
          * @param {Object} handlers - handlers list in format { eventDescription : handlerFunction, ... }
          */
-        addListeners: function(handlers) {
+        addListeners (handlers) {
             var types = Object.keys(handlers);
             for (var i = 0; i < types.length; i++) {
                 this.addListener(types[i], handlers[types[i]]);
             }
-        },
+        }
 
         /**
          * Prohibits triggering of the event. The prohibitions are stacked - if the same event is prohibited N times, you need to allow it N times to make it work.
          * @param {String} type - name of the event to be prohibited.
          */
-        prohibitEvent: function(type) {
+        prohibitEvent (type) {
             if (!this._prohibitedEvents) this._prohibitedEvents = [];
             this._prohibitedEvents.push(type);
-        },
+        }
 
         /**
          * Allows a previously prohibited event. The prohibitions are stacked - if the same event is prohibited N times, you need to allow it N times to make it work. If no prohibitions were set for the event, the operation is ignored.
          * @param {String} type - name of the event to be allowed.
          */
-        allowEvent: function(type) {
+        allowEvent (type) {
             if (!this._prohibitedEvents) return;
             var index = this._prohibitedEvents.indexOf(type);
             if (index !== -1) this._prohibitedEvents.splice(index, 1);
-        },
+        }
 
         /**
          * Checks if the object has the handler for the given event type.
@@ -184,7 +184,7 @@ sGis.module('IEventHandler', [
          * @param {Function} handler - handler to be checked
          * @returns {boolean}
          */
-        hasListener: function(type, handler) {
+        hasListener (type, handler) {
             if (!sGis.utils.isString(type) || !sGis.utils.isFunction(handler)) sGis.utils.error('Expected the name of the event and handler function, but got (' + type + ', ' + handler + ') instead');
 
             if (this._eventHandlers && this._eventHandlers[type]) {
@@ -194,14 +194,14 @@ sGis.module('IEventHandler', [
             }
 
             return false;
-        },
+        }
 
         /**
          * Checks if the object has any handlers corresponding to the following description.
          * @param {String} description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either.
          * @returns {boolean} - true if the object has at least one handler of the given types with the given namespaces. If no event type is given, checks if there are any handlers in the given namespaces exist. If no namespace is given, the namespace check is ignored.
          */
-        hasListeners: function(description) {
+        hasListeners (description) {
             if (!sGis.utils.isString(description)) sGis.utils.error('Expected the name of the event, but got ' + description + ' instead');
             if (!this._eventHandlers) return false;
 
@@ -224,50 +224,53 @@ sGis.module('IEventHandler', [
                 }
             }
             return false;
-        },
+        }
 
         /**
          * Returns the list of the event handler description in format { handler: Func, namespaces: ['.ns1, ...], oneTime: ifTheHandlerOneTimeHandler }.
          * @param {String} type - name of the event.
          * @returns {Array}
          */
-        getHandlers: function(type) {
+        getHandlers (type) {
             if (!sGis.utils.isString(type)) sGis.utils.error('Expected the name of the e*vent, but got ' + type + ' instead');
             if (this._eventHandlers && this._eventHandlers[type]) {
                 return sGis.utils.copyObject(this._eventHandlers[type]);
             }
             return [];
-        },
+        }
 
         /**
          * Removes all event listeners from the object.
          */
-        removeAllListeners: function() {
+        removeAllListeners () {
             delete this._eventHandlers;
-        },
+        }
 
-        _setHandlerList: function() {
+        _setHandlerList () {
             Object.defineProperty(this, '_eventHandlers', { value: {}, configurable: true });
         }
     };
 
+    let EventListener = mixin(Object);
+    EventListener.mixin = mixin;
+    
     /**
-     * @alias IEventHandler.prototype.addListener
+     * @alias EventHandler.prototype.addListener
      */
-    IEventHandler.on = IEventHandler.addListener;
+    EventListener.prototype.on = EventListener.prototype.addListener;
 
     /**
-     * @alias IEventHandler.prototype.removeListener
+     * @alias EventHandler.prototype.removeListener
      */
-    IEventHandler.off = IEventHandler.removeListener;
+    EventListener.prototype.off = EventListener.prototype.removeListener;
 
 
     // Deprecated names
-    IEventHandler.addListner = IEventHandler.addListener;
-    IEventHandler.addListners = IEventHandler.addListeners;
-    IEventHandler.removeListner = IEventHandler.removeListener;
-    IEventHandler.hasListner = IEventHandler.hasListener;
-    IEventHandler.hasListners = IEventHandler.hasListeners;
+    EventListener.prototype.addListner = EventListener.prototype.addListener;
+    EventListener.prototype.addListners = EventListener.prototype.addListeners;
+    EventListener.prototype.removeListner = EventListener.prototype.removeListener;
+    EventListener.prototype.hasListner = EventListener.prototype.hasListener;
+    EventListener.prototype.hasListners = EventListener.prototype.hasListeners;
 
 
     function getTypes(string) {
@@ -278,6 +281,6 @@ sGis.module('IEventHandler', [
         return string.match(/\.[A-Za-z0-9_-]+/g) || [];
     }
 
-    return IEventHandler;
-
+    return EventListener;
+    
 });

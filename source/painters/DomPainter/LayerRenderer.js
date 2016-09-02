@@ -25,7 +25,6 @@ sGis.module('painter.domPainter.LayerRenderer', [
         /**
          * @constructor
          * @alias sGis.renderers.domRenderer.LayerRenderer.constructor
-         * @mixes sGis.IEventHandler
          * @param master
          * @param layer
          * @param index

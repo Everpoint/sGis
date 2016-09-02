@@ -1,26 +1,25 @@
 sGis.module('Control', [
     'utils',
     'FeatureLayer',
-    'IEventHandler'
-], function(utils, FeatureLayer, IEventHandler) {
+    'EventHandler'
+], function(utils, FeatureLayer, EventHandler) {
     'use strict';
     
-    var Control = function(extention) {
-        for (var key in extention) {
-            this[key] = extention[key];
+    class Control extends EventHandler {
+        constructor(extension) {
+            super();
+            for (var key in extension) {
+                this[key] = extension[key];
+            }
         }
-    };
 
-    Control.prototype = {
-        _activeLayer: null,
-
-        activate: function() {
+        activate () {
             if (!this._active) {
                 this._setActiveStatus(true);
             }
-        },
+        }
 
-        deactivate: function() {
+        deactivate () {
             if (this._active) {
                 this._setActiveStatus(false);
                 if (this._selfActiveLayer) {
@@ -30,7 +29,9 @@ sGis.module('Control', [
                 }
             }
         }
-    };
+    }
+    
+    Control.prototype._activeLayer = null;
 
     Object.defineProperties(Control.prototype, {
         activeLayer: {
@@ -75,8 +76,6 @@ sGis.module('Control', [
             }
         }
     });
-
-    sGis.utils.proto.setMethods(Control.prototype, sGis.IEventHandler);
     
     return Control;
 

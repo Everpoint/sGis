@@ -1,21 +1,11 @@
 sGis.module('decorations.ScaleSlider', [
     'utils',
     'utils.proto',
-    'IEventHandler'
-], function(utils, proto, IEventHandler) {
+    'EventHandler'
+], function(utils, proto, EventHandler) {
     'use strict';
-
-    var ScaleSlider = function(map, options) {
-        this._map = map;
-        this._createGrid();
-        this._createSlider();
-
-        sGis.utils.init(this, options);
-        this.updateDisplay();
-        this._setListeners();
-    };
-
-    ScaleSlider.prototype = {
+    
+    let defaults = {
         _gridCss: 'sGis-decorations-scaleSlider-grid',
         _gridWidth: 8,
         _gridHeight: 120,
@@ -26,7 +16,30 @@ sGis.module('decorations.ScaleSlider', [
         _sliderHeight: 10,
         _eventNamespace: '.sGis-decorations-scaleSlider',
 
-        updateDisplay: function() {
+        _defaultHandlers: {
+            drag: function(sGisEvent) {
+                this._moveSlider(sGisEvent.offset.yPx);
+            },
+
+            dragEnd: function() {
+                this._map.painter.allowUpdate();
+                this._map.adjustResolution();
+            }
+        }
+    };
+    
+    class ScaleSlider extends EventHandler {
+        constructor (map, options) {
+            this._map = map;
+            this._createGrid();
+            this._createSlider();
+
+            sGis.utils.init(this, options);
+            this.updateDisplay();
+            this._setListeners();
+        }
+
+        updateDisplay () {
             var wrapper = this._map.innerWrapper;
             if (wrapper) {
                 wrapper.appendChild(this._grid);
@@ -35,13 +48,13 @@ sGis.module('decorations.ScaleSlider', [
                 this._grid.parentNode.removeChild(this._grid);
                 this._slider.parentNode.removeChild(this._grid);
             }
-        },
+        }
 
-        _setListeners: function() {
+        _setListeners () {
             this._map.on('wrapperSet', this.updateDisplay.bind(this));
-        },
+        }
 
-        _createGrid: function() {
+        _createGrid () {
             var grid = document.createElement('div');
             grid.style.position = 'absolute';
             grid.style.width = this._gridWidth + 'px';
@@ -51,9 +64,9 @@ sGis.module('decorations.ScaleSlider', [
             grid.className = this._gridCss;
 
             this._grid = grid;
-        },
-
-        _createSlider: function() {
+        }
+        
+        _createSlider () {
             var slider = document.createElement('div');
 
             slider.style.position = 'absolute';
@@ -65,13 +78,13 @@ sGis.module('decorations.ScaleSlider', [
 
             this._slider = slider;
             this._setSliderEvents();
-        },
+        }
 
-        _getSliderLeft: function() {
+        _getSliderLeft () {
             return this._gridLeft + (this._gridWidth - this._sliderWidth) / 2;
-        },
+        }
 
-        _getSliderPosition: function() {
+        _getSliderPosition () {
             var height = this._gridHeight - this._sliderHeight;
             var maxResolution = this._map.maxResolution;
             var minResolution = this._map.minResolution;
@@ -83,9 +96,9 @@ sGis.module('decorations.ScaleSlider', [
             } else {
                 return this._gridTop;
             }
-        },
+        }
 
-        _setSliderEvents: function() {
+        _setSliderEvents () {
             var self = this;
             this._map.addListener('dragStart' + this._eventNamespace, function(sGisEvent) {
                 if (sGisEvent.browserEvent.target === self._slider) {
@@ -96,13 +109,13 @@ sGis.module('decorations.ScaleSlider', [
             });
 
             this._map.addListener('layerAdd layerRemove bboxChangeEnd', this._updateSliderPosition.bind(this));
-        },
+        }
 
-        _updateSliderPosition: function() {
+        _updateSliderPosition () {
             this._slider.style.top = this._getSliderPosition() + 'px';
-        },
+        }
 
-        _moveSlider: function(delta) {
+        _moveSlider (delta) {
             var offset = parseInt(this._slider.style.top) - this._gridTop;
             offset -= delta;
             if (offset < 0) {
@@ -119,20 +132,11 @@ sGis.module('decorations.ScaleSlider', [
 
             var resolution = minResolution * Math.pow(2, offset * Math.log2(maxResolution / minResolution) / height);
             this._map.resolution = resolution;
-        },
-
-        _defaultHandlers: {
-            drag: function(sGisEvent) {
-                this._moveSlider(sGisEvent.offset.yPx);
-            },
-
-            dragEnd: function() {
-                this._map.painter.allowUpdate();
-                this._map.adjustResolution();
-            }
         }
-    };
-
+    }
+    
+    utils.extend(ScaleSlider.prototype, defaults);
+    
     Object.defineProperties(ScaleSlider.prototype, {
         map: {
             get: function() {
@@ -233,8 +237,6 @@ sGis.module('decorations.ScaleSlider', [
             }
         }
     });
-
-    sGis.utils.proto.setMethods(ScaleSlider.prototype, sGis.IEventHandler);
 
     var defaultCss = '.sGis-decorations-scaleSlider-grid {' +
             'border: 1px solid gray; ' +

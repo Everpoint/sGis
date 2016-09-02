@@ -2,17 +2,40 @@ sGis.module('Map', [
     'utils',
     'Crs',
     'Event',
-    'IEventHandler',
+    'EventHandler',
     'Point',
     'Bbox',
     'LayerGroup',
     'feature.Point'
-], function(utils, Crs, Event, IEventHandler, Point, Bbox, PointF) {
+], function(utils, Crs, Event, EventHandler, Point, Bbox, PointF) {
     'use strict';
 
+    let defaults = {
+        _crs: sGis.CRS.webMercator,
+        _position: new sGis.Point([55.755831, 37.617673]).projectTo(sGis.CRS.webMercator),
+        _resolution: 611.4962262812505 / 2,
+        _animationTime: 300,
+        _defaultHandlers: {
+            bboxChange: function () {
+                var map = this;
+                var CHANGE_END_DELAY = 300;
+                if (map._changeTimer) clearTimeout(map._changeTimer);
+                map._changeTimer = setTimeout((function (map) {
+                    return function () {
+                        map.fire('bboxChangeEnd', {map: map});
+                        map._changeTimer = null;
+                    };
+                })(map), CHANGE_END_DELAY);
+            }
+        },
+        _tileScheme: null
+    };
+    
+    
+    
     /**
      *
-     * @mixes sGis.IEventHandler.prototype
+     * @extends sGis.EventHandler
      * @param {Object} [options]
      * @param {sGis.Crs} [options.crs=sGis.CRS.webMercator] - setting a crs that cannot be converted into WGS resets default values of position to [0, 0].
      * @param {sGis.Point|sGis.feature.Point|Array} [options.position] - the start position of the map. If the array is specified as [x, y], it should be in map crs. By default center it is of Moscow.
@@ -21,54 +44,49 @@ sGis.module('Map', [
      * @param {sGis.Layer} [options.layers[]] - the list of layers that will be initially on the map. The first in the list will be displayed at the bottom.
      * @constructor
      */
-
-    var Map = function(options) {
-        this._initLayerGroup();
-        if (options && options.crs) this.crs = options.crs;
-        sGis.utils.init(this, options);
-    };
-
-    Map.prototype = {
-        _crs: sGis.CRS.webMercator,
-        _position: new sGis.Point([55.755831, 37.617673]).projectTo(sGis.CRS.webMercator),
-        _resolution: 611.4962262812505 / 2,
-        _tileScheme: null,
-
-        _initLayerGroup: function() {
+    class Map extends EventHandler {
+        constructor(properties) {
+            super();
+            this._initLayerGroup();
+            if (properties && properties.crs) this.crs = properties.crs;
+            sGis.utils.init(this, properties);
+        }
+        
+        _initLayerGroup () {
             this._layerGroup = new sGis.LayerGroup();
             var self = this;
             this._layerGroup.on('layerAdd layerRemove layerOrderChange', function(sGisEvent) {
                 self.forwardEvent(sGisEvent);
             });
-        },
+        }
 
         /**
          * Adds a layer to the map
          * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
          * @fires sGis.Map#layerAdd
          */
-        addLayer: function(layer) {
+        addLayer (layer) {
             this._layerGroup.addLayer(layer);
-        },
-
+        }
+        
         /**
          * Adds a layer to the map
          * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
          * @param {number} index - inserted index
          * @fires sGis.Map#layerAdd || sGis.Map#layerOrderChange
          */
-        insertLayer: function(layer, index) {
+        insertLayer (layer, index) {
             this._layerGroup.insertLayer(layer, index);
-        },
+        }
 
         /**
          * Removes the layer from the map
          * @param {sGis.Layer} layer - the layer to be removed. If the layer is not on the map, an exception will be thrown.
          * @fires sGis.Map#layerRemove
          */
-        removeLayer: function(layer) {
+        removeLayer (layer) {
             this._layerGroup.removeLayer(layer);
-        },
+        }
 
         /**
          * Changes order of layers, moves layer to the specified index. If the layer is not on the map, it will be added to the map.
@@ -78,9 +96,9 @@ sGis.module('Map', [
          * @fires sGis.Map#layerAdd - in case the layer is not on the map
          * @deprecated
          */
-        moveLayerToIndex: function(layer, index) {
+        moveLayerToIndex (layer, index) {
             this._layerGroup.insertLayer(layer, index);
-        },
+        }
 
         /**
          * Moves the layer to the end of the layer list. If the layer is not on the map, it will be added to the map.
@@ -88,31 +106,31 @@ sGis.module('Map', [
          * @fires sGis.Map#layerOrderChange - in case the layer is on the map
          * @fires sGis.Map#layerAdd - in case the layer is not on the map
          */
-        moveLayerToTop: function(layer) {
+        moveLayerToTop (layer) {
             this.moveLayerToIndex(layer, -1);
-        },
+        }
 
         /**
          * Returns the order of the layer on the map
          * @param {type} layer
          * @returns {int}
          */
-        getLayerIndex: function(layer) {
+        getLayerIndex (layer) {
             return this._layerGroup.indexOf(layer);
-        },
+        }
 
         /**
          * Moves the map position by the specified offset
          * @param {Number} dx - Offset along X axis in map coordinates, positive direction is right
          * @param {Number} dy - Offset along Y axis in map coordinates, positive direction is down
          */
-        move: function(dx, dy) {
+        move (dx, dy) {
             if (!sGis.utils.isNumber(dx) || !sGis.utils.isNumber(dy)) sGis.utils.error('Number, Number is expected but got ' + dx + ', ' + dy + ' instead');
             var position = this.position;
             position.x += dx;
             position.y += dy;
             this.position = position;
-        },
+        }
 
         /**
          * Changes the scale of map by scalingK
@@ -120,21 +138,21 @@ sGis.module('Map', [
          * @param {sGis.Point} basePoint - /optional/ Base point of zooming
          * @param {Boolean} [doNotAdjust=false] - do not adjust resolution to the round ones
          */
-        changeScale: function(scalingK, basePoint, doNotAdjust) {
+        changeScale (scalingK, basePoint, doNotAdjust) {
             var resolution = this.resolution;
             this.setResolution(resolution * scalingK, basePoint, doNotAdjust);
-        },
+        }
 
         /**
          * Changes the scale of map by scalingK with animation
          * @param {float} scalingK - Coefficient of scaling (Ex. 5 -> 5 times zoom in)
          * @param {sGis.Point} basePoint - /optional/ Base point of zooming
          */
-        animateChangeScale: function(scalingK, basePoint) {
+        animateChangeScale (scalingK, basePoint) {
             this.animateSetResolution(this.resolution * scalingK, basePoint);
-        },
+        }
 
-        zoom: function(k, basePoint) {
+        zoom (k, basePoint) {
             var tileScheme = this.tileScheme;
 
             if (this._animationTarget) {
@@ -163,9 +181,9 @@ sGis.module('Map', [
             }
 
             this.animateSetResolution(resolution, basePoint);
-        },
+        }
 
-        adjustResolution: function() {
+        adjustResolution () {
             var resolution = this.resolution;
             var newResolution = this.getAdjustedResolution(resolution);
             var ratio = newResolution / resolution;
@@ -176,9 +194,9 @@ sGis.module('Map', [
                 this.setResolution(newResolution);
                 return false;
             }
-        },
+        }
 
-        getAdjustedResolution: function(resolution) {
+        getAdjustedResolution (resolution) {
             var tileScheme = this.tileScheme;
             if (tileScheme) {
                 var minDifference = Infinity;
@@ -195,7 +213,7 @@ sGis.module('Map', [
             } else {
                 return resolution;
             }
-        },
+        }
 
         /**
          * Sets new resolution to the map with animation
@@ -203,16 +221,14 @@ sGis.module('Map', [
          * @param {sGis.Point} [basePoint] - Base point of zooming
          * @returns {undefined}
          */
-        animateSetResolution: function(resolution, basePoint) {
+        animateSetResolution (resolution, basePoint) {
             var adjustedResolution = this.getAdjustedResolution(resolution);
             var newPosition = this._getScaledPosition(adjustedResolution, basePoint);
             this._animateTo(newPosition, adjustedResolution);
             this.fire('animationStart');
-        },
+        }
 
-        _animationTime: 300,
-
-        _animateTo: function(position, resolution) {
+        _animateTo (position, resolution) {
             this.stopAnimation();
 
             var originalPosition = this.position;
@@ -238,33 +254,33 @@ sGis.module('Map', [
                     self.setPosition(new sGis.Point([x, y], self.crs), r);
                 }
             }, 1000 / 60);
-        },
+        }
 
-        _getScaledPosition: function(newResolution, basePoint) {
+        _getScaledPosition (newResolution, basePoint) {
             var position = this.position;
             basePoint = basePoint ? basePoint.projectTo(this.crs) : position;
             var resolution = this.resolution;
             var scalingK = newResolution / resolution;
             return new sGis.Point([(position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y], position.crs);
-        },
+        }
 
-        stopAnimation: function() {
+        stopAnimation () {
             this._animationStopped = true;
             this._animationTarget = null;
             clearInterval(this._animationTimer);
-        },
+        }
 
-        _easeFunction: function(t, b, c, d) {
+        _easeFunction (t, b, c, d) {
             return b + c * t / d;
-        },
+        }
 
-        setPosition: function(position, resolution) {
+        setPosition (position, resolution) {
             this.prohibitEvent('bboxChange');
             this.position = position;
             if (resolution) this.resolution = resolution;
             this.allowEvent('bboxChange');
             this.fire('bboxChange');
-        },
+        }
 
         /**
          * Sets new resolution to the map
@@ -272,28 +288,16 @@ sGis.module('Map', [
          * @param {sGis.Point} [basePoint] - Base point of zooming
          * @param {Boolean} [doNotAdjust=false] - do not adjust resolution to the round ones
          */
-        setResolution: function(resolution, basePoint, doNotAdjust) {
+        setResolution (resolution, basePoint, doNotAdjust) {
             this.setPosition(this._getScaledPosition(this.resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
-        },
+        }
 
-        _defaultHandlers: {
-            bboxChange: function () {
-                var map = this;
-                var CHANGE_END_DELAY = 300;
-                if (map._changeTimer) clearTimeout(map._changeTimer);
-                map._changeTimer = setTimeout((function (map) {
-                    return function () {
-                        map.fire('bboxChangeEnd', {map: map});
-                        map._changeTimer = null;
-                    };
-                })(map), CHANGE_END_DELAY);
-            }
-        },
-        
-        getLayers: function(recurse) {
+        getLayers (recurse) {
             return this._layerGroup.getLayers(recurse);
         }
-    };
+    }
+    
+    utils.extend(Map.prototype, defaults);
 
     Object.defineProperties(Map.prototype, {
         /**
@@ -442,8 +446,6 @@ sGis.module('Map', [
             }
         }
     });
-
-    sGis.utils.proto.setMethods(Map.prototype, sGis.IEventHandler);
 
     return Map;
 

@@ -17,16 +17,15 @@ module.exports = function(config) {
     files: [
       'source/sGis.js',
       'source/**/*.js',
-      'test/unit/sGis/Crs.js',
-      'test/unit/sGis/utils.js',
-      'test/unit/sGis/Geotools.js',
+
+      'test/**/*.js',
       //'test/unit/**/*.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-
+        'test/unit/**/*.js'
     ],
 
 

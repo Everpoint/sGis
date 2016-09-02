@@ -1,7 +1,7 @@
 sGis.module('Layer', [
     'utils',
-    'IEventHandler'
-], function(utils, IEventHandler) {
+    'EventHandler'
+], function(utils, EventHandler) {
     'use strict';
 
     var defaults = {
@@ -13,14 +13,15 @@ sGis.module('Layer', [
     /**
      * Base class for all map layers.
      * @alias sGis.Layer
-     * @mixes sGis.IEventHandler
+     * @extends sGis.EventHandler
      */
-    class Layer {
+    class Layer extends EventHandler {
         /**
          * @constructor
          * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
          */
         constructor(properties) {
+            super();
             utils.init(this, properties);
         }
         
@@ -119,7 +120,6 @@ sGis.module('Layer', [
     Layer.prototype.delayedUpdate = false;
 
     sGis.utils.extend(Layer.prototype, defaults);
-    sGis.utils.extend(Layer.prototype, IEventHandler);
 
     return Layer;
 

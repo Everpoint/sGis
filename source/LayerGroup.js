@@ -1,20 +1,21 @@
 sGis.module('LayerGroup', [
     'utils',
-    'IEventHandler'
-], function(utils, IEventHandler) {
+    'EventHandler'
+], function(utils, EventHandler) {
 
     'use strict';
 
     /**
      * Ordered list of layers and nested layer groups.
      * @alias sGis.LayerGroup
-     * @mixes sGis.IEventHandler
+     * @extends sGis.EventHandler
      */
-    class LayerGroup {
+    class LayerGroup extends EventHandler {
         /**
          * @param {sGis.Layer[]} [layers=[]] - initial list of layers in the group
          */
         constructor (layers = []) {
+            super();
             this._layers = [];
             this.layers = layers || [];
 
@@ -161,8 +162,6 @@ sGis.module('LayerGroup', [
             }
         }
     }
-
-    utils.extend(LayerGroup.prototype, IEventHandler);
 
     return LayerGroup;
 

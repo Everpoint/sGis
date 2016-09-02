@@ -2,8 +2,8 @@ sGis.module('Feature', [
     'utils',
     'CRS',
     'Bbox',
-    'IEventHandler'
-], function(utils, CRS, Bbox, IEventHandler) {
+    'EventHandler'
+], function(utils, CRS, Bbox, EventHandler) {
 
     'use strict';
 
@@ -20,14 +20,15 @@ sGis.module('Feature', [
     /**
      * Abstract feature object without any geometry. All other features inherit from this class. It can be used to store attributes in the way compatible with other features.
      * @alias sGis.Feature
-     * @mixes sGis.IEventHandler
+     * @extends sGis.EventHandler
      */
-    class Feature {
+    class Feature extends EventHandler {
         /**
          * @constructor
          * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
          */
         constructor(properties = {}) {
+            super();
             var copy = utils.extend({}, properties);
             if (copy.crs){
                 this._crs = copy.crs;
@@ -146,7 +147,6 @@ sGis.module('Feature', [
         get bbox() { return new Bbox([Math.MIN_VALUE, Math.MIN_VALUE], [Math.MAX_VALUE, Math.MAX_VALUE], this.crs); }
     }
 
-    utils.extend(Feature.prototype, IEventHandler);
     utils.extend(Feature.prototype, defaults);
 
     return Feature;
