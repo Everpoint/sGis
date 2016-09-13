@@ -24,6 +24,19 @@ sGis.module('Feature', [
      */
     class Feature extends EventHandler {
         /**
+         * Sets default coordinate system for all features.<br><br>
+         *     <strong>
+         *     NOTE: This method affects all already created features that do not have explicitly specified crs.
+         *     You should use this function only when initializing library.
+         *     </strong>
+         * @param {sGis.Crs} crs
+         * @static
+         */
+        static setDefaultCrs(crs) {
+            Feature.prototype.crs = crs;
+        }
+
+        /**
          * @constructor
          * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
          */
@@ -109,7 +122,7 @@ sGis.module('Feature', [
 
         /**
          * Returns true, if a temporary symbol is currently set for this feature.
-         * @returns {boolean}
+         * @returns {Boolean}
          */
         get isTempSymbolSet() { return !!this._tempSymbol; }
 
@@ -122,14 +135,14 @@ sGis.module('Feature', [
         /**
          * Coordinate system of the feature.
          * @readonly
-         * @type sGis.Crs
+         * @type {sGis.Crs}
          * @default sGis.CRS.geo
          */
         get crs() { return this._crs; }
 
         /**
          * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
-         * @type sGis.Symbol
+         * @type {sGis.Symbol}
          */
         get symbol() { return this._tempSymbol || this._symbol; }
         set symbol(/** sGis.Symbol */ symbol) {
@@ -143,7 +156,12 @@ sGis.module('Feature', [
          * @readonly
          */
         get hidden() { return this._hidden; }
-        
+
+        /**
+         * Bounding box of the feature.
+         * @type {sGis.Bbox}
+         * @readonly
+         */
         get bbox() { return new Bbox([Math.MIN_VALUE, Math.MIN_VALUE], [Math.MAX_VALUE, Math.MAX_VALUE], this.crs); }
     }
 
