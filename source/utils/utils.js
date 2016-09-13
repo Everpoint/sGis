@@ -186,26 +186,6 @@ sGis.module('utils', [
         },
 
         /**
-         * Return the maximum number in the array
-         * @param {Number[]} arr
-         * @returns {Number}
-         * TODO: move to MATH
-         */
-        max: function(arr) {
-            return Math.max.apply(null, arr);
-        },
-
-        /**
-         * Return the minimum number in the array
-         * @param {Number[]} arr
-         * @returns {Number}
-         * TODO: move to MATH
-         */
-        min: function(arr) {
-            return Math.min.apply(null, arr);
-        },
-
-        /**
          * Prepares the set of coordinates for matrix operations
          * @param {Number[][]} coord
          * @param {Number[]} center - the center of the operation

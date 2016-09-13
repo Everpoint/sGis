@@ -126,10 +126,10 @@ sGis.module('PointGroup', [
                         yArray.push(this._points[i].y);
                     }
 
-                    var xmin = sGis.utils.min(xArray),
-                        xmax = sGis.utils.max(xArray),
-                        ymin = sGis.utils.min(yArray),
-                        ymax = sGis.utils.max(yArray);
+                    var xmin = Math.min.apply(this, xArray),
+                        xmax = Math.max.apply(this, xArray),
+                        ymin = Math.min.apply(this, yArray),
+                        ymax = Math.max.apply(this, yArray);
 
                     return new sGis.Bbox([xmin, ymin], [xmax, ymax], crs);
                 } else {
