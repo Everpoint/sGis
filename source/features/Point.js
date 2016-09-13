@@ -16,6 +16,10 @@ sGis.module('feature.Point', [
      * @implements sGis.IPoint
      */
     class PointF extends Feature {
+        /**
+         * @param {Position} position - coordinates of the point
+         * @param {Object} properties - key-value set of properties to be set to the instance
+         */
         constructor(position, properties) {
             super(properties);
             this._position = position;
@@ -26,6 +30,9 @@ sGis.module('feature.Point', [
             return new PointF(projected.position, { crs: crs, symbol: this.symbol });
         }
 
+        /**
+         * Returns a copy of the point. The copy will include all sGis.Point properties, but will not copy of user defined properties or event listeners.
+         */
         clone() {
             return this.projectTo(this.crs);
         }
@@ -53,7 +60,16 @@ sGis.module('feature.Point', [
             this.redraw();
         }
     }
-    
+
+    /**
+     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
+     * @member symbol
+     * @memberof sGis.feature.Point
+     * @type {sGis.Symbol}
+     * @instance
+     * @default new sGis.symbol.point.Point()
+     */
+
     PointF.prototype._symbol = new PointSymbol(); 
 
     return PointF;

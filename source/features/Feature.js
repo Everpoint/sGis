@@ -143,6 +143,7 @@ sGis.module('Feature', [
         /**
          * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
          * @type {sGis.Symbol}
+         * @default null
          */
         get symbol() { return this._tempSymbol || this._symbol; }
         set symbol(/** sGis.Symbol */ symbol) {
