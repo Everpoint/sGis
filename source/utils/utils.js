@@ -87,7 +87,7 @@ sGis.module('utils', [
          * @returns {boolean}
          */
         isArray: function(obj) {
-            return Object.prototype.toString.call(obj) === '[object Array]';
+            return Array.isArray(obj);
         },
 
         /**
