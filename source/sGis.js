@@ -1,6 +1,9 @@
 (function() {
     'use strict';
 
+    /**
+     * @namespace sGis
+     */
     var sGis = {};
 
     sGis.browser = (function() {

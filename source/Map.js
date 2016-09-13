@@ -76,7 +76,8 @@ sGis.module('Map', [
          * Adds a layer to the map
          * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
          * @param {number} index - inserted index
-         * @fires sGis.Map#layerAdd || sGis.Map#layerOrderChange
+         * @fires sGis.Map#layerAdd
+         * @fires sGis.Map#layerOrderChange
          */
         insertLayer (layer, index) {
             this._layerGroup.insertLayer(layer, index);
@@ -451,5 +452,29 @@ sGis.module('Map', [
     });
 
     return Map;
+
+    /**
+     * A layer is added to the map
+     * @event sGis.Map#layerAdd
+     * @mixes sGisEvent
+     * @type {Object}
+     * @property {sGis.Layer} layer - added layer
+     */
+
+    /**
+     * A layer is removed from the map
+     * @event sGis.Map#layerRemove
+     * @mixes sGisEvent
+     * @type {Object}
+     * @property {sGis.Layer} layer - removed layer
+     */
+
+    /**
+     * Position of one of the layers on the map is changed
+     * @event sGis.Map#layerOrderChange
+     * @mixes sGisEvent
+     * @type {Object}
+     * @property {sGis.Layer} layer - the layer that was moved
+     */
 
 });

@@ -114,9 +114,14 @@ sGis.module('CRS', [
 ], function(Crs, math) {
 
     /**
-     * @namespace sGis.CRS
+     * @namespace
+     * @memberof sGis
      */
     var CRS = {
+        /**
+         * Plain euclidean coordinate system. This projection cannot be projected to any other projection.
+         * @type {sGis.Crs}
+         */
         plain: new Crs('Plain crs without any projection functions'),
         wgs84: new Crs({wkid:4326})
     };

@@ -23,8 +23,7 @@ sGis.module('feature.Polyline', [
             if (coordinates) this.coordinates = coordinates;
         }
 
-        addPoint(point, ring) {
-            ring = ring || 0;
+        addPoint(point, ring = 0) {
             if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist in feature');
             this.setPoint(ring, this._coordinates[ring].length, point);
         }

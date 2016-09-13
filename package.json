@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "jsdoc source -r -d docs"
+    "doc": "jsdoc source -r -d docs -c jsdoc.conf.json"
   },
   "repository": {
     "type": "git",
