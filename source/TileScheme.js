@@ -29,6 +29,25 @@ sGis.module('TileScheme', [
 
             return keys[i-1];
         }
+
+        maxResolution() {
+            var maxResolution = 0;
+            var levels = Object.keys(this.levels);
+            for (var i = 0; i < levels.length; i++) {
+                maxResolution = Math.max(maxResolution, this.levels[levels[i]].resolution);
+            }
+            return maxResolution;
+        }
+
+        minResolution() {
+            var minResolution = Infinity;
+            var levels = Object.keys(this.levels);
+            for (var i = 0; i < levels.length; i++) {
+                minResolution = Math.min(minResolution, this.levels[levels[i]].resolution);
+            }
+
+            return minResolution;
+        }
     }
 
     var defaultLevels = [{
