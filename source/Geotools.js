@@ -18,11 +18,11 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
     };
 
     geotools.length = function(geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Polyline ? geometry.rings : geometry,
+        var coord = geometry instanceof sGis.feature.Poly ? geometry.rings : geometry,
             length = 0,
             ringTemp;
 
-        crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
+        crs = geometry instanceof sGis.feature.Poly ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
         for (var ring = 0, l = coord.length; ring < l; ring++) {
             ringTemp = [].concat(coord[ring]);
@@ -37,8 +37,8 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
     };
 
     geotools.area = function (geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Polyline ? geometry.rings : geometry;
-        crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
+        var coord = geometry instanceof sGis.feature.Poly ? geometry.rings : geometry;
+        crs = geometry instanceof sGis.feature.Poly ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
         var tempFeature = new sGis.feature.Polyline(coord, {crs: crs}),
             area = 0;

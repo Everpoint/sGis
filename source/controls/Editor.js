@@ -187,7 +187,7 @@ sGis.module('controls.Editor', [
                 this._createTransformControls();
             }
 
-            if (this._selectedFeature instanceof sGis.feature.Polyline) {
+            if (this._selectedFeature instanceof sGis.feature.Poly) {
                 this._updateTransformControls();
             }
             this._map.moveLayerToIndex(this._snappingLayer, Number.MAX_VALUE);
@@ -309,7 +309,7 @@ sGis.module('controls.Editor', [
         },
 
         _updateTransformControls: function() {
-            if (this._transformControls && this._selectedFeature && this._selectedFeature instanceof sGis.feature.Polyline) {
+            if (this._transformControls && this._selectedFeature && this._selectedFeature instanceof sGis.feature.Poly) {
                 var bbox = this._selectedFeature.bbox.projectTo(this._map.crs);
                 var coordinates = [[bbox.xMin, bbox.yMin], [bbox.xMax, bbox.yMax]];
                 var controls = this._transformControls;
@@ -364,7 +364,7 @@ sGis.module('controls.Editor', [
             this._selectedFeature.addListener('drag.' + this._ns, function(sGisEvent) { self._dragHandler(sGisEvent, this); });
             this._selectedFeature.addListener('dragEnd.' + this._ns, this._saveState.bind(this));
 
-            if (this._selectedFeature instanceof sGis.feature.Polyline) {
+            if (this._selectedFeature instanceof sGis.feature.Poly) {
                 this._selectedFeature.addListener('mousemove.' + this._ns, function(sGisEvent) { self._polylineMousemoveHandler(sGisEvent, this); });
                 this._selectedFeature.addListener('mouseout.' + this._ns, function(sGisEvent) { self._polylineMouseoutHandler(sGisEvent, this); });
                 this._selectedFeature.addListener('dblclick.' + this._ns, function(sGisEvent) { self._polylineDblclickHandler(sGisEvent, this); });
@@ -385,7 +385,7 @@ sGis.module('controls.Editor', [
         _dragStartHandler: function(sGisEvent, feature) {
             if (this.ignoreEvents || !(this.allowVertexEditing || this.allowDragging)) return;
 
-            if (feature instanceof sGis.feature.Polyline || feature instanceof sGis.feature.MultiPoint) {
+            if (feature instanceof sGis.feature.Poly || feature instanceof sGis.feature.MultiPoint) {
                 this._currentDragInfo = this._getAdjustedEventData(sGisEvent, feature);
                 if (!this.allowVertexEditing && (this._currentDragInfo.type === 'line' || this._currentDragInfo.type === 'vertex')) {
                     this._currentDragInfo.type = 'bulk';
@@ -399,7 +399,7 @@ sGis.module('controls.Editor', [
         _dragHandler: function(sGisEvent, feature) {
             if (feature instanceof sGis.feature.Point) {
                 this._pointDragHandler(sGisEvent, feature);
-            } else if (feature instanceof sGis.feature.Polyline) {
+            } else if (feature instanceof sGis.feature.Poly) {
                 this._polylineDragHandler(sGisEvent, feature);
             } else if (feature instanceof sGis.feature.MultiPoint) {
                 this._multipointDragHandler(sGisEvent, feature);
@@ -836,7 +836,7 @@ sGis.module('controls.Editor', [
                     if (Math.abs(feature.x - point.x) < distance && Math.abs(feature.y - point.y) < distance) {
                         return [feature.x, feature.y];
                     }
-                } else if (feature instanceof sGis.feature.Polyline) {
+                } else if (feature instanceof sGis.feature.Poly) {
                     var coordinates = feature.coordinates;
                     for (var ring = 0; ring < coordinates.length; ring++) {
                         for (var j = 0; j < coordinates[ring].length; j++) {
@@ -853,7 +853,7 @@ sGis.module('controls.Editor', [
             var bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             var features = layer.getFeatures(bbox);
             for (var i = 0; i < features.length; i++) {
-                if (exclude.indexOf(features[i]) !== -1 || !(features[i] instanceof sGis.feature.Polyline)) continue;
+                if (exclude.indexOf(features[i]) !== -1 || !(features[i] instanceof sGis.feature.Poly)) continue;
                 var feature = features[i].projectTo(point.crs);
                 var coordinates = feature.coordinates;
 
@@ -876,7 +876,7 @@ sGis.module('controls.Editor', [
             var bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             var features = layer.getFeatures(bbox);
             for (var i = 0; i < features.length; i++) {
-                if (exclude.indexOf(features[i]) !== -1 || !(features[i] instanceof sGis.feature.Polyline)) continue;
+                if (exclude.indexOf(features[i]) !== -1 || !(features[i] instanceof sGis.feature.Poly)) continue;
                 var feature = features[i].projectTo(point.crs);
                 var coordinates = feature.coordinates;
 
