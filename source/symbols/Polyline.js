@@ -33,7 +33,7 @@ sGis.module('symbol.polyline.Simple', [
 
         static _getRenderedCoordinates(feature, resolution, crs) {
             if (!feature.coordinates || !utils.isArray(feature.coordinates) || !utils.isArray(feature.coordinates[0])) return null;
-            var projected = feature.projectTo(crs).coordinates;
+            var projected = feature.crs.equals(crs) ? feature.rings : feature.projectTo(crs).rings;
             
             return projected.map(ring => {
                 return ring.map(point => {

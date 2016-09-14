@@ -79,7 +79,7 @@ sGis.module('controls.Rectangle', [
             var coord = this._activeFeature.coordinates[0],
                 pointCoord = newPoint.position;
 
-            coord = [coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]];
+            coord = [[coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]]];
 
             this._activeFeature.coordinates = coord;
             this.activeLayer.redraw();

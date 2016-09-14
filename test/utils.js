@@ -47,4 +47,16 @@ describe('utils', function() {
             expect(copy.a).toBe(obj.a);
         });
     });
+
+    describe('.copyArray()', () => {
+        it('should return a deep copy of array', () => {
+            let array = [[[0, 1, false, 'abc'], [{}, []], ['as', 3]]];
+            let copy = sGis.utils.copyArray(array);
+            expect(copy).toEqual(array);
+            expect(copy[0]).not.toBe(array[0]);
+            expect(copy[0][0]).not.toBe(array[0][0]);
+            expect(copy[0][1]).not.toBe(array[0][1]);
+            expect(copy[0][1][0]).toBe(array[0][1][0]);
+        });
+    });
 });

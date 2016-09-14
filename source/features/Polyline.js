@@ -17,84 +17,106 @@ sGis.module('feature.Polyline', [
      * @extends sGis.Feature
      */
     class Polyline extends Feature {
-        constructor(coordinates, properties) {
+        constructor(rings, properties) {
             super(properties);
-            this._coordinates = [[]];
-            if (coordinates) this.coordinates = coordinates;
-        }
-
-        addPoint(point, ring = 0) {
-            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist in feature');
-            this.setPoint(ring, this._coordinates[ring].length, point);
-        }
-
-        removePoint(ring, index) {
-            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist in the feature');
-            if (!this._coordinates[ring][index]) sGis.utils.error('The point with specified index ' + index + ' does not exist in the feature');
-            this._coordinates[ring].splice(index, 1);
-            if (this._coordinates[ring].length === 0) {
-                this._coordinates.splice(ring, 1);
+            if (rings && rings.length > 0) {
+                if (rings[0].length > 0 && !Array.isArray(rings[0][0])) rings = [rings];
+                this.rings = utils.copyArray(rings);
+            } else {
+                this._rings = [[]];
             }
-            this._cache = {};
+        }
+        
+        get rings() { return this._rings; }
+        set rings(rings) { 
+            this._rings = rings;
+            this._update();
+        }
+
+        addPoint(point, ringN) {
+            if (!ringN) ringN = this._rings.length - 1;
+            this.setPoint(ringN, this._rings[ringN].length, point);
+        }
+
+        removePoint(ringN, index) {
+            this._rings[ringN].splice(index, 1);
+            if (this._rings[ringN].length === 0) {
+                this.removeRing(ringN);
+            }
+            this._update();
+        }
+
+        removeRing(ringN) {
+            this._rings.splice(ringN, 1);
+            this._update();
+        }
+        
+        _update() {
             this._bbox = null;
-            this.redraw();
-        }
-
-        removeRing(ring) {
-            if (this._coordinates.length > 1 && this._coordinates[ring]) {
-                this._coordinates.splice(ring, 1);
-            }
             this.redraw();
         }
 
         clone() {
-            return new Polyline(this._coordinates, {crs: this._crs, color: this._color, width: this._width, symbol: this.originalSymbol});
+            return new Polyline(this._rings, {crs: this.crs, symbol: this.originalSymbol});
         }
 
         projectTo(/** sGis.Crs */ crs) {
-            var projected = this._coordinates.map(ring => {
+            var projected = this._rings.map(ring => {
                 return ring.map(point => { return this.crs.projectionTo(crs)(point); });
             });
-            return new Polyline(projected, { crs: crs, symbol: this.symbol });
+            return new Polyline(projected, { crs: crs, symbol: this.originalSymbol });
         }
 
-        setRing(n, coordinates) {
-            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
-            if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
-
-            if (n > this._coordinates.length) n = this._coordinates.length;
-            this._coordinates[n] = [];
-            for (var i = 0, l = coordinates.length; i < l; i++) {
-                this.setPoint(n, i, coordinates[i]);
-            }
+        setRing(ringN, ring) {
+            ringN = Math.min(ringN, this._rings.length);
+            this._rings[ringN] = ring;
+            this._update();
         }
 
-        setPoint(ring, n, point) {
-            if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
-            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
-            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
-
-            if (n > this._coordinates[ring].length) n = this._coordinates[ring].length;
-            if (point instanceof sGis.Point) {
-                var projected = point.projectTo(this.crs);
-                this._coordinates[ring][n] = this.crs === sGis.CRS.geo ? [projected.y, projected.x] : [projected.x, projected.y];
-            } else {
-                this._coordinates[ring][n] = point;
-            }
-            this._bbox = null;
-            this._cache = {};
-            this.redraw();
+        setPoint(ringN, pointN, point) {
+            pointN = Math.min(pointN, this._rings[ringN].length);
+            this._rings[ringN][pointN] = point.position && point.projectTo ? point.projectTo(this.crs).position : point;
+            this._update();
         }
 
-        insertPoint(ring, n, point) {
-            if (!isValidPoint(point)) sGis.utils.error('Point is expected but got ' + point + ' instead');
-            if (!this._coordinates[ring]) sGis.utils.error('The ring with index ' + ring + ' does not exist');
-            if (!sGis.utils.isInteger(n) || n < 0) sGis.utils.error('Positive integer is expected for index but got ' + n + ' instead');
-
-            this._coordinates[ring].splice(n, 0, [0, 0]);
-            this.setPoint(ring, n, point);
+        insertPoint(ringN, pointN, point) {
+            pointN = Math.min(pointN, this._rings[ringN].length);
+            this._rings[ringN].splice(pointN, 0, [0, 0]);
+            this.setPoint(ringN, pointN, point);
         }
 
+        get bbox() {
+            if (this._bbox) return this._bbox;
+            let xMin = Number.MAX_VALUE;
+            let yMin = Number.MAX_VALUE;
+            let xMax = Number.MIN_VALUE;
+            let yMax = Number.MAX_VALUE;
+            
+            this._rings.forEach(ring => {
+                ring.forEach(point => {
+                    xMin = Math.min(xMin, point[0]);
+                    yMin = Math.min(yMin, point[1]);
+                    xMax = Math.max(xMax, point[0]);
+                    yMax = Math.max(yMax, point[1]);
+                });
+            });
+            
+            this._bbox = new Bbox([xMin, yMin], [xMax, yMax], this.crs);
+            return this._bbox;
+        }
+        
+        get centroid() {
+            let bbox = this.bbox;
+            let x = (bbox.xMin + bbox.xMax) / 2;
+            let y = (bbox.yMin + bbox.yMax) / 2;
+            return [x, y];
+        }
+
+        /**
+         * @deprecated
+         */
+        get coordinates() { return utils.copyArray(this._rings); }
+        set coordinates(rings) { this.rings = utils.copyArray(rings); }
 
         transform(matrix, center) {
             if (center instanceof sGis.Point || center instanceof sGis.feature.Point) {
@@ -161,86 +183,7 @@ sGis.module('feature.Polyline', [
         }
         return coord;
     }
-
-    Object.defineProperties(Polyline.prototype, {
-        coordinates: {
-            get: function() {
-                return sGis.utils.copyArray(this._coordinates);
-            },
-            set: function(coordinates) {
-                if (!sGis.utils.isArray(coordinates)) sGis.utils.error('Array is expected but got ' + coordinates + ' instead');
-
-                this._coordinates = [[]];
-                if (!sGis.utils.isArray(coordinates[0]) || sGis.utils.isNumber(coordinates[0][0])) {
-                    // One ring is specified
-                    this.setRing(0, coordinates);
-                } else {
-                    // Array of rings is specified
-
-                    for (var ring = 0, l = coordinates.length; ring < l; ring++) {
-                        this.setRing(ring, coordinates[ring]);
-                    }
-                }
-            }
-        },
-
-        bbox: {
-            get: function() {
-                if (!this._bbox) {
-                    var point1 = [this._coordinates[0][0][0], this._coordinates[0][0][1]],
-                        point2 = [this._coordinates[0][0][0], this._coordinates[0][0][1]];
-                    for (var ring = 0, l = this._coordinates.length; ring < l; ring++) {
-                        for (var i = 0, m = this._coordinates[ring].length; i < m; i++) {
-                            if (point1[0] > this._coordinates[ring][i][0]) point1[0] = this._coordinates[ring][i][0];
-                            if (point1[1] > this._coordinates[ring][i][1]) point1[1] = this._coordinates[ring][i][1];
-                            if (point2[0] < this._coordinates[ring][i][0]) point2[0] = this._coordinates[ring][i][0];
-                            if (point2[1] < this._coordinates[ring][i][1]) point2[1] = this._coordinates[ring][i][1];
-                        }
-                    }
-                    this._bbox = new sGis.Bbox(point1, point2, this._crs);
-                }
-                return this._bbox;
-            }
-        },
-
-        type: {
-            value: 'polyline'
-        },
-
-        width: {
-            get: function() {
-                return this._symbol && this._symbol.strokeWidth;
-            },
-
-            set: function(width) {
-                if (this._symbol) this._symbol.strokeWidth = width;
-            }
-        },
-
-        color: {
-            get: function() {
-                return this._symbol && this._symbol.strokeColor;
-            },
-
-            set: function(color) {
-                if (this._symbol) this._symbol.strokeColor = color;
-            }
-        },
-
-        centroid: {
-            get: function() {
-                var bbox = this.bbox,
-                    x = (bbox.p[0].x + bbox.p[1].x) / 2,
-                    y = (bbox.p[0].y + bbox.p[1].y) / 2;
-
-                return [x, y];
-            }
-        }
-    });
-
-    function isValidPoint(point) {
-        return sGis.utils.isArray(point) && sGis.utils.isNumber(point[0]) && sGis.utils.isNumber(point[1]) || (point instanceof sGis.Point);
-    }
+    
 
     return Polyline;
 

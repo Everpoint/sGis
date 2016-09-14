@@ -19,13 +19,13 @@ sGis.module('controls.Distance', [
             if (this.activeLayer.features.length > 1) this.activeLayer.features = [this.activeLayer.features[this.activeLayer.features.length - 1]];
 
             var feature = this.activeLayer.features[this.activeLayer.features.length - 1],
-                coord = feature.coordinates[0],
+                coord = feature.rings[0],
                 label = new sGis.feature.Label(coord[1], { symbol: new sGis.symbol.label.Label({css: 'sGis-symbol-label-center-top sGis-distanceLabel'}), crs: map.crs });
 
             this.activeLayer.add(label);
 
             map.addListener('mousemove.distanceMeasureControl', function() {
-                label.coordinates = feature.coordinates[0][feature.coordinates[0].length - 1];
+                label.coordinates = feature.rings[0][feature.coordinates[0].length - 1];
                 label.content = formatNumber(sGis.geotools.length(feature));
             });
         });

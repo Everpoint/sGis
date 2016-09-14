@@ -95,7 +95,7 @@ sGis.module('controls.Circle', [
                 coordinates.push(point);
             }
 
-            this._activeFeature.coordinates = coordinates;
+            this._activeFeature.rings = [coordinates];
             this.activeLayer.redraw();
         }
     });

@@ -18,7 +18,7 @@ sGis.module('geotools', ['math'], function(math) {
     };
 
     geotools.length = function(geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry,
+        var coord = geometry instanceof sGis.feature.Polyline ? geometry.rings : geometry,
             length = 0,
             ringTemp;
 
@@ -37,7 +37,7 @@ sGis.module('geotools', ['math'], function(math) {
     };
 
     geotools.area = function (geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Polyline ? geometry.coordinates : geometry;
+        var coord = geometry instanceof sGis.feature.Polyline ? geometry.rings : geometry;
         crs = geometry instanceof sGis.feature.Polyline ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
         var tempFeature = new sGis.feature.Polyline(coord, {crs: crs}),
@@ -45,9 +45,9 @@ sGis.module('geotools', ['math'], function(math) {
 
 
         if (crs.from) {
-            var projected = tempFeature.projectTo(sGis.CRS.cylindricalEqualArea).coordinates;
+            var projected = tempFeature.projectTo(sGis.CRS.cylindricalEqualArea).rings;
         } else {
-            projected = tempFeature.coordinates;
+            projected = tempFeature.rings;
         }
 
         for (var ring = 0, l = projected.length; ring < l; ring++) {
@@ -181,7 +181,7 @@ sGis.module('geotools', ['math'], function(math) {
      * @returns {boolean}
      */
     geotools.isPolygonValid = function (polygon) {
-        var coordinates = (polygon instanceof sGis.feature.Polygon) ? polygon.coordinates : polygon;
+        var coordinates = (polygon instanceof sGis.feature.Polygon) ? polygon.rings : polygon;
         if (coordinates.length === 0) return false;
 
         for (var ring = 0; ring < coordinates.length; ring++) {

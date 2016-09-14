@@ -370,7 +370,7 @@ sGis.module('Map', [
             set: function(position) {
                 var point;
                 if (position instanceof sGis.feature.Point || (sGis.utils.isArray(position) && position.length === 2 && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1]))) {
-                    var coordinates = position.coordinates || position;
+                    var coordinates = position.position || position;
                     point = new sGis.Point([coordinates[0], coordinates[1]], position.crs || this.crs);
                 } else if (position instanceof sGis.Point) {
                     point = position;
