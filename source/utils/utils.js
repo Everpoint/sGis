@@ -185,58 +185,6 @@ sGis.module('utils', [
             if (b !== true && b !== false) utils.error('Boolean is expected but got ' + b + ' instead');
         },
 
-        /**
-         * Prepares the set of coordinates for matrix operations
-         * @param {Number[][]} coord
-         * @param {Number[]} center - the center of the operation
-         * @returns {Number[][]} extended coordinates
-         * TODO: move to MATH
-         */
-        extendCoordinates: function(coord, center) {
-            var extended = [];
-            for (var i = 0, l = coord.length; i < l; i++) {
-                extended[i] = [coord[i][0] - center[0], coord[i][1] - center[1], 1];
-            }
-            return extended;
-        },
-
-        /**
-         * Takes extended coordinates and make them plain again
-         * @param {Number[][]} extended
-         * @param {Number[]} center - the center of the operation
-         * @returns {Number[][]} extended coordinates
-         * TODO: move to MATH
-         */
-        collapseCoordinates: function(extended, center) {
-            var coord = [];
-            for (var i = 0, l = extended.length; i < l; i++) {
-                coord[i] = [extended[i][0] + center[0], extended[i][1] + center[1]];
-            }
-            return coord;
-        },
-
-        /**
-         * Returns a new array with simplified coordinates
-         * @param {Number[][][]} points - array of coordinate contours
-         * @param tolerance - the tolerance of simplification. Points that are overflow other points or lines with given tolerance will be excluded from the result
-         * @returns {Number[][][]}
-         */
-        simplify: function(points, tolerance) {
-            var result = [];
-
-            for (var ring = 0, l = points.length; ring < l; ring++) {
-                var simplified = [points[ring][0]];
-                for (var i = 1, len = points[ring].length - 1; i < len; i++) {
-                    if (points[ring][i].length === 0 || simplified[simplified.length - 1].length === 0 || Math.abs(points[ring][i][0] - simplified[simplified.length - 1][0]) > tolerance || Math.abs(points[ring][i][1] - simplified[simplified.length - 1][1]) > tolerance) {
-                        simplified.push(points[ring][i]);
-                    }
-                }
-                if (simplified[simplified.length - 1] !== points[ring][points[ring].length - 1]) simplified.push(points[ring][points[ring].length - 1]);
-                result[ring] = simplified;
-            }
-
-            return result;
-        },
 
         /**
          * Returns a random GUID
@@ -313,28 +261,6 @@ sGis.module('utils', [
             } else {
                 return obj;
             }
-        },
-
-        /**
-         * Multiplies matrix a by matrix b
-         * @param a
-         * @param b
-         * @returns {Array}
-         * TODO: move to MATH
-         */
-        multiplyMatrix: function(a, b) {
-            var c = [];
-            for (var i = 0, m = a.length; i < m; i++) {
-                c[i] = [];
-                for (var j = 0, q = b[0].length; j < q; j++) {
-                    c[i][j] = 0;
-                    for (var r = 0, n = b.length; r < n; r++) {
-                        c[i][j] += a[i][r] * b[r][j];
-                    }
-                }
-            }
-
-            return c;
         },
         
         setCssClasses: function(desc) {

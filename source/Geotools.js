@@ -1,4 +1,4 @@
-sGis.module('geotools', ['math'], function(math) {
+sGis.module('geotools', ['math', 'utils'], function(math, utils) {
     'use strict';
 
     var geotools = {};
@@ -237,9 +237,47 @@ sGis.module('geotools', ['math'], function(math) {
         return (q[0] <= Math.max(p[0], r[0]) && q[0] >= Math.min(p[0], r[0])) &&
             (q[1] <= Math.max(p[1], r[1]) && q[1] >= Math.min(p[1], r[1]));
     }
+    
+    geotools.transform = function(features, matrix, center) {
+        if (Array.isArray(features)) {
+            features.forEach(feature => transformFeature(feature, matrix, center));
+        } else {
+            transformFeature(features, matrix, center);
+        }
+    };
+    
+    geotools.rotate = function(features, angle, center) {
+        let sin = Math.sin(angle);
+        let cos = Math.cos(angle);
 
+        geotools.transform(features, [[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center);
+    };
 
+    geotools.scale = function(features, scale, center) {
+        geotools.transform(features, [[scale[0], 0, 0], [0, scale[1], 0], [0, 0, 1]], center);
+    };
+
+    geotools.move = function(features, translate) {
+        geotools.transform(features, [[1, 0 ,0], [0, 1, 1], [translate[0], translate[1], 1]], [0, 0]);
+    };
+    
+    function transformFeature(feature, matrix, center) {
+        let base = center.crs ? center.projectTo(feature.crs).position : center;
+        if (feature.rings) {
+            let rings = feature.rings;
+            transformRings(rings, matrix, base);
+            feature.rings = rings;
+        }
+    }
+    
+    function transformRings(rings, matrix, base) {
+        rings.forEach((ring, index) => {
+            math.extendCoordinates(ring, base);
+            let transformed = math.multiplyMatrix(ring, matrix);
+            math.collapseCoordinates(transformed, base);
+            rings[index] = transformed;
+        });
+    }
 
     return geotools;
 });
-

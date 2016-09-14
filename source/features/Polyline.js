@@ -90,7 +90,7 @@ sGis.module('feature.Polyline', [
             let xMin = Number.MAX_VALUE;
             let yMin = Number.MAX_VALUE;
             let xMax = Number.MIN_VALUE;
-            let yMax = Number.MAX_VALUE;
+            let yMax = Number.MIN_VALUE;
             
             this._rings.forEach(ring => {
                 ring.forEach(point => {
@@ -117,73 +117,9 @@ sGis.module('feature.Polyline', [
          */
         get coordinates() { return utils.copyArray(this._rings); }
         set coordinates(rings) { this.rings = utils.copyArray(rings); }
-
-        transform(matrix, center) {
-            if (center instanceof sGis.Point || center instanceof sGis.feature.Point) {
-                var basePoint = center.projectTo(this.crs),
-                    base = [basePoint.x, basePoint.y];
-            } else if (sGis.utils.isArray(center) && sGis.utils.isNumber(center[0]) && sGis.utils.isNumber(center[1])) {
-                base = [parseFloat(center[0]), parseFloat(center[1])];
-            } else if (center === undefined) {
-                base = this.centroid;
-            } else {
-                sGis.utils.error('Unknown format of center point: ' + center);
-            }
-            var coord = this.coordinates,
-                result = [];
-            for (var ring = 0, l = coord.length; ring < l; ring++) {
-                var extended = extendCoordinates(coord[ring], base),
-                    transformed = sGis.utils.multiplyMatrix(extended, matrix);
-                result[ring] = collapseCoordinates(transformed, base);
-            }
-
-            this.coordinates = result;
-            this.redraw();
-        }
-
-        rotate(angle, center) {
-            if (!sGis.utils.isNumber(angle)) sGis.utils.error('Number is expected but got ' + angle + ' instead');
-
-            var sin = Math.sin(angle),
-                cos = Math.cos(angle);
-
-            this.transform([[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center);
-        }
-
-        scale(scale, center) {
-            if (sGis.utils.isNumber(scale)) {
-                scale = [scale, scale];
-            } else if (!sGis.utils.isArray(scale)) {
-                sGis.utils.error('Number or array is expected but got ' + scale + ' instead');
-            }
-            this.transform([[parseFloat(scale[0]), 0, 0], [0, parseFloat(scale[1]), 0], [0, 0, 1]], center);
-        }
-
-        move(x, y) {
-            this.transform([[1, 0 ,0], [0, 1, 1], [x, y, 1]]);
-        }
     }
 
     utils.extend(Polyline.prototype, defaults);
-
-    //TODO: use sGis.utils.extendCoordinates
-    function extendCoordinates(coord, center) {
-        var extended = [];
-        for (var i = 0, l = coord.length; i < l; i++) {
-            extended[i] = [coord[i][0] - center[0], coord[i][1] - center[1], 1];
-        }
-        return extended;
-    }
-
-    //TODO: use sGis.utils.collapseCoordinates
-    function collapseCoordinates(extended, center) {
-        var coord = [];
-        for (var i = 0, l = extended.length; i < l; i++) {
-            coord[i] = [extended[i][0] + center[0], extended[i][1] + center[1]];
-        }
-        return coord;
-    }
-    
 
     return Polyline;
 

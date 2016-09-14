@@ -1,9 +1,10 @@
 sGis.module('symbol.polyline.Simple', [
     'utils',
+    'math',
     'Symbol',
     'render.Polyline',
     'serializer.symbolSerializer'
-], function(utils, Symbol, Polyline, symbolSerializer) {
+], function(utils, math, Symbol, Polyline, symbolSerializer) {
     
     'use strict';
 
@@ -35,11 +36,11 @@ sGis.module('symbol.polyline.Simple', [
             if (!feature.coordinates || !utils.isArray(feature.coordinates) || !utils.isArray(feature.coordinates[0])) return null;
             var projected = feature.crs.equals(crs) ? feature.rings : feature.projectTo(crs).rings;
             
-            return projected.map(ring => {
+            return math.simplifyCoordinates(projected.map(ring => {
                 return ring.map(point => {
                     return [point[0] / resolution, point[1] / -resolution];
                 });
-            });
+            }), 1);
         }
     }
 

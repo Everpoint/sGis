@@ -276,7 +276,7 @@ sGis.module('controls.Editor', [
 
             var xIndex = feature.xIndex === 0 ? 2 : feature.xIndex === 2 ? 0 : 1;
             var yIndex = feature.yIndex === 0 ? 2 : feature.yIndex === 2 ? 0 : 1;
-            var basePoint = this._transformControls[xIndex][yIndex].coordinates;
+            var basePoint = this._transformControls[xIndex][yIndex].position;
 
             var bbox = this._selectedFeature.bbox;
             var resolution = this._map.resolution;
@@ -288,7 +288,7 @@ sGis.module('controls.Editor', [
             var yScale = yIndex === 1 ? 1 : (height + (yIndex - 1) * sGisEvent.offset.y) / height;
             if (height < tolerance && yScale < 1) yScale = 1;
 
-            this._selectedFeature.scale([xScale, yScale], basePoint);
+            geotools.scale(this._selectedFeature, [xScale, yScale], basePoint);
             this._activeLayer.redraw();
             this._updateTransformControls();
         },
@@ -301,7 +301,7 @@ sGis.module('controls.Editor', [
             var alpha2 = sGisEvent.point.x === this._rotationBase[0] ? Math.PI / 2 : Math.atan2(sGisEvent.point.y - this._rotationBase[1], sGisEvent.point.x - this._rotationBase[0]);
             var angle = alpha2 - alpha1;
 
-            this._selectedFeature.rotate(angle, this._rotationBase);
+            geotools.rotate(this._selectedFeature, angle, this._rotationBase);
             this._activeLayer.redraw();
             this._updateTransformControls();
 
@@ -320,7 +320,7 @@ sGis.module('controls.Editor', [
                             if (i !== 1 || j !== 1) {
                                 var x = coordinates[0][0] + (coordinates[1][0] - coordinates[0][0]) * i / 2;
                                 var y = coordinates[0][1] + (coordinates[1][1] - coordinates[0][1]) * j / 2;
-                                controls[i][j].coordinates = [x, y];
+                                controls[i][j].position = [x, y];
                                 if (this.allowScaling) {
                                     controls[i][j].show();
                                 } else {
@@ -332,7 +332,7 @@ sGis.module('controls.Editor', [
                 }
 
                 if (controls.rotationControl) {
-                    controls.rotationControl.coordinates = [(coordinates[0][0] + coordinates[1][0]) / 2, coordinates[1][1]];
+                    controls.rotationControl.position = [(coordinates[0][0] + coordinates[1][0]) / 2, coordinates[1][1]];
                     if (this.allowRotation) {
                         controls.rotationControl.show();
                     } else {
@@ -559,7 +559,7 @@ sGis.module('controls.Editor', [
 
                 this.fire('featurePointAdd', {feature: feature});
             } else {
-                feature.move(-sGisEvent.offset.x, -sGisEvent.offset.y);
+                geotools.move(feature, [-sGisEvent.offset.x, -sGisEvent.offset.y]);
                 this.fire('featureMove', {feature: feature});
             }
 
