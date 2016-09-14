@@ -194,9 +194,9 @@ sGis.module('TileLayer', [
 
         _updateFeatures() {
             Object.keys(this._tiles).forEach(key => {
-                let renders = this._tiles[key].getRenderCache();
-                if (!renders || !renders[0]) return;
-                let image = renders[0].getCache();
+                let cache = this._tiles[key].getRenderCache();
+                if (!cache || !cache.renders || !cache.renders[0]) return;
+                let image = cache.renders[0].getCache();
                 if (image) image.style.opacity = this._symbol.opacity;
             });
         }
