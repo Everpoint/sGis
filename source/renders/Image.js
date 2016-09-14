@@ -33,6 +33,8 @@ sGis.module('render.Image', [
             node.onerror = function() { callback('Failed to load image', null); };
             
             node.src = this._src;
+            
+            this._node = node;
         }
 
         /**
@@ -51,6 +53,8 @@ sGis.module('render.Image', [
             var point = new sGis.Point([position.x * resolution, position.y * resolution], this._bbox.crs);
             return this._bbox.contains(point);
         }
+        
+        getCache() { return this._node; }
     }
 
     /**

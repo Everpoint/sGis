@@ -164,7 +164,7 @@ sGis.module('TileLayer', [
             this._opacity = opacity;
             this._symbol.opacity = opacity;
 
-            this._clearFeaturesCache();
+            this._updateFeatures();
 
             this.fire('propertyChange', {property: 'opacity'});
         }
@@ -181,7 +181,7 @@ sGis.module('TileLayer', [
         get transitionTime() { return this._transitionTime; }
         set transitionTime(/** Number */ time) {
             this._transitionTime = this._symbol.transitionTime = time;
-            this._clearFeaturesCache();
+            this._updateFeatures();
 
             this.fire('propertyChange', {property: 'transitionTime'});
         }
@@ -189,6 +189,15 @@ sGis.module('TileLayer', [
         _clearFeaturesCache() {
             Object.keys(this._tiles).forEach((key) => {
                 this._tiles[key].redraw();
+            });
+        }
+
+        _updateFeatures() {
+            Object.keys(this._tiles).forEach(key => {
+                let renders = this._tiles[key].getRenderCache();
+                if (!renders || !renders[0]) return;
+                let image = renders[0].getCache();
+                if (image) image.style.opacity = this._symbol.opacity;
             });
         }
     }

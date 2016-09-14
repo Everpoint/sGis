@@ -171,8 +171,8 @@ sGis.module('Map', [
                 for (var i = 0; i < levels.length; i++) {
                     var ratio = currResolution / tileScheme.levels[levels[i]].resolution;
                     if (ratio > 0.9) {
-                        var newLevel = parseInt(i) + k;
-                        while (!tileScheme.levels[newLevel]) {
+                        var newLevel = parseInt(levels[i]) + k;
+                        while (!tileScheme.levels[newLevel] && newLevel > parseInt(levels[0]) && newLevel < parseInt(levels[levels.length - 1])) {
                             newLevel += k > 0 ? -1 : 1;
                         }
                         resolution = tileScheme.levels[newLevel].resolution;
@@ -183,6 +183,8 @@ sGis.module('Map', [
             } else {
                 resolution = currResolution * Math.pow(2, -k);
             }
+
+            resolution = Math.min(Math.max(resolution, this.minResolution || 0), this.maxResolution || Number.MAX_VALUE);
 
             this.animateSetResolution(resolution, basePoint);
         }
