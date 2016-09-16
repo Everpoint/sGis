@@ -1,13 +1,12 @@
 sGis.module('Map', [
     'utils',
     'Crs',
-    'Event',
     'EventHandler',
     'Point',
     'Bbox',
     'LayerGroup',
     'feature.Point'
-], function(utils, Crs, Event, EventHandler, Point, Bbox, PointF) {
+], function(utils, Crs, EventHandler, Point, Bbox, PointF) {
     'use strict';
 
     let defaults = {

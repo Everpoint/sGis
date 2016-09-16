@@ -1,7 +1,7 @@
 sGis.module('painter.domPainter.EventDispatcher', [
-    'Event',
+    'event',
     'utils'
-], (Event, utils) => {
+], (ev, utils) => {
 
     'use strict';
 
@@ -60,27 +60,27 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
 
         _setListeners(baseNode) {
-            Event.add(baseNode, 'mousedown', this._onmousedown.bind(this));
-            Event.add(baseNode, 'wheel', this._onwheel.bind(this));
-            Event.add(baseNode, 'click', this._onclick.bind(this));
-            Event.add(baseNode, 'dblclick', this._ondblclick.bind(this));
-            Event.add(baseNode, 'mousemove', this._onmousemove.bind(this));
-            Event.add(baseNode, 'mouseout', this._onmouseout.bind(this));
-            Event.add(baseNode, 'contextmenu', this._oncontextmenu.bind(this));
+            ev.add(baseNode, 'mousedown', this._onmousedown.bind(this));
+            ev.add(baseNode, 'wheel', this._onwheel.bind(this));
+            ev.add(baseNode, 'click', this._onclick.bind(this));
+            ev.add(baseNode, 'dblclick', this._ondblclick.bind(this));
+            ev.add(baseNode, 'mousemove', this._onmousemove.bind(this));
+            ev.add(baseNode, 'mouseout', this._onmouseout.bind(this));
+            ev.add(baseNode, 'contextmenu', this._oncontextmenu.bind(this));
 
-            Event.add(baseNode, 'touchstart', this._ontouchstart.bind(this));
-            Event.add(baseNode, 'touchmove', this._ontouchmove.bind(this));
-            Event.add(baseNode, 'touchend', this._ontouchend.bind(this));
+            ev.add(baseNode, 'touchstart', this._ontouchstart.bind(this));
+            ev.add(baseNode, 'touchmove', this._ontouchmove.bind(this));
+            ev.add(baseNode, 'touchend', this._ontouchend.bind(this));
         }
 
         _onmousedown(event) {
             if (!isFormElement(event.target)) {
                 this._clickCatcher = true;
                 if (event.which === 1) {
-                    this._dragPosition = Event.getMouseOffset(event.currentTarget, event);
+                    this._dragPosition = ev.getMouseOffset(event.currentTarget, event);
 
-                    Event.add(document, 'mousemove', this._onDocumentMousemove);
-                    Event.add(document, 'mouseup', this._onDocumentMouseup);
+                    ev.add(document, 'mousemove', this._onDocumentMousemove);
+                    ev.add(document, 'mouseup', this._onDocumentMouseup);
 
                     document.ondragstart = function() {return false;};
                     document.body.onselectstart = function() {return false;};
@@ -91,7 +91,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
 
         _onDocumentMousemove(event) {
             var map = this._master.map;
-            var mousePosition = Event.getMouseOffset(this._master.wrapper, event);
+            var mousePosition = ev.getMouseOffset(this._master.wrapper, event);
             var dxPx = this._dragPosition.x - mousePosition.x;
             var dyPx = this._dragPosition.y - mousePosition.y;
             var resolution = map.resolution;
@@ -127,8 +127,8 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
 
         _clearDocumentListeners() {
-            Event.remove(document, 'mousemove', this._onDocumentMousemove);
-            Event.remove(document, 'mouseup', this._onDocumentMouseup);
+            ev.remove(document, 'mousemove', this._onDocumentMousemove);
+            ev.remove(document, 'mouseup', this._onDocumentMouseup);
             document.ondragstart = null;
             document.body.onselectstart = null;
         }
@@ -138,8 +138,8 @@ sGis.module('painter.domPainter.EventDispatcher', [
             if (time - this._wheelTimer > MIN_WHEEL_DELAY) {
                 this._wheelTimer = time;
                 var map = this._master.map;
-                var wheelDirection = Event.getWheelDirection(event);
-                var mouseOffset = Event.getMouseOffset(event.currentTarget, event);
+                var wheelDirection = ev.getWheelDirection(event);
+                var mouseOffset = ev.getMouseOffset(event.currentTarget, event);
 
                 map.zoom(wheelDirection, this._master.getPointFromPxPosition(mouseOffset.x, mouseOffset.y));
             }
@@ -149,7 +149,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
 
         _getMouseEventDescription(event) {
             var map = this._master.map;
-            var mouseOffset = Event.getMouseOffset(event.currentTarget, event);
+            var mouseOffset = ev.getMouseOffset(event.currentTarget, event);
             var point = this._master.getPointFromPxPosition(mouseOffset.x, mouseOffset.y);
             var position = {x: point.x / map.resolution, y: - point.y / map.resolution};
             return {map: map, mouseOffset: mouseOffset, ctrlKey: event.ctrlKey, point: point, position: position, browserEvent: event};
@@ -195,7 +195,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 var dxPx = this._touchHandler.dragPrevPosition[touch.identifier].x - touch.pageX;
                 var dyPx = this._touchHandler.dragPrevPosition[touch.identifier].y - touch.pageY;
                 var resolution = map.resolution;
-                var touchOffset = Event.getMouseOffset(event.currentTarget, touch);
+                var touchOffset = ev.getMouseOffset(event.currentTarget, touch);
                 var point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
                 var position = {x: point.x / resolution, y: 0 - point.y / resolution};
 

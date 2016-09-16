@@ -2,8 +2,9 @@
     'utils',
     'Control',
     'Map',
-    'Layer'
-], function(utils, Control, Map, Layer) {
+    'Layer',
+    'event'
+], function(utils, Control, Map, Layer, ev) {
     'use strict';
 
     var BaseLayerSwitch = function(painter, options) {
@@ -240,7 +241,7 @@
             container.className = this.activeCss;
 
             var self = this;
-            sGis.Event.add(container, 'click', function(event) {
+            ev.add(container, 'click', function(event) {
                 if (self.useToggle) {
                     if (self._inactiveLayerBox.style.maxWidth === '0px') {
                         self._showInactiveLayerBox();
@@ -258,7 +259,7 @@
             var container = document.createElement('div');
             container.className = this.containerCss;
 
-            sGis.Event.add(container, 'dblclick', function(event) {
+            ev.add(container, 'dblclick', function(event) {
                 event.stopPropagation();
             });
 

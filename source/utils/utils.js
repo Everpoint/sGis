@@ -1,6 +1,6 @@
 sGis.module('utils', [
-    'Event'
-], function(Event) {
+    'event'
+], function(ev) {
     'use strict';
 
     /**
@@ -288,7 +288,7 @@ sGis.module('utils', [
     if (document.body) {
         setCssRules();
     } else {
-        sGis.Event.add(document, 'DOMContentLoaded', setCssRules);
+        ev.add(document, 'DOMContentLoaded', setCssRules);
     }
 
     function setCssRules() {
