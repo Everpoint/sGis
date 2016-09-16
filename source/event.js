@@ -4,7 +4,18 @@ sGis.module('event', [], function() {
 
     let id = 0;
 
+    /**
+     * Utility methods for cross-browser DOM event handling
+     * @namespace sGis.event
+     */
     let ev = {
+        /**
+         * Cross browser DOM event attachment
+         * @param {HTMLElement} element - target element
+         * @param {String} type - name of the event
+         * @param {Function} handler - event handler
+         * @returns {Function} - attached handler
+         */
         add: function (element, type, handler) {
             if (type === 'wheel') type = getWheelEventType();
             if (!handler.guid) handler.guid = ++id;
@@ -31,6 +42,12 @@ sGis.module('event', [], function() {
             return handler;
         },
 
+        /**
+         * Removes an event handler.
+         * @param {HTMLElement} element - target element
+         * @param {String} type - event name
+         * @param {Function} [handler] - handler to be removed. If not specified all handlers will be removed.
+         */
         remove: function (element, type, handler) {
             var handlers = element.events && element.events[type];
             if (!handlers) return;
@@ -132,7 +149,11 @@ sGis.module('event', [], function() {
         }
     }
 
-
+    /**
+     * Returns cross-browser consistent value of wheel rolling direction (-1 or 1).
+     * @param {Event} e
+     * @returns {number}
+     */
     ev.getWheelDirection = function (e) {
         var wheelData = (e.detail ? e.detail * -1 : e.wheelDelta / 40) || (e.deltaY * -1);
         if (wheelData > 0) {
@@ -143,11 +164,22 @@ sGis.module('event', [], function() {
         return wheelData;
     };
 
+    /**
+     * Returns offset of a mouse event relative to the target element
+     * @param {HTMLElement} target
+     * @param {MouseEvent} e
+     * @returns {{x: Number, y: Number}}
+     */
     ev.getMouseOffset = function (target, e) {
         var docPos = ev.getPosition(target);
         return {x: e.pageX - docPos.x, y: e.pageY - docPos.y};
     };
 
+    /**
+     * Returns offset of an element relative to the viewport
+     * @param {HTMLElement} e
+     * @returns {{x: Number, y: Number}}
+     */
     ev.getPosition = function (e) {
         var clientRect = e.getBoundingClientRect(),
             x = (window.pageXOffset !== undefined) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft,
