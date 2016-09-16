@@ -97,7 +97,7 @@ sGis.module('Bbox', [
          */
         get yMax() { return this._p[3]; }
         set yMax(value) {
-            if (value < this.yMin) sGis.utils.error('Max value cannot be lower than the min value');
+            if (value < this.yMin) utils.error('Max value cannot be lower than the min value');
             this._p[3] = value;
         }
 
@@ -106,7 +106,7 @@ sGis.module('Bbox', [
          */
         get xMin() { return this._p[0]; }
         set xMin(value) {
-            if (value > this.xMax) sGis.utils.error('Min value cannot be higher than the max value');
+            if (value > this.xMax) utils.error('Min value cannot be higher than the max value');
             this._p[0] = value;
         }
 
@@ -115,7 +115,7 @@ sGis.module('Bbox', [
          */
         get yMin() { return this._p[1]; }
         set yMin(value) {
-            if (value > this.yMax) sGis.utils.error('Min value cannot be higher than the max value');
+            if (value > this.yMax) utils.error('Min value cannot be higher than the max value');
             this._p[1] = value;
         }
 
