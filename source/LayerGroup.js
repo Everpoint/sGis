@@ -120,12 +120,14 @@ sGis.module('LayerGroup', [
             index = index > length ? length : index < 0 && index < -length ? -length : index;
             if (index < 0) index = length + index;
     
-    
-    
             this._layers.splice(currIndex, 1);
             this._layers.splice(index, 0, layer);
             var event = added ? 'layerAdd' : 'layerOrderChange';
             this.fire(event, {layer: layer});
+        }
+        
+        moveLayerToTop(layer) {
+            this.insertLayer(layer, -1);
         }
 
         /**

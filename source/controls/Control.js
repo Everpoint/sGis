@@ -49,7 +49,7 @@ sGis.module('Control', [
             set: function(layer) {
                 if (!(layer instanceof sGis.FeatureLayer)) sGis.utils.error('Expected sGis.FeatureLayer instance but got ' + layer + ' instead');
                 if (this.isActive) sGis.utils.error('Cannot set active layer for an acitve control');
-                if (this._map && this._map.getLayerIndex(layer) === -1) sGis.utils.error('The layer does not belong to control\'s map');
+                if (this._map && this._map.indexOf(layer) === -1) sGis.utils.error('The layer does not belong to control\'s map');
                 this._activeLayer = layer;
             }
         },

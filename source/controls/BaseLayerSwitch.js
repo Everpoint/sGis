@@ -50,7 +50,7 @@
             this._layerDescriptions.push({ layer: layer, imageSrc: imageSrc });
             this._addLayerToImageBox(layer);
 
-            if (this._map.getLayerIndex(layer) !== -1) {
+            if (this._map.indexOf(layer) !== -1) {
                 this.activeLayer = layer;
             }
 
@@ -401,11 +401,11 @@
                     if (indexInList === -1) sGis.utils.error('The layer is not in the list');
 
                     if (this._activeLayer) {
-                        indexOnMap = this._map.getLayerIndex(this._activeLayer);
+                        indexOnMap = this._map.indexOf(this._activeLayer);
                         this._map.removeLayer(this._activeLayer);
                     }
 
-                    this._map.moveLayerToIndex(layer, indexOnMap);
+                    this._map.insertLayer(layer, indexOnMap);
                     this._activeLayer = layer;
 
                     this._setActiveLayerImage();

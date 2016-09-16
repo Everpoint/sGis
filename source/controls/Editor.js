@@ -164,7 +164,7 @@ sGis.module('controls.Editor', [
                 this._removeSelectedListeners();
                 this._removeSnappingLayer();
                 this._selectedFeature = null;
-                if (this._map.getLayerIndex(this._activeLayer) !== -1) this._activeLayer.redraw();
+                if (this._map.indexOf(this._activeLayer) !== -1) this._activeLayer.redraw();
 
                 this.fire('featureDeselect', {feature: feature});
             }
@@ -190,7 +190,7 @@ sGis.module('controls.Editor', [
             if (this._selectedFeature instanceof sGis.feature.Poly) {
                 this._updateTransformControls();
             }
-            this._map.moveLayerToIndex(this._snappingLayer, Number.MAX_VALUE);
+            this._map.insertLayer(this._snappingLayer, Number.MAX_VALUE);
         },
 
         _removeSnappingLayer: function() {

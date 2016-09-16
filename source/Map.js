@@ -6,7 +6,7 @@ sGis.module('Map', [
     'Bbox',
     'LayerGroup',
     'feature.Point'
-], function(utils, Crs, EventHandler, Point, Bbox, PointF) {
+], function(utils, Crs, EventHandler, Point, Bbox, LayerGroup, PointF) {
     'use strict';
 
     let defaults = {
@@ -16,12 +16,11 @@ sGis.module('Map', [
         _animationTime: 300,
         _tileScheme: null
     };
-    
-    
-    
+
     /**
      *
-     * @extends sGis.EventHandler
+     * @alias sGis.Map
+     * @extends sGis.LayerGroup
      * @param {Object} [options]
      * @param {sGis.Crs} [options.crs=sGis.CRS.webMercator] - setting a crs that cannot be converted into WGS resets default values of position to [0, 0].
      * @param {sGis.Point|sGis.feature.Point|Array} [options.position] - the start position of the map. If the array is specified as [x, y], it should be in map crs. By default center it is of Moscow.
@@ -30,7 +29,7 @@ sGis.module('Map', [
      * @param {sGis.Layer} [options.layers[]] - the list of layers that will be initially on the map. The first in the list will be displayed at the bottom.
      * @constructor
      */
-    class Map extends EventHandler {
+    class Map extends LayerGroup {
         constructor(properties) {
             super();
             this._initLayerGroup();
@@ -60,66 +59,6 @@ sGis.module('Map', [
             this._layerGroup.on('layerAdd layerRemove layerOrderChange', function(sGisEvent) {
                 self.forwardEvent(sGisEvent);
             });
-        }
-
-        /**
-         * Adds a layer to the map
-         * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
-         * @fires sGis.Map#layerAdd
-         */
-        addLayer (layer) {
-            this._layerGroup.addLayer(layer);
-        }
-        
-        /**
-         * Adds a layer to the map
-         * @param {sGis.Layer} layer - the layer to be added. If the layer is already on the map, an exception will be thrown.
-         * @param {number} index - inserted index
-         * @fires sGis.Map#layerAdd
-         * @fires sGis.Map#layerOrderChange
-         */
-        insertLayer (layer, index) {
-            this._layerGroup.insertLayer(layer, index);
-        }
-
-        /**
-         * Removes the layer from the map
-         * @param {sGis.Layer} layer - the layer to be removed. If the layer is not on the map, an exception will be thrown.
-         * @fires sGis.Map#layerRemove
-         */
-        removeLayer (layer) {
-            this._layerGroup.removeLayer(layer);
-        }
-
-        /**
-         * Changes order of layers, moves layer to the specified index. If the layer is not on the map, it will be added to the map.
-         * @param {sGis.Layer} layer - layer to be moved.
-         * @param {Number} index - new index of the layer.
-         * @fires sGis.Map#layerOrderChange - in case the layer is on the map
-         * @fires sGis.Map#layerAdd - in case the layer is not on the map
-         * @deprecated
-         */
-        moveLayerToIndex (layer, index) {
-            this._layerGroup.insertLayer(layer, index);
-        }
-
-        /**
-         * Moves the layer to the end of the layer list. If the layer is not on the map, it will be added to the map.
-         * @param {sGis.Layer} layer - layer to be moved.
-         * @fires sGis.Map#layerOrderChange - in case the layer is on the map
-         * @fires sGis.Map#layerAdd - in case the layer is not on the map
-         */
-        moveLayerToTop (layer) {
-            this.moveLayerToIndex(layer, -1);
-        }
-
-        /**
-         * Returns the order of the layer on the map
-         * @param {type} layer
-         * @returns {int}
-         */
-        getLayerIndex (layer) {
-            return this._layerGroup.indexOf(layer);
         }
 
         /**
@@ -296,29 +235,11 @@ sGis.module('Map', [
         setResolution (resolution, basePoint, doNotAdjust) {
             this.setPosition(this._getScaledPosition(this.resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
         }
-
-        getLayers (recurse) {
-            return this._layerGroup.getLayers(recurse);
-        }
     }
     
     utils.extend(Map.prototype, defaults);
 
     Object.defineProperties(Map.prototype, {
-        /**
-         * Returns a copy of the list of layers on the map. The first layer in the list is displayed on the bottom.<br>
-         * If assigned, first removes all layers from the map (triggering "layerRemove" event) and then adds layers one by one (triggering "layerAdd" event for each).
-         */
-        layers: {
-            get: function() {
-                return this._layerGroup.layers;
-            },
-
-            set: function(layers) {
-                this._layerGroup.layers = layers;
-            }
-        },
-
         /**
          * Sets or returns the CRS of the map. If the old crs cannot be projected to the new one, the position and resolution of the map are discharged.
          */
