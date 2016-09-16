@@ -8,15 +8,11 @@ sGis.module('utils', [
      */
     var utils = {
         /**
-         * If the handler sGis.onerror is set, calls this handler with 'message' parameter. Otherwise throws an exception with 'message' description
+         * Throws an exception with given message. If you need to handle all errors in one place, redefined this method to your needed handler.
          * @param message
          */
         error: function(message) {
-            if (sGis.onerror) {
-                sGis.onerror(message);
-            } else {
-                throw new Error(message);
-            }
+            throw new Error(message);
         },
 
         /**
