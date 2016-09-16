@@ -62,13 +62,13 @@ sGis.module('feature.Point', [
     }
 
     /**
-     * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
-     * @member symbol
-     * @memberof sGis.feature.Point
-     * @type {sGis.Symbol}
-     * @instance
-     * @default new sGis.symbol.point.Point()
-     */
+    * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
+    * @member symbol
+    * @memberof sGis.feature.Point
+    * @type {sGis.Symbol}
+    * @instance
+    * @default new sGis.symbol.point.Point()
+    */
 
     PointF.prototype._symbol = new PointSymbol(); 
 

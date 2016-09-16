@@ -17,6 +17,14 @@
  */
 
 /**
+ * Returns a copy of the object, projected to the specified coordinate system.
+ * @method projectTo
+ * @instance
+ * @memberof sGis.IPoint
+ * @returns {sGis.IPoint}
+ */
+
+/**
  * Position of the point with specified coordinate system.
  * @member {sGis.Point} point
  * @instance

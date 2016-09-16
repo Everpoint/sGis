@@ -113,7 +113,7 @@ sGis.module('feature.Poly', [
          * Sets a new value for a point in the feature.
          * @param {Number} ringN - index of the contour of the point.
          * @param {Number} pointN - index of the point in the contour.
-         * @param {Position|sGis.Point} point - new coordinates
+         * @param {Position|sGis.IPoint} point - new coordinates
          */
         setPoint(ringN, pointN, point) {
             pointN = Math.min(pointN, this._rings[ringN].length);
@@ -125,7 +125,7 @@ sGis.module('feature.Poly', [
          * Inserts a new point to the given position.
          * @param {Number} ringN - index of the contour the point will be inserted into.
          * @param {Number} pointN - index of the point to insert to.
-         * @param {Position|sGis.Point} point - point to be inserted
+         * @param {Position|sGis.IPoint} point - point to be inserted
          */
         insertPoint(ringN, pointN, point) {
             pointN = Math.min(pointN, this._rings[ringN].length);
