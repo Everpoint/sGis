@@ -267,17 +267,25 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
             let rings = feature.rings;
             transformRings(rings, matrix, base);
             feature.rings = rings;
+        } else if (feature.points) {
+            feature.points = transformRing(feature.points, matrix, base);
+        } else if (feature.position) {
+            feature.position = transformRing([feature.position], matrix, base)[0];
         }
     }
     
     function transformRings(rings, matrix, base) {
         rings.forEach((ring, index) => {
-            math.extendCoordinates(ring, base);
-            let transformed = math.multiplyMatrix(ring, matrix);
-            math.collapseCoordinates(transformed, base);
-            rings[index] = transformed;
+            rings[index] = transformRing(ring, matrix, base);
         });
     }
-
+    
+    function transformRing(ring, matrix, base) {
+        math.extendCoordinates(ring, base);
+        let transformed = math.multiplyMatrix(ring, matrix);
+        math.collapseCoordinates(transformed, base);
+        return transformed;
+    }
+    
     return geotools;
 });
