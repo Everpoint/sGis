@@ -32,7 +32,6 @@ sGis.module('Map', [
     class Map extends LayerGroup {
         constructor(properties) {
             super();
-            this._initLayerGroup();
             if (properties && properties.crs) this.crs = properties.crs;
             utils.init(this, properties);
             
@@ -50,14 +49,6 @@ sGis.module('Map', [
                         map._changeTimer = null;
                     };
                 })(map), CHANGE_END_DELAY);
-            });
-        }
-        
-        _initLayerGroup () {
-            this._layerGroup = new sGis.LayerGroup();
-            var self = this;
-            this._layerGroup.on('layerAdd layerRemove layerOrderChange', function(sGisEvent) {
-                self.forwardEvent(sGisEvent);
             });
         }
 
@@ -311,7 +302,7 @@ sGis.module('Map', [
                 if (this._tileScheme !== null) {
                     return this._tileScheme;
                 } else {
-                    var layers = this.layers;
+                    var layers = this.getLayers(true);
                     var tileScheme = null;
                     for (var i = 0, len = layers.length; i < len; i++) {
                         if (layers[i] instanceof sGis.TileLayer) {
@@ -332,23 +323,10 @@ sGis.module('Map', [
          */
         maxResolution: {
             get: function() {
-                if (this._maxResolution) {
-                    return this._maxResolution;
-                } else {
-                    var tileScheme = this.tileScheme;
-                    if (tileScheme && tileScheme.levels) {
-                        var maxResolution = 0;
-                        var levels = Object.keys(tileScheme.levels);
-                        for (var i = 0; i < levels.length; i++) {
-                            maxResolution = Math.max(maxResolution, tileScheme.levels[levels[i]].resolution);
-                        }
-                        return maxResolution;
-                    }
-                }
+                return this._maxResolution || this.tileScheme && this.tileScheme.maxResolution;
             },
             set: function(resolution) {
                 if (resolution !== null) {
-                    if ((!sGis.utils.isNumber(resolution) || resolution <= 0)) sGis.utils.error('Positive number is expected but got ' + resolution + ' instead');
                     var minResolution = this.minResolution;
                     if (resolution < minResolution) sGis.utils.error('maxResolution cannot be less then minResolution');
                 }
@@ -359,16 +337,15 @@ sGis.module('Map', [
 
         minResolution: {
             get: function() {
-                var tileScheme = this.tileScheme;
-                if (tileScheme) {
-                    var minResolution = Infinity;
-                    var levels = Object.keys(tileScheme.levels);
-                    for (var i = 0; i < levels.length; i++) {
-                        minResolution = Math.min(minResolution, tileScheme.levels[levels[i]].resolution);
-                    }
-
-                    return minResolution;
+                return this._minResolution || this.tileScheme && this.tileScheme.minResolution;
+            },
+            set: function(resolution) {
+                if (resolution !== null) {
+                    var maxResolution = this.maxResolution;
+                    if (resolution < maxResolution) sGis.utils.error('maxResolution cannot be less then minResolution');
                 }
+                this._maxResolution = resolution;
+                if (this.resolution > this.minResolution) this.resolution = resolution;
             }
         }
     });

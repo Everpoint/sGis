@@ -30,7 +30,7 @@ sGis.module('TileScheme', [
             return keys[i-1];
         }
 
-        maxResolution() {
+        get maxResolution() {
             var maxResolution = 0;
             var levels = Object.keys(this.levels);
             for (var i = 0; i < levels.length; i++) {
@@ -39,7 +39,7 @@ sGis.module('TileScheme', [
             return maxResolution;
         }
 
-        minResolution() {
+        get minResolution() {
             var minResolution = Infinity;
             var levels = Object.keys(this.levels);
             for (var i = 0; i < levels.length; i++) {
