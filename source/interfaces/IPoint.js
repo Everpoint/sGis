@@ -4,45 +4,34 @@
 
 /**
  * Position of the point given in object's own coordinate system in [x, y] format.
- * @member {Position} position
- * @instance
- * @memberof sGis.IPoint
+ * @member {Position} sGis.IPoint#position
  */
 
 /**
  * Object's coordinate system.
- * @member {sGis.Crs} crs
- * @instance
- * @memberof sGis.IPoint
+ * @member {sGis.Crs} sGis.IPoint#crs
  */
 
 /**
  * Returns a copy of the object, projected to the specified coordinate system.
- * @method projectTo
- * @instance
- * @memberof sGis.IPoint
+ * @method
+ * @name sGis.IPoint#projectTo
  * @returns {sGis.IPoint}
  */
 
 /**
  * Position of the point with specified coordinate system.
- * @member {sGis.Point} point
- * @instance
- * @memberof sGis.IPoint
+ * @member {sGis.Point} sGis.IPoint#point
  */
 
 /**
  * X coordinate
- * @member {Number} x
- * @instance
- * @memberof sGis.IPoint
+ * @member {Number} sGis.IPoint#x
  */
 
 /**
  * Y coordinate
- * @member {Number} y
- * @instance
- * @memberof sGis.IPoint
+ * @member {Number} sGis.IPoint#y
  */
 
 
