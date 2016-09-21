@@ -86,42 +86,25 @@ sGis.module('Map', [
         }
 
         zoom (k, basePoint) {
-            var tileScheme = this.tileScheme;
+            let tileScheme = this.tileScheme;
+            let currResolution = this._animationTarget ? this._animationTarget[1] : this.resolution;
 
-            if (this._animationTarget) {
-                var currResolution = this._animationTarget[1];
-            } else {
-                currResolution = this.resolution;
-            }
-
-            var resolution;
+            let resolution;
             if (tileScheme) {
-                var levels = Object.keys(tileScheme.levels);
-                for (var i = 0; i < levels.length; i++) {
-                    var ratio = currResolution / tileScheme.levels[levels[i]].resolution;
-                    if (ratio > 0.9) {
-                        var newLevel = parseInt(levels[i]) + k;
-                        while (!tileScheme.levels[newLevel] && newLevel > parseInt(levels[0]) && newLevel < parseInt(levels[levels.length - 1])) {
-                            newLevel += k > 0 ? -1 : 1;
-                        }
-                        resolution = tileScheme.levels[newLevel].resolution;
-                        break;
-                    }
-                }
-                if (!resolution) resolution = tileScheme.levels[levels[i]] && tileScheme.levels[levels[i]].resolution || currResolution;
+                let level = tileScheme.getLevel(currResolution) + (k > 0 ? -1 : 1);
+                resolution = tileScheme.levels[level] ? tileScheme.levels[level].resolution : currResolution;
             } else {
                 resolution = currResolution * Math.pow(2, -k);
             }
 
             resolution = Math.min(Math.max(resolution, this.minResolution || 0), this.maxResolution || Number.MAX_VALUE);
-
             this.animateSetResolution(resolution, basePoint);
         }
 
         adjustResolution () {
-            var resolution = this.resolution;
-            var newResolution = this.getAdjustedResolution(resolution);
-            var ratio = newResolution / resolution;
+            let resolution = this.resolution;
+            let newResolution = this.getAdjustedResolution(resolution);
+            let ratio = newResolution / resolution;
             if (ratio > 1.1 || ratio < 0.9) {
                 this.animateSetResolution(newResolution);
                 return true;
@@ -132,22 +115,8 @@ sGis.module('Map', [
         }
 
         getAdjustedResolution (resolution) {
-            var tileScheme = this.tileScheme;
-            if (tileScheme) {
-                var minDifference = Infinity;
-                var index;
-                var levels = Object.keys(tileScheme.levels);
-                for (var i = 0; i < levels.length; i++) {
-                    var difference = Math.abs(resolution - tileScheme.levels[levels[i]].resolution);
-                    if (difference < minDifference) {
-                        minDifference = difference;
-                        index = levels[i];
-                    }
-                }
-                return tileScheme.levels[index].resolution;
-            } else {
-                return resolution;
-            }
+            if (!this.tileScheme) return resolution;
+            return this.tileScheme.getAdjustedResolution(resolution);
         }
 
         /**

@@ -55,5 +55,24 @@ describe('TileScheme', () => {
             expect(scheme.getLevel(10 + sGis.math.tolerance/2)).toBe(0);
         });
     });
+    
+    describe('resolution limits', () => {
+        let scheme;
+        beforeEach(() => {
+            scheme = new sGis.TileScheme({levels: [
+                { resolution: 10 },
+                { resolution: 20 },
+                { resolution: 40 }
+            ]});
+        });
+        
+        it('.maxResolution should return maximum resolution', () => {
+            expect(scheme.maxResolution).toBe(40);
+        });
+        
+        it('.minResolution should return minimum resolution', () => {
+            
+        });
+    });
 
 });

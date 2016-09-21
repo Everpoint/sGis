@@ -89,6 +89,8 @@ sGis.module('TileLayer', [
             bbox = bbox.projectTo(ownCrs);
 
             var layerResolution = this.tileScheme.levels[level].resolution;
+            if (layerResolution * 2 < resolution) return [];
+            
             var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
             var xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
             var yStartIndex = Math.floor((this.tileScheme.origin.y - bbox.p[1].y) / this.tileHeight / layerResolution);
@@ -101,11 +103,11 @@ sGis.module('TileLayer', [
 
                 for (var yIndex = yStartIndex; yIndex < yEndIndex; yIndex++) {
                     var yIndexAdj = this.cycleY ? this._getAdjustedIndex(yIndex, level) : yIndex;
-                    var tileId = TileLayer.getTileId(level, xIndex, yIndex);
+                    var tileId = TileLayer.getTileId(this.tileScheme.levels[level].zIndex, xIndex, yIndex);
 
                     if (!tiles[tileId]) {
                         var imageBbox = this._getTileBbox(level, xIndex, yIndex);
-                        var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, level);
+                        var tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, this.tileScheme.levels[level].zIndex);
                         tiles[tileId] = new ImageF(imageBbox, { src: tileUrl, symbol: this._symbol, crs: this.crs });
                     }
 
