@@ -8,26 +8,22 @@ sGis.module('TileScheme', [
      * @alias sGis.TileScheme
      */
     class TileScheme {
-        constructor(parameters) {
-            utils.extend(this, parameters);
+        constructor(parameters = {}) {
+            utils.init(this, parameters, true);
+        }
+
+        get levels() { return this._levels; }
+        set levels(levels) {
+            this._levels = levels.sort((a, b) => a.resolution - b.resolution);
         }
 
         getLevel(resolution) {
-            if (!this.levels) return -1;
-            var keys = Object.keys(this.levels);
-            for (var i = 0; i < keys.length; i++) {
-                var level = this.levels[keys[i]];
-                if (resolution > level.resolution + math.tolerance) {
-                    if (keys[i] === '0') {
-                        return resolution / level.resolution > 2 ? -1 : 0;
-                    }
-                    return keys[i] - 1;
-                }
+            if (!this.levels) utils.error('Tile scheme levels are not set');
+
+            for (var i = 0; i < this.levels.length; i++) {
+                if (resolution <= this.levels[i].resolution + math.tolerance) return i;
             }
-
-            if (this.levels[keys[i-1]].resolution / resolution > 2) return -1;
-
-            return keys[i-1];
+            return i-1;
         }
 
         get maxResolution() {
@@ -48,6 +44,8 @@ sGis.module('TileScheme', [
 
             return minResolution;
         }
+        
+        
     }
 
     var defaultLevels = [{
