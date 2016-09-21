@@ -51,6 +51,7 @@ sGis.module('FeatureLayer', [
             } else {
                 this._features.push(features);
                 this.fire('featureAdd', {feature: features});
+                this.redraw();
             }
         }
 
@@ -65,6 +66,7 @@ sGis.module('FeatureLayer', [
             if (index === -1) utils.error('The feature does not belong to the layer');
             this._features.splice(index, 1);
             this.fire('featureRemove', {feature: feature});
+            this.redraw();
         }
 
         /**
@@ -85,6 +87,7 @@ sGis.module('FeatureLayer', [
             if (index !== -1) {
                 this._features.splice(index, 1);
                 this._features.push(feature);
+                this.redraw();
             }
         }
 
@@ -97,12 +100,16 @@ sGis.module('FeatureLayer', [
          */
         get features() { return this._features.slice(); }
         set features(/** sGis.Feature[] */ features) {
+            this.prohibitEvent('propertyChange');
             var currFeatures = this.features;
             for (var i = 0; i < currFeatures.length; i++) {
                 this.remove(currFeatures[i]);
             }
 
             this.add(features);
+            this.allowEvent('propertyChange');
+            
+            this.redraw();
         }
     }
 

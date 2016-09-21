@@ -18,7 +18,7 @@ sGis.module('EventHandler', [
      * Provides methods for handling events.
      * @alias sGis.EventHandler
      */
-    class EventListener {
+    class EventHandler {
         /**
          * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
          * @param {Object} sGisEvent - event object of the original event
@@ -245,6 +245,6 @@ sGis.module('EventHandler', [
         return string.match(/\.[A-Za-z0-9_-]+/g) || [];
     }
 
-    return EventListener;
+    return EventHandler;
     
 });
