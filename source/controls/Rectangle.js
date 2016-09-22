@@ -1,114 +1,28 @@
 sGis.module('controls.Rectangle', [
-    'utils',
-    'utils.proto',
-    'Control',
-    'Map',
-    'FeatureLayer',
+    'controls.PolyDrag',
     'feature.Polygon'
-], function(utils, proto, Control, Map, FeatureLayer, Polygon) {
+], function(PolyDrag, Polygon) {
+
     'use strict';
 
-    var Rectangle = function(map, options) {
-        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
-        this._map = map;
+    class Rectangle extends PolyDrag {
+        _startNewFeature(point) {
+            let position = point.position;
+            this._activeFeature = new Polygon([[position, position, position, position]], { crs: point.crs, symbol: this.symbol });
+            this._tempLayer.add(this._activeFeature);
+        }
 
-        options = options || {};
-
-        if (options.activeLayer) this.activeLayer = options.activeLayer;
-    };
-
-    Rectangle.prototype = new sGis.Control({
-        activate: function() {
-            if (!this._isActive) {
-                var self = this;
-
-                if (!this._activeLayer) {
-                    if (!this._tempLayer) this._tempLayer = new sGis.FeatureLayer();
-                    this._map.addLayer(this._tempLayer);
-                    this._activeLayer = this._tempLayer;
-                }
-
-                this._map.on('dragStart.sGis-RectangleControl', function(sGisEvent) {
-                    self._startDrawing(sGisEvent.point);
-
-                    this.on('drag.sGis-RectangleControl', function(sGisEvent) {
-                        self._updateRectangle(sGisEvent.point);
-                        sGisEvent.stopPropagation();
-                        sGisEvent.preventDefault();
-                    });
-
-                    this.on('dragEnd.sGis-RectangleControl', function(sGisEvent) {
-                        var feature = self._activeFeature;
-                        this.removeListener('drag dragEnd.sGis-RectangleControl');
-                        this._activeFeature = null;
-                        self.fire('drawingFinish', { geom: feature, browserEvent: sGisEvent.browserEvent });
-                    });
-
-                    self.fire('drawingStart', { geom: self._activeFeature });
-                });
-
-                this._isActive = true;
-            }
-        },
-
-        deactivate: function() {
-            if (this._isActive) {
-                this._map.off('.sGis-RectangleControl');
-
-                if (this._activeLayer === this._tempLayer) {
-                    this._map.removeLayer(this._tempLayer);
-                    this._tempLayer.features = [];
-                    this._activeLayer = null;
-                }
-
-                this._isActive = false;
-            }
-        },
-
-        _startDrawing: function(point) {
-            var coord = point.position,
-                rect = new sGis.feature.Polygon([coord, coord, coord, coord], { crs: point.crs });
-
-            this.activeLayer.add(rect);
-            this._activeFeature = rect;
-
-            this.activeLayer.redraw();
-        },
-
-        _updateRectangle: function(newPoint) {
-            var coord = this._activeFeature.coordinates[0],
-                pointCoord = newPoint.position;
+        _updateFeature(point) {
+            let coord = this._activeFeature.rings[0];
+            let pointCoord = point.position;
 
             coord = [[coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]]];
 
-            this._activeFeature.coordinates = coord;
-            this.activeLayer.redraw();
+            this._activeFeature.rings = coord;
+            this._tempLayer.redraw();
         }
-    });
+    }
 
-    sGis.utils.proto.setProperties(Rectangle.prototype, {
-        isActive: {
-            default: false,
-            set: function(bool) {
-                if (bool) {
-                    this.activate();
-                } else {
-                    this.deactivate();
-                }
-            }
-        },
-        activeLayer: {
-            default: null,
-            set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
-                this._activeLayer = layer;
-            }
-        },
-        tempLayer: {
-            set: null
-        }
-    });
-    
     return Rectangle;
     
 });
