@@ -1,18 +1,18 @@
 sGis.module('controls.Polygon', [
     'controls.Poly',
-    'feature.Polygon'
-], function(Polyg, PolygonF) {
+    'feature.Polygon',
+    'symbol.polygon.Simple'
+], function(Poly, Polygon, PolygonSymbol) {
+    
     'use strict';
 
-    var Polygon = function(map, options) {
-        this._initialize(map, options);
-    };
-
-    Polygon.prototype = new sGis.controls.Poly({
-        _featureClass: sGis.feature.Polygon
-    });
-
-    return Polygon;
+    class PolygonControl extends Poly {
+        constructor(map, options) {
+            super(Polygon, new PolygonSymbol(), map, options);
+        }
+    }
+    
+    return PolygonControl;
 
 });
 

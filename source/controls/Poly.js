@@ -9,7 +9,7 @@ sGis.module('controls.Poly', [
         constructor(FeatureClass, symbol, map, options) {
             super(map, options);
 
-            this.symbol = symbol;
+            if (!this.symbol) this.symbol = symbol;
             this._getNewFeature = function(rings, options) {
                 return new FeatureClass(rings, options);
             };
