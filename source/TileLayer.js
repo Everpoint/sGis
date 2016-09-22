@@ -91,10 +91,10 @@ sGis.module('TileLayer', [
             var layerResolution = this.tileScheme.levels[level].resolution;
             if (layerResolution * 2 < resolution) return [];
             
-            var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
-            var xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin.x) / this.tileWidth / layerResolution);
-            var yStartIndex = Math.floor((this.tileScheme.origin.y - bbox.p[1].y) / this.tileHeight / layerResolution);
-            var yEndIndex = Math.ceil((this.tileScheme.origin.y - bbox.p[0].y) / this.tileHeight / layerResolution);
+            var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
+            var xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
+            var yStartIndex = Math.floor((this.tileScheme.origin[1] - bbox.p[1].y) / this.tileHeight / layerResolution);
+            var yEndIndex = Math.ceil((this.tileScheme.origin[1] - bbox.p[0].y) / this.tileHeight / layerResolution);
 
             var tiles = this._tiles;
             var features = [];
@@ -121,8 +121,8 @@ sGis.module('TileLayer', [
 
         _getTileBbox(level, xIndex, yIndex) {
             var resolution = this.tileScheme.levels[level].resolution;
-            var startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin.x, -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin.y], this.crs);
-            var endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin.x, -yIndex * this.tileHeight * resolution + this.tileScheme.origin.y], this.crs);
+            var startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin[0], -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1]], this.crs);
+            var endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin[0], -yIndex * this.tileHeight * resolution + this.tileScheme.origin[1]], this.crs);
 
             return new Bbox(startPoint.position, endPoint.position, this.crs);
         }
