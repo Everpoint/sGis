@@ -1,127 +1,34 @@
 sGis.module('controls.Circle', [
-    'utils',
-    'Map',
-    'FeatureLayer',
-    'feature.Polygon',
-    'Control'
-], function(utils, Map, FeatureLayer, Polygon, Control) {
+    'controls.PolyDrag',
+    'feature.Polygon'
+], function(PolyDrag, Polygon) {
+
     'use strict';
 
-    var Circle = function(map, options) {
-        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map instance is expected but got ' + map + ' instead');
-        this._map = map;
+    class Circle extends PolyDrag {
+        _startNewFeature(point) {
+            this._centerPoint = point.position;
+            this._activeFeature = new Polygon([[]], { crs: point.crs, symbol: this.symbol });
+            this._tempLayer.add(this._activeFeature);
+        }
 
-        options = options || {};
+        _updateFeature(point) {
+            let radius = Math.sqrt(Math.pow(this._centerPoint[0] - point.position[0], 2) + Math.pow(this._centerPoint[1] - point.position[1], 2));
+            let angleStep = 2 * Math.PI / this.segmentNo;
 
-        if (options.activeLayer) this.activeLayer = options.activeLayer;
-    };
-
-    Circle.prototype = new sGis.Control({
-        segmentNo: 36,
-
-        activate: function() {
-            if (!this._isActive) {
-                var self = this;
-
-                if (!this._activeLayer) {
-                    if (!this._tempLayer) this._tempLayer = new sGis.FeatureLayer();
-                    this._map.addLayer(this._tempLayer);
-                    this._activeLayer = this._tempLayer;
-                }
-
-                this._map.on('dragStart.sGis-RectangleControl', function(sGisEvent) {
-                    self._startDrawing(sGisEvent.point);
-
-                    this.on('drag.sGis-RectangleControl', function(sGisEvent) {
-                        self._updateRectangle(sGisEvent.point);
-                        sGisEvent.stopPropagation();
-                        sGisEvent.preventDefault();
-                    });
-
-                    this.on('dragEnd.sGis-RectangleControl', function(sGisEvent) {
-                        var feature = self._activeFeature;
-                        this.removeListener('drag dragEnd.sGis-RectangleControl');
-                        this._activeFeature = null;
-                        self.fire('drawingFinish', { geom: feature, browserEvent: sGisEvent.browserEvent });
-                    });
-
-                    self.fire('drawingStart', { geom: self._activeFeature });
-                });
-
-                this._isActive = true;
-            }
-        },
-
-        deactivate: function() {
-            if (this._isActive) {
-                this._map.off('.sGis-RectangleControl');
-
-                if (this._activeLayer === this._tempLayer) {
-                    this._map.removeLayer(this._tempLayer);
-                    this._tempLayer.features = [];
-                    this._activeLayer = null;
-                }
-
-                this._isActive = false;
-            }
-        },
-
-        _startDrawing: function(point) {
-            var center = point.position;
-            var coordinates = [];
+            let coordinates = [];
             for (var i = 0; i < this.segmentNo; i++) {
-                coordinates.push(center);
-            }
-
-            var circle = new sGis.feature.Polygon(coordinates, { crs: point.crs });
-            circle.center = center;
-
-            this.activeLayer.add(circle);
-            this._activeFeature = circle;
-
-            this.activeLayer.redraw();
-        },
-
-        _updateRectangle: function(newPoint) {
-            var center = this._activeFeature.center;
-            var newCoord = newPoint.position;
-            var radius = Math.sqrt(Math.pow(center[0] - newCoord[0], 2) + Math.pow(center[1] - newCoord[1], 2));
-            var coordinates = [];
-            for (var i = 0; i < this.segmentNo; i++) {
-                var point = [
-                    center[0] + radius * Math.sin(2 * Math.PI * i / this.segmentNo),
-                    center[1] + radius * Math.cos(2 * Math.PI * i / this.segmentNo)
-                ];
-                coordinates.push(point);
+                coordinates.push([
+                    this._centerPoint[0] + radius * Math.sin(angleStep * i),
+                    this._centerPoint[1] + radius * Math.cos(angleStep * i)
+                ]);
             }
 
             this._activeFeature.rings = [coordinates];
-            this.activeLayer.redraw();
         }
-    });
+    }
 
-    sGis.utils.proto.setProperties(Circle.prototype, {
-        isActive: {
-            default: false,
-            set: function(bool) {
-                if (bool) {
-                    this.activate();
-                } else {
-                    this.deactivate();
-                }
-            }
-        },
-        activeLayer: {
-            default: null,
-            set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
-                this._activeLayer = layer;
-            }
-        },
-        tempLayer: {
-            set: null
-        }
-    });
+    Circle.prototype.segmentNo = 36;
 
     return Circle;
 

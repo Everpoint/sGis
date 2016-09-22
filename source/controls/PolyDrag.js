@@ -40,6 +40,7 @@ sGis.module('controls.PolyDrag', [
 
         _handleDrag(sGisEvent) {
             this._updateFeature(sGisEvent.point);
+            this._tempLayer.redraw();
             sGisEvent.stopPropagation();
         }
 

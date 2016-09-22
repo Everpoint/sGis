@@ -19,7 +19,6 @@ sGis.module('controls.Rectangle', [
             coord = [[coord[0], [coord[1][0], pointCoord[1]], pointCoord, [pointCoord[0], coord[3][1]]]];
 
             this._activeFeature.rings = coord;
-            this._tempLayer.redraw();
         }
     }
 
