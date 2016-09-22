@@ -1,18 +1,18 @@
 sGis.module('controls.Polyline', [
     'controls.Poly',
-    'feature.Polyline'
-], function(Polyg, PolylineF) {
+    'feature.Polyline',
+    'symbol.polyline.Simple'
+], function(Poly, Polyline, PolylineSymbol) {
+    
     'use strict';
 
-    var Polyline = function(map, options) {
-        this._initialize(map, options);
-    };
-
-    Polyline.prototype = new sGis.controls.Poly({
-        _featureClass: sGis.feature.Polyline
-    });
-
-    return Polyline;
+    class PolylineControl extends Poly {
+        constructor(map, options) {
+            super(Polyline, new PolylineSymbol(), map, options);
+        }
+    }
+    
+    return PolylineControl;
 
 });
 

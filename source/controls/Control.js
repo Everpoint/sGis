@@ -15,11 +15,19 @@ sGis.module('Control', [
             utils.init(this, options, true);
         }
 
-        activate () {
+        activate() {
+            this.isActive = true;
+        }
+        
+        deactivate() {
+            this.isActive = false;
+        }
+        
+        _activate() {
             // abstract method, must be implemented in child
         }
 
-        deactivate () {
+        _deactivate() {
             // abstract method, must be implemented in child
         }
         
@@ -32,9 +40,9 @@ sGis.module('Control', [
             this._isActive = bool;
 
             if (bool) {
-                this.activate();
+                this._activate();
             } else {
-                this.deactivate();
+                this._deactivate();
             }
 
         }

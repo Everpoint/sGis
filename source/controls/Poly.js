@@ -5,242 +5,113 @@ sGis.module('controls.Poly', [
 ], function(utils, Control, FeatureLayer) {
     'use strict';
 
-    var Poly = function(extention) {
-        for (var key in extention) {
-            this[key] = extention[key];
+    class PolyControl extends Control {
+        constructor(FeatureClass, symbol, map, options) {
+            super(map, options);
+
+            this.symbol = symbol;
+            this._getNewFeature = function(rings, options) {
+                return new FeatureClass(rings, options);
+            };
+
+            this._handleClick = this._handleClick.bind(this);
+            this._handleMousemove = this._handleMousemove.bind(this);
+            this._handleDblclick = this._handleDblclick.bind(this);
         }
-    };
 
-    Poly.prototype = new sGis.Control({
-        _featureClass: null,
+        _activate() {
+            this._tempLayer = new FeatureLayer();
+            this.map.addLayer(this._tempLayer);
+            this.map.on('click', this._handleClick);
+        }
 
-        _initialize: function(map, options) {
-            if (!(map instanceof sGis.Map)) sGis.utils.error('Expected sGis.Map child, but got ' + map + ' instead');
-            this._map = map;
+        _deactivate() {
+            this.map.removeLayer(this._tempLayer);
+            this._tempLayer = null;
+            this.map.off('click', this._handleClick);
+        }
 
-            options = options || {};
-            if (options.activeLayer) this.activeLayer = options.activeLayer;
-            this._prototype = new this._featureClass([[]], {style: options.style, symbol: options.symbol});
-
-
-            sGis.utils.init(this, options);
-
-            this._active = false;
-            var self = this;
-
-            this._clickHandler = function(sGisEvent) {
-                setTimeout(function() {
-                    if (Date.now() - self._dblClickTime < 30) return;
-                    if (self._activeFeature) {
-                        if (sGisEvent.ctrlKey) {
-                            self.startNewRing();
-                        } else {
-                            self._activeFeature.addPoint(sGisEvent.point, self._activeFeature.coordinates.length - 1);
-                        }
-                        self.fire('pointAdd');
+        _handleClick(sGisEvent) {
+            setTimeout(() => {
+                if (Date.now() - this._dblClickTime < 30) return;
+                if (this._activeFeature) {
+                    if (sGisEvent.ctrlKey) {
+                        this.startNewRing();
                     } else {
-                        self.startNewFeature(sGisEvent.point);
-
-                        self._activeFeature.prohibitEvent('click');
-
-                        self.fire('drawingBegin');
-                        self.fire('pointAdd');
+                        this._activeFeature.addPoint(sGisEvent.point, this._activeFeature.rings.length - 1);
                     }
-
-                    self.activeLayer.redraw();
-                }, 10);
-                sGisEvent.stopPropagation();
-                sGisEvent.preventDefault();
-            };
-
-            this._mousemoveHandler = function(sGisEvent) {
-                var ring = self._activeFeature.coordinates.length - 1;
-                self._activeFeature.removePoint(ring, self._activeFeature.coordinates[ring].length - 1);
-
-                if (self._activeFeature.coordinates.length > ring) {
-                    self._activeFeature.addPoint(sGisEvent.point, ring);
                 } else {
-                    self._activeFeature.setRing(ring, [sGisEvent.point]);
+                    this.startNewFeature(sGisEvent.point);
+                    this.fire('drawingBegin');
                 }
+                this.fire('pointAdd');
 
-                self.activeLayer.redraw();
-            };
+                this._tempLayer.redraw();
+            }, 10);
 
-            this._dblclickHandler = function(sGisEvent) {
-                finishDrawing(self, sGisEvent);
-                sGisEvent.stopPropagation();
-                self._dblClickTime = Date.now();
-            };
-        },
+            sGisEvent.stopPropagation();
+        }
 
-        startNewFeature: function(point) {
+        startNewFeature(point) {
             this.activate();
             this.cancelDrawing();
-            this._activeFeature = createFeature(this.activeLayer, point, {style: this._prototype.style, symbol: this._prototype.symbol, crs: this._map.crs}, this._featureClass);
 
-            this._map.addListener('mousemove.sGis-polygon', this._mousemoveHandler);
-            this._map.addListener('dblclick.sGis-polygon', this._dblclickHandler);
+            this._activeFeature = this._getNewFeature([point.position, point.position], { crs: this.map.crs, symbol: this.symbol });
+            this._tempLayer.add(this._activeFeature);
 
-            return this._activeFeature;
+            this.map.addListener('mousemove', this._handleMousemove);
+            this.map.addListener('dblclick', this._handleDblclick);
+        }
 
-        },
+        _handleMousemove(sGisEvent) {
+            let ringIndex = this._activeFeature.rings.length - 1;
+            let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
 
-        _setActiveStatus: function(isActive) {
-            if (isActive) {
-                this._map.addListener('click.sGis-polygon', this._clickHandler);
-            } else {
-                if (this._activeFeature) finishDrawing(this);
-                this._map.removeListener('click.sGis-polygon');
-            }
-            this._active = isActive;
-        },
+            this._activeFeature.rings[ringIndex][pointIndex] = sGisEvent.point.position;
+            this._activeFeature.redraw();
+            this._tempLayer.redraw();
+        }
 
-        cancelDrawing: function() {
-            if (this._activeFeature) {
-                var coordinates = this._activeFeature.coordinates;
-                if (coordinates.length > 1) {
-                    coordinates.pop();
-                } else {
-                    coordinates = [[[0, 0]]];
-                }
+        _handleDblclick(sGisEvent) {
+            let feature = this._activeFeature;
+            this.finishDrawing(self, sGisEvent);
+            sGisEvent.stopPropagation();
+            this._dblClickTime = Date.now();
+            this.fire('drawingFinish', { geom: feature, browserEvent: sGisEvent.browserEvent });
+        }
 
-                this._activeFeature.coordinates = coordinates;
-                this.prohibitEvent('drawingFinish');
-                finishDrawing(this);
-                this.allowEvent('drawingFinish');
-            }
-        },
+        cancelDrawing() {
+            if (!this._activeFeature) return;
 
-        startNewRing: function() {
-            var coordinates = this._activeFeature.coordinates;
-            var ringIndex = coordinates.length;
-            var point = coordinates.pop().pop();
+            this._tempLayer.remove(this._activeFeature);
+            this._activeFeature = null;
+        }
+
+        finishDrawing() {
+            let feature = this._activeFeature;
+            let ringIndex = feature.rings.length - 1;
+
+            this.cancelDrawing();
+            if (ringIndex === 0 && feature.rings[ringIndex].length < 3) return;
+
+            feature.removePoint(ringIndex, feature.rings[ringIndex].length - 1);
+
+            this._map.removeListener('mousemove', this._handleMousemove);
+            this._map.removeListener('dblclick', this._handleDblclick);
+
+            if (this.activeLayer) this.activeLayer.add(feature);
+        }
+
+        startNewRing() {
+            let rings = this._activeFeature.rings;
+            let ringIndex = rings.length;
+            let point = rings[ringIndex-1][rings[ringIndex-1].length-1];
             this._activeFeature.setRing(ringIndex, [point]);
-        },
-
-        activate: function() {
-            if (!this.isActive) {
-                if (!this.activeLayer) {
-                    if (!this._tempLayer) this._tempLayer = new sGis.FeatureLayer();
-                    this._map.addLayer(this._tempLayer);
-                    this.activeLayer = this._tempLayer;
-                }
-
-                this._map.addListener('click.sGis-polygon', this._clickHandler);
-                this._isActive = true;
-            }
-        },
-
-        deactivate: function() {
-            if (this.isActive) {
-                if (this.activeFeature) {
-                    this.cancelDrawing();
-                }
-
-                if (this.activeLayer === this._tempLayer) {
-                    this._map.removeLayer(this._tempLayer);
-                    this._tempLayer.features = [];
-                    this.activeLayer = null;
-                }
-
-                this._map.off('click.sGis-polygon');
-                this._isActive = false;
-            }
-        },
-
-
-    });
-
-    Object.defineProperties(Poly.prototype, {
-        activeLayer: {
-            get: function() {
-                return this._activeLayer;
-            },
-            set: function(layer) {
-                if (!(layer instanceof sGis.FeatureLayer) && layer !== null) sGis.utils.error('sGis.FeatureLayer instance is expected but got ' + layer + ' instead');
-                this._activeLayer = layer;
-            }
-        },
-
-        style: {
-            get: function() {
-                return this._prototype.style;
-            },
-            set: function(style) {
-                this._prototype.style = style;
-            }
-        },
-
-        symbol: {
-            get: function() {
-                return this._prototype.symbol;
-            },
-            set: function(symbol) {
-                this._prototype.symbol = symbol;
-            }
-        },
-
-        activeFeature: {
-            get: function() {
-                return this._activeFeature;
-            },
-
-            set: function(feature) {
-                if (!(feature instanceof this._featureClass)) sGis.utils.error('sGis.feature.Polygon instance is expected but got ' + feature + ' instead');
-                if (this._activeFeature) {
-                    if (feature === this._activeFeature) return;
-                    this.canceDrawing();
-                }
-
-                this._activeFeature = feature;
-                this._map.addListener('mousemove.sGis-polygon', this._mousemoveHandler);
-                this._map.addListener('dblclick.sGis-polygon', this._dblclickHandler);
-
-                this._activeFeature.prohibitEvent('click');
-
-                this.activate();
-            }
-        },
-
-        isActive: {
-            get: function() {
-                return this._isActive;
-            },
-            set: function(bool) {
-                if (bool) {
-                    this.activate();
-                } else {
-                    this.deactivate();
-                }
-            }
-        }
-    });
-
-    function createFeature(layer, point, options, featureClass) {
-        var polygon = new featureClass([[point.x, point.y], [point.x, point.y]], options);
-        layer.add(polygon);
-        return polygon;
-    }
-
-    function finishDrawing(control, sGisEvent) {
-        var ring = control._activeFeature.coordinates.length - 1;
-        if (control._activeFeature.coordinates[ring].length < 3) {
-            control.activeLayer.remove(control._activeFeature);
-        } else {
-            control._activeFeature.removePoint(ring, control._activeFeature.coordinates[ring].length - 1);
-            var geom = control._activeFeature;
         }
 
-        control._activeFeature.allowEvent('click');
-
-        control._map.removeListener('mousemove.sGis-polygon');
-        control._map.removeListener('dblclick.sGis-polygon');
-        control._activeFeature = null;
-
-        control.activeLayer.redraw();
-        if (geom) control.fire('drawingFinish', { geom: geom, browserEvent: sGisEvent && sGisEvent.browserEvent });
+        get activeFeature() { return this._activeFeature; }
     }
     
-    return Poly;
+    return PolyControl;
     
 });

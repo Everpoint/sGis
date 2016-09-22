@@ -13,24 +13,20 @@ sGis.module('controls.Point', [
     class PointControl extends Control {
         constructor(map, options) {
             super(map, options);
-            this._addPoint = this._addPoint.bind(this);
+            this._handleClick = this._handleClick.bind(this);
         }
 
-        activate() {
-            if (this.isActive) return;
-            this.map.addListener('click', this._addPoint);
+        _activate() {
+            this.map.addListener('click', this._handleClick);
         }
 
-        deactivate() {
-            if (!this.isActive) return;
-            this.map.removeListener('click.sGis-point', this._addPoint);
+        _deactivate() {
+            this.map.removeListener('click', this._handleClick);
         }
 
-        _addPoint(sGisEvent) {
+        _handleClick(sGisEvent) {
             this.startNewFeature(sGisEvent.point);
-
             sGisEvent.stopPropagation();
-            sGisEvent.preventDefault();
         }
 
         startNewFeature(point) {
