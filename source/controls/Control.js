@@ -9,10 +9,10 @@ sGis.module('Control', [
      * @alias sGis.Control
      */
     class Control extends EventHandler {
-        constructor(map, options) {
+        constructor(map, properties) {
             super();
             this._map = map;
-            utils.init(this, options, true);
+            utils.init(this, properties, true);
         }
 
         activate() {
@@ -36,7 +36,8 @@ sGis.module('Control', [
 
         get isActive() { return this._isActive; }
         set isActive(bool) {
-            if (this._isActive == bool) return;
+            bool = !!bool;
+            if (this._isActive === bool) return;
             this._isActive = bool;
 
             if (bool) {
@@ -49,6 +50,8 @@ sGis.module('Control', [
 
         get map() { return this._map; }
     }
+
+    Control.prototype._isActive = false;
 
     return Control;
 

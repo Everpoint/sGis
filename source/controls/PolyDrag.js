@@ -7,8 +7,8 @@ sGis.module('controls.PolyDrag', [
     'use strict';
 
     class PolyDrag extends Control {
-        constructor(map, options) {
-            super(map, options);
+        constructor(map, properties) {
+            super(map, properties);
 
             if (!this.symbol) this.symbol = new PolygonSymbol();
             
@@ -28,6 +28,7 @@ sGis.module('controls.PolyDrag', [
             this._tempLayer = null;
             this._activeFeature = null;
             this._removeDragListeners();
+            this.map.off('dragStart', this._handleDragStart);
         }
 
         _handleDragStart(sGisEvent) {

@@ -17,40 +17,32 @@ sGis.module('controls.Editor', [
 
     var PREFIX = 'sGis-control-edit-';
 
-    var Editor = function(map, properties) {
-        if (!(map instanceof sGis.Map)) sGis.utils.error('sGis.Map is expected but got ' + map + ' instead');
+    class Editor extends Control {
+        constructor(map, properties) {
+            super(map, properties);
 
-        this._map = map;
-        this._id = sGis.utils.getGuid();
+            this._currentState = -1;
+            this._states = [];
+            this._featureStates = {};
+        }
 
-        this._ns = PREFIX + this._id;
-        this._currentState = -1;
-        this._states = [];
-        this._featureStates = {};
-
-        sGis.utils.init(this, properties);
-    };
-
-    Editor.prototype = new sGis.Control({
-        _translateControlSymbol: sGis.symbol.point.Square,
-
-        activate: function() {
+        _activate() {
             if (!this._isActive) {
                 this._setEventListeners();
                 this._isActive = true;
             }
-        },
+        }
 
-        deactivate: function() {
+        _deactivate() {
             if (this._isActive) {
                 this._removeEventListeners();
                 this.deselect();
                 this.clearStateList();
                 this._isActive = false;
             }
-        },
+        }
 
-        _setEventListeners: function() {
+        _setEventListeners() {
             if (this._activeLayer) {
                 var features = this._activeLayer.features;
                 for (var i = 0; i < features.length; i++) {
@@ -63,14 +55,14 @@ sGis.module('controls.Editor', [
 
                 this._map.addListener('keydown.' + this._ns, this._keydownHandler.bind(this));
             }
-        },
+        }
 
-        _featureRemoveHandler: function(sGisEvent) {
+        _featureRemoveHandler(sGisEvent) {
             if (this._selectedFeature === sGisEvent.feature) this.deselect();
             this._removeFeatureClickHandler(sGisEvent.feature);
-        },
+        }
 
-        _removeEventListeners: function() {
+        _removeEventListeners() {
             if (this._activeLayer) {
                 var features = this._activeLayer.features;
                 for (var i = 0; i < features.length; i++) {
@@ -79,9 +71,9 @@ sGis.module('controls.Editor', [
                 this._activeLayer.removeListener('.' + this._ns);
             }
             this._map.removeListener('keydown.' + this._ns);
-        },
+        }
 
-        _keydownHandler: function(sGisEvent) {
+        _keydownHandler(sGisEvent) {
             if (this.ignoreEvents) return;
             var event = sGisEvent.browserEvent;
 
@@ -112,33 +104,33 @@ sGis.module('controls.Editor', [
                 sGisEvent.stopPropagation();
                 sGisEvent.preventDefault();
             }
-        },
+        }
 
-        _selectNext: function() {
+        _selectNext() {
             if (this._activeLayer) {
                 var features = this._activeLayer.features;
 
                 this.select(features[0]);
             }
-        },
+        }
 
-        _setFeatureClickHandler: function(feature) {
+        _setFeatureClickHandler(feature) {
             var self = this;
             feature.addListener('click.' + this._ns, function(sGisEvent) { self._featureClickHandler(sGisEvent, this); });
-        },
+        }
 
-        _removeFeatureClickHandler: function(feature) {
+        _removeFeatureClickHandler(feature) {
             feature.removeListener('click.' + this._ns);
-        },
+        }
 
-        _featureClickHandler: function(sGisEvent, feature) {
+        _featureClickHandler(sGisEvent, feature) {
             if (this.ignoreEvents) return;
             this.select(feature);
             sGisEvent.stopPropagation();
             sGisEvent.preventDefault();
-        },
+        }
 
-        select: function(feature) {
+        select(feature) {
             if (this._selectedFeature === feature) return;
             this.deselect();
 
@@ -154,9 +146,9 @@ sGis.module('controls.Editor', [
 
                 this.fire('featureSelect', {feature: feature});
             }
-        },
+        }
 
-        deselect: function() {
+        deselect() {
             if (this.deselectionAllowed && this._selectedFeature) {
                 var feature = this._selectedFeature;
                 this._map.removeListener('click.' + this._ns);
@@ -168,17 +160,17 @@ sGis.module('controls.Editor', [
 
                 this.fire('featureDeselect', {feature: feature});
             }
-        },
+        }
 
-        prohibitDeselect: function() {
+        prohibitDeselect() {
             this.deselectionAllowed = false;
-        },
+        }
 
-        allowDeselect: function() {
+        allowDeselect() {
             this.deselectionAllowed = true;
-        },
+        }
 
-        _setSnappingLayer: function() {
+        _setSnappingLayer() {
             if (!this._snappingLayer) {
                 this._snappingLayer = new sGis.FeatureLayer();
                 this._snappingPoint = new sGis.feature.Point([0, 0], {crs: this._map.crs, symbol: this._snappingPointSymbol});
@@ -191,22 +183,22 @@ sGis.module('controls.Editor', [
                 this._updateTransformControls();
             }
             this._map.insertLayer(this._snappingLayer, Number.MAX_VALUE);
-        },
+        }
 
-        _removeSnappingLayer: function() {
+        _removeSnappingLayer() {
             this._map.removeLayer(this._snappingLayer);
             this._snappingPoint.hide();
             this._hideTransformControls();
-        },
+        }
 
-        _createTransformControls: function() {
+        _createTransformControls() {
             this._transformControls = [];
             this._createScalingControls();
             this._createRotationControl();
             this._updateTransformControls();
-        },
+        }
 
-        _createScalingControls: function() {
+        _createScalingControls() {
             var OFFSET = 10;
             var self = this;
 
@@ -227,9 +219,9 @@ sGis.module('controls.Editor', [
                     }
                 }
             }
-        },
+        }
 
-        _createRotationControl: function() {
+        _createRotationControl() {
             var self = this;
             var rotationControl = new sGis.feature.Point([0,0], {crs: this._map.crs, symbol: this._rotationControlSymbol});
             rotationControl.addListener('dragStart', function(sGisEvent) {
@@ -247,9 +239,9 @@ sGis.module('controls.Editor', [
             rotationControl.hide();
             this._snappingLayer.add(rotationControl);
             this._transformControls.rotationControl = rotationControl;
-        },
+        }
 
-        _hideTransformControls: function() {
+        _hideTransformControls() {
             if (this._transformControls) {
                 if (this._transformControls.length > 0) {
                     for (var i = 0; i < 3; i++) {
@@ -263,15 +255,15 @@ sGis.module('controls.Editor', [
 
                 if (this._transformControls.rotationControl) this._transformControls.rotationControl.hide();
             }
-        },
+        }
 
-        _transformControlDragStartHandler: function(sGisEvent) {
+        _transformControlDragStartHandler(sGisEvent) {
             //if (this.ignoreEvents) return; todo: this does not work because of the context
             sGisEvent.draggingObject = this; // called in feature context
             sGisEvent.stopPropagation();
-        },
+        }
 
-        _transformControlDragHandler: function(sGisEvent, feature) {
+        _transformControlDragHandler(sGisEvent, feature) {
             var MIN_SIZE = 10;
 
             var xIndex = feature.xIndex === 0 ? 2 : feature.xIndex === 2 ? 0 : 1;
@@ -291,9 +283,9 @@ sGis.module('controls.Editor', [
             geotools.scale(this._selectedFeature, [xScale, yScale], basePoint);
             this._activeLayer.redraw();
             this._updateTransformControls();
-        },
+        }
 
-        _rotationControlDragHandler: function(sGisEvent) {
+        _rotationControlDragHandler(sGisEvent) {
             var xPrev = sGisEvent.point.x + sGisEvent.offset.x;
             var yPrev = sGisEvent.point.y + sGisEvent.offset.y;
 
@@ -306,9 +298,9 @@ sGis.module('controls.Editor', [
             this._updateTransformControls();
 
             this.fire('rotation');
-        },
+        }
 
-        _updateTransformControls: function() {
+        _updateTransformControls() {
             if (this._transformControls && this._selectedFeature && this._selectedFeature instanceof sGis.feature.Poly) {
                 var bbox = this._selectedFeature.bbox.projectTo(this._map.crs);
                 var coordinates = [[bbox.xMin, bbox.yMin], [bbox.xMax, bbox.yMax]];
@@ -343,22 +335,22 @@ sGis.module('controls.Editor', [
             } else {
                 this._hideTransformControls();
             }
-        },
+        }
 
-        _mapClickHandler: function(sGisEvent) {
+        _mapClickHandler(sGisEvent) {
             if (this.ignoreEvents) return;
             this.deselect();
-        },
+        }
 
-        _setTempSymbol: function() {
+        _setTempSymbol() {
             this._selectedFeature.setTempSymbol(new selectionSymbol({baseSymbol: this._selectedFeature.symbol}));
-        },
+        }
 
-        _clearTempSymbol: function() {
+        _clearTempSymbol() {
             this._selectedFeature.clearTempSymbol();
-        },
+        }
 
-        _setSelectedListeners: function() {
+        _setSelectedListeners() {
             var self = this;
             this._selectedFeature.addListener('dragStart.' + this._ns, function(sGisEvent) { self._dragStartHandler(sGisEvent, this); });
             this._selectedFeature.addListener('drag.' + this._ns, function(sGisEvent) { self._dragHandler(sGisEvent, this); });
@@ -371,18 +363,18 @@ sGis.module('controls.Editor', [
             } else if (this._selectedFeature instanceof sGis.feature.MultiPoint) {
                 this._selectedFeature.addListener('dblclick.' + this._ns, function(sGisEvent) { self._multipointDblclickHandler(sGisEvent, this); })
             }
-        },
+        }
 
-        _removeSelectedListeners: function() {
+        _removeSelectedListeners() {
             this._selectedFeature.removeListener('dragStart.' + this._ns);
             this._selectedFeature.removeListener('drag.' + this._ns);
             this._selectedFeature.removeListener('dragEnd.' + this._ns);
             this._selectedFeature.removeListener('mousemove.' + this._ns);
             this._selectedFeature.removeListener('mouseout.' + this._ns);
             this._selectedFeature.removeListener('dblclick.' + this._ns);
-        },
+        }
 
-        _dragStartHandler: function(sGisEvent, feature) {
+        _dragStartHandler(sGisEvent, feature) {
             if (this.ignoreEvents || !(this.allowVertexEditing || this.allowDragging)) return;
 
             if (feature instanceof sGis.feature.Poly || feature instanceof sGis.feature.MultiPoint) {
@@ -394,9 +386,9 @@ sGis.module('controls.Editor', [
 
             sGisEvent.draggingObject = feature;
             sGisEvent.stopPropagation();
-        },
+        }
 
-        _dragHandler: function(sGisEvent, feature) {
+        _dragHandler(sGisEvent, feature) {
             if (feature instanceof sGis.feature.Point) {
                 this._pointDragHandler(sGisEvent, feature);
             } else if (feature instanceof sGis.feature.Poly) {
@@ -404,9 +396,9 @@ sGis.module('controls.Editor', [
             } else if (feature instanceof sGis.feature.MultiPoint) {
                 this._multipointDragHandler(sGisEvent, feature);
             }
-        },
+        }
 
-        _polylineMousemoveHandler: function(sGisEvent, feature) {
+        _polylineMousemoveHandler(sGisEvent, feature) {
             if (this.ignoreEvents || !this.allowVertexEditing) return;
 
             var adjustedEvent = this._getAdjustedEventData(sGisEvent, feature);
@@ -421,9 +413,9 @@ sGis.module('controls.Editor', [
                 this._snappingPoint.hide();
             }
             this._snappingLayer.redraw();
-        },
+        }
 
-        _polylineDblclickHandler: function(sGisEvent, feature) {
+        _polylineDblclickHandler(sGisEvent, feature) {
             if (this.ignoreEvents || !this.allowVertexEditing) return;
 
             var adjustedEvent = this._getAdjustedEventData(sGisEvent, feature);
@@ -448,9 +440,9 @@ sGis.module('controls.Editor', [
 
                 this.fire('featurePointRemove', {feature: feature, pointIndex: adjustedEvent.index, ring: adjustedEvent.ring});
             }
-        },
+        }
 
-        _multipointDblclickHandler: function(sGisEvent, feature) {
+        _multipointDblclickHandler(sGisEvent, feature) {
             if (this.ignoreEvents || !this.allowVertexEditing) return;
 
             var adjustedEvent = this._getAdjustedEventData(sGisEvent, feature);
@@ -468,9 +460,9 @@ sGis.module('controls.Editor', [
             sGisEvent.preventDefault();
 
             this.fire('featurePointRemove', {feature: feature, pointIndex: adjustedEvent.index});
-        },
+        }
 
-        deleteSelected: function() {
+        deleteSelected() {
             if (this.deselectionAllowed && this.allowDeletion && this.selectedFeature) {
                 var feature = this._selectedFeature;
                 this.prohibitEvent('featureDeselect');
@@ -481,9 +473,9 @@ sGis.module('controls.Editor', [
 
                 this.fire('featureRemove', {feature: feature});
             }
-        },
+        }
 
-        _getAdjustedEventData: function(sGisEvent, feature) {
+        _getAdjustedEventData(sGisEvent, feature) {
             if (sGisEvent.intersectionType && sGis.utils.isArray(sGisEvent.intersectionType)) {
                 var coordinates = feature.coordinates;
                 var ring = sGisEvent.intersectionType[0];
@@ -530,14 +522,14 @@ sGis.module('controls.Editor', [
             }
 
             return {point: snappingPoint, type: snappingType, ring: ring, index: index};
-        },
+        }
 
-        _polylineMouseoutHandler: function(sGisEvent, feature) {
+        _polylineMouseoutHandler(sGisEvent, feature) {
             this._snappingPoint.hide();
             this._snappingLayer.redraw();
-        },
+        }
 
-        _polylineDragHandler: function(sGisEvent, feature) {
+        _polylineDragHandler(sGisEvent, feature) {
             var dragInfo = this._currentDragInfo;
             if ((dragInfo.type === 'vertex' || dragInfo.type === 'line') && !this.allowVertexEditing || dragInfo.type === 'bulk' && !this.allowDragging) return;
 
@@ -565,9 +557,9 @@ sGis.module('controls.Editor', [
 
             this._updateTransformControls();
             this._activeLayer.redraw();
-        },
+        }
 
-        _pointDragHandler: function(sGisEvent, feature) {
+        _pointDragHandler(sGisEvent, feature) {
             if (!this.allowDragging) return;
 
             var projected = feature.projectTo(this._map.crs);
@@ -586,9 +578,9 @@ sGis.module('controls.Editor', [
             this._activeLayer.redraw();
 
             this.fire('featureMove', {feature: feature});
-        },
+        }
 
-        _multipointDragHandler: function(sGisEvent, feature) {
+        _multipointDragHandler(sGisEvent, feature) {
             if (!this.allowDragging) return;
 
             var projected = feature.projectTo(this._map.crs);
@@ -608,28 +600,28 @@ sGis.module('controls.Editor', [
             this._activeLayer.redraw();
 
             this.fire('featureMove', {feature: feature});
-        },
+        }
 
-        _getSnappingPoint: function(point, functions, exclude, featureData) {
+        _getSnappingPoint(point, functions, exclude, featureData) {
             var snappingDistance = this.snappingDistance * this._map.resolution;
             for (var i = 0; i < functions.length; i++) {
                 if (snapping[functions[i]]) var snappingPoint = snapping[functions[i]](point, this._activeLayer, snappingDistance, exclude, featureData);
                 if (snappingPoint) return snappingPoint;
             }
-        },
+        }
 
-        _saveDeletion: function(feature) {
+        _saveDeletion(feature) {
             this._saveState(null, feature, true)
-        },
+        }
 
-        _trimStates: function() {
+        _trimStates() {
             while(this._states.length - 1 > this._currentState) {
                 var state = this._states.pop();
                 this._featureStates[state.feature.id].pop();
             }
-        },
+        }
 
-        _saveOriginalState: function() {
+        _saveOriginalState() {
             var feature = this._selectedFeature;
             if (!this._featureStates[feature.id]) {
                 this._featureStates[feature.id] = [];
@@ -638,9 +630,9 @@ sGis.module('controls.Editor', [
             if (!this._featureStates[feature.id][0]) {
                 this._featureStates[feature.id].push(feature.coordinates);
             }
-        },
+        }
 
-        _saveState: function(sGisEvent, feature, del) {
+        _saveState(sGisEvent, feature, del) {
             this._trimStates();
 
             feature = feature || this._selectedFeature;
@@ -653,17 +645,16 @@ sGis.module('controls.Editor', [
 
             this._limitStateCache();
             this._currentState = this._states.length - 1;
-        },
+        }
 
-
-        _limitStateCache: function() {
+        _limitStateCache() {
             if (this._states.length > this._maxStatesLength) {
                 var state = this._states.shift();
                 this._featureStates[state.feature.id].splice(state.index, 1);
             }
-        },
+        }
 
-        _setState: function(index) {
+        _setState(index) {
             if (index > this._currentState) {
                 var baseState = this._states[index];
                 if (baseState) var i = baseState.index;
@@ -700,27 +691,27 @@ sGis.module('controls.Editor', [
 
                 this._currentState = index;
             }
-        },
+        }
 
-        undo: function() {
+        undo() {
             this._setState(this._currentState - 1);
-        },
+        }
 
-        redo: function() {
+        redo() {
             this._setState(this._currentState + 1);
-        },
+        }
 
-        clearStateList: function() {
+        clearStateList() {
             this._states = [];
             this._currentState = -1;
             this._featureStates = {};
-        },
+        }
 
         /**
          * Sets the mode of editing.
          * @param {String|String[]} mode - the mode or list of modes. Possible values are: 'rotate', 'scale', 'drag', 'vertex', 'all'.
          */
-        setMode: function(mode) {
+        setMode(mode) {
             var state = mode === 'all';
             this.allowRotation = this.allowScaling = this.allowDragging = this.allowVertexEditing = state;
 
@@ -740,7 +731,9 @@ sGis.module('controls.Editor', [
 
             this._updateTransformControls();
         }
-    });
+    }
+
+    Editor.prototype._translateControlSymbol = sGis.symbol.point.Square;
 
     sGis.utils.proto.setProperties(Editor.prototype, {
         allowDeletion: true,
@@ -773,31 +766,6 @@ sGis.module('controls.Editor', [
             },
             set: function(feature) {
                 this.selectedFeature = feature;
-            }
-        },
-
-        activeLayer: {
-            default: null,
-            type: sGis.FeatureLayer,
-            set: function(layer) {
-                var isActive = this._isActive;
-                this.deactivate();
-                this._activeLayer = layer;
-                this.isActive = isActive;
-            }
-        },
-
-        isActive: {
-            default: false,
-            get: function() {
-                return this._isActive;
-            },
-            set: function(bool) {
-                if (bool) {
-                    this.activate();
-                } else {
-                    this.deactivate();
-                }
             }
         },
 

@@ -7,8 +7,8 @@ sGis.module('controls.Polygon', [
     'use strict';
 
     class PolygonControl extends Poly {
-        constructor(map, options) {
-            super(Polygon, new PolygonSymbol(), map, options);
+        constructor(map, properties) {
+            super(Polygon, new PolygonSymbol(), map, properties);
         }
     }
     

@@ -7,8 +7,8 @@ sGis.module('controls.Polyline', [
     'use strict';
 
     class PolylineControl extends Poly {
-        constructor(map, options) {
-            super(Polyline, new PolylineSymbol(), map, options);
+        constructor(map, properties) {
+            super(Polyline, new PolylineSymbol(), map, properties);
         }
     }
     

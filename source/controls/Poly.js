@@ -6,8 +6,8 @@ sGis.module('controls.Poly', [
     'use strict';
 
     class PolyControl extends Control {
-        constructor(FeatureClass, symbol, map, options) {
-            super(map, options);
+        constructor(FeatureClass, symbol, map, properties) {
+            super(map, properties);
 
             if (!this.symbol) this.symbol = symbol;
             this._getNewFeature = function(rings, options) {

@@ -11,8 +11,8 @@ sGis.module('controls.Point', [
      * @constructor
      */
     class PointControl extends Control {
-        constructor(map, options) {
-            super(map, options);
+        constructor(map, properties) {
+            super(map, properties);
             this._handleClick = this._handleClick.bind(this);
         }
 

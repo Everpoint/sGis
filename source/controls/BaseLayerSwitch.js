@@ -22,7 +22,7 @@
     };
 
 
-    BaseLayerSwitch.prototype = new sGis.Control({
+    BaseLayerSwitch.prototype = {
         _xAlign: 'right',
         _yAlign: 'bottom',
         _xOffset: 32,
@@ -289,7 +289,7 @@
                 }
             }
         }
-    });
+    };
 
     Object.defineProperties(BaseLayerSwitch.prototype, {
         xAlign: {
