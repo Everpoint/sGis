@@ -77,7 +77,7 @@ sGis.module('controls.Poly', [
             this.finishDrawing(self, sGisEvent);
             sGisEvent.stopPropagation();
             this._dblClickTime = Date.now();
-            this.fire('drawingFinish', { geom: feature, browserEvent: sGisEvent.browserEvent });
+            this.fire('drawingFinish', { feature: feature, browserEvent: sGisEvent.browserEvent });
         }
 
         cancelDrawing() {

@@ -93,7 +93,7 @@ sGis.module('feature.MultiPoint', [
                 if (!(feature instanceof sGis.feature.MultiPoint) && feature !== null) sGis.utils.error('sGis.feature.MultiPoint is expected');
                 if (!this._isActive) return;
 
-                if (this._activeFeature && this._activeFeature !== feature) this.fire('drawingFinish', {geom: this._activeFeature});
+                if (this._activeFeature && this._activeFeature !== feature) this.fire('drawingFinish', {feature: this._activeFeature});
 
                 if (feature) this.activeLayer.add(feature);
                 this._activeFeature = feature;

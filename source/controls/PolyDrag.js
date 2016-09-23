@@ -51,7 +51,7 @@ sGis.module('controls.PolyDrag', [
             this._removeDragListeners();
 
             if (this.activeLayer) this.activeLayer.add(feature);
-            this.fire('drawingFinish', { geom: feature, browserEvent: sGisEvent.browserEvent });
+            this.fire('drawingFinish', { feature: feature, browserEvent: sGisEvent.browserEvent });
         }
 
         _removeDragListeners() {
