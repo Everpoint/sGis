@@ -8,8 +8,13 @@ sGis.module('controls.Point', [
      * Control for creating point features. When active, any click on the map will create a new point feature and add it
      * to the active layer. If active layer is not set, the point feature will be given through 'drawingFinish' event.
      * @alias sGis.controls.Point
+     * @extends sGis.Control
      */
     class PointControl extends Control {
+        /**
+         * @param {sGis.Map} map
+         * @param {Object} properties - key-value set of properties to be set to the instance
+         */
         constructor(map, properties) {
             super(map, properties);
             this._handleClick = this._handleClick.bind(this);
@@ -24,12 +29,9 @@ sGis.module('controls.Point', [
         }
 
         _handleClick(sGisEvent) {
-            this.startNewFeature(sGisEvent.point);
             sGisEvent.stopPropagation();
-        }
 
-        startNewFeature(point) {
-            point = point.projectTo(this.map.crs);
+            let point = sGisEvent.point.projectTo(this.map.crs);
             var feature = new sGis.feature.Point(point.position, {crs: this.map.crs, symbol: this.symbol});
 
             if (this.activeLayer) this.activeLayer.add(feature);
@@ -37,6 +39,11 @@ sGis.module('controls.Point', [
         }
     }
 
+    /**
+     * Symbol of the points that are created by the control.
+     * @member {sGis.Symbol} sGis.controls.Point#symbol
+     * @default new sGis.symbol.point.Point()
+     */
     PointControl.prototype.symbol = new PointSymbol();
     
     return PointControl;
