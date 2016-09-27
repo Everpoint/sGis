@@ -1,8 +1,10 @@
 sGis.module('feature.Label', [
     'utils',
     'Feature',
-    'symbol.label.Label'
-], function(utils, Feature, LabelSymbol) {
+    'symbol.label.Label',
+    'Bbox',
+    'Point'
+], function(utils, Feature, LabelSymbol, Bbox, Point) {
     'use strict';
 
     var defaults = {
@@ -26,23 +28,28 @@ sGis.module('feature.Label', [
             this.coordinates = position;
         }
 
+        get position() { return this._position; }
+        set position(position) {
+            this._position = position;
+            this.redraw();
+        }
+
         /**
          * Position of the label
          * @type {sGis.Point}
          */
-        get point() { return this._point; }
+        get point() { return new Point(this.position, this.crs); }
         set point(/** sGis.Point */ point) {
-            this._point = point.projectTo(this.crs);
-            this.redraw();
+            this.position  = point.projectTo(this.crs).position;
         }
 
         /**
          * Position of the label
          * @type {Number[]}
          */
-        get coordinates() { return this._point; }
+        get coordinates() { return this._position.slice(); }
         set coordinates(/** Number[] */ point) {
-            this.point = new sGis.Point(point, this.crs);
+            this.position = point.slice();
         }
 
         /**
@@ -53,6 +60,10 @@ sGis.module('feature.Label', [
         set content(/** String */ content) {
             this._content = content;
             this.redraw();
+        }
+
+        get bbox() {
+            return new Bbox(this.position, this.position, this.crs);
         }
     }
 
