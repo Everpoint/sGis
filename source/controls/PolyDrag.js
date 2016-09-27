@@ -33,11 +33,11 @@ sGis.module('controls.PolyDrag', [
         _activate() {
             this.map.on('dragStart', this._handleDragStart);
             this._tempLayer = new FeatureLayer();
-            this._map.addLayer(this._tempLayer);
+            this.map.addLayer(this._tempLayer);
         }
 
         _deactivate() {
-            this._map.removeLayer(this._tempLayer);
+            this.map.removeLayer(this._tempLayer);
             this._tempLayer = null;
             this._activeFeature = null;
             this._removeDragListeners();
@@ -80,6 +80,11 @@ sGis.module('controls.PolyDrag', [
             // Abstract method, must be set in a child class
         }
 
+        /**
+         * The feature being drawn.
+         * @type sGis.feature.Polygon
+         * @readonly
+         */
         get activeFeature() { return this._activeFeature; }
     }
 
