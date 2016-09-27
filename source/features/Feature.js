@@ -168,6 +168,12 @@ sGis.module('Feature', [
 
     utils.extend(Feature.prototype, defaults);
 
+
     return Feature;
+
+    /**
+     * @typedef {function(Object)} sGis.Feature.constructor
+     * @returns sGis.Feature
+     */
 
 });

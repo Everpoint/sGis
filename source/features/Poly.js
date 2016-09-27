@@ -177,4 +177,8 @@ sGis.module('feature.Poly', [
 
     return Poly;
 
+    /**
+     * @typedef {function(Position[][], Object)} sGis.feature.Poly.constructor
+     * @returns sGis.feature.Poly
+     */
 });
