@@ -56,4 +56,5 @@ sGis.module('controls.Point', [
      * @mixes sGisEvent
      * @prop {sGis.feature.Point} feature - point that was created.
      */
+    
 });
