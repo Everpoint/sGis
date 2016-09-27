@@ -9,6 +9,7 @@ sGis.module('controls.Point', [
      * to the active layer. If active layer is not set, the point feature will be given through 'drawingFinish' event.
      * @alias sGis.controls.Point
      * @extends sGis.Control
+     * @fires sGis.controls.Point#drawingFinish
      */
     class PointControl extends Control {
         /**
@@ -48,4 +49,11 @@ sGis.module('controls.Point', [
     
     return PointControl;
 
+    /**
+     * A point is drawn and is added to the active layer (if set).
+     * @event sGis.controls.Point#drawingFinish
+     * @type {Object}
+     * @mixes sGisEvent
+     * @prop {sGis.feature.Point} feature - point that was created.
+     */
 });
