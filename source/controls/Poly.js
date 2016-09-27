@@ -47,6 +47,7 @@ sGis.module('controls.Poly', [
         }
 
         _deactivate() {
+            this.cancelDrawing();
             this.map.removeLayer(this._tempLayer);
             this._tempLayer = null;
             this.map.off('click', this._handleClick);
@@ -111,6 +112,9 @@ sGis.module('controls.Poly', [
         cancelDrawing() {
             if (!this._activeFeature) return;
 
+            this.map.removeListener('mousemove', this._handleMousemove);
+            this.map.removeListener('dblclick', this._handleDblclick);
+
             this._tempLayer.remove(this._activeFeature);
             this._activeFeature = null;
         }
@@ -127,9 +131,6 @@ sGis.module('controls.Poly', [
             if (ringIndex === 0 && feature.rings[ringIndex].length < 3) return;
 
             feature.removePoint(ringIndex, feature.rings[ringIndex].length - 1);
-
-            this.map.removeListener('mousemove', this._handleMousemove);
-            this.map.removeListener('dblclick', this._handleDblclick);
 
             if (this.activeLayer) this.activeLayer.add(feature);
         }
