@@ -61,6 +61,7 @@ sGis.module('controls.PolyDrag', [
         _handleDragEnd(sGisEvent) {
             let feature = this._activeFeature;
             this._activeFeature = null;
+            this._tempLayer.features = [];
             this._removeDragListeners();
 
             if (this.activeLayer) this.activeLayer.add(feature);
