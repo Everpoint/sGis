@@ -141,8 +141,8 @@ sGis.module('feature.Poly', [
             if (this._bbox) return this._bbox;
             let xMin = Number.MAX_VALUE;
             let yMin = Number.MAX_VALUE;
-            let xMax = Number.MIN_VALUE;
-            let yMax = Number.MIN_VALUE;
+            let xMax = -Number.MAX_VALUE;
+            let yMax = -Number.MAX_VALUE;
 
             this._rings.forEach(ring => {
                 ring.forEach(point => {
