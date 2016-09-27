@@ -5,11 +5,16 @@ sGis.module('controls.Rectangle', [
 
     'use strict';
 
+    /**
+     * Control for drawing rectangles by dragging from corner to corner.
+     * @alias sGis.controls.Rectangle
+     * @extends sGis.controls.PolyDrag
+     */
     class Rectangle extends PolyDrag {
         _startNewFeature(point) {
             let position = point.position;
             this._activeFeature = new Polygon([[position, position, position, position]], { crs: point.crs, symbol: this.symbol });
-            this._tempLayer.add(this._activeFeature);
+            this.tempLayer.add(this._activeFeature);
         }
 
         _updateFeature(point) {
