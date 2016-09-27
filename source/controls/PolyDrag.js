@@ -24,7 +24,7 @@ sGis.module('controls.PolyDrag', [
             super(map, properties);
 
             if (!this.symbol) this.symbol = new PolygonSymbol();
-            
+
             this._handleDragStart = this._handleDragStart.bind(this);
             this._handleDrag = this._handleDrag.bind(this);
             this._handleDragEnd = this._handleDragEnd.bind(this);
@@ -86,6 +86,13 @@ sGis.module('controls.PolyDrag', [
          * @readonly
          */
         get activeFeature() { return this._activeFeature; }
+
+        /**
+         * Temporary layer for feature drawing
+         * @type sGis.FeatureLayer
+         * @readonly
+         */
+        get tempLayer() { return this._tempLayer; }
     }
 
     /**
@@ -108,7 +115,7 @@ sGis.module('controls.PolyDrag', [
      * @event sGis.controls.PolyDrag#drawingFinish
      * @type {Object}
      * @mixes sGisEvent
-     * @ptop {sGis.feature.Polygon} feature - created feature
+     * @prop {sGis.feature.Polygon} feature - created feature
      */
 
 });

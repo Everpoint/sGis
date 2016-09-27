@@ -5,11 +5,16 @@ sGis.module('controls.Circle', [
 
     'use strict';
 
+    /**
+     * Control for drawing circles by dragging from center to the radius.
+     * @alias sGis.controls.Circle
+     * @extends sGis.controls.PolyDrag
+     */
     class Circle extends PolyDrag {
         _startNewFeature(point) {
             this._centerPoint = point.position;
             this._activeFeature = new Polygon([[]], { crs: point.crs, symbol: this.symbol });
-            this._tempLayer.add(this._activeFeature);
+            this.tempLayer.add(this._activeFeature);
         }
 
         _updateFeature(point) {
@@ -28,6 +33,10 @@ sGis.module('controls.Circle', [
         }
     }
 
+    /**
+     * The number of segments of the circle. The higher this number is the smoother the circle will be.
+     * @member {Number} sGis.controls.Circle#segmentNo
+     */
     Circle.prototype.segmentNo = 36;
 
     return Circle;
