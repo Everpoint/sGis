@@ -4,22 +4,23 @@ sGis.module('utils.Color', [
 
     'use strict';
 
-    var Color = function(string) {
-        this._original = string;
-        this._color = string && string.trim() || 'transparent';
-        this._setChannels();
-    };
+    class Color {
+        constructor(string) {
+            this._original = string;
+            this._color = string && string.trim() || 'transparent';
+            this._setChannels();
+        }
 
-    Color.prototype = {
-        _setChannels: function() {
+        _setChannels() {
             var format = this.format;
             if (format && formats[format]) {
                 this._channels = formats[format](this._color);
             } else {
                 this._channels = {};
             }
-        },
-        toString: function(format) {
+        }
+
+        toString(format) {
             if (format === 'hex') {
                 return '#' + decToHex(this.a) + decToHex(this.r) + decToHex(this.g) + decToHex(this.b);
             } else if (format === 'rgb') {
@@ -28,84 +29,49 @@ sGis.module('utils.Color', [
                 return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + (this.a / 255).toFixed(2).replace(/\.*0+$/, '') + ')';
             }
         }
-    };
+
+        get original() { return this._original; }
+
+        get isValid() { return !!(utils.isNumber(this._channels.a) && utils.isNumber(this._channels.r) && utils.isNumber(this._channels.g) && utils.isNumber(this._channels.b)); }
+
+        get format() {
+            if (this._color.substr(0, 1) === '#' && this._color.search(/[^#0-9a-fA-F]/) === -1) {
+                if (this._color.length === 4) {
+                    return 'hex3';
+                } else if (this._color.length === 7) {
+                    return 'hex6';
+                } else if (this._color.length === 5) {
+                    return 'hex4';
+                } else if (this._color.length === 9) {
+                    return 'hex8';
+                }
+            } else if (this._color.substr(0, 4) === 'rgb(') {
+                return 'rgb';
+            } else if (this._color.substr(0, 5) === 'rgba(') {
+                return 'rgba';
+            } else if (this._color in Color.names) {
+                return 'name';
+            }
+        }
+
+        get r() { return this._channels.r; }
+
+        get g() { return this._channels.g; }
+
+        get b() { return this._channels.b; }
+
+        get a() { return this._channels.a; }
+
+        get channels() { return Object.assign({}, this._channels); }
+    }
 
     function decToHex(dec) {
         var hex = Math.floor(dec).toString(16);
         return hex.length === 1 ? '0' + hex : hex;
     }
 
-    Object.defineProperties(Color.prototype, {
-        original: {
-            get: function() {
-                return this._original;
-            }
-        },
-
-        isValid: {
-            get: function() {
-                return !!(sGis.utils.isNumber(this._channels.a) && sGis.utils.isNumber(this._channels.r) && sGis.utils.isNumber(this._channels.g) && sGis.utils.isNumber(this._channels.b));
-            }
-        },
-
-        format: {
-            get: function() {
-                if (this._color.substr(0, 1) === '#' && this._color.search(/[^#0-9a-fA-F]/) === -1) {
-                    if (this._color.length === 4) {
-                        return 'hex3';
-                    } else if (this._color.length === 7) {
-                        return 'hex6';
-                    } else if (this._color.length === 5) {
-                        return 'hex4';
-                    } else if (this._color.length === 9) {
-                        return 'hex8';
-                    }
-                } else if (this._color.substr(0, 4) === 'rgb(') {
-                    return 'rgb';
-                } else if (this._color.substr(0, 5) === 'rgba(') {
-                    return 'rgba';
-                } else if (this._color in Color.names) {
-                    return 'name';
-                }
-            }
-        },
-        r: {
-            get: function() {
-                return this._channels.r;
-            }
-        },
-        g: {
-            get: function() {
-                return this._channels.g;
-            }
-        },
-        b: {
-            get: function() {
-                return this._channels.b;
-            }
-        },
-        a: {
-            get: function() {
-                return this._channels.a;
-            },
-            set: function(v) {
-                this._channels.a = Math.max(0, Math.min(255, Math.round(v)));
-            }
-        },
-        channels: {
-            get: function() {
-                return {
-                    a: this._channels.a,
-                    r: this._channels.r,
-                    g: this._channels.g,
-                    b: this._channels.b
-                }
-            }
-        }
-    });
-
     var formats = {
-        hex3: function(string) {
+        hex3: function(/** String */ string) {
             return {
                 r: parseInt(string.substr(1,1) + string.substr(1,1), 16),
                 g: parseInt(string.substr(2,1) + string.substr(2,1), 16),
@@ -113,7 +79,7 @@ sGis.module('utils.Color', [
                 a: 255
             }
         },
-        hex6: function(string) {
+        hex6: function(/** String */ string) {
             return {
                 r: parseInt(string.substr(1,2), 16),
                 g: parseInt(string.substr(3,2), 16),
@@ -121,7 +87,7 @@ sGis.module('utils.Color', [
                 a: 255
             }
         },
-        hex4: function(string) {
+        hex4: function(/** String */ string) {
             return {
                 r: parseInt(string.substr(2,1) + string.substr(2,1), 16),
                 g: parseInt(string.substr(3,1) + string.substr(3,1), 16),
@@ -129,7 +95,7 @@ sGis.module('utils.Color', [
                 a: parseInt(string.substr(1,1) + string.substr(1,1), 16)
             }
         },
-        hex8: function(string) {
+        hex8: function(/** String */ string) {
             return {
                 r: parseInt(string.substr(3,2), 16),
                 g: parseInt(string.substr(5,2), 16),
@@ -137,7 +103,7 @@ sGis.module('utils.Color', [
                 a:  parseInt(string.substr(1,2), 16)
             }
         },
-        rgb: function(string) {
+        rgb: function(/** String */ string) {
             var percents = string.match(/%/g);
             if (!percents || percents.length === 3) {
                 var channels = string.substring(string.search(/\(/) + 1, string.length - 1).split(',');
@@ -175,7 +141,7 @@ sGis.module('utils.Color', [
             };
         },
 
-        rgba: function(string) {
+        rgba: function(/** String */ string) {
             var channels = formats.rgb(string);
             channels.a = undefined;
 
@@ -194,7 +160,7 @@ sGis.module('utils.Color', [
             }
             return channels;
         },
-        name: function(string) {
+        name: function(/** String */ string) {
             var color = new Color('#' + Color.names[string]);
             return color.channels;
         }
@@ -356,8 +322,6 @@ sGis.module('utils.Color', [
         yellowgreen: "9acd32",
         transparent: '0000'
     };
-
-    sGis.utils.Color = Color;
 
     return Color;
 
