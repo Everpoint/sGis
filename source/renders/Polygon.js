@@ -67,7 +67,14 @@ sGis.module('render.Polygon', [
          * @memberof sGis.render.Polygon
          * @default 2
          */
-        lineContainsTolerance: 2
+        lineContainsTolerance: 2,
+
+        /**
+         * Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification
+         * @member {Number[]} sGis.render.Polyline#lineDash
+         * @default []
+         */
+        lineDash: []
     };
 
     /**

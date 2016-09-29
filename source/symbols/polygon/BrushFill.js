@@ -28,7 +28,7 @@ sGis.module('symbol.polygon.BrushFill', [
         renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
             if (!coordinates) return [];
-            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._brush })];
+            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._brush, lineDash: this.lineDash })];
         }
 
         /**
@@ -124,6 +124,13 @@ sGis.module('symbol.polygon.BrushFill', [
      * @default 1
      */
     PolygonSymbol.prototype.strokeWidth = 1;
+
+    /**
+     * Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification
+     * @member {Number[]} sGis.symbol.polygon.BrushFill#lineDash
+     * @default []
+     */
+    PolygonSymbol.prototype.lineDash = [];
 
     symbolSerializer.registerSymbol(PolygonSymbol, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth']);
 

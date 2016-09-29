@@ -86,6 +86,7 @@ sGis.module('painter.domPainter.Canvas', [
             this._ctx.lineJoin = 'round';
             this._ctx.lineWidth = render.strokeWidth;
             this._ctx.strokeStyle = render.strokeColor;
+            this._ctx.setLineDash(render.lineDash || []);
 
             for (var ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
                 this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
@@ -102,7 +103,7 @@ sGis.module('painter.domPainter.Canvas', [
                 if (render.fillStyle === 'color') {
                     this._ctx.fillStyle = render.fillColor;
                 } else if (render.fillStyle === 'image') {
-                    this._ctx.fillStyle = ctx.createPattern(render.fillImage, 'repeat');
+                    this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
                     var patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
                         patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
                     this._ctx.translate(patternOffsetX, patternOffsetY);

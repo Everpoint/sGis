@@ -29,7 +29,7 @@ sGis.module('symbol.polygon.ImageFill', [
             }
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
             if (!coordinates) return [];
-            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._image })];
+            return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._image, lineDash: this.lineDash })];
         }
 
         /**
@@ -63,6 +63,13 @@ sGis.module('symbol.polygon.ImageFill', [
      * @default 1
      */
     PolygonSymbol.prototype.strokeWidth = 1;
+
+    /**
+     * Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification
+     * @member {Number[]} sGis.symbol.polygon.ImageFill#lineDash
+     * @default []
+     */
+    PolygonSymbol.prototype.lineDash = [];
 
     symbolSerializer.registerSymbol(PolygonSymbol, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth']);
 

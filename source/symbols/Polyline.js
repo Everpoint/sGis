@@ -29,7 +29,7 @@ sGis.module('symbol.polyline.Simple', [
         renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
             var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
             if (!coordinates) return [];
-            return [new Polyline(coordinates, {strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
+            return [new Polyline(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, lineDash: this.lineDash })];
         }
 
         static _getRenderedCoordinates(feature, resolution, crs) {
@@ -60,6 +60,13 @@ sGis.module('symbol.polyline.Simple', [
      * @default 1
      */
     PolylineSymbol.prototype.strokeWidth = 1;
+
+    /**
+     * Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification
+     * @member {Number[]} sGis.symbol.polyline.Simple#lineDash
+     * @default []
+     */
+    PolylineSymbol.prototype.lineDash = [];
 
     symbolSerializer.registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth']);
 
