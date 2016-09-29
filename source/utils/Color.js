@@ -4,7 +4,14 @@ sGis.module('utils.Color', [
 
     'use strict';
 
+    /**
+     * Utility class for working with different representations of colors in browsers
+     * @alias sGis.utils.Color
+     */
     class Color {
+        /**
+         * @param {String} string - any valid css color string
+         */
         constructor(string) {
             this._original = string;
             this._color = string && string.trim() || 'transparent';
@@ -20,6 +27,11 @@ sGis.module('utils.Color', [
             }
         }
 
+        /**
+         * Returns the color as a string in the requested format
+         * @param {String} [format="rgba"] - target format. Available values: "hex" - #AARRGGBB, "rgb" - "rgb(r, g, b)", "rgba" - "rgba(r, g, b, a)"
+         * @returns {string}
+         */
         toString(format) {
             if (format === 'hex') {
                 return '#' + decToHex(this.a) + decToHex(this.r) + decToHex(this.g) + decToHex(this.b);
@@ -30,10 +42,24 @@ sGis.module('utils.Color', [
             }
         }
 
+        /**
+         * Returns the string given to the constructor of the instance
+         * @type {String}
+         */
         get original() { return this._original; }
 
+        /**
+         * Returns true if the instance represents a valid color, i.e. that after parsing of the string given to the constructor,
+         * the format is recognized and values of all channels are resolved to valid numbers.
+         * @returns {Boolean}
+         */
         get isValid() { return !!(utils.isNumber(this._channels.a) && utils.isNumber(this._channels.r) && utils.isNumber(this._channels.g) && utils.isNumber(this._channels.b)); }
 
+        /**
+         * Returns the format of the input color sting. Possible values: hex3, hex6, hex4, hex8, rgb, rgba, name.
+         * (name is the named css color values like "white")
+         * @returns {String}
+         */
         get format() {
             if (this._color.substr(0, 1) === '#' && this._color.search(/[^#0-9a-fA-F]/) === -1) {
                 if (this._color.length === 4) {
@@ -54,14 +80,34 @@ sGis.module('utils.Color', [
             }
         }
 
+        /**
+         * Returns red channel value as integer from 0 to 255.
+         * @type {Number}
+         */
         get r() { return this._channels.r; }
 
+        /**
+         * Returns green channel value as integer from 0 to 255.
+         * @type {Number}
+         */
         get g() { return this._channels.g; }
 
+        /**
+         * Returns blue channel value as integer from 0 to 255.
+         * @type {Number}
+         */
         get b() { return this._channels.b; }
 
+        /**
+         * Returns tranparency channel value as integer from 0 to 255.
+         * @type {Number}
+         */
         get a() { return this._channels.a; }
 
+        /**
+         * Returns values of the channels as integers from 0 to 255. Format is { r: r, g: g, b: b, a: a }.
+         * @type {Object}
+         */
         get channels() { return Object.assign({}, this._channels); }
     }
 
