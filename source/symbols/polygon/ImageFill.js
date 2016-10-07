@@ -45,7 +45,7 @@ sGis.module('symbol.polygon.ImageFill', [
         }
     }
 
-    PolygonSymbol.prototype._src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+    PolygonSymbol.prototype._src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
     /**
      * Stroke color of the outline. Can be any valid css color string.
