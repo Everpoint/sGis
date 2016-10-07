@@ -5,13 +5,13 @@ sGis.module('render.HtmlElement', [
     'use strict';
 
     /**
-     * @alias sGis.renders.HtmlElement
+     * @alias sGis.render.HtmlElement
      */
     class HtmlElement {
         /**
          * @constructor
          * @param {String} htmlText - the inner html value of html element
-         * @param {Number[]} position - projected position of render in [x, y] format
+         * @param {Position} position - projected position of render in [x, y] format
          * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM
          */
         constructor(htmlText, position, onAfterDisplayed) {
@@ -35,7 +35,7 @@ sGis.module('render.HtmlElement', [
 
         /**
          * Position of the render in [x, y] format
-         * @type Number[]
+         * @type Position
          * @readonly
          */
         get position() { return this._position; }
