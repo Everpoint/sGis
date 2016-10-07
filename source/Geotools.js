@@ -5,13 +5,20 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
 
     geotools.distance = function (a, b) {
         if (a.crs.from) {
-            var p1 = a.projectTo(sGis.CRS.geo),
-                p2 = b.projectTo(sGis.CRS.geo),
-                d = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(math.degToRad((p2.y - p1.y) / 2)), 2) + Math.cos(math.degToRad(p1.y)) * Math.cos(math.degToRad(p2.y)) * Math.pow(Math.sin(math.degToRad((p2.x - p1.x) / 2)), 2))),
-                R = 6372795,
-                l = d * R;
+            let p1 = a.projectTo(sGis.CRS.wgs84);
+            let p2 = b.projectTo(sGis.CRS.wgs84);
+            let lat1 = math.degToRad(p1.y);
+            let lat2 = math.degToRad(p2.y);
+            let dlat = lat2 - lat1;
+            let dlon = math.degToRad(p2.x - p1.x);
+
+            let d = Math.sin(dlat/2) * Math.sin(dlat/2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon/2) * Math.sin(dlon/2);
+            let c = 2 * Math.atan2(Math.sqrt(d), Math.sqrt(1-d));
+            let R = 6372795;
+
+            var l = R * c;
         } else {
-            var l = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+            l = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
         }
 
         return l;
