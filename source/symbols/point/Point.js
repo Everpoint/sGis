@@ -37,45 +37,35 @@ sGis.module('symbol.point.Point', [
 
     /**
      * Diameter of the circle.
-     * @member {Number} size
-     * @memberof sGis.symbol.point.Point
-     * @instance
+     * @member {Number} sGis.symbol.point.Point#size
      * @default 10
      */
     PointSymbol.prototype.size = 10;
 
     /**
      * Offset of the point from the feature position in {x: dx, y: dy} format. If set to {x:0, y:0}, center of the circle will be at the position of the feature.
-     * @member {Object} offset
-     * @memberof sGis.symbol.point.Point
-     * @instance
+     * @member {Object} sGis.symbol.point.Point#offset
      * @default {x: 0, y: 0}
      */
     PointSymbol.prototype.offset = {x: 0, y: 0};
 
     /**
      * Color of the inner part of the circle. Can be any valid css color string.
-     * @member {String} fillColor
-     * @memberof sGis.symbol.point.Point
-     * @instance
+     * @member {String} sGis.symbol.point.Point#fillColor
      * @default "black"
      */
     PointSymbol.prototype.fillColor = 'black';
 
     /**
      * Color of the outline of the circle. Can be any valid css color string.
-     * @member {String} strokeColor
-     * @memberof sGis.symbol.point.Point
-     * @instance
+     * @member {String} sGis.symbol.point.Point#strokeColor
      * @default "transparent"
      */
     PointSymbol.prototype.strokeColor = 'transparent';
 
     /**
      * Width of the outline.
-     * @member {Number} strokeWidth
-     * @memberof sGis.symbol.point.Point
-     * @instance
+     * @member {Number} sGis.symbol.point.Point#strokeWidth
      * @default 1
      */
     PointSymbol.prototype.strokeWidth = 1;
