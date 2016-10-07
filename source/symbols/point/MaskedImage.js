@@ -124,18 +124,14 @@ sGis.module('symbol.point.MaskedImage', [
 
     /**
      * Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used.
-     * @member {Number} width
-     * @memberof sGis.symbol.point.MaskedImage
-     * @instance
+     * @member {Number} sGis.symbol.point.MaskedImage#width
      * @default 10
      */
     MaskedImage.prototype.width = 32;
 
     /**
      * Height of the image. If not set, image will be automatically resized according to width. If both width and height are not set, original image size will be used.
-     * @member {Number} height
-     * @memberof sGis.symbol.point.MaskedImage
-     * @instance
+     * @member {Number} sGis.symbol.point.MaskedImage#height
      * @default 32
      */
     MaskedImage.prototype.height = 32;
@@ -143,9 +139,7 @@ sGis.module('symbol.point.MaskedImage', [
     /**
      * Anchor point of the image in the {x: dx, y: dy} format. If set to {x: 0, y: 0}, image's left top corner will be at the feature position.<br>
      *     Anchor point does not scale with width and height parameters.
-     * @member {Object} anchorPoint
-     * @memberof sGis.symbol.point.MaskedImage
-     * @instance
+     * @member {Object} sGis.symbol.point.MaskedImage#anchorPoint
      * @default {x: 16, y: 32}
      */
     MaskedImage.prototype.anchorPoint = {x: 16, y: 32};

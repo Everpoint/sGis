@@ -41,16 +41,14 @@ sGis.module('symbol.image.Image', [
 
     /**
      * Transition (fade in) time of the image node in ms.
-     * @member {Number} transitionTime
-     * @memberof sGis.symbol.image.Image
+     * @member {Number} sGis.symbol.image.Image#transitionTime
      * @default 0
      */
     ImageSymbol.prototype.transitionTime = 0;
 
     /**
      * Opacity of the image.
-     * @member {Number} transitionTime
-     * @memberof sGis.symbol.image.Image
+     * @member {Number} sGis.symbol.image.Image#transitionTime
      * @default 1
      */
     ImageSymbol.prototype.opacity = 1;

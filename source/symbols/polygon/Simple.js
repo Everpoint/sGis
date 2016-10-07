@@ -34,26 +34,21 @@ sGis.module('symbol.polygon.Simple', [
 
     /**
      * Fill color of the polygon. Can be any valid css color string.
-     * @member {String} fillColor
-     * @memberof sGis.symbol.polygon.Simple
-     * @instance
+     * @member {String} sGis.symbol.polygon.Simple#fillColor
      * @default "transparent"
      */
     PolygonSymbol.prototype.fillColor = 'transparent';
 
     /**
      * Stroke color of the outline. Can be any valid css color string.
-     * @member {String} strokeColor
-     * @memberof sGis.symbol.polygon.Simple
-     * @instance
+     * @member {String} sGis.symbol.polygon.Simple#strokeColor
      * @default "black"
      */
     PolygonSymbol.prototype.strokeColor = 'black';
 
     /**
      * Stroke width of the outline.
-     * @member {Number} strokeWidth
-     * @memberof sGis.symbol.polygon.Simple
+     * @member {Number} sGis.symbol.polygon.Simple#strokeWidth
      * @default 1
      */
     PolygonSymbol.prototype.strokeWidth = 1;

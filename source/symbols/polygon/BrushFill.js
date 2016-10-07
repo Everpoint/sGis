@@ -109,18 +109,14 @@ sGis.module('symbol.polygon.BrushFill', [
 
     /**
      * Stroke color of the outline. Can be any valid css color string.
-     * @member {String} strokeColor
-     * @memberof sGis.symbol.polygon.BrushFill
-     * @instance
+     * @member {String} sGis.symbol.polygon.BrushFill#strokeColor
      * @default "black"
      */
     PolygonSymbol.prototype.strokeColor = 'black';
 
     /**
      * Stroke width of the outline.
-     * @member {Number} strokeWidth
-     * @memberof sGis.symbol.polygon.BrushFill
-     * @instance
+     * @member {Number} sGis.symbol.polygon.BrushFill#strokeWidth
      * @default 1
      */
     PolygonSymbol.prototype.strokeWidth = 1;

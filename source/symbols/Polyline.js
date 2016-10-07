@@ -46,17 +46,14 @@ sGis.module('symbol.polyline.Simple', [
 
     /**
      * Stroke color of the line. Can be any valid css color string.
-     * @member {String} strokeColor
-     * @memberof sGis.symbol.polyline.Simple
-     * @instance
+     * @member {String} sGis.symbol.polyline.Simple#strokeColor
      * @default "black"
      */
     PolylineSymbol.prototype.strokeColor = 'black';
 
     /**
      * Stroke width of the line.
-     * @member {Number} strokeWidth
-     * @memberof sGis.symbol.polyline.Simple
+     * @member {Number} sGis.symbol.polyline.Simple#strokeWidth
      * @default 1
      */
     PolylineSymbol.prototype.strokeWidth = 1;

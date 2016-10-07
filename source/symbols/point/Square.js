@@ -40,45 +40,35 @@ sGis.module('symbol.point.Square', [
 
     /**
      * Size of the square.
-     * @member {Number} size
-     * @memberof sGis.symbol.point.Square
-     * @instance
+     * @member {Number} sGis.symbol.point.Square#size
      * @default 10
      */
     SquareSymbol.prototype.size = 10;
 
     /**
      * Offset of the point from the feature position in {x: dx, y: dy} format. If set to {x:0, y:0}, center of the square will be at the position of the feature.
-     * @member {Object} offset
-     * @memberof sGis.symbol.point.Square
-     * @instance
+     * @member {Object} sGis.symbol.point.Square#offset
      * @default {x: 0, y: 0}
      */
     SquareSymbol.prototype.offset = {x: 0, y: 0};
 
     /**
      * Color of the inner part of the square. Can be any valid css color string.
-     * @member {String} fillColor
-     * @memberof sGis.symbol.point.Square
-     * @instance
+     * @member {String} sGis.symbol.point.Square#fillColor
      * @default "black"
      */
     SquareSymbol.prototype.fillColor = 'black';
 
     /**
      * Color of the outline of the square. Can be any valid css color string.
-     * @member {String} strokeColor
-     * @memberof sGis.symbol.point.Square
-     * @instance
+     * @member {String} sGis.symbol.point.Square#strokeColor
      * @default "transparent"
      */
     SquareSymbol.prototype.strokeColor = 'transparent';
 
     /**
      * Width of the outline.
-     * @member {Number} strokeWidth
-     * @memberof sGis.symbol.point.Square
-     * @instance
+     * @member {Number} sGis.symbol.point.Square#strokeWidth
      * @default 1
      */
     SquareSymbol.prototype.strokeWidth = 1;
