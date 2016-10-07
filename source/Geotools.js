@@ -1,12 +1,19 @@
-sGis.module('geotools', ['math', 'utils'], function(math, utils) {
+sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis.CRS */ CRS) {
     'use strict';
 
     var geotools = {};
 
+    /**
+     * Finds distance between two geographical points. If the coordinate system of the points can be projected to the
+     * wgs84 crs, the distance will be calculated on a sphere with radius 6,371,009 meters (mean radius of the Earth).
+     * @param {sGis.IPoint} a
+     * @param {sGis.IPoint} b
+     * @returns {Number}
+     */
     geotools.distance = function (a, b) {
-        if (a.crs.from) {
-            let p1 = a.projectTo(sGis.CRS.wgs84);
-            let p2 = b.projectTo(sGis.CRS.wgs84);
+        if (a.crs.canProjectTo(CRS.wgs84)) {
+            let p1 = a.projectTo(CRS.wgs84);
+            let p2 = b.projectTo(CRS.wgs84);
             let lat1 = math.degToRad(p1.y);
             let lat2 = math.degToRad(p2.y);
             let dlat = lat2 - lat1;
@@ -14,7 +21,7 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
 
             let d = Math.sin(dlat/2) * Math.sin(dlat/2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon/2) * Math.sin(dlon/2);
             let c = 2 * Math.atan2(Math.sqrt(d), Math.sqrt(1-d));
-            let R = 6372795;
+            let R = 6371009;
 
             var l = R * c;
         } else {
@@ -25,9 +32,9 @@ sGis.module('geotools', ['math', 'utils'], function(math, utils) {
     };
 
     geotools.length = function(geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Poly ? geometry.rings : geometry,
-            length = 0,
-            ringTemp;
+        let coord = geometry.rings ? geometry.rings : geometry;
+        let length = 0;
+        let ringTemp;
 
         crs = geometry instanceof sGis.feature.Poly ? geometry.crs : crs ? crs : sGis.CRS.geo;
 
