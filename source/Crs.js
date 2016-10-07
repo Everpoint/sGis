@@ -312,14 +312,14 @@ sGis.module('CRS', [
         /**
          * @deprecated
          */
-        CRS.AlbersEqualArea.prototype.from = function(x, y) {
+        AlbersEqualArea.prototype.from = function(x, y) {
             var [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
-        CRS.AlbersEqualArea.prototype.to = function(lat, lon)  {
+        AlbersEqualArea.prototype.to = function(lat, lon)  {
             var [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };
