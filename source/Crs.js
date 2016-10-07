@@ -114,20 +114,30 @@ sGis.module('CRS', [
 ], function(Crs, math) {
 
     /**
-     * @namespace
-     * @memberof sGis
+     * @namespace sGis.CRS
      */
-    var CRS = {
-        /**
-         * Plain euclidean coordinate system. This projection cannot be projected to any other projection.
-         * @type {sGis.Crs}
-         */
-        plain: new Crs('Plain crs without any projection functions'),
-        wgs84: new Crs({wkid:4326})
-    };
+    var CRS = {};
 
     /**
+     * Plain euclidean coordinate system. This projection cannot be projected to any other projection.
+     * @type sGis.Crs
+     * @alias sGis.CRS.plain
+     * @memberof sGis.CRS
+     */
+    CRS.plain = new Crs('Plain crs without any projection functions');
+
+    /**
+     * Geographical coordinate system, which has longitude set as X coordinate, and latitude as Y coordinate.
+     * @type sGis.Crs
+     * @alias sGis.CRS.wgs84
+     * @memberof sGis.CRS
+     */
+    CRS.wgs84 = new Crs({wkid:4326});
+
+    /**
+     * @type sGis.Crs
      * @alias sGis.CRS.geo
+     * @memberof sGis.CRS
      */
     CRS.geo = new Crs('Native geographical coordinate system. It is same as wgs84, but x is longitude, rather then latitude.');
     CRS.geo.setProjectionTo(CRS.wgs84, ([x,y]) => [y,x]);
@@ -147,7 +157,10 @@ sGis.module('CRS', [
         let a = 6378137;
 
         /**
+         * @type sGis.Crs
          * @alias sGis.CRS.webMercator
+         * @memberof sGis.CRS
+
          */
         CRS.webMercator = new Crs({wkid: 102113});
         CRS.webMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
@@ -191,7 +204,9 @@ sGis.module('CRS', [
         let pih = Math.PI/2;
 
         /**
+         * @type sGis.Crs
          * @alias sGis.CRS.ellipticalMercator
+         * @memberof sGis.CRS
          */
         CRS.ellipticalMercator = new Crs({wkid: 667});
         CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
@@ -243,16 +258,14 @@ sGis.module('CRS', [
     {
         //http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
 
-        var R = 6372795;
+        let R = 6372795;
         /**
          * Class constructor of Alber's equal area projections.
-         * @class
-         * @augments Crs
          * @alias sGis.CRS.AlbersEqualArea
+         * @extends Crs
          */
-        CRS.AlbersEqualArea = class extends Crs {
+        class AlbersEqualArea extends Crs {
             /**
-             * @constructor
              * @param {Number} lat0 - latitude of origin
              * @param {Number} lon0 - longitude of origin
              * @param {Number} stLat1 - first standard parallel
@@ -310,10 +323,14 @@ sGis.module('CRS', [
             var [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };
+
+        CRS.AlbersEqualArea = AlbersEqualArea;
     }
 
     /**
+     * @type sGis.Crs
      * @alias sGis.CRS.cylindricalEqualArea
+     * @memberof sGis.CRS
      */
     CRS.cylindricalEqualArea = new CRS.AlbersEqualArea(0, 180, 60, 50);
 
