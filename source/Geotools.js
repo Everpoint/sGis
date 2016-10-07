@@ -31,6 +31,12 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
         return l;
     };
 
+    /**
+     * 
+     * @param geometry
+     * @param crs
+     * @returns {number}
+     */
     geotools.length = function(geometry, crs) {
         let coord = geometry.rings ? geometry.rings : geometry;
         let length = 0;
