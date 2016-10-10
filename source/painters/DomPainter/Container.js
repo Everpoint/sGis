@@ -40,7 +40,10 @@ sGis.module('painter.domPainter.Container', [
         }
 
         addNode(node, width, height, bbox) {
-            if (bbox.crs !== this._bbox.crs) bbox = bbox.projectTo(this._bbox.crs);
+            if (bbox.crs !== this._bbox.crs) {
+                if (!bbox.crs.canProjectTo(this._bbox.crs)) return;
+                bbox = bbox.projectTo(this._bbox.crs);
+            }
             Container._setNodeStyle(node);
             setNodeTransform(
                 node,
