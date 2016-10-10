@@ -64,6 +64,21 @@ sGis.module('painter.DomPainter', [
         }
 
         get layerRenderers() { return Array.from(this._layerRenderers.values()); }
+
+        /**
+         * Sets position and resolution of the map to show the full bounding box in the center of the map
+         * @param {sGis.Bbox} bbox
+         * @param {Boolean} [animate=true] - if set to true, the position will be changed gradually with animation.
+         */
+        show(bbox, animate = true) {
+            let projected = bbox.projectTo(this.map.crs);
+            let xResolution = projected.width / this.width;
+            let yResolution = projected.height / this.height;
+
+            let method = animate ? 'animateTo' : 'setPosition';
+
+            this.map[method](projected.center, this.map.getAdjustedResolution(Math.max(xResolution, yResolution)));
+        }
         
         _updateLayerList() {
             var mapLayers = this._map.getLayers(true);

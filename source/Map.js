@@ -131,6 +131,10 @@ sGis.module('Map', [
             this._animateTo(newPosition, adjustedResolution);
             this.fire('animationStart');
         }
+        
+        animateTo(position, resolution) {
+            this._animateTo(position, resolution);
+        }
 
         _animateTo (position, resolution) {
             this.stopAnimation();

@@ -39,6 +39,12 @@ sGis.module('Bbox', [
         }
 
         /**
+         * Center of the bounding box
+         * @type sGis.Point
+         */
+        get center() { return new Point([(this.xMax + this.xMin)/2, (this.yMax + this.yMin)/2], this.crs); }
+
+        /**
          * Returns a copy of the bbox
          * @returns {sGis.Bbox}
          */
