@@ -58,7 +58,7 @@ sGis.module('controls.Snapping', [
 
     Snapping.prototype.symbol = new PointSymbol({fillColor: 'red', size: 5});
 
-    Snapping.prototype.snappingDistance = 5;
+    Snapping.prototype.snappingDistance = 7;
 
     Snapping.prototype.activeFeature = null;
     Snapping.prototype.activeRingIndex = null;
