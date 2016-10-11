@@ -29,6 +29,7 @@ sGis.module('controls.Snapping', [
             this._removeListeners();
             this.map.removeLayer(this._tempLayer);
             this._tempLayer = null;
+            this._snapping = null;
         }
 
         _removeListeners() {
@@ -41,7 +42,7 @@ sGis.module('controls.Snapping', [
 
             this._tempLayer.features = snapping ? [ new PointFeature(snapping.position, {crs: point.crs, symbol: this.symbol}) ] : [];
 
-            sGisEvent.snapping = snapping;
+            this._snapping = snapping;
         }
 
         getSnapping(point) {
@@ -52,6 +53,8 @@ sGis.module('controls.Snapping', [
             }
             return null;
         }
+
+        get position() { return this._snapping && this._snapping.position; }
     }
 
     Snapping.prototype.snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
@@ -131,7 +134,9 @@ sGis.module('controls.Snapping', [
                     for (let j = 1; j < ring.length; j++) {
                         let projection = geotools.pointToLineProjection(point.position, [ring[j-1], ring[j]]);
 
-                        if (Math.abs(projection[0] - point.x) < distance && Math.abs(projection[1] - point.y) < distance) {
+                        let minX = Math.min(ring[j-1][0], ring[j][0]);
+                        let maxX = Math.max(ring[j-1][0], ring[j][0]);
+                        if (projection[0] >= minX && projection[0] <= maxX && Math.abs(projection[0] - point.x) < distance && Math.abs(projection[1] - point.y) < distance) {
                             return { position: projection, feature: features[i], ring: ringIndex, index: j-1 };
                         }
                     }
