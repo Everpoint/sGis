@@ -29,6 +29,8 @@ sGis.module('feature.Polygon', [
      * @default new sGis.symbol.polygon.Simple()
      */
     Polygon.prototype._symbol = new PolygonSymbol();
+    
+    Polygon.prototype.isEnclosed = true;
 
     return Polygon;
 
