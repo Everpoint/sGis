@@ -2,6 +2,8 @@ sGis.module('controls.PointEditor', [
     'Control'
 ], (Control) => {
 
+    'use strict';
+    
     class PointEditor extends Control {
         constructor(map, options) {
             super(map, options);
