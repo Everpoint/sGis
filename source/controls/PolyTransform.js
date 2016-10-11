@@ -123,18 +123,18 @@ sGis.module('controls.PolyTransform', [
             let xIndex = index % 3;
             let yIndex = Math.floor(index / 3);
 
-            var baseX = xIndex === 0 ? 2 : xIndex === 2 ? 0 : 1;
-            var baseY = yIndex === 0 ? 2 : yIndex === 2 ? 0 : 1;
-            var basePoint = this._scaleHandles[baseX + 3 * baseY].position;
+            let baseX = xIndex === 0 ? 2 : xIndex === 2 ? 0 : 1;
+            let baseY = yIndex === 0 ? 2 : yIndex === 2 ? 0 : 1;
+            let basePoint = this._scaleHandles[baseX + 3 * baseY].position;
 
-            var bbox = this._activeFeature.bbox;
-            var resolution = this.map.resolution;
-            var tolerance = MIN_SIZE * resolution;
-            var width = bbox.width;
-            var xScale = baseX === 1 ? 1 : (width + (baseX - 1) * sGisEvent.offset.x) / width;
+            let bbox = this._activeFeature.bbox;
+            let resolution = this.map.resolution;
+            let tolerance = MIN_SIZE * resolution;
+            let width = bbox.width;
+            let xScale = baseX === 1 ? 1 : (width + (baseX - 1) * sGisEvent.offset.x) / width;
             if (width < tolerance && xScale < 1) xScale = 1;
-            var height = bbox.height;
-            var yScale = baseY === 1 ? 1 : (height + (baseY - 1) * sGisEvent.offset.y) / height;
+            let height = bbox.height;
+            let yScale = baseY === 1 ? 1 : (height + (baseY - 1) * sGisEvent.offset.y) / height;
             if (height < tolerance && yScale < 1) yScale = 1;
 
             geotools.scale(this._activeFeature, [xScale, yScale], basePoint);
@@ -144,8 +144,8 @@ sGis.module('controls.PolyTransform', [
     }
 
     PolyTransform.prototype.rotationHandleSymbol = new PointSymbol({offset: {x: 0, y: -30}});
-    PolyTransform.prototype.scaleHandleSymbol = new SquareSymbol();
-    PolyTransform.prototype.scaleHandleOffset = 10;
+    PolyTransform.prototype.scaleHandleSymbol = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
+    PolyTransform.prototype.scaleHandleOffset = 12;
     
     return PolyTransform;
     
