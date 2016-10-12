@@ -7,7 +7,9 @@ sGis.module('controls.Editor', [
     'controls.PolyTransform'
 ], function(utils, Control, EditorSymbol, PointEditor, PolyEditor, PolyTransform) {
     'use strict';
-    
+
+    const modes = ['vertex', 'rotate', 'scale', 'drag'];
+
     class Editor extends Control {
         constructor(map, options) {
             super(map, options);
@@ -23,13 +25,17 @@ sGis.module('controls.Editor', [
             this._polyEditor.on('edit', this._updateTransformControl.bind(this));
 
             this._deselect = this._deselect.bind(this);
+            this.setMode(modes);
+
+            this._handleFeatureAdd = this._handleFeatureAdd.bind(this);
+            this._handleFeatureRemove = this._handleFeatureRemove.bind(this);
         }
 
         _activate() {
             if (!this.activeLayer) return;
             this.activeLayer.features.forEach(this._setListener, this);
-            this.activeLayer.on('featureAdd', this._setListener);
-            this.activeLayer.on('featureRemove', this._removeListener);
+            this.activeLayer.on('featureAdd', this._handleFeatureAdd);
+            this.activeLayer.on('featureRemove', this._handleFeatureRemove);
             this.map.on('click', this._deselect);
         }
 
@@ -50,15 +56,19 @@ sGis.module('controls.Editor', [
         }
 
         _deactivate() {
+            this._deselect();
             this.activeLayer.feature.forEach(this._removeListener, this);
-            this.activeLayer.off('featureAdd', this._setListener);
-            this.activeLayer.off('featureRemove', this._removeListener);
+            this.activeLayer.off('featureAdd', this._handleFeatureAdd);
+            this.activeLayer.off('featureRemove', this._handleFeatureRemove);
             this.map.off('click', this._deselect);
         }
 
+        select(feature) { this.activeFeature = feature; }
+        deselect() { this.activeFeature = null; }
+
         get activeFeature() { return this._activeFeature; }
         set activeFeature(feature) {
-            this.activate();
+            if (feature) this.activate();
             this._select(feature);
         }
 
@@ -79,18 +89,27 @@ sGis.module('controls.Editor', [
                 this._pointEditor.activeLayer = this.activeLayer;
                 this._pointEditor.activeFeature = feature;
             } else if (feature.rings) {
-                this._polyEditor.activeLayer = this.activeLayer;
-                this._polyTransform.activeLayer = this.activeLayer;
-                this._polyEditor.activeFeature = feature;
-                this._polyTransform.activeFeature = feature
+                this._activatePolyControls(feature);
             }
             this.activeLayer.redraw();
             
             this.fire('featureSelect', { feature: feature })
         }
 
+        _activatePolyControls(feature) {
+            this._polyEditor.featureDragAllowed = this._dragging;
+            this._polyEditor.vertexChangeAllowed = this._vertexEditing;
+            this._polyEditor.activeLayer = this.activeLayer;
+            this._polyEditor.activeFeature = feature;
+
+            this._polyTransform.enableRotation = this._rotation;
+            this._polyTransform.enableScaling = this._scaling;
+            this._polyTransform.activeLayer = this.activeLayer;
+            this._polyTransform.activeFeature = feature
+        }
+
         _deselect() {
-            if (!this._activeFeature) return;
+            if (!this._activeFeature || !this._deselectAllowed) return;
 
             this._pointEditor.deactivate();
             this._polyEditor.deactivate();
@@ -110,12 +129,26 @@ sGis.module('controls.Editor', [
         }
 
         setMode(mode) {
+            if (mode === 'all') mode = modes;
+            if (!Array.isArray(mode)) mode = mode.split(',').map(x => x.trim());
 
+            this._vertexEditing = mode.indexOf('vertex') >= 0;
+            this._rotation = mode.indexOf('rotate') >= 0;
+            this._dragging = mode.indexOf('drag') >= 0;
+            this._scaling = mode.indexOf('scale') >= 0;
+
+            if (this._activeFeature && this._activeFeature.rings) {
+                this._polyEditor.deactivate();
+                this._polyTransform.deactivate();
+                this._activatePolyControls(this._activeFeature);
+            }
         }
+
+        allowDeselect() { this._deselectAllowed = true; }
+        prohibitDeselect() { this._deselectAllowed = false; }
     }
 
-    const modes = ['vertex', 'rotate', 'scale', 'drag'];
-
+    Editor.prototype._deselectAllowed = true;
     
     
     // class Editor extends Control {

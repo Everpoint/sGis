@@ -42,11 +42,10 @@ sGis.module('controls.PolyEditor', [
         }
         
         _handleDragStart(sGisEvent) {
-            sGisEvent.draggingObject = this._activeFeature;
-            sGisEvent.stopPropagation();
+            if (!this.vertexChangeAllowed && !this.featureDragAllowed) return;
 
             let intersection = sGisEvent.intersectionType;
-            if (Array.isArray(intersection)) {
+            if (Array.isArray(intersection) && this.vertexChangeAllowed) {
                 let ring = this._activeFeature.rings[intersection[0]];
                 let point = ring[intersection[1]];
                 let evPoint = sGisEvent.point.projectTo(this._activeFeature.crs).position;
@@ -72,6 +71,11 @@ sGis.module('controls.PolyEditor', [
                 }
             } else {
                 this._activeRing = this._activeIndex = null;
+            }
+
+            if (this._activeRing !== null || this.featureDragAllowed) {
+                sGisEvent.draggingObject = this._activeFeature;
+                sGisEvent.stopPropagation();
             }
 
              this._setSnapping();
@@ -104,6 +108,7 @@ sGis.module('controls.PolyEditor', [
         }
 
         _handleFeatureDrag(sGisEvent) {
+
             geotools.move([this._activeFeature], [-sGisEvent.offset.x, -sGisEvent.offset.y]);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
@@ -144,6 +149,9 @@ sGis.module('controls.PolyEditor', [
     PolyEditor.prototype.vertexSize = 7;
     PolyEditor.prototype.onFeatureRemove = null;
     PolyEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
+    
+    PolyEditor.prototype.vertexChangeAllowed = true;
+    PolyEditor.prototype.featureDragAllowed = true;
 
     function distance(p1, p2) {
         return Math.sqrt((p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]));
