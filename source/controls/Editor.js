@@ -4,8 +4,10 @@ sGis.module('controls.Editor', [
     'symbol.Editor',
     'controls.PointEditor',
     'controls.PolyEditor',
-    'controls.PolyTransform'
-], function(utils, Control, EditorSymbol, PointEditor, PolyEditor, PolyTransform) {
+    'controls.PolyTransform',
+    'utils.StateManager',
+    'event'
+], function(utils, Control, EditorSymbol, PointEditor, PolyEditor, PolyTransform, StateManager, event) {
     'use strict';
 
     const modes = ['vertex', 'rotate', 'scale', 'drag'];
@@ -17,18 +19,30 @@ sGis.module('controls.Editor', [
             this._ns = '.' + utils.getGuid();
             this._setListener = this._setListener.bind(this);
             this._removeListener = this._removeListener.bind(this);
+            this._saveState = this._saveState.bind(this);
+            this._setEditors();
 
-            this._pointEditor = new PointEditor(map);
-            this._polyEditor = new PolyEditor(map);
-            this._polyTransform = new PolyTransform(map);
-
-            this._polyEditor.on('edit', this._updateTransformControl.bind(this));
+            this._states = new StateManager();
 
             this._deselect = this._deselect.bind(this);
             this.setMode(modes);
 
             this._handleFeatureAdd = this._handleFeatureAdd.bind(this);
             this._handleFeatureRemove = this._handleFeatureRemove.bind(this);
+
+            this._handleKeyDown = this._handleKeyDown.bind(this);
+        }
+
+        _setEditors() {
+            this._pointEditor = new PointEditor(this.map);
+            this._pointEditor.on('edit', this._saveState);
+
+            this._polyEditor = new PolyEditor(this.map, { onFeatureRemove: this._delete.bind(this) });
+            this._polyEditor.on('edit', this._saveState);
+            this._polyEditor.on('change', this._updateTransformControl.bind(this));
+
+            this._polyTransform = new PolyTransform(this.map);
+            this._polyTransform.on('rotationEnd scalingEnd', this._saveState);
         }
 
         _activate() {
@@ -37,6 +51,8 @@ sGis.module('controls.Editor', [
             this.activeLayer.on('featureAdd', this._handleFeatureAdd);
             this.activeLayer.on('featureRemove', this._handleFeatureRemove);
             this.map.on('click', this._deselect);
+
+            event.add(document, 'keydown', this._handleKeyDown);
         }
 
         _handleFeatureAdd(sGisEvent) {
@@ -61,6 +77,9 @@ sGis.module('controls.Editor', [
             this.activeLayer.off('featureAdd', this._handleFeatureAdd);
             this.activeLayer.off('featureRemove', this._handleFeatureRemove);
             this.map.off('click', this._deselect);
+
+            event.remove(document, 'keydown', this._handleKeyDown);
+
         }
 
         select(feature) { this.activeFeature = feature; }
@@ -92,7 +111,9 @@ sGis.module('controls.Editor', [
                 this._activatePolyControls(feature);
             }
             this.activeLayer.redraw();
-            
+
+            this._saveState();
+
             this.fire('featureSelect', { feature: feature })
         }
 
@@ -125,7 +146,7 @@ sGis.module('controls.Editor', [
         }
 
         _updateTransformControl() {
-            this._polyTransform.update();
+            if (this._polyTransform.isActive) this._polyTransform.update();
         }
 
         setMode(mode) {
@@ -146,10 +167,61 @@ sGis.module('controls.Editor', [
 
         allowDeselect() { this._deselectAllowed = true; }
         prohibitDeselect() { this._deselectAllowed = false; }
+
+        _delete() {
+            if (this._deselectAllowed && this.allowDeletion) {
+                let feature = this._activeFeature;
+                this._deselect();
+                this.activeLayer.remove(feature);
+
+                this._saveState();
+            }
+        }
+
+        _handleKeyDown(event) {
+            switch (event.which) {
+                case 27: this._deselect(); return false; // esc
+                case 46: this._delete(); return false; // del
+                case 90: if (event.ctrlKey) this.undo(); return false; // ctrl+z
+                case 89: if (event.ctrlKey) this.redo(); return false; // ctrl+x
+            }
+        }
+
+        _saveState() {
+            this._states.setState({ feature: this._activeFeature, coordinates: this._activeFeature && this._activeFeature.coordinates });
+        }
+
+        undo() {
+            this._setState(this._states.undo());
+        }
+
+        redo() {
+            this._setState(this._states.redo());
+        }
+
+        _setState(state) {
+            if (!state) return this._deselect();
+
+            if (!state.coordinates && this.activeLayer.features.indexOf(state.feature) >= 0) {
+                this.activeFeature = null;
+                this.activeLayer.remove(state.feature);
+            } else if (state.coordinates && this.activeLayer.features.indexOf(state.feature) < 0) {
+                state.feature.coordinates = state.coordinates;
+                this.activeLayer.add(state.feature);
+                this.activeFeature = state.feature;
+            } else if (state.coordinates) {
+                state.feature.coordinates = state.coordinates;
+                this.activeFeature = state.feature;
+            }
+
+            this._updateTransformControl();
+            this.activeLayer.redraw();
+        }
     }
 
     Editor.prototype._deselectAllowed = true;
-    
+    Editor.prototype.allowDeletion = true;
+
     
     // class Editor extends Control {
     //     constructor(map, properties) {

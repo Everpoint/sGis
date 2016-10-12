@@ -60,6 +60,7 @@ sGis.module('controls.PointEditor', [
 
         _handleDragEnd() {
             this._snapping.deactivate();
+            this.fire('edit');
         }
     }
 

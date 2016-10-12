@@ -99,21 +99,20 @@ sGis.module('controls.PolyEditor', [
             this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snapping.position || sGisEvent.point.projectTo(this._activeFeature.crs).position);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
-
-            this.fire('edit');
+            this.fire('change');
         }
 
         _handleDragEnd() {
             this._snapping.deactivate();
+            this.fire('edit');
         }
 
         _handleFeatureDrag(sGisEvent) {
-
             geotools.move([this._activeFeature], [-sGisEvent.offset.x, -sGisEvent.offset.y]);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
-            
-            this.fire('edit');
+
+            this.fire('change');
         }
 
         _handleDblClick(sGisEvent) {

@@ -59,6 +59,9 @@ sGis.module('feature.Point', [
             this._position[1] = y;
             this.redraw();
         }
+
+        get coordinates() { return this.position.slice(); }
+        set coordinates(position) { this.position = position.slice(); }
     }
 
     /**
