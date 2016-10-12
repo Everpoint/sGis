@@ -68,16 +68,15 @@ sGis.module('controls.Snapping', [
     Snapping.prototype.activePointIndex = null;
 
     var snapping = {
-        vertex: function(point, layer, distance, activeFeature) {
+        vertex: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
             let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
             for (let i = 0; i < features.length; i++) {
-                if (features[i] === activeFeature) continue;
-
                 let feature = features[i].crs.equals(point.crs) ? features[i] : features[i].projectTo(point.crs);
 
                 if (feature.position) {
+                    if (features[i] === activeFeature) continue;
                     if (Math.abs(feature.x - point.x) < distance && Math.abs(feature.y - point.y) < distance) {
                         return { position: feature.position, feature: features[i] };
                     }
@@ -85,6 +84,8 @@ sGis.module('controls.Snapping', [
                     let rings = feature.rings;
                     for (let ring = 0; ring < rings.length; ring++) {
                         for (let j = 0; j < rings[ring].length; j++) {
+                            if (features[i] === activeFeature && ring === activeRing && (Math.abs(j - activeIndex) < 2 || Math.abs(j - activeIndex) === rings[ring].length - 1)) continue;
+
                             if (Math.abs(rings[ring][j][0] - point.x) < distance && Math.abs(rings[ring][j][1] - point.y) < distance) {
                                 return { position: rings[ring][j], feature: features[i], ring: ring, index: j };
                             }
@@ -94,7 +95,7 @@ sGis.module('controls.Snapping', [
             }
         },
 
-        midpoint: function(point, layer, distance) {
+        midpoint: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
             let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
@@ -107,6 +108,8 @@ sGis.module('controls.Snapping', [
                     let ring = feature.isEnclosed ? rings[ringIndex].concat([rings[ringIndex][0]]) : rings[ringIndex];
 
                     for (let j = 1; j < ring.length; j++) {
+                        if (features[i] === activeFeature && ringIndex === activeRing && (j === activeIndex || j-1 === activeIndex || activeIndex === 0 && j === ring.length-1)) continue;
+
                         let midPointX = (ring[j][0] + ring[j-1][0]) / 2;
                         let midPointY = (ring[j][1] + ring[j-1][1]) / 2;
 
@@ -118,7 +121,7 @@ sGis.module('controls.Snapping', [
             }
         },
 
-        line: function(point, layer, distance) {
+        line: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
             let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
@@ -132,6 +135,8 @@ sGis.module('controls.Snapping', [
                     let ring = feature.isEnclosed ? rings[ringIndex].concat([rings[ringIndex][0]]) : rings[ringIndex];
 
                     for (let j = 1; j < ring.length; j++) {
+                        if (features[i] === activeFeature && ringIndex === activeRing && (j === activeIndex || j-1 === activeIndex || activeIndex === 0 && j === ring.length-1)) continue;
+
                         let projection = geotools.pointToLineProjection(point.position, [ring[j-1], ring[j]]);
 
                         let minX = Math.min(ring[j-1][0], ring[j][0]);
@@ -144,8 +149,8 @@ sGis.module('controls.Snapping', [
             }
         },
 
-        axis: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
-            if (!activeFeature || !activeRing || !activeIndex) return null;
+        axis: function(point, layer, distance, activeFeature, activeRing = null, activeIndex = null) {
+            if (!activeFeature || activeRing === null || activeIndex === null) return null;
 
             let lines = [];
             let ring = activeFeature.rings[activeRing].slice();
@@ -177,11 +182,13 @@ sGis.module('controls.Snapping', [
             }
         },
 
-        orthogonal: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
+        orthogonal: function(point, layer, distance, activeFeature, activeRing = null, activeIndex = null) {
+            if (!activeFeature || activeRing === null || activeIndex === null) return null;
+            
             let lines = [];
             let ring = activeFeature.rings[activeRing].slice();
             if (activeFeature.isEnclosed) {
-                let n = ring.length;
+                var n = ring.length;
                 lines.push([ring[(activeIndex+1) % n], ring[(activeIndex+2) % n]]);
                 lines.push([ring[(n + activeIndex - 1) % n], ring[(n + activeIndex - 2) % n]]);
             } else {

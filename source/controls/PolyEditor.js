@@ -1,15 +1,20 @@
 sGis.module('controls.PolyEditor', [
     'Control',
+    'controls.Snapping',
     'geotools'
-], (Control, geotools) => {
+], (Control, Snapping, geotools) => {
 
     'use strict';
 
     class PolyEditor extends Control {
         constructor(map, options) {
             super(map, options);
+
+            this._snapping = new Snapping(map);
+
             this._handleDragStart = this._handleDragStart.bind(this);
             this._handleDrag = this._handleDrag.bind(this);
+            this._handleDragEnd = this._handleDragEnd.bind(this);
             this._handleDblClick = this._handleDblClick.bind(this);
         }
 
@@ -17,6 +22,7 @@ sGis.module('controls.PolyEditor', [
             if (!this._activeFeature) return;
             this._activeFeature.on('dragStart', this._handleDragStart);
             this._activeFeature.on('drag', this._handleDrag);
+            this._activeFeature.on('dragEnd', this._handleDragEnd);
             this._activeFeature.on('dblclick', this._handleDblClick);
         }
 
@@ -24,6 +30,7 @@ sGis.module('controls.PolyEditor', [
             if (!this._activeFeature) return;
             this._activeFeature.off('dragStart', this._handleDragStart);
             this._activeFeature.off('drag', this._handleDrag);
+            this._activeFeature.off('dragEnd', this._handleDragEnd);
             this._activeFeature.off('dblclick', this._handleDblClick);
         }
 
@@ -50,6 +57,7 @@ sGis.module('controls.PolyEditor', [
                 let currDist = distance(point, evPoint);
                 if (currDist < targetDist) {
                     this._activeIndex = intersection[1];
+                    this._setSnapping();
                     return;
                 }
 
@@ -65,14 +73,33 @@ sGis.module('controls.PolyEditor', [
             } else {
                 this._activeRing = this._activeIndex = null;
             }
+
+             this._setSnapping();
+        }
+
+        _setSnapping() {
+            if (this._activeRing === null || !this.snappingTypes) return;
+
+            this._snapping.activeLayer = this.activeLayer;
+            this._snapping.snappingTypes = this.snappingTypes;
+            this._snapping.activeFeature = this._activeFeature;
+            this._snapping.activeRingIndex = this._activeRing;
+            this._snapping.activePointIndex = this._activeIndex;
+
+            this._snapping.activate();
         }
         
         _handleDrag(sGisEvent) {
             if (this._activeRing === null) return this._handleFeatureDrag(sGisEvent);
 
-            this._activeFeature.rings[this._activeRing][this._activeIndex] = sGisEvent.point.projectTo(this._activeFeature.crs).position;
+
+            this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snapping.position || sGisEvent.point.projectTo(this._activeFeature.crs).position);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
+        }
+
+        _handleDragEnd() {
+            this._snapping.deactivate();
         }
 
         _handleFeatureDrag(sGisEvent) {
@@ -111,6 +138,7 @@ sGis.module('controls.PolyEditor', [
 
     PolyEditor.prototype.vertexSize = 7;
     PolyEditor.prototype.onFeatureRemove = null;
+    PolyEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
 
     function distance(p1, p2) {
         return Math.sqrt((p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]));
