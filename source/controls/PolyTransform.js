@@ -15,6 +15,9 @@ sGis.module('controls.PolyTransform', [
 
             this._handleRotationStart = this._handleRotationStart.bind(this);
             this._handleRotation = this._handleRotation.bind(this);
+            this._handleRotationEnd = this._handleRotationEnd.bind(this);
+            
+            this._handleScalingEnd = this._handleScalingEnd.bind(this);
         }
         
         get activeFeature() { return this._activeFeature; }
@@ -23,6 +26,8 @@ sGis.module('controls.PolyTransform', [
             this._activeFeature = feature;
             this.activate();
         }
+        
+        update() { if (this._activeFeature) this._updateHandles(); }
         
         _activate() {
             if (!this._activeFeature) return;
@@ -39,8 +44,8 @@ sGis.module('controls.PolyTransform', [
         }
         
         _setHandles() {
-            this._setRotationHandle();
-            this._setScaleHandles();
+            if (this.enableRotation) this._setRotationHandle();
+            if (this.enableScaling) this._setScaleHandles();
         }
         
         _setRotationHandle() {
@@ -48,6 +53,7 @@ sGis.module('controls.PolyTransform', [
             this._updateRotationHandle();
             this._rotationHandle.on('dragStart', this._handleRotationStart);
             this._rotationHandle.on('drag', this._handleRotation);
+            this._rotationHandle.on('dragEnd', this._handleRotationEnd);
             this._tempLayer.add(this._rotationHandle);
         }
         
@@ -64,6 +70,7 @@ sGis.module('controls.PolyTransform', [
                 this._scaleHandles[i] = new PointFeature([0, 0], {symbol: symbol, crs: this._activeFeature.crs});
                 this._scaleHandles[i].on('dragStart', this._handleScalingStart.bind(this, i));
                 this._scaleHandles[i].on('drag', this._handleScaling.bind(this, i));
+                this._scaleHandles[i].on('dragEnd', this._handleScalingEnd);
             }
             
             this._tempLayer.add(this._scaleHandles);
@@ -74,6 +81,8 @@ sGis.module('controls.PolyTransform', [
             this._rotationBase = this._activeFeature.bbox.center.position;
             sGisEvent.draggingObject = this._rotationHandle;
             sGisEvent.stopPropagation();
+
+            this.fire('rotationStart');
         }
 
         _handleRotation(sGisEvent) {
@@ -88,10 +97,14 @@ sGis.module('controls.PolyTransform', [
             if (this.activeLayer) this.activeLayer.redraw();
             this._updateHandles();
         }
+        
+        _handleRotationEnd() {
+            this.fire('rotationEnd');
+        }
 
         _updateHandles() {
-            this._updateRotationHandle();
-            this._updateScaleHandles();
+            if (this.enableRotation) this._updateRotationHandle();
+            if (this.enableScaling) this._updateScaleHandles();
 
             this._tempLayer.redraw();
         }
@@ -115,7 +128,8 @@ sGis.module('controls.PolyTransform', [
         _handleScalingStart(index, sGisEvent) {
             sGisEvent.draggingObject = this._scaleHandles[index];
             sGisEvent.stopPropagation();
-
+            
+            this.fire('scalingStart');
         }
 
         _handleScaling(index, sGisEvent) {
@@ -141,11 +155,18 @@ sGis.module('controls.PolyTransform', [
             if (this.activeLayer) this.activeLayer.redraw();
             this._updateHandles();
         }
+
+        _handleScalingEnd() {
+            this.fire('scalingEnd');
+        }
     }
 
     PolyTransform.prototype.rotationHandleSymbol = new PointSymbol({offset: {x: 0, y: -30}});
     PolyTransform.prototype.scaleHandleSymbol = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
     PolyTransform.prototype.scaleHandleOffset = 12;
+    
+    PolyTransform.prototype.enableRotation = true;
+    PolyTransform.prototype.enableScaling = true;
     
     return PolyTransform;
     

@@ -192,10 +192,10 @@ sGis.module('controls.Snapping', [
                 lines.push([ring[(activeIndex+1) % n], ring[(activeIndex+2) % n]]);
                 lines.push([ring[(n + activeIndex - 1) % n], ring[(n + activeIndex - 2) % n]]);
             } else {
-                if (ring[index+2]) {
+                if (ring[activeIndex+2]) {
                     lines.push([ring[activeIndex+1], ring[activeIndex+2]]);
                 }
-                if (ring[index-2]) {
+                if (ring[activeIndex-2]) {
                     lines.push([ring[activeIndex-1], ring[activeIndex-2]]);
                 }
             }
