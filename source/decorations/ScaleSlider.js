@@ -128,8 +128,7 @@ sGis.module('decorations.ScaleSlider', [
             var maxResolution = this._map.maxResolution;
             var minResolution = this._map.minResolution;
 
-            var resolution = minResolution * Math.pow(2, offset * Math.log2(maxResolution / minResolution) / height);
-            this._map.resolution = resolution;
+            this._map.resolution = minResolution * Math.pow(2, offset * Math.log2(maxResolution / minResolution) / height);
         }
     }
     

@@ -4,6 +4,9 @@ sGis.module('painter.domPainter.Container', [
 
     var containerStyle = 'width: 100%; height: 100%; transform-origin: left top; position: absolute;';
 
+    /**
+     * @alias sGis.painter.domPainter.Container
+     */
     class Container {
         constructor(wrapper, bbox, resolution, onEmpty) {
             this._onEmpty = onEmpty;

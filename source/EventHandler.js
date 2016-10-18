@@ -46,13 +46,13 @@ sGis.module('EventHandler', [
          * @returns {Object} - event object
          */
         fire (eventType, parameters) {
-            if (this._prohibitedEvents && this._prohibitedEvents.indexOf(eventType) !== -1) return;
+            if (this._prohibitedEvents && this._prohibitedEvents.indexOf(eventType) !== -1) return null;
 
             var sGisEvent = {};
-            if (parameters) sGis.utils.extend(sGisEvent, parameters);
+            if (parameters) utils.extend(sGisEvent, parameters);
 
             var types = getTypes(eventType);
-            if (types.length !== 1) sGis.utils.error('Exactly on type of event can be fired at a time, but ' + types.length + ' is given');
+            if (types.length !== 1) utils.error('Exactly on type of event can be fired at a time, but ' + types.length + ' is given');
 
             sGisEvent.sourceObject = this;
             sGisEvent.eventType = types[0];
@@ -71,11 +71,11 @@ sGis.module('EventHandler', [
          * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
          */
         addListener (description, handler) {
-            if (!(handler instanceof Function)) sGis.utils.error('Function is expected but got ' + handler + ' instead');
-            if (!sGis.utils.isString(description)) sGis.utils.error('String is expected but got ' + description + ' instead');
+            if (!(handler instanceof Function)) utils.error('Function is expected but got ' + handler + ' instead');
+            if (!sGis.utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
 
             var types = getTypes(description);
-            if (types.length < 1) sGis.utils.error('No event type is specified');
+            if (types.length < 1) utils.error('No event type is specified');
 
             var namespaces = getNamespaces(description);
             if (!this._eventHandlers) this._setHandlerList();
@@ -92,11 +92,11 @@ sGis.module('EventHandler', [
          * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
          */
         once (description, handler) {
-            if (!(handler instanceof Function)) sGis.utils.error('Function is expected but got ' + handler + ' instead');
-            if (!sGis.utils.isString(description)) sGis.utils.error('String is expected but got ' + description + ' instead');
+            if (!(handler instanceof Function)) utils.error('Function is expected but got ' + handler + ' instead');
+            if (!sGis.utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
 
             var types = getTypes(description);
-            if (types.length !== 1) sGis.utils.error('Only one event type can be specified with .once() method');
+            if (types.length !== 1) utils.error('Only one event type can be specified with .once() method');
             var namespaces = getNamespaces(description);
             if (!this._eventHandlers) this._setHandlerList();
 
@@ -211,7 +211,7 @@ sGis.module('EventHandler', [
         getHandlers (type) {
             if (!sGis.utils.isString(type)) sGis.utils.error('Expected the name of the e*vent, but got ' + type + ' instead');
             if (this._eventHandlers && this._eventHandlers[type]) {
-                return sGis.utils.copyObject(this._eventHandlers[type]);
+                return utils.copyObject(this._eventHandlers[type]);
             }
             return [];
         }
@@ -241,7 +241,7 @@ sGis.module('EventHandler', [
         return string.replace(/\.[A-Za-z0-9_-]+/g, '').match(/[A-Za-z0-9_-]+/g) || [];
     }
 
-    function getNamespaces(string) {
+    function getNamespaces(/** String */ string) {
         return string.match(/\.[A-Za-z0-9_-]+/g) || [];
     }
 

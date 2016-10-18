@@ -10,7 +10,10 @@ sGis.module('painter.domPainter.EventDispatcher', [
     var defaults = {
         objectEvents: ['click', 'dblclick', 'dragStart', 'mousemove']
     };
-    
+
+    /**
+     * @alias sGis.painter.domPainter.EventDispatcher
+     */
     class EventDispatcher {
         constructor(baseNode, master) {
             this._master = master;

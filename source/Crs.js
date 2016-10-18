@@ -308,7 +308,7 @@ sGis.module('CRS', [
                     return [x, y];
                 });
             }
-        };
+        }
 
         /**
          * @deprecated

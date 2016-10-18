@@ -9,7 +9,10 @@ sGis.module('painter.domPainter.SvgRender', [
     'use strict';
    
     var NS = 'http://www.w3.org/2000/svg';
-    
+
+    /**
+     * @alias sGis.painter.domPainter.SvgRender
+     */
     class SvgRender{
         constructor(render) {
             this._baseRender = render;

@@ -65,13 +65,12 @@ sGis.module('symbol.maptip.Simple', [
             var y = position[1] + offset.y;
             var width = this.width;
             var height = this.height;
-            var square = [
-                    [x - 1, y],
-                    [x + width, y],
-                    [x + width, y + height + 1],
-                    [x - 1, y + height + 1]
-                ];
-            return square;
+            return [
+                [x - 1, y],
+                [x + width, y],
+                [x + width, y + height + 1],
+                [x - 1, y + height + 1]
+            ];
         }
     }
     
@@ -133,9 +132,6 @@ sGis.module('symbol.maptip.Simple', [
         }
 
         return baseLine;
-    }
-
-    function getBalloonSquare(feature, position) {
     }
 
     function isInside(position, square) {
