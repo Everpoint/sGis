@@ -7,12 +7,32 @@ sGis.module('controls.Editor', [
     'controls.PolyTransform',
     'utils.StateManager',
     'event'
-], function(utils, Control, EditorSymbol, PointEditor, PolyEditor, PolyTransform, StateManager, event) {
+], function(
+    /** sGis.utils */ utils, 
+    /** function(new:sGis.Control) */ Control, 
+    /** function(new:sGis.symbol.Editor) */ EditorSymbol, 
+    /** function(new:sGis.controls.PointEditor) */ PointEditor, 
+    /** function(new:sGis.controls.PolyEditor) */ PolyEditor, 
+    /** function(new:sGis.controls.PolyTransform) */ PolyTransform, 
+    /** function(new:sGis.utils.StateManager */ StateManager, 
+    /** sGis.event */ event) {
+    
     'use strict';
 
     const modes = ['vertex', 'rotate', 'scale', 'drag'];
 
+    /**
+     * Control for editing points, polylines and polygons. It uses PointEditor, PolyEditor, PolyTransform and Snapping classes for editing corresponding features.
+     * @alias sGis.controls.Editor
+     * @extends sGis.Control
+     * @fires sGis.controls.Editor#featureSelect
+     * @fires sGis.controls.Editor#featureDeselect
+     */
     class Editor extends Control {
+        /**
+         * @param {sGis.Map} map - map object the control will work with
+         * @param {Object} [options] - key-value set of properties to be set to the instance
+         */
         constructor(map, options) {
             super(map, options);
 
@@ -82,11 +102,23 @@ sGis.module('controls.Editor', [
 
         }
 
+        /**
+         * Selects a given feature if it is in the active layer.
+         * @param {sGis.Feature} feature
+         */
         select(feature) { this.activeFeature = feature; }
+
+        /**
+         * Clears selection if any.
+         */
         deselect() { this.activeFeature = null; }
 
+        /**
+         * Currently selected for editing feature.
+         * @type {sGis.Feature}
+         */
         get activeFeature() { return this._activeFeature; }
-        set activeFeature(feature) {
+        set activeFeature(/** sGis.Feature */ feature) {
             if (feature) this.activate();
             this._select(feature);
         }
@@ -149,6 +181,15 @@ sGis.module('controls.Editor', [
             if (this._polyTransform.isActive) this._polyTransform.update();
         }
 
+        /**
+         * Sets the editing mode. Available modes are:<br>
+         *     * vertex - editing vertexes of polygons and polylines.
+         *     * rotate - rotation of polygons and polylines
+         *     * drag - dragging of whole features
+         *     * scale - scaling of polygons and polylines
+         *     * all - all modes are active
+         * @param {string[]|string} mode - can be coma separated list or array of mode names
+         */
         setMode(mode) {
             if (mode === 'all') mode = modes;
             if (!Array.isArray(mode)) mode = mode.split(',').map(x => x.trim());
@@ -165,7 +206,14 @@ sGis.module('controls.Editor', [
             }
         }
 
+        /**
+         * If deselecting was prohibited, this methods turns it on again.
+         */
         allowDeselect() { this._deselectAllowed = true; }
+
+        /**
+         * Prevents feature to be deselected by any user or code interaction. It will not have effect if the control is deactivated though.
+         */
         prohibitDeselect() { this._deselectAllowed = false; }
 
         _delete() {
@@ -191,10 +239,16 @@ sGis.module('controls.Editor', [
             this._states.setState({ feature: this._activeFeature, coordinates: this._activeFeature && this._activeFeature.coordinates });
         }
 
+        /**
+         * Undo last change.
+         */
         undo() {
             this._setState(this._states.undo());
         }
 
+        /**
+         * Redo a change that was undone.
+         */
         redo() {
             this._setState(this._states.redo());
         }
@@ -220,8 +274,30 @@ sGis.module('controls.Editor', [
     }
 
     Editor.prototype._deselectAllowed = true;
+
+    /**
+     * If set to true the feature will be deleted in one of two cases:<br>
+     *     1) User removes last point of polyline or polygon.
+     *     2) User presses "del" button
+     * @member {Boolean} sGis.controls.Editor#allowDeletion
+     */
     Editor.prototype.allowDeletion = true;
 
     return Editor;
-    
+
+    /**
+     * Feature was selected by user.
+     * @event sGis.controls.Editor#featureSelect
+     * @type {Object}
+     * @prop {sGis.Feature} feature - feature that was selected
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Feature was deselected by user.
+     * @event sGis.controls.Editor#featureDeselect
+     * @type {Object}
+     * @prop {sGis.Feature} feature - feature that was deselected
+     * @mixes sGisEvent
+     */
 });
