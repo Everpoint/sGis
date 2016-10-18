@@ -80,17 +80,18 @@ sGis.module('controls.PointEditor', [
     }
 
     /**
-     * Specifies which snapping functions to use.
+     * Specifies which snapping functions to use. See {sGis.controls.Snapping#snappingTypes}.
      * @member {String[]} sGis.controls.PointEditor#snappingTypes
+     * @default ['vertex', 'midpoint', 'line']
      */
     PointEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line'];
 
     return PointEditor;
 
-    /**
-     * Dragging of the point if finished and the feature is released.
-     * @event sGis.controls.PointEditor#edit
-     * @type {Object}
-     * @mixes sGisEvent
-     */
+        /**
+         * Dragging of the point if finished and the feature is released.
+         * @event sGis.controls.PointEditor#edit
+         * @type {Object}
+         * @mixes sGisEvent
+         */
 });

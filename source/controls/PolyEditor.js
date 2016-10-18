@@ -6,7 +6,20 @@ sGis.module('controls.PolyEditor', [
 
     'use strict';
 
+    /**
+     * Control for editing polyline and polygon features. When activeFeature is set, the feature becomes draggable.
+     * If a vertex is dragged, the vertex position is changed. If a side is dragged, a new point is added to the side and
+     * then being dragged. If inside area of the polygon is dragged, the whole polygon will change position.
+     * @alias sGis.controls.PolyEditor
+     * @extends sGis.Control
+     * @fires sGis.controls.PolyEditor#change
+     * @fires sGis.controls.PolyEditor#edit
+     */
     class PolyEditor extends Control {
+        /**
+         * @param {sGis.Map} map - map object the control will work with
+         * @param {Object} [options] - key-value set of properties to be set to the instance
+         */
         constructor(map, options) {
             super(map, options);
 
@@ -34,8 +47,12 @@ sGis.module('controls.PolyEditor', [
             this._activeFeature.off('dblclick', this._handleDblClick);
         }
 
+        /**
+         * Feature to edit. If set to null, the control is deactivated.
+         * @type {sGis.feature.Poly}
+         */
         get activeFeature() { return this._activeFeature; }
-        set activeFeature(feature) {
+        set activeFeature(/** sGis.feature.Poly */ feature) {
             this.deactivate();
             this._activeFeature = feature;
             this.activate();
@@ -145,11 +162,41 @@ sGis.module('controls.PolyEditor', [
         }
     }
 
+    /**
+     * Distance from a vertex in pixels that will be considered as inside of the vertex. If the cursor is in this range from
+     * a vertex then the vertex will be dragged.
+     * @member {Number} sGis.controls.PolyEditor#vertexSize
+     * @default 7
+     */
     PolyEditor.prototype.vertexSize = 7;
+
+    /**
+     * If user tries to remove the last point of the feature, the control will not remove it but will call this callback
+     * function instead. The function is called without any arguments.
+     * @member {Function} sGis.controls.PolyEditor#onFeatureRemove
+     * @default null
+     */
     PolyEditor.prototype.onFeatureRemove = null;
+
+    /**
+     * Specifies which snapping functions to use. See {sGis.controls.Snapping#snappingTypes}.
+     * @member {String[]} sGis.controls.PolyEditor#snappingTypes
+     * @default ['vertex', 'midpoint', 'line', 'axis', 'orthogonal']
+     */
     PolyEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
-    
+
+    /**
+     * If set to false it will be not possible to change the shape of the feature.
+     * @member {Boolean} sGis.controls.PolyEditor#vertexChangeAllowed
+     * @default true
+     */
     PolyEditor.prototype.vertexChangeAllowed = true;
+
+    /**
+     * If set to false it will be not possible to move the feature as whole.
+     * @member {Boolean} sGis.controls.PolyEditor#featureDragAllowed
+     * @default true
+     */
     PolyEditor.prototype.featureDragAllowed = true;
 
     function distance(p1, p2) {
@@ -157,5 +204,19 @@ sGis.module('controls.PolyEditor', [
     }
 
     return PolyEditor;
+
+    /**
+     * The feature is being dragged (one or more points is changed due to user interaction).
+     * @event sGis.controls.PolyEditor#change
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Dragging of the feature if finished and the feature is released.
+     * @event sGis.controls.PolyEditor#edit
+     * @type {Object}
+     * @mixes sGisEvent
+     */
 
 });
