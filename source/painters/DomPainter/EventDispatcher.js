@@ -181,7 +181,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
 
         _ontouchstart(event) {
-            for (var i in event.changedTouches) {
+            for (var i = 0; i < event.changedTouches.length; i++) {
                 var touch = event.changedTouches[i];
                 this._touchHandler.dragPrevPosition[touch.identifier] = {x: touch.pageX, y: touch.pageY};
                 this._touchHandler.lastDrag = {x: 0, y: 0};
@@ -244,7 +244,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
 
         _ontouchend(event) {
-            for (var i in event.changedTouches) {
+            for (var i = 0; i < event.changedTouches.length; i++) {
                 delete this._touchHandler.dragPrevPosition[event.changedTouches[i].identifier];
             }
 

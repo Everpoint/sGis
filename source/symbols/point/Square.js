@@ -34,7 +34,7 @@ sGis.module('symbol.point.Square', [
                 [pxPosition[0] + halfSize + offset.x, pxPosition[1] - halfSize + offset.y]
             ];
 
-            return [new sGis.render.Polygon(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
+            return [new PolygonRender(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
         }
     }
 

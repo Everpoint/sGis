@@ -92,10 +92,10 @@ sGis.module('TileLayer', [
             var layerResolution = this.tileScheme.levels[level].resolution;
             if (layerResolution * 2 < resolution) return [];
             
-            var xStartIndex = Math.floor((bbox.p[0].x - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
-            var xEndIndex = Math.ceil((bbox.p[1].x - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
-            var yStartIndex = Math.floor((this.tileScheme.origin[1] - bbox.p[1].y) / this.tileHeight / layerResolution);
-            var yEndIndex = Math.ceil((this.tileScheme.origin[1] - bbox.p[0].y) / this.tileHeight / layerResolution);
+            var xStartIndex = Math.floor((bbox.xMin - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
+            var xEndIndex = Math.ceil((bbox.xMax - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
+            var yStartIndex = Math.floor((this.tileScheme.origin[1] - bbox.yMax) / this.tileHeight / layerResolution);
+            var yEndIndex = Math.ceil((this.tileScheme.origin[1] - bbox.yMin) / this.tileHeight / layerResolution);
 
             var tiles = this._tiles;
             var features = [];

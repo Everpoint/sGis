@@ -64,7 +64,7 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
             area = 0;
 
 
-        if (crs.from) {
+        if (crs.canProjectTo(CRS.cylindricalEqualArea)) {
             var projected = tempFeature.projectTo(sGis.CRS.cylindricalEqualArea).rings;
         } else {
             projected = tempFeature.rings;

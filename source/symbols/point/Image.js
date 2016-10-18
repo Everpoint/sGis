@@ -28,7 +28,7 @@ sGis.module('symbol.point.Image', [
             var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
 
             var html = '<img src="' + this.source + '"' + (this.width > 0 ? ' width="' + this.width + '"' : '') + (this.height > 0 ? ' height="' + this.height + '"' : '') + '>';
-            return [new sGis.render.HtmlElement(html, renderPosition)];
+            return [new HtmlElement(html, renderPosition)];
         }
     }
 
