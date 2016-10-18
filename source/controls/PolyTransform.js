@@ -5,11 +5,31 @@ sGis.module('controls.PolyTransform', [
     'symbol.point.Point',
     'symbol.point.Square',
     'geotools'
-], (Control, FeatureLayer, PointFeature, PointSymbol, SquareSymbol, geotools) => {
+], (
+    /** function(new:sGis.Control) */ Control,
+    /** function(new:sGis.FeatureLayer) */ FeatureLayer, 
+    /** function(new:sGis.feature.Point) */ PointFeature, 
+    /** function(new:sGis.symbol.point.Point) */ PointSymbol, 
+    /** function(new:sGis.symbol.point.Square) */ SquareSymbol, 
+    /** sGis.geotools */ geotools) => {
     
     'use strict';
-    
+
+    /**
+     * Control for modifying polylines or polygons as whole. When activeFeature is set, it shows points around the feature
+     * dragging which one can scale or rotate the feature.
+     * @alias sGis.controls.PolyTransform
+     * @extends sGis.Control
+     * @fires sGis.controls.PolyTransform#rotationStart
+     * @fires sGis.controls.PolyTransform#rotationEnd
+     * @fires sGis.controls.PolyTransform#scalingStart
+     * @fires sGis.controls.PolyTransform#scalingEnd
+     */
     class PolyTransform extends Control {
+        /**
+         * @param {sGis.Map} map - map object the control will work with
+         * @param {Object} [options] - key-value set of properties to be set to the instance
+         */
         constructor(map, options) {
             super(map, options);
 
@@ -19,14 +39,21 @@ sGis.module('controls.PolyTransform', [
             
             this._handleScalingEnd = this._handleScalingEnd.bind(this);
         }
-        
+
+        /**
+         * Feature to edit. If set to null, the control is deactivated.
+         * @type {sGis.feature.Poly}
+         */
         get activeFeature() { return this._activeFeature; }
-        set activeFeature(feature) {
+        set activeFeature(/** sGis.feature.Poly */ feature) {
             this.deactivate();
             this._activeFeature = feature;
             this.activate();
         }
-        
+
+        /**
+         * Updates position of the editor handles.
+         */
         update() { if (this._activeFeature) this._updateHandles(); }
         
         _activate() {
@@ -161,13 +188,69 @@ sGis.module('controls.PolyTransform', [
         }
     }
 
+    /**
+     * Symbol of the rotation handle.
+     * @member {sGis.Symbol} sGis.controls.PolyTransform#rotationHandleSymbol
+     * @default new PointSymbol({offset: {x: 0, y: -30}})
+     */
     PolyTransform.prototype.rotationHandleSymbol = new PointSymbol({offset: {x: 0, y: -30}});
+
+    /**
+     * Symbol of the scaling handles.
+     * @member {sGis.Symbol} sGis.controls.PolyTransform#scaleHandleSymbol
+     * #default new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 })
+     */
     PolyTransform.prototype.scaleHandleSymbol = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
+
+    /**
+     * Distance in pixels between scaling handles and feature bbox.
+     * @member {Number} sGis.controls.PolyTransform#scaleHandleOffset
+     * @default 12
+     */
     PolyTransform.prototype.scaleHandleOffset = 12;
-    
+
+    /**
+     * If set to false the rotation handle will not be displayed.
+     * @member {Boolean} sGis.controls.PolyTransform#enableRotation
+     * @default true
+     */
     PolyTransform.prototype.enableRotation = true;
+
+    /**
+     * If set to false the scaling handle will not be displayed.
+     * @member {Boolean} sGis.controls.PolyTransform#enableScaling
+     * @default true
+     */
     PolyTransform.prototype.enableScaling = true;
     
     return PolyTransform;
-    
+
+    /**
+     * Rotation has started.
+     * @event sGis.controls.PolyTransform#rotationStart
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Rotation has ended.
+     * @event sGis.controls.PolyTransform#rotationEnd
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Scaling has started.
+     * @event sGis.controls.PolyTransform#scalingStart
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Scaling has ended.
+     * @event sGis.controls.PolyTransform#scalingEnd
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
 });

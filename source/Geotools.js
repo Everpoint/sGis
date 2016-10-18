@@ -1,6 +1,9 @@
 sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis.CRS */ CRS) {
     'use strict';
 
+    /**
+     * @namespace sGis.geotools
+     */
     var geotools = {};
 
     /**
@@ -265,7 +268,14 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
             transformFeature(features, matrix, center);
         }
     };
-    
+
+    /**
+     * @alias sGis.geotools.rotate
+     * @memberof sGis.geotools
+     * @param features
+     * @param angle
+     * @param center
+     */
     geotools.rotate = function(features, angle, center) {
         let sin = Math.sin(angle);
         let cos = Math.cos(angle);
@@ -273,6 +283,13 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
         geotools.transform(features, [[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center);
     };
 
+    /**
+     * @alias sGis.geotools.scale
+     * @memberof sGis.geotools
+     * @param features
+     * @param scale
+     * @param center
+     */
     geotools.scale = function(features, scale, center) {
         geotools.transform(features, [[scale[0], 0, 0], [0, scale[1], 0], [0, 0, 1]], center);
     };

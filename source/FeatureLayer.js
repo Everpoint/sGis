@@ -10,7 +10,6 @@ sGis.module('FeatureLayer', [
      */
     class FeatureLayer extends Layer {
         /**
-         * @constructor
          * @param {Object} [properties] - key-value set of properties to be assigned to the instance
          */
         constructor(properties = {}) {
