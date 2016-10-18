@@ -89,6 +89,13 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
         return Math.abs(area / 2);
     }
 
+    /**
+     * @alias sGis.geotools.pointToLineProjection
+     * @memberof sGis.geotools
+     * @param point
+     * @param line
+     * @returns {*[]}
+     */
     geotools.pointToLineProjection = function (point, line) {
         if (line[0][0] === line[1][0]) {
             return [line[0][0], point[1]];

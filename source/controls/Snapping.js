@@ -4,11 +4,26 @@ sGis.module('controls.Snapping', [
     'feature.Point',
     'symbol.point.Point',
     'geotools'
-], (Control, FeatureLayer, PointFeature, PointSymbol, geotools) => {
+], (
+    /** function(new:sGis.Control) */ Control,
+    /** function(new:sGis.FeatureLayer) */ FeatureLayer,
+    /** function(new:sGis.feature.Point) */ PointFeature,
+    /** function(new:sGis.symbol.point.Point) */ PointSymbol,
+    /** sGis.geotools */ geotools) => {
 
     'use strict';
 
+    /**
+     * Control for finding snapping points inside a layer during editing with other controls. When active it will watch
+     * mousemove events and draw a little point whenever it can find an appropriate snapping.
+     * @alias sGis.controls.Snapping
+     * @extends sGis.Control
+     */
     class Snapping extends Control {
+        /**
+         * @param {sGis.Map} map - map object the control will work with
+         * @param {Object} [options] - key-value set of properties to be set to the instance
+         */
         constructor(map, options) {
             super(map, options);
 
@@ -45,6 +60,11 @@ sGis.module('controls.Snapping', [
             this._snapping = snapping;
         }
 
+        /**
+         * Returns snapping result for given point. If no snapping is found, null is returned.
+         * @param {sGis.IPoint} point
+         * @returns {sGis.controls.Snapping.SnappingResult|null}
+         */
         getSnapping(point) {
             let distance = this.map.resolution * this.snappingDistance;
             for (var i = 0; i < this.snappingTypes.length; i++) {
@@ -54,17 +74,55 @@ sGis.module('controls.Snapping', [
             return null;
         }
 
+        /**
+         * Position of the current snapping point.
+         * @returns {sGis.controls.Snapping.SnappingResult|null}
+         */
         get position() { return this._snapping && this._snapping.position; }
     }
 
+    /**
+     * The types of snapping to use. The priority of snapping is given by the order in this list (earlier in the list is more important). Possible values are:<br>
+     *     * vertex - snaps to any point in the active layer. This includes point features and vertexes of polylines and polygons.<br>
+     *     * midpoint - snaps to middle points of sides of polylines and polygons.<br>
+     *     * line - snaps to any point on sides of polylines and polygons.<br>
+     *     * axis - if activeFeature, activeRingIndex and activePointIndex properties are set, snaps to position on the plane so that the current point would make a vertical or horizontal line with its neighbours.<br>
+     *     * orthogonal - if activeFeature, activeRingIndex and activePointIndex properties are set, snaps to position on the plane so that the current point would make a 90deg angle with its neighbours.
+     * @member {String[]} sGis.controls.Snapping#snappingTypes
+     * @default ['vertex', 'midpoint', 'line', 'axis', 'orthogonal']
+     */
     Snapping.prototype.snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
 
+    /**
+     * Symbol of the snapping point
+     * @member {sGis.Symbol} sGis.controls.Snapping#symbol
+     * #default new PointSymbol({fillColor: 'red', size: 5})
+     */
     Snapping.prototype.symbol = new PointSymbol({fillColor: 'red', size: 5});
 
+    /**
+     * Maximum distance in pixels from current point to the snapping point.
+     * @member {Number} sGis.controls.Snapping#snappingDistance
+     * #default 7
+     */
     Snapping.prototype.snappingDistance = 7;
 
+    /**
+     * The feature that is being edited currently. Setting this property is necessary to prevent snapping to self, and to calculate certain types of snapping.
+     * @member {sGis.Feature} sGis.controls.Snapping#activeFeature
+     */
     Snapping.prototype.activeFeature = null;
+
+    /**
+     * If the feature that is being edited is a polyline or polygon, represents the contour index that is being edited currently.
+     * @member {Number} sGis.controls.Snapping#activeRingIndex
+     */
     Snapping.prototype.activeRingIndex = null;
+
+    /**
+     * If the feature that is being edited is a polyline or polygon, represents the point index in the contour that is being edited currently.
+     * @member {Number} sGis.controls.Snapping#activePointIndex
+     */
     Snapping.prototype.activePointIndex = null;
 
     var snapping = {
@@ -222,5 +280,14 @@ sGis.module('controls.Snapping', [
     };
 
     return Snapping;
+
+    /**
+     * @typedef {Object} sGis.controls.Snapping.SnappingResult
+     * @prop {Position} position - position of the snapping point
+     * @prop {sGis.Feature} feature - feature that the snapping snapped to
+     * @prop {Number} ring - if the feature is sGis.feature.Poly instance, this property will contain the contour index which triggered snapping
+     * @prop {Number} index - if the feature is sGis.feature.Poly instance, this property will contain the index of vertex in contour which is followed by snapping point.
+     *                        E.g. if the point snapped to the [i, i+1] side of the ring, i will be set as the value of this property.
+     */
 
 });
