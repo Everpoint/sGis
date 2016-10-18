@@ -253,6 +253,7 @@ sGis.module('CRS', [
         }
     }
 
+    //noinspection SpellCheckingInspection
     CRS.moscowBessel = new Crs({"wkt":"PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"});
 
     {
@@ -287,20 +288,20 @@ sGis.module('CRS', [
                     var yRad = y / R;
                     var th = Math.atan(xRad / (_ro0 - yRad));
                     var ro = xRad / Math.sin(th);
-                    var rlat = Math.asin((_c - ro * ro * _n * _n) / 2 / _n);
-                    var rlon = _lon0 + th / _n;
+                    var rLat = Math.asin((_c - ro * ro * _n * _n) / 2 / _n);
+                    var rLon = _lon0 + th / _n;
 
-                    var lat = math.radToDeg(rlat);
-                    var lon = math.radToDeg(rlon);
+                    var lat = math.radToDeg(rLat);
+                    var lon = math.radToDeg(rLon);
 
                     return [lon, lat];
                 });
 
                 CRS.wgs84.setProjectionTo(this, ([lon,lat]) => {
-                    var rlon = math.degToRad(lon),
-                        rlat = math.degToRad(lat),
-                        th = _n * (rlat - _lon0),
-                        ro = Math.sqrt(_c - 2 * _n * Math.sin(rlon)) / _n,
+                    var rLon = math.degToRad(lon),
+                        rLat = math.degToRad(lat),
+                        th = _n * (rLat - _lon0),
+                        ro = Math.sqrt(_c - 2 * _n * Math.sin(rLon)) / _n,
                         x = ro * Math.sin(th) * R,
                         y = _ro0 - ro * Math.cos(th) * R;
 
@@ -318,8 +319,7 @@ sGis.module('CRS', [
         };
         /**
          * @deprecated
-         */
-        AlbersEqualArea.prototype.to = function(lat, lon)  {
+         */        AlbersEqualArea.prototype.to = function(lat, lon)  {
             var [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };

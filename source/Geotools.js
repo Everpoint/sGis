@@ -16,10 +16,10 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
             let p2 = b.projectTo(CRS.wgs84);
             let lat1 = math.degToRad(p1.y);
             let lat2 = math.degToRad(p2.y);
-            let dlat = lat2 - lat1;
-            let dlon = math.degToRad(p2.x - p1.x);
+            let dLat = lat2 - lat1;
+            let dLon = math.degToRad(p2.x - p1.x);
 
-            let d = Math.sin(dlat/2) * Math.sin(dlat/2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlon/2) * Math.sin(dlon/2);
+            let d = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon/2) * Math.sin(dLon/2);
             let c = 2 * Math.atan2(Math.sqrt(d), Math.sqrt(1-d));
             let R = 6371009;
 

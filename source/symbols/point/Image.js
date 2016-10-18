@@ -54,6 +54,7 @@ sGis.module('symbol.point.Image', [
      */
     ImageSymbol.prototype.anchorPoint = {x: 16, y: 32};
 
+    //noinspection SpellCheckingInspection
     /**
      * Source of the image. Can be url or data:url string.
      * @member {String} sGis.symbol.point.Image#source

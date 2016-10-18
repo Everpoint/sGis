@@ -99,7 +99,7 @@ sGis.module('utils.Color', [
         get b() { return this._channels.b; }
 
         /**
-         * Returns tranparency channel value as integer from 0 to 255.
+         * Returns opacity channel value as integer from 0 to 255.
          * @type {Number}
          */
         get a() { return this._channels.a; }
@@ -214,8 +214,9 @@ sGis.module('utils.Color', [
 
 
     // Big List of Colors
-// ------------------
-// <http://www.w3.org/TR/css3-color/#svg-color>
+    // ------------------
+    // <http://www.w3.org/TR/css3-color/#svg-color>
+    //noinspection SpellCheckingInspection
     Color.names = {
         aliceblue: "f0f8ff",
         antiquewhite: "faebd7",

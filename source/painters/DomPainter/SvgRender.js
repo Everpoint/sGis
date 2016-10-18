@@ -197,8 +197,8 @@ sGis.module('painter.domPainter.SvgRender', [
             var coordinates = this._baseRender.coordinates;
             var x = coordinates[0][0][0];
             var y = coordinates[0][0][1];
-            var xmax = x;
-            var ymax = y;
+            var xMax = x;
+            var yMax = y;
 
             for (var ring = 0; ring < coordinates.length; ring++) {
                 d += 'M' + coordinates[ring][0].join(' ') + ' ';
@@ -206,13 +206,13 @@ sGis.module('painter.domPainter.SvgRender', [
                     d += 'L' + coordinates[ring][i].join(' ') + ' ';
                     x = Math.min(x, coordinates[ring][i][0]);
                     y = Math.min(y, coordinates[ring][i][1]);
-                    xmax = Math.max(xmax, coordinates[ring][i][0]);
-                    ymax = Math.max(ymax, coordinates[ring][i][1]);
+                    xMax = Math.max(xMax, coordinates[ring][i][0]);
+                    yMax = Math.max(yMax, coordinates[ring][i][1]);
                 }
             }
 
-            var width = xmax - x + this._baseRender.strokeWidth;
-            var height = ymax - y + this._baseRender.strokeWidth;
+            var width = xMax - x + this._baseRender.strokeWidth;
+            var height = yMax - y + this._baseRender.strokeWidth;
             x -= this._baseRender.strokeWidth / 2;
             y -= this._baseRender.strokeWidth / 2;
             d = d.trim();

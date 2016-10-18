@@ -94,7 +94,7 @@ sGis.module('symbol.maptip.Simple', [
     MaptipSymbol.prototype.height = 200;
 
     /**
-     * Offset of the balloon from the position of the maptip feature. The arrow of the balloon will point to the feature position, and the left top corner of the rectangle will be offseted by this value.
+     * Offset of the balloon from the position of the maptip feature. The arrow of the balloon will point to the feature position, and the left top corner of the rectangle will be have offset by this value.
      * @member {Object} offset
      * @memberof sGis.symbol.maptip.Simple
      * @instance
@@ -145,8 +145,8 @@ sGis.module('symbol.maptip.Simple', [
             position[1] <= square[2][1];
     }
 
-    function getTailBasePoint(position, baloonSquare) {
-        var square = baloonSquare.concat([baloonSquare[0]]),
+    function getTailBasePoint(position, balloonSquare) {
+        var square = balloonSquare.concat([balloonSquare[0]]),
             center = [(square[0][0] + square[2][0]) / 2, (square[0][1] + square[2][1]) / 2];
         for (var i = 0; i < 4; i++) {
             var side = (i + 1) % 2,
@@ -173,9 +173,9 @@ sGis.module('symbol.maptip.Simple', [
             dy2 = b[0][1] - b[1][1],
             da = (a[0][0] * a[1][1] - a[0][1] * a[1][0]),
             db = (b[0][0] * b[1][1] - b[0][1] * b[1][0]),
-            devisor = (dx1 * dy2 - dy1 * dx2),
-            x = (da * dx2 - dx1 * db) / devisor,
-            y = (da * dy2 - dy1 * db) / devisor;
+            divisor = (dx1 * dy2 - dy1 * dx2),
+            x = (da * dx2 - dx1 * db) / divisor,
+            y = (da * dy2 - dy1 * db) / divisor;
 
         return [x, y];
     }

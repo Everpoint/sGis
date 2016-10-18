@@ -187,6 +187,7 @@ sGis.module('utils', [
          * @returns {string}
          */
         getGuid: function() {
+            //noinspection SpellCheckingInspection
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);});
         },
 
@@ -301,11 +302,11 @@ sGis.module('utils', [
             transform:  document.body.style.transform !== undefined ? {func: 'transform', rule: 'transform'} :
                 document.body.style.webkitTransform !== undefined ? {func: 'webkitTransform', rule: '-webkit-transform'} :
                     document.body.style.OTransform !== undefined ? {func: 'OTransform', rule: '-o-transform'} :
-                        document.body.style.msTransform !== undefined ? {func: 'msTransform', rule: '-ms-ransform'} : null,
+                        document.body.style.msTransform !== undefined ? {func: 'msTransform', rule: '-ms-transform'} : null,
             transformOrigin: document.body.style.transformOrigin !== undefined ? {func: 'transformOrigin', rule: 'transform-origin'} :
                 document.body.style.webkitTransformOrigin !== undefined ? {func: 'webkitTransformOrigin', rule: '-webkit-transform-origin'} :
                     document.body.style.OTransformOrigin !== undefined ? {func: 'OTransformOrigin', rule: '-o-transform-origin'} :
-                        document.body.style.msTransformOrigin !== undefined ? {func: 'msTransformOrigin', rule: '-ms-ransform-origin'} : null
+                        document.body.style.msTransformOrigin !== undefined ? {func: 'msTransformOrigin', rule: '-ms-transform-origin'} : null
         };
     }
 

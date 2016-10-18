@@ -34,7 +34,7 @@
 
     /**
      * This function is used to define sGis library modules and their dependencies. It should not be used if a module loading system (like CommonJS or AMD) is used.
-     * @param {String} moduleName - name of the module. Can contain any number of namespaces, like: "namespace.subnamespace.moduleName"
+     * @param {String} moduleName - name of the module. Can contain any number of namespaces, like: "namespace.subNamespace.moduleName"
      * @param {String[]} dependencies - list of dependency module names with namespaces
      * @param {Function} intiHandler - module initialization handler. The function will be called with array of loaded models as specified in 'dependencies' argument
      */
