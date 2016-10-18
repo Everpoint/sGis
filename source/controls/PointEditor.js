@@ -4,8 +4,18 @@ sGis.module('controls.PointEditor', [
 ], (Control, Snapping) => {
 
     'use strict';
-    
+
+    /**
+     * Control for editing point features. When activeFeature is set, the feature is becoming draggable.
+     * @alias sGis.controls.PointEditor
+     * @extends sGis.Control
+     * @fires sGis.controls.PointEditor#edit
+     */
     class PointEditor extends Control {
+        /**
+         * @param {sGis.Map} map - map object the control will work with
+         * @param {Object} [options] - key-value set of properties to be set to the instance 
+         */
         constructor(map, options) {
             super(map, options);
             this._handleDragStart = this._handleDragStart.bind(this);
@@ -39,9 +49,14 @@ sGis.module('controls.PointEditor', [
             this._activeFeature.off('dragEnd', this._handleDragEnd);
         }
 
+        /**
+         * Point to drag. If set to null, the control is deactivated.
+         * @type {sGis.feature.Point}
+         */
         get activeFeature() { return this._activeFeature; }
-        set activeFeature(feature) {
+        set activeFeature(/** sGis.feature.Point */ feature) {
             this.deactivate();
+
             this._activeFeature = feature;
             if (feature) this.activate();
         }
@@ -64,8 +79,18 @@ sGis.module('controls.PointEditor', [
         }
     }
 
+    /**
+     * Specifies which snapping functions to use.
+     * @member {String[]} sGis.controls.PointEditor#snappingTypes
+     */
     PointEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line'];
 
     return PointEditor;
 
+    /**
+     * Dragging of the point if finished and the feature is released.
+     * @event sGis.controls.PointEditor#edit
+     * @type {Object}
+     * @mixes sGisEvent
+     */
 });

@@ -228,11 +228,11 @@ sGis.module('EventHandler', [
         }
 
         /**
-         * @alias EventHandler.prototype.addListener
+         * @see sGis.EventHandler#addListener
          */
         on() { this.addListener.apply(this, arguments); }
         /**
-         * @alias EventHandler.prototype.removeListener
+         * @see sGis.EventHandler#removeListener
          */
         off() { this.removeListener.apply(this, arguments); }
     }
