@@ -1,10 +1,10 @@
 sGis.module('render.Image', [
-    
 ], () => {
 
     'use strict';
     
     /**
+     * Rendered image on a map.
      * @alias sGis.render.ImageRender
      */
     class ImageRender {
