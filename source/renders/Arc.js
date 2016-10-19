@@ -1,6 +1,5 @@
 sGis.module('render.Arc', [
-    'utils'
-], function(utils) {
+], function() {
     
     'use strict';
 
@@ -85,7 +84,7 @@ sGis.module('render.Arc', [
          * @param {Object} [options] - key-value options of any Arc parameters
          */
         constructor(center, options) {
-            utils.init(this, options);
+            Object.assign(this, options);
             this.center = center;
         }
 
@@ -105,7 +104,7 @@ sGis.module('render.Arc', [
         get isVector() { return true; }
     }
 
-    utils.extend(Arc.prototype, defaults);
+    Object.assign(Arc.prototype, defaults);
     
     return Arc;
     
