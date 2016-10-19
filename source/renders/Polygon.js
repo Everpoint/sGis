@@ -78,7 +78,9 @@ sGis.module('render.Polygon', [
     };
 
     /**
+     * Rendered polygon
      * @alias sGis.render.Polygon
+     * @implements sGis.IRender
      */
     class Polygon {
         /**
@@ -96,12 +98,7 @@ sGis.module('render.Polygon', [
         }
         
         get isVector() { return true; }
-        
-        /**
-         * Returns true if 'position' is inside the rendered polygon.
-         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
-         * @returns {boolean}
-         */
+
         contains(position) {
             return geotools.contains(this.coordinates, position, this.strokeWidth / 2 + this.lineContainsTolerance);
         }

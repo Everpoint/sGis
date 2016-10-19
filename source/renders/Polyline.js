@@ -50,6 +50,11 @@ sGis.module('render.Polyline', [
         lineDash: []
     };
 
+    /**
+     * Rendered polyline.
+     * @alias sGis.render.Polyline
+     * @implements sGis.IRender
+     */
     class Polyline {
         /**
          * @constructor

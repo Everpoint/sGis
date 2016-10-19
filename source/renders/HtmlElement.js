@@ -6,6 +6,7 @@ sGis.module('render.HtmlElement', [
     /**
      * Custom HTML element on the map.
      * @alias sGis.render.HtmlElement
+     * @implements sGis.IRender
      */
     class HtmlElement {
         /**
@@ -39,12 +40,7 @@ sGis.module('render.HtmlElement', [
          * @readonly
          */
         get position() { return this._position; }
-        
-        /**
-         * Returns true if 'position' is inside the rendered element.
-         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
-         * @returns {boolean}
-         */
+
         contains(position) {
             var width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
             var height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;

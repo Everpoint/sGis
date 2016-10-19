@@ -77,6 +77,7 @@ sGis.module('render.Arc', [
     /**
      * Rendered arc (circle) on a map.
      * @alias sGis.render.Arc
+     * @implements sGis.IRender
      */
     class Arc {
         /**
@@ -88,11 +89,6 @@ sGis.module('render.Arc', [
             this.center = center;
         }
 
-        /**
-         * Returns true if 'position' is inside the rendered arc.
-         * @param {Position} position - position in the rendered (px) coordinates in [x,y] format.
-         * @returns {boolean}
-         */
         contains(position) {
             var dx = position[0] - this.center[0];
             var dy = position[1] - this.center[1];

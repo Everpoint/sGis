@@ -5,6 +5,7 @@ sGis.module('render.Point', [], () => {
     /**
      * Point geometry rendered to the screen coordinates for drawing.
      * @alias sGis.render.Point
+     * @implements sGis.IRender
      */
     class Point {
         /**
@@ -17,12 +18,7 @@ sGis.module('render.Point', [], () => {
         }
 
         get isVector() { return true; }
-
-        /**
-         * Returns true if 'position' is inside the rendered arc.
-         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
-         * @returns {boolean}
-         */
+        
         contains(position) {
             var dx = position.x - this._coord[0],
                 dy = position.y - this._coord[1],

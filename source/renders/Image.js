@@ -6,6 +6,7 @@ sGis.module('render.Image', [
     /**
      * Rendered image on a map.
      * @alias sGis.render.ImageRender
+     * @implements sGis.IRender
      */
     class ImageRender {
         /**
@@ -44,11 +45,6 @@ sGis.module('render.Image', [
          */
         get bbox() { return this._bbox; }
 
-        /**
-         * Returns true if 'position' is inside the rendered element.
-         * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
-         * @returns {boolean}
-         */
         contains(position) {
             var point = new sGis.Point([position.x * resolution, position.y * resolution], this._bbox.crs);
             return this._bbox.contains(point);
