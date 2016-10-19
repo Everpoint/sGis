@@ -1,10 +1,10 @@
 sGis.module('render.HtmlElement', [
-
 ], () => {
     
     'use strict';
 
     /**
+     * Custom HTML element on the map.
      * @alias sGis.render.HtmlElement
      */
     class HtmlElement {
