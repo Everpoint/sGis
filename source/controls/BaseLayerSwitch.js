@@ -4,7 +4,7 @@
     'Map',
     'Layer',
     'event',
-    'proto'
+    'utils.proto'
 ], function(utils, Control, Map, Layer, ev, proto) {
     'use strict';
 
