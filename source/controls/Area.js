@@ -3,8 +3,9 @@ sGis.module('controls.Area', [
     'controls.Polygon',
     'Map',
     'feature.Label',
-    'geotools'
-], function (Control, PolygonControl, Map, Label, geotools) {
+    'geotools',
+    'utils.proto'
+], function (Control, PolygonControl, Map, Label, geotools, proto) {
     'use strict';
 
     var Area = function(map, options) {
