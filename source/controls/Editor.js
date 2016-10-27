@@ -27,6 +27,7 @@ sGis.module('controls.Editor', [
      * @extends sGis.Control
      * @fires sGis.controls.Editor#featureSelect
      * @fires sGis.controls.Editor#featureDeselect
+     * @fires sGis.controls.Editor#featureRemove
      */
     class Editor extends Control {
         /**
@@ -217,12 +218,15 @@ sGis.module('controls.Editor', [
         prohibitDeselect() { this._deselectAllowed = false; }
 
         _delete() {
-            if (this._deselectAllowed && this.allowDeletion) {
+            if (this._deselectAllowed && this.allowDeletion && this._activeFeature) {
                 let feature = this._activeFeature;
+                this.prohibitEvent('featureDeselect');
                 this._deselect();
+                this.allowEvent('featureDeselect');
                 this.activeLayer.remove(feature);
 
                 this._saveState();
+                this.fire('featureRemove', { feature: feature });
             }
         }
 
@@ -300,4 +304,13 @@ sGis.module('controls.Editor', [
      * @prop {sGis.Feature} feature - feature that was deselected
      * @mixes sGisEvent
      */
+
+    /**
+     * Feature was deleted by user.
+     * @event sGis.controls.Editor#featureRemove
+     * @type {Object}
+     * @prop {sGis.Feature} feature - feature that was deselected
+     * @mixes sGisEvent
+     */
+
 });
