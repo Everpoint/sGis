@@ -3,8 +3,9 @@
     'Control',
     'Map',
     'Layer',
-    'event'
-], function(utils, Control, Map, Layer, ev) {
+    'event',
+    'proto'
+], function(utils, Control, Map, Layer, ev, proto) {
     'use strict';
 
     var BaseLayerSwitch = function(painter, options) {
