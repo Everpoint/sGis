@@ -19,6 +19,8 @@ sGis.module('decorations.ScaleSlider', [
     
     class ScaleSlider extends EventHandler {
         constructor (map, options) {
+            super();
+            
             this._map = map;
             this._createGrid();
             this._createSlider();
