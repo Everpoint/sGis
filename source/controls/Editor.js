@@ -71,7 +71,7 @@ sGis.module('controls.Editor', [
             this.activeLayer.features.forEach(this._setListener, this);
             this.activeLayer.on('featureAdd', this._handleFeatureAdd);
             this.activeLayer.on('featureRemove', this._handleFeatureRemove);
-            this.map.on('click', this._deselect);
+            this.map.on('click', this._onMapClick.bind(this));
 
             event.add(document, 'keydown', this._handleKeyDown);
         }
@@ -91,16 +91,19 @@ sGis.module('controls.Editor', [
         _removeListener(feature) {
             feature.off('click' + this._ns);
         }
+        
+        _onMapClick() {
+            if (!this.ignoreEvents) this._deactivate();
+        }
 
         _deactivate() {
             this._deselect();
-            this.activeLayer.feature.forEach(this._removeListener, this);
+            this.activeLayer.features.forEach(this._removeListener, this);
             this.activeLayer.off('featureAdd', this._handleFeatureAdd);
             this.activeLayer.off('featureRemove', this._handleFeatureRemove);
             this.map.off('click', this._deselect);
 
             event.remove(document, 'keydown', this._handleKeyDown);
-
         }
 
         /**
@@ -125,6 +128,7 @@ sGis.module('controls.Editor', [
         }
 
         _handleFeatureClick(feature, sGisEvent) {
+            if (this.ignoreEvents) return;
             sGisEvent.stopPropagation();
             this._select(feature);
         }
@@ -274,6 +278,14 @@ sGis.module('controls.Editor', [
 
             this._updateTransformControl();
             this.activeLayer.redraw();
+        }
+        
+        get ignoreEvents() { return this._ignoreEvents; }
+        set ignoreEvents(bool) {
+            this._ignoreEvents = bool;
+            this._pointEditor.ignoreEvents = bool;
+            this._polyEditor.ignoreEvents = bool;
+            this._polyTransform.ignoreEvents = bool;
         }
     }
 

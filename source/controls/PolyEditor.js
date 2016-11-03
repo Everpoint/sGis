@@ -59,7 +59,7 @@ sGis.module('controls.PolyEditor', [
         }
         
         _handleDragStart(sGisEvent) {
-            if (!this.vertexChangeAllowed && !this.featureDragAllowed) return;
+            if (this.ignoreEvents || !this.vertexChangeAllowed && !this.featureDragAllowed) return;
 
             let intersection = sGisEvent.intersectionType;
             if (Array.isArray(intersection) && this.vertexChangeAllowed) {
@@ -131,7 +131,7 @@ sGis.module('controls.PolyEditor', [
         }
 
         _handleDblClick(sGisEvent) {
-            if (!Array.isArray(sGisEvent.intersectionType)) return;
+            if (this.ignoreEvents || !Array.isArray(sGisEvent.intersectionType)) return;
 
             let ringIndex = sGisEvent.intersectionType[0];
             let ring = this._activeFeature.rings[ringIndex];
@@ -196,6 +196,8 @@ sGis.module('controls.PolyEditor', [
      * @default true
      */
     PolyEditor.prototype.featureDragAllowed = true;
+    
+    PolyEditor.prototype.ignoreEvents = false;
 
     function distance(p1, p2) {
         return Math.sqrt((p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]));

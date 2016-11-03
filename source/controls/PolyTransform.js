@@ -105,6 +105,8 @@ sGis.module('controls.PolyTransform', [
         }
 
         _handleRotationStart(sGisEvent) {
+            if (this.ignoreEvents) return;
+
             this._rotationBase = this._activeFeature.bbox.center.position;
             sGisEvent.draggingObject = this._rotationHandle;
             sGisEvent.stopPropagation();
@@ -153,6 +155,8 @@ sGis.module('controls.PolyTransform', [
         }
 
         _handleScalingStart(index, sGisEvent) {
+            if (this.ignoreEvents) return;
+            
             sGisEvent.draggingObject = this._scaleHandles[index];
             sGisEvent.stopPropagation();
             
@@ -222,6 +226,8 @@ sGis.module('controls.PolyTransform', [
      * @default true
      */
     PolyTransform.prototype.enableScaling = true;
+
+    PolyTransform.prototype.ignoreEvents = false;
     
     return PolyTransform;
 

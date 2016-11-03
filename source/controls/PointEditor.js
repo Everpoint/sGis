@@ -62,6 +62,8 @@ sGis.module('controls.PointEditor', [
         }
 
         _handleDragStart(sGisEvent) {
+            if (this.ignoreEvents) return;
+            
             sGisEvent.draggingObject = this._activeFeature;
             sGisEvent.stopPropagation();
 
@@ -85,6 +87,7 @@ sGis.module('controls.PointEditor', [
      * @default ['vertex', 'midpoint', 'line']
      */
     PointEditor.prototype.snappingTypes = ['vertex', 'midpoint', 'line'];
+    PointEditor.prototype.ignoreEvents = false;
 
     return PointEditor;
 

@@ -8,7 +8,7 @@ sGis.module('controls.Polyline', [
 
     /**
      * Control for drawing polyline features.
-     * @alias sGis.control.Polyline
+     * @alias sGis.controls.Polyline
      * @extends sGis.controls.Poly
      */
     class PolylineControl extends Poly {
