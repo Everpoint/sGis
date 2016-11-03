@@ -73,18 +73,16 @@ sGis.module('controls.PolyEditor', [
                 let currDist = distance(point, evPoint);
                 if (currDist < targetDist) {
                     this._activeIndex = intersection[1];
-                    this._setSnapping();
-                    return;
-                }
-
-                let nextIndex = (intersection[1]+1) % ring.length;
-                point = ring[nextIndex];
-                let nextDist = distance(point, evPoint);
-                if (nextDist < targetDist) {
-                    this._activeIndex = nextIndex;
                 } else {
-                    this._activeFeature.insertPoint(intersection[0], intersection[1]+1, evPoint);
-                    this._activeIndex = intersection[1]+1;
+                    let nextIndex = (intersection[1]+1) % ring.length;
+                    point = ring[nextIndex];
+                    let nextDist = distance(point, evPoint);
+                    if (nextDist < targetDist) {
+                        this._activeIndex = nextIndex;
+                    } else {
+                        this._activeFeature.insertPoint(intersection[0], intersection[1]+1, evPoint);
+                        this._activeIndex = intersection[1]+1;
+                    }
                 }
             } else {
                 this._activeRing = this._activeIndex = null;
