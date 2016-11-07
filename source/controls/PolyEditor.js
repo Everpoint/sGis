@@ -114,7 +114,7 @@ sGis.module('controls.PolyEditor', [
             this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snapping.position || sGisEvent.point.projectTo(this._activeFeature.crs).position);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
-            this.fire('change');
+            this.fire('change', { ringIndex: this._activeRing, pointIndex: this._activeIndex });
         }
 
         _handleDragEnd() {
@@ -147,10 +147,10 @@ sGis.module('controls.PolyEditor', [
 
             if (ring.length > 2) {
                 this._activeFeature.removePoint(ringIndex, index);
-                this.fire('edit');
+                this.fire('edit', { ringIndex: ringIndex, pointIndex: index });
             } else if (this._activeFeature.rings.length > 1) {
                 this._activeFeature.removeRing(ringIndex);
-                this.fire('edit');
+                this.fire('edit', { ringIndex: ringIndex, pointIndex: index });
             } else if (this.onFeatureRemove) {
                 this.onFeatureRemove();
             }

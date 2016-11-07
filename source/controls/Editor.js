@@ -287,6 +287,10 @@ sGis.module('controls.Editor', [
             this._polyEditor.ignoreEvents = bool;
             this._polyTransform.ignoreEvents = bool;
         }
+
+        get pointEditor() { return this._pointEditor; }
+        get polyEditor() { return this._polyEditor; }
+        get polyTransform() { return this._polyTransform; }
     }
 
     Editor.prototype._deselectAllowed = true;
