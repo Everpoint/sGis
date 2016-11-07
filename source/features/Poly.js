@@ -2,7 +2,7 @@ sGis.module('feature.Poly', [
     'utils',
     'Feature',
     'Bbox'
-], function(utils, Feature, Bbox) {
+], function(utils, /** sGis.Feature */ Feature, Bbox) {
 
     'use strict';
 

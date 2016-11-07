@@ -33,7 +33,7 @@ sGis.module('Feature', [
          * @static
          */
         static setDefaultCrs(crs) {
-            Feature.prototype.crs = crs;
+            Feature.prototype._crs = crs;
         }
 
         /**

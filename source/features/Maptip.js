@@ -19,13 +19,13 @@ sGis.module('feature.Maptip', [
     class Maptip extends Feature {
         constructor(position, properties) {
             super(properties);
-            this.position = position;
+            this._position = position;
         }
         
         get position() { return this._position; }
-        set position(point) {
-            
-        }
+        // set position(point) {
+        //
+        // }
     }
 
     /**
