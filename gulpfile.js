@@ -3,12 +3,7 @@ const babel = require('gulp-babel');
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
 
-gulp.task('default', () => {
-    return gulp.src('source/**/*.js')
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        .pipe(gulp.dest('dist'));
+gulp.task('default', ['build', 'build-babel'], () => {
 });
 
 gulp.task('build', () => {
