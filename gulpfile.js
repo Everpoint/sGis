@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const babel = require('gulp-babel');
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
-const argv = require('yargs').argv;
 
 gulp.task('default', () => {
     return gulp.src('source/**/*.js')
@@ -33,17 +32,13 @@ gulp.task('build-babel', () => {
 });
 
 gulp.task('version', () => {
-    var version = argv.v;
+    var version = process.env.npm_package_version;
     console.log(version);
 
     gulp.src(['./source/sGis.js'])
         .pipe(replace(/sGis\.version\s*=\s*".+"/, 'sGis.version = "' + version + '"'))
         .pipe(replace(/sGis\.releaseDate\s*=\s*".+"/, 'sGis.releaseDate = "' + today() + '"'))
-        .pipe(gulp.dest('./dist/'));
-
-    gulp.src('./package.json')
-        .pipe(replace(/"version"\s*:\s*".+"/, '"version": "' + version + '"'))
-        .pipe(gulp.dest('./dist/'));
+        .pipe(gulp.dest('./source/'));
 });
 
 function today() {

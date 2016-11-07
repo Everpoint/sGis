@@ -7,11 +7,12 @@
     "test": "test"
   },
   "scripts": {
-    "doc": "jsdoc source -r -d docs -c jsdoc.conf.json"
+    "doc": "jsdoc source -r -d docs -c jsdoc.conf.json",
+    "version": "gulp version && git add source/sGis.js"
   },
   "repository": {
     "type": "git",
-    "url": "http://mg@st.everpoint.ru/scm/ej/sgis.git"
+    "url": "https://github.com/Everpoint/sGis"
   },
   "author": "",
   "license": "ISC",
@@ -30,8 +31,6 @@
     "karma": "^1.2.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
-    "karma-jasmine": "^1.0.2",
-    "pump": "^1.0.1",
-    "yargs": "^6.3.0"
+    "karma-jasmine": "^1.0.2"
   }
 }
