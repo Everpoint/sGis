@@ -3,15 +3,11 @@ const babel = require('gulp-babel');
 const concat = require('gulp-concat');
 const replace = require('gulp-replace');
 
-gulp.task('default', ['build', 'build-babel'], () => {
+gulp.task('default', ['build', 'build-babel', 'minify', 'minify-babel'], () => {
 });
 
 gulp.task('build', () => {
-    return gulp.src(['./source/sGis.js', './source/**/*.js', '!./source/interfaces/*'])
-        .pipe(babel({
-            presets: ['babili'],
-            plugins: ['remove-comments']
-        }))
+    return gulp.src(['./source/sGis.js', './source/**/*.js'])
         .pipe(concat('sGis.js'))
         .pipe(gulp.dest('./dist/'))
 });
@@ -19,10 +15,30 @@ gulp.task('build', () => {
 gulp.task('build-babel', () => {
     return gulp.src(['./source/sGis.js', './source/**/*.js', '!./source/interfaces/*'])
         .pipe(babel({
-            presets: ['es2015', 'babili'],
+            presets: ['es2015'],
             plugins: ['remove-comments']
         }))
         .pipe(concat('sGis.babel.js'))
+        .pipe(gulp.dest('./dist/'))
+});
+
+gulp.task('minify', () => {
+    return gulp.src(['./source/sGis.js', './source/**/*.js', '!./source/interfaces/*'])
+        .pipe(babel({
+            presets: ['babili'],
+            plugins: ['remove-comments']
+        }))
+        .pipe(concat('sGis.min.js'))
+        .pipe(gulp.dest('./dist/'))
+});
+
+gulp.task('minify-babel', () => {
+    return gulp.src(['./source/sGis.js', './source/**/*.js', '!./source/interfaces/*'])
+        .pipe(babel({
+            presets: ['es2015', 'babili'],
+            plugins: ['remove-comments']
+        }))
+        .pipe(concat('sGis.babel.min.js'))
         .pipe(gulp.dest('./dist/'))
 });
 
