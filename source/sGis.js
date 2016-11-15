@@ -6,8 +6,8 @@
      */
     var sGis = {};
 
-    sGis.version = "0.1.3";
-    sGis.releaseDate = "07.11.2016";
+    sGis.version = "0.1.1";
+    sGis.releaseDate = "15.11.2016";
 
     sGis.browser = (function() {
         var ua= navigator.userAgent,
