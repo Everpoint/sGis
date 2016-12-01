@@ -17,9 +17,9 @@ sGis.module('LayerGroup', [
         constructor (layers = []) {
             super();
             this._layers = [];
-            this.layers = layers || [];
-
             this._forwardEvent = (sGisEvent) => { this.fire(sGisEvent.eventType, sGisEvent); };
+
+            this.layers = layers || [];
         }
 
         /**
