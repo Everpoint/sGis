@@ -85,6 +85,10 @@ sGis.module('controls.Poly', [
             this._activeFeature = this._getNewFeature([point.position, point.position], { crs: this.map.crs, symbol: this.symbol });
             this._tempLayer.add(this._activeFeature);
 
+            this._setHandlers();
+        }
+
+        _setHandlers() {
             this.map.addListener('mousemove', this._handleMousemove);
             this.map.addListener('dblclick', this._handleDblclick);
         }
@@ -96,6 +100,8 @@ sGis.module('controls.Poly', [
             this._activeFeature.rings[ringIndex][pointIndex] = sGisEvent.point.position;
             this._activeFeature.redraw();
             this._tempLayer.redraw();
+
+            this.fire('mousemove');
         }
 
         _handleDblclick(sGisEvent) {
@@ -115,7 +121,7 @@ sGis.module('controls.Poly', [
             this.map.removeListener('mousemove', this._handleMousemove);
             this.map.removeListener('dblclick', this._handleDblclick);
 
-            this._tempLayer.remove(this._activeFeature);
+            if (this._tempLayer.has(this._activeFeature)) this._tempLayer.remove(this._activeFeature);
             this._activeFeature = null;
         }
 
@@ -148,9 +154,15 @@ sGis.module('controls.Poly', [
         /**
          * The active drawing feature.
          * @type {sGis.feature.Poly}
-         * @readonly
          */
         get activeFeature() { return this._activeFeature; }
+        set activeFeature(/** sGis.feature.Poly */ feature) {
+            if (!this._isActive) return;
+            this.cancelDrawing();
+
+            this._activeFeature = feature;
+            this._setHandlers();
+        }
     }
     
     return PolyControl;

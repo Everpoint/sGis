@@ -152,10 +152,8 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
                 prevD = D;
                 prevH = H;
             }
-            if (intersectionCount % 2 === 1) return true;
         }
-
-        return false;
+        return intersectionCount % 2 === 1;
     };
 
     geotools.pointToLineDistance = function (point, line) {
