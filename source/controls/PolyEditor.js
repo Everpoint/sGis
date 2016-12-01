@@ -1,8 +1,11 @@
 sGis.module('controls.PolyEditor', [
     'Control',
     'controls.Snapping',
-    'geotools'
-], (Control, Snapping, geotools) => {
+    'geotools',
+    'symbol.point.Point',
+    'FeatureLayer',
+    'feature.Point'
+], (Control, Snapping, geotools, PointSymbol, FeatureLayer, Point) => {
 
     'use strict';
 
@@ -25,6 +28,7 @@ sGis.module('controls.PolyEditor', [
 
             this._snapping = new Snapping(map);
 
+            this._handleMousemove = this._handleMousemove.bind(this);
             this._handleDragStart = this._handleDragStart.bind(this);
             this._handleDrag = this._handleDrag.bind(this);
             this._handleDragEnd = this._handleDragEnd.bind(this);
@@ -33,6 +37,9 @@ sGis.module('controls.PolyEditor', [
 
         _activate() {
             if (!this._activeFeature) return;
+            this._setTempLayer();
+
+            this._activeFeature.on('mousemove mouseout', this._handleMousemove);
             this._activeFeature.on('dragStart', this._handleDragStart);
             this._activeFeature.on('drag', this._handleDrag);
             this._activeFeature.on('dragEnd', this._handleDragEnd);
@@ -41,10 +48,24 @@ sGis.module('controls.PolyEditor', [
 
         _deactivate() {
             if (!this._activeFeature) return;
+            this._removeTempLayer();
+
+            this._activeFeature.off('mousemove mouseout', this._handleMousemove);
             this._activeFeature.off('dragStart', this._handleDragStart);
             this._activeFeature.off('drag', this._handleDrag);
             this._activeFeature.off('dragEnd', this._handleDragEnd);
             this._activeFeature.off('dblclick', this._handleDblClick);
+        }
+
+        _setTempLayer() {
+            this._tempLayer = new FeatureLayer();
+            this.map.addLayer(this._tempLayer);
+        }
+
+        _removeTempLayer() {
+            if (!this._tempLayer) return;
+            this.map.removeLayer(this._tempLayer);
+            this._tempLayer = null;
         }
 
         /**
@@ -56,6 +77,39 @@ sGis.module('controls.PolyEditor', [
             this.deactivate();
             this._activeFeature = feature;
             this.activate();
+        }
+
+        _handleMousemove(sGisEvent) {
+            if (this.ignoreEvents || !this.vertexChangeAllowed || this._activeRing !== null || this._activeIndex !== null || sGisEvent.eventType === 'mouseout') {
+                this._tempLayer.features = [];
+            }
+
+            let intersection = sGisEvent.intersectionType;
+            if (!Array.isArray(intersection)) return;
+
+            let activeRing = intersection[0];
+            let activeIndex = intersection[1];
+
+            let ring = this._activeFeature.rings[activeRing];
+            let point = ring[activeIndex];
+            let evPoint = sGisEvent.point.projectTo(this._activeFeature.crs).position;
+
+            let symbol = this.vertexHoverSymbol;
+
+            let targetDist = this.vertexSize * this.map.resolution;
+            let currDist = distance(point, evPoint);
+            if (currDist > targetDist) {
+                let nextIndex = (activeIndex+1) % ring.length;
+                point = ring[nextIndex];
+                let nextDist = distance(point, evPoint);
+                if (nextDist > targetDist) {
+                    symbol = this.sideHoverSymbol;
+                    point = geotools.pointToLineProjection(evPoint, [ring[activeIndex], point]);
+                }
+            }
+
+            let feature = new Point(point, {crs: this.map.crs, symbol: symbol});
+            this._tempLayer.features = [feature];
         }
         
         _handleDragStart(sGisEvent) {
@@ -93,7 +147,7 @@ sGis.module('controls.PolyEditor', [
                 sGisEvent.stopPropagation();
             }
 
-             this._setSnapping();
+            this._setSnapping();
         }
 
         _setSnapping() {
@@ -119,6 +173,9 @@ sGis.module('controls.PolyEditor', [
 
         _handleDragEnd() {
             this._snapping.deactivate();
+            this._activeRing = null;
+            this._activeIndex = null;
+
             this.fire('edit');
         }
 
@@ -198,6 +255,10 @@ sGis.module('controls.PolyEditor', [
     PolyEditor.prototype.featureDragAllowed = true;
     
     PolyEditor.prototype.ignoreEvents = false;
+
+    PolyEditor.prototype.vertexHoverSymbol = new PointSymbol({ size: 7 });
+
+    PolyEditor.prototype.sideHoverSymbol = new PointSymbol({});
 
     function distance(p1, p2) {
         return Math.sqrt((p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]));
