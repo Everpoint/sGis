@@ -1,0 +1,15 @@
+{
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "sGis": true
+  },
+  "rules": {
+
+  }
+}
