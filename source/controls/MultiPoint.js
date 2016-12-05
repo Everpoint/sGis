@@ -1,105 +1,100 @@
-sGis.module('feature.MultiPoint', [
+sGis.module('controls.MultiPoint', [
     'utils',
-    'utils.proto',
     'Control',
     'FeatureLayer',
-    'symbol.point',
+    'symbol.point.Point',
     'feature.MultiPoint'
-], function(utils, proto, Control, FeatureLayer, pointSymbols, MultiPoint) {
-   'use strict';
+], function(utils, Control, FeatureLayer, PointSymbol, MultiPointFeature) {
 
-    var MultiPoint = function(map, options) {
-        this._map = map;
-        this._ns = '.' + sGis.utils.getGuid();
+    'use strict';
 
-        sGis.utils.init(this, options);
-    };
+    class MultiPoint extends Control {
+        constructor(map, properties) {
+            super(map, properties);
+            this._handleClick = this._handleClick.bind(this);
+            this._handleDblclick = this._handleDblclick.bind(this);
+        }
 
-    MultiPoint.prototype = new sGis.Control({
-        symbol: new sGis.symbol.point.Point(),
+        _activate() {
+            this._tempLayer = new FeatureLayer();
+            this.map.addLayer(this._tempLayer);
 
-        activate: function() {
-            if (!this._isActive) {
-                if (!this.activeLayer) {
-                    if (!this._tempLayer) this._tempLayer = new sGis.FeatureLayer();
-                    this._map.addLayer(this._tempLayer);
-                    this.activeLayer = this._tempLayer;
-                }
+            this.map.on('click', this._handleClick);
+        }
 
-                this._map.addListener('click' + this._ns, this._clickHandler.bind(this));
-                this._map.on('dblclick' + this._ns, this._dblClickHandler.bind(this));
-                this._isActive = true;
-            }
-        },
+        _deactivate() {
+            this.cancelDrawing();
+            this.map.removeLayer(this._tempLayer);
+            this._tempLayer = null;
+            this.map.off('click', this._handleClick);
+        }
 
-        deactivate: function() {
-            if (this._isActive) {
-                if (this.activeLayer === this._tempLayer) {
-                    this._map.removeLayer(this._tempLayer);
-                    this._tempLayer.features = [];
-                    this.activeLayer = null;
-                }
-
-                this._map.off('click' + this._ns);
-                this._isActive = false;
-            }
-        },
-
-        _clickHandler: function(sGisEvent) {
-            var self = this;
-            setTimeout(function() {
-                if (sGisEvent.isCanceled() || self._isDblClick) return;
-                if (self._activeFeature) {
-                    self._addPoint(sGisEvent.point);
+        _handleClick(sGisEvent) {
+            setTimeout(() => {
+                if (Date.now() - this._dblClickTime < this.dblClickTimeout) return;
+                if (this._activeFeature) {
+                    this._activeFeature.addPoint(sGisEvent.point);
                 } else {
-                    self.startNewFeature(sGisEvent.point);
+                    this.startNewFeature(sGisEvent.point);
+                    this.fire('drawingBegin');
                 }
-            }, 0);
-        },
+                this.fire('pointAdd');
 
-        _dblClickHandler: function(sGisEvent) {
-            this._isDblClick = true;
-
-            this.activeFeature = null;
-            var self = this;
-            setTimeout(function() {
-                self._isDblClick = false;
-            }, 0);
+                this._tempLayer.redraw();
+            }, 10);
 
             sGisEvent.stopPropagation();
-            this.deactivate();
-        },
+        }
 
-        _addPoint: function(point) {
+        startNewFeature(point) {
+            this.activate();
+            this.cancelDrawing();
+
+            this._activeFeature = new MultiPointFeature([point.position], { crs: this.map.crs, symbol: this.symbol });
+            this._tempLayer.add(this._activeFeature);
+
+            this._setHandlers();
+        }
+
+        _setHandlers() {
+            this.map.addListener('dblclick', this._handleDblclick);
+        }
+
+        cancelDrawing() {
             if (!this._activeFeature) return;
-            this._activeFeature.addPoint(point);
-            this._activeLayer.redraw();
-            this.fire('pointAdd');
-        },
 
-        startNewFeature: function(point) {
+            this.map.removeListener('dblclick', this._handleDblclick);
+
+            if (this._tempLayer.has(this._activeFeature)) this._tempLayer.remove(this._activeFeature);
+            this._activeFeature = null;
+        }
+
+        _handleDblclick(sGisEvent) {
+            let feature = this._activeFeature;
+            this.finishDrawing(self, sGisEvent);
+            sGisEvent.stopPropagation();
+            this._dblClickTime = Date.now();
+            this.fire('drawingFinish', { feature: feature, browserEvent: sGisEvent.browserEvent });
+        }
+
+        finishDrawing() {
+            let feature = this._activeFeature;
+            this.cancelDrawing();
+            if (this.activeLayer) this.activeLayer.add(feature);
+        }
+
+        get activeFeature() { return this._activeFeature; }
+        set activeFeature(feature) {
             if (!this._isActive) return;
-            this.activeFeature = new sGis.feature.MultiPoint([point], {symbol: this.symbol, crs: point.crs});
-            this._activeLayer.redraw();
-            this.fire('drawingBegin');
-            this.fire('pointAdd');
+            this.cancelDrawing();
+
+            this._activeFeature = feature;
+            this._setHandlers();
         }
-    });
+    }
 
-    sGis.utils.proto.setProperties(MultiPoint.prototype, {
-        activeFeature: {
-            get: function() { return this._activeFeature; },
-            set: function(feature) {
-                if (!(feature instanceof sGis.feature.MultiPoint) && feature !== null) sGis.utils.error('sGis.feature.MultiPoint is expected');
-                if (!this._isActive) return;
-
-                if (this._activeFeature && this._activeFeature !== feature) this.fire('drawingFinish', {feature: this._activeFeature});
-
-                if (feature) this.activeLayer.add(feature);
-                this._activeFeature = feature;
-            }
-        }
-    });
+    MultiPoint.prototype.dblClickTimeout = 30;
+    MultiPoint.prototype.symbol = new PointSymbol();
 
     return MultiPoint;
 

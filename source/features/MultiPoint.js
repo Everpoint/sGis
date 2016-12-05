@@ -61,7 +61,7 @@ sGis.module('feature.MultiPoint', [
          */
         addPoint(point) {
             if (point.position && point.crs) {
-                this._points.push(point.projectTo(this.crs).coordinates);
+                this._points.push(point.projectTo(this.crs).position);
             } else {
                 this._points.push([point[0], point[1]]);
             }
@@ -80,7 +80,7 @@ sGis.module('feature.MultiPoint', [
             var renders = [];
             this._points.forEach(point => {
                 var f = new PointF(point, {crs: this.crs, symbol: this.symbol});
-                renders = renders.concat(f.render(arguments));
+                renders = renders.concat(f.render(resolution, crs));
             });
 
             this._rendered = {
