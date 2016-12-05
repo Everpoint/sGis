@@ -8,7 +8,7 @@ sGis.module('serializer.symbolSerializer', [
      * @namespace sGis.serializer
      */
     
-    var symbolDescriptions = {};
+    let symbolDescriptions = {};
 
     /**
      * @alias sGis.serializer.symbolSerializer
@@ -19,12 +19,12 @@ sGis.module('serializer.symbolSerializer', [
         },
 
         serialize: (symbol) => {
-            var keys = Object.keys(symbolDescriptions);
-            for (var i = 0; i < keys.length; i++) {
-                var desc = symbolDescriptions[keys[i]];
+            let keys = Object.keys(symbolDescriptions);
+            for (let i = 0; i < keys.length; i++) {
+                let desc = symbolDescriptions[keys[i]];
 
                 if (symbol instanceof desc.Constructor) {
-                    var serialized = {symbolName: keys[i]};
+                    let serialized = {symbolName: keys[i]};
                     desc.properties.forEach(prop => {
                         serialized[prop] = symbol[prop];
                     });
@@ -37,7 +37,7 @@ sGis.module('serializer.symbolSerializer', [
         
         deserialize: (desc) => {
             if (!symbolDescriptions[desc.symbolName]) utils.error('Unknown type of symbol.');
-            var symbol = new symbolDescriptions[desc.symbolName].Constructor();
+            let symbol = new symbolDescriptions[desc.symbolName].Constructor();
             symbolDescriptions[desc.symbolName].properties.forEach(prop => { symbol[prop] = desc[prop]; });
             
             return symbol;
