@@ -66,11 +66,11 @@ sGis.module('LayerGroup', [
         }
 
         _setForwardListeners (layerGroup) {
-            layerGroup.on('layerAdd layerRemove layerOrderChange', this._forwardEvent);
+            layerGroup.on('layerAdd layerRemove layerOrderChange visibilityChange', this._forwardEvent);
         }
 
         _removeForwardListeners (layerGroup) {
-            layerGroup.off('layerAdd layerRemove layerOrderChange', this._forwardEvent);
+            layerGroup.off('layerAdd layerRemove layerOrderChange visibilityChange', this._forwardEvent);
         }
 
         /**
@@ -133,11 +133,14 @@ sGis.module('LayerGroup', [
         /**
          * Returns the list of the layers in the group without child LayerGroup's
          * @param {Boolean} [recurse=false] - weather to include layers from the child groups
+         * @param {Boolean} [excludeInactive=false] - if set to true, layers with isDisplayed=false and all their children will not be included
          * @returns {sGis.Layer[]} - ordered list of the layers
          */
-        getLayers (recurse) {
+        getLayers(recurse, excludeInactive) {
             let layers = [];
             this._layers.forEach(layer => {
+                if (excludeInactive && !layer.isDisplayed) return;
+
                 if (recurse && layer instanceof LayerGroup) {
                     layers = layers.concat(layer.getLayers(recurse));
                 } else {
@@ -163,6 +166,17 @@ sGis.module('LayerGroup', [
                 this.addLayer(layers[i]);
             }
         }
+
+        get isDisplayed() { return this._isDisplayed; }
+        set isDisplayed(bool) {
+            if (this._isDisplayed !== bool) {
+                this._isDisplayed = bool;
+                this.fire('visibilityChange');
+            }
+        }
+
+        show() { this.isDisplayed = true; }
+        hide() { this.isDisplayed = false; }
     }
 
     return LayerGroup;

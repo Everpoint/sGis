@@ -44,7 +44,8 @@ sGis.module('Layer', [
         get isDisplayed() { return this._isDisplayed; }
         set isDisplayed(/** Boolean */ bool) {
             this._isDisplayed = bool;
-            this.fire('propertyChange', {property: 'display'});
+            //this.fire('propertyChange', {property: 'display'});
+            this.fire('visibilityChange');
         }
 
         /**
