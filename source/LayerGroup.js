@@ -18,6 +18,7 @@ sGis.module('LayerGroup', [
             super();
             this._layers = [];
             this._forwardEvent = (sGisEvent) => { this.fire(sGisEvent.eventType, sGisEvent); };
+            this._fireContentChange = () => { this.fire('contentsChange'); };
 
             this.layers = layers || [];
         }
@@ -26,6 +27,7 @@ sGis.module('LayerGroup', [
          * Adds a layer to the end of the list
          * @param {sGis.Layer|sGis.LayerGroup} layer - layer to add
          * @fires sGis.LayerGroup#layerAdd
+         * @fires sGis.LayerGroup#contentsChange
          * @throws if the layer is already in the group, or in any of the child groups
          */
         addLayer (layer) {
@@ -35,8 +37,13 @@ sGis.module('LayerGroup', [
             }
 
             this._layers.push(layer);
-            if (layer instanceof LayerGroup) this._setForwardListeners(layer);
+            if (layer instanceof LayerGroup) {
+                this._setForwardListeners(layer);
+            } else {
+                this._setChildListeners(layer);
+            }
             this.fire('layerAdd', {layer: layer});
+            this.fire('contentsChange');
         }
 
         /**
@@ -44,14 +51,20 @@ sGis.module('LayerGroup', [
          * @param {sGis.Layer|sGis.LayerGroup} layer - layer to remove
          * @param {Boolean} [recurse=false] - remove the layer from the child groups
          * @fires sGis.LayerGroup#layerRemove
+         * @fires sGis.LayerGroup#contentsChange
          * @throws if the layer not in the group
          */
         removeLayer (layer, recurse) {
             var index = this._layers.indexOf(layer);
             if (index !== -1) {
                 this._layers.splice(index, 1);
-                if (layer instanceof LayerGroup) this._removeForwardListeners(layer);
+                if (layer instanceof LayerGroup) {
+                    this._removeForwardListeners(layer);
+                } else {
+                    this._removeChildListeners(layer);
+                }
                 this.fire('layerRemove', {layer: layer});
+                this.fire('contentsChange');
                 return;
             } else if (recurse) {
                 for (var i = 0, l = this._layers.length; i < l; i++) {
@@ -65,12 +78,20 @@ sGis.module('LayerGroup', [
             utils.error('The layer is not in the group');
         }
 
+        _setChildListeners(layer) {
+            layer.on('visibilityChange', this._fireContentChange);
+        }
+
+        _removeChildListeners(layer) {
+            layer.off('visibilityChange', this._fireContentChange);
+        }
+
         _setForwardListeners (layerGroup) {
-            layerGroup.on('layerAdd layerRemove layerOrderChange visibilityChange', this._forwardEvent);
+            layerGroup.on('layerAdd layerRemove layerOrderChange contentsChange', this._forwardEvent);
         }
 
         _removeForwardListeners (layerGroup) {
-            layerGroup.off('layerAdd layerRemove layerOrderChange visibilityChange', this._forwardEvent);
+            layerGroup.off('layerAdd layerRemove layerOrderChange contentsChange', this._forwardEvent);
         }
 
         /**
@@ -103,6 +124,7 @@ sGis.module('LayerGroup', [
          * @param {Number} index - integer position of the layer after insertion
          * @fires sGis.LayerGroup#layerAdd
          * @fires sGis.LayerGroup#layerOrderChange
+         * @fires sGis.LayerGroup#contentsChange
          * @throws if the given layer cannot be added to the group
          */
         insertLayer (layer, index) {
@@ -124,6 +146,8 @@ sGis.module('LayerGroup', [
             this._layers.splice(index, 0, layer);
             var event = added ? 'layerAdd' : 'layerOrderChange';
             this.fire(event, {layer: layer});
+            this.fire('contentsChange');
+
         }
         
         moveLayerToTop(layer) {
@@ -142,7 +166,7 @@ sGis.module('LayerGroup', [
                 if (excludeInactive && !layer.isDisplayed) return;
 
                 if (recurse && layer instanceof LayerGroup) {
-                    layers = layers.concat(layer.getLayers(recurse));
+                    layers = layers.concat(layer.getLayers(recurse, excludeInactive));
                 } else {
                     layers.push(layer);
                 }
@@ -179,6 +203,8 @@ sGis.module('LayerGroup', [
         hide() { this.isDisplayed = false; }
     }
 
+    LayerGroup.prototype.isDisplayed = true;
+
     return LayerGroup;
 
     /**
@@ -203,5 +229,12 @@ sGis.module('LayerGroup', [
      * @mixes sGisEvent
      * @type {Object}
      * @property {sGis.Layer} layer - the layer that was moved
+     */
+
+    /**
+     * One of the child layers (recursive) is added, removed, moved to other index or changed isDisplayed property
+     * @event sGis.LayerGroup#contentsChange
+     * @mixes sGisEvent
+     * @type {Object}
      */
 });

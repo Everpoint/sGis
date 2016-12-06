@@ -106,7 +106,7 @@ sGis.module('painter.DomPainter', [
         }
         
         _setEventListeners() {
-            this._map.on('layerAdd layerRemove layerOrderChange visibilityChange', this._updateLayerList.bind(this));
+            this._map.on('contentsChange', this._updateLayerList.bind(this));
             this._map.on('drag', this._onMapDrag.bind(this));
             this._map.on('dblclick', this._onMapDblClick.bind(this));
             this._map.on('animationStart', this.forbidUpdate.bind(this));
@@ -139,7 +139,7 @@ sGis.module('painter.DomPainter', [
                 this._updateBbox();
 
                 if (this._updateAllowed) {
-                    this._map.getLayers(true).reverse().forEach(layer => {
+                    this._map.getLayers(true, true).reverse().forEach(layer => {
                         let renderer = this._layerRenderers.get(layer);
                         if (this._redrawNeeded || renderer.updateNeeded) {
                             renderer.update();
