@@ -45,7 +45,7 @@ sGis.module('feature.Point', [
             this.redraw();
         }
         
-        get point() { return new sGis.Point(this.position, this.crs); }
+        get point() { return new Point(this.position, this.crs); }
         set point(point) { this.position = point.projectTo(this.crs).position; }
 
         get x() { return this._position[0]; }

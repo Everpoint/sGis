@@ -120,7 +120,7 @@ sGis.module('Layer', [
      */
     Layer.prototype.delayedUpdate = false;
 
-    sGis.utils.extend(Layer.prototype, defaults);
+    utils.extend(Layer.prototype, defaults);
 
     return Layer;
 

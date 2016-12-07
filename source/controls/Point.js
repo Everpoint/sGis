@@ -1,7 +1,8 @@
 sGis.module('controls.Point', [
     'Control',
+    'feature.Point',
     'symbol.point.Point'
-], function(/** sGis.Control */ Control, PointSymbol) {
+], function(/** sGis.Control */ Control, PointFeature, PointSymbol) {
     'use strict';
 
     /**
@@ -33,7 +34,7 @@ sGis.module('controls.Point', [
             sGisEvent.stopPropagation();
 
             let point = sGisEvent.point.projectTo(this.map.crs);
-            var feature = new sGis.feature.Point(point.position, {crs: this.map.crs, symbol: this.symbol});
+            var feature = new PointFeature(point.position, {crs: this.map.crs, symbol: this.symbol});
 
             if (this.activeLayer) this.activeLayer.add(feature);
             this.fire('drawingFinish', { feature: feature });

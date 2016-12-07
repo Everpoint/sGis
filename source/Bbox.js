@@ -160,11 +160,11 @@ sGis.module('Bbox', [
                 var projected = point.projectTo(this._crs);
                 this._p[index * 2] = projected.x;
                 this._p[1 + index * 2] = projected.y;
-            } else if (sGis.utils.isArray(point)) {
+            } else if (utils.isArray(point)) {
                 this._p[index * 2] = point[0];
                 this._p[1 + index * 2] = point[1];
             } else {
-                sGis.utils.error('Point is expected but got ' + point + ' instead');
+                utils.error('Point is expected but got ' + point + ' instead');
             }
         }
     }

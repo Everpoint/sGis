@@ -27,7 +27,7 @@ sGis.module('EventHandler', [
             if (this._prohibitedEvents && this._prohibitedEvents.indexOf(sGisEvent.eventType) !== -1) return;
             var eventType = sGisEvent.eventType;
             if (this._eventHandlers && this._eventHandlers[eventType]) {
-                var handlerList = sGis.utils.copyArray(this._eventHandlers[eventType]); //This is needed in case one of the handlers is deleted in the process of handling
+                var handlerList = utils.copyArray(this._eventHandlers[eventType]); //This is needed in case one of the handlers is deleted in the process of handling
                 for (var i = 0, len = handlerList.length; i < len; i++) {
                     if (handlerList[i].oneTime) {
                         var currentIndex = this._eventHandlers[eventType].indexOf(handlerList[i]);
@@ -93,7 +93,7 @@ sGis.module('EventHandler', [
          */
         once (description, handler) {
             if (!(handler instanceof Function)) utils.error('Function is expected but got ' + handler + ' instead');
-            if (!sGis.utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
+            if (!utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
 
             var types = getTypes(description);
             if (types.length !== 1) utils.error('Only one event type can be specified with .once() method');
@@ -111,14 +111,14 @@ sGis.module('EventHandler', [
          * @param {Function} [handler] - handler to be removed. If no handler is specified, all handlers from the given namespaces will be removed. If no handler and namespace are specified, error will be thrown.
          */
         removeListener (description, handler) {
-            if (!sGis.utils.isString(description)) sGis.utils.error('Expected the name of the event and handler function, but got (' + description + ', ' + handler + ') instead');
+            if (!utils.isString(description)) utils.error('Expected the name of the event and handler function, but got (' + description + ', ' + handler + ') instead');
 
             var types = getTypes(description);
             var namespaces = getNamespaces(description);
 
             if (namespaces.length === 0) {
-                if (types.length === 0) sGis.utils.error('At least one event type or namespace must be specified');
-                if (!handler) sGis.utils.error('To remove all listeners of the given type use the .removeAllListeners() method');
+                if (types.length === 0) utils.error('At least one event type or namespace must be specified');
+                if (!handler) utils.error('To remove all listeners of the given type use the .removeAllListeners() method');
             }
 
             if (!this._eventHandlers) return;
@@ -127,7 +127,7 @@ sGis.module('EventHandler', [
             for (var i = 0; i < types.length; i++) {
                 if (this._eventHandlers[types[i]]) {
                     for (var j = this._eventHandlers[types[i]].length-1; j >=0; j--) {
-                        if ((namespaces === null || namespaces.length === 0 || sGis.utils.arrayIntersect(this._eventHandlers[types[i]][j].namespaces, namespaces)) &&
+                        if ((namespaces === null || namespaces.length === 0 || utils.arrayIntersect(this._eventHandlers[types[i]][j].namespaces, namespaces)) &&
                             (!handler || this._eventHandlers[types[i]][j].handler === handler)) {
                             this._eventHandlers[types[i]].splice(j, 1);
                         }
@@ -162,7 +162,7 @@ sGis.module('EventHandler', [
          * @returns {boolean}
          */
         hasListener (type, handler) {
-            if (!sGis.utils.isString(type) || !sGis.utils.isFunction(handler)) sGis.utils.error('Expected the name of the event and handler function, but got (' + type + ', ' + handler + ') instead');
+            if (!utils.isString(type) || !utils.isFunction(handler)) utils.error('Expected the name of the event and handler function, but got (' + type + ', ' + handler + ') instead');
 
             if (this._eventHandlers && this._eventHandlers[type]) {
                 for (var i = 0; i < this._eventHandlers[type].length; i++) {
@@ -179,7 +179,7 @@ sGis.module('EventHandler', [
          * @returns {boolean} - true if the object has at least one handler of the given types with the given namespaces. If no event type is given, checks if there are any handlers in the given namespaces exist. If no namespace is given, the namespace check is ignored.
          */
         hasListeners (description) {
-            if (!sGis.utils.isString(description)) sGis.utils.error('Expected the name of the event, but got ' + description + ' instead');
+            if (!utils.isString(description)) utils.error('Expected the name of the event, but got ' + description + ' instead');
             if (!this._eventHandlers) return false;
 
             var types = getTypes(description);
@@ -191,7 +191,7 @@ sGis.module('EventHandler', [
                 if (this._eventHandlers[types[i]] && this._eventHandlers[types[i]].length > 0) {
                     if (namespaces.length > 0) {
                         for (var j = 0; j < this._eventHandlers[types[i]].length; j++) {
-                            if (sGis.utils.arrayIntersect(this._eventHandlers[types[i]][j].namespaces, namespaces)) {
+                            if (utils.arrayIntersect(this._eventHandlers[types[i]][j].namespaces, namespaces)) {
                                 return true;
                             }
                         }
@@ -209,7 +209,7 @@ sGis.module('EventHandler', [
          * @returns {Array}
          */
         getHandlers (type) {
-            if (!sGis.utils.isString(type)) sGis.utils.error('Expected the name of the e*vent, but got ' + type + ' instead');
+            if (!utils.isString(type)) utils.error('Expected the name of the e*vent, but got ' + type + ' instead');
             if (this._eventHandlers && this._eventHandlers[type]) {
                 return utils.copyObject(this._eventHandlers[type]);
             }

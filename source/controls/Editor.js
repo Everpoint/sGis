@@ -238,8 +238,8 @@ sGis.module('controls.Editor', [
             switch (event.which) {
                 case 27: this._deselect(); return false; // esc
                 case 46: this._delete(); return false; // del
-                case 90: if (event.ctrlKey) { this.undo(); return false; } // ctrl+z
-                case 89: if (event.ctrlKey) { this.redo(); return false; } // ctrl+y
+                case 90: if (event.ctrlKey) { this.undo(); return false; } break; // ctrl+z
+                case 89: if (event.ctrlKey) { this.redo(); return false; } break; // ctrl+y
             }
         }
 

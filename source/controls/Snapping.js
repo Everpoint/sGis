@@ -3,12 +3,14 @@ sGis.module('controls.Snapping', [
     'FeatureLayer',
     'feature.Point',
     'symbol.point.Point',
+    'Bbox',
     'geotools'
 ], (
     /** function(new:sGis.Control) */ Control,
     /** function(new:sGis.FeatureLayer) */ FeatureLayer,
     /** function(new:sGis.feature.Point) */ PointFeature,
     /** function(new:sGis.symbol.point.Point) */ PointSymbol,
+    /** function(new:sGis.Bbox) */ Bbox,
     /** sGis.geotools */ geotools) => {
 
     'use strict';
@@ -127,7 +129,7 @@ sGis.module('controls.Snapping', [
 
     var snapping = {
         vertex: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
-            let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
+            let bbox = new Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
             for (let i = 0; i < features.length; i++) {
@@ -154,7 +156,7 @@ sGis.module('controls.Snapping', [
         },
 
         midpoint: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
-            let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
+            let bbox = new Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
             for (let  i = 0; i < features.length; i++) {
@@ -180,7 +182,7 @@ sGis.module('controls.Snapping', [
         },
 
         line: function(point, layer, distance, activeFeature, activeRing, activeIndex) {
-            let bbox = new sGis.Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
+            let bbox = new Bbox([point.x - distance, point.y - distance], [point.x + distance, point.y + distance], point.crs);
             let features = layer.getFeatures(bbox);
 
             for (let i = 0; i < features.length; i++) {
