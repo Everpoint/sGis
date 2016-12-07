@@ -10,16 +10,15 @@ sGis.module('Bbox', [
     };
 
     /**
-     * Simple rectangular area on a map
-     * @class
+     * Object representing a rectangular area on a map between two point.
      * @alias sGis.Bbox
      */
     class Bbox {
         /**
          * @constructor
-         * @param {Number[]} point1
-         * @param {Number[]} point2
-         * @param {sGis.Crs} [crs=sGis.CRS.geo]
+         * @param {Position} point1 - first corner point of rectangle
+         * @param {Position} point2 - second corner point of rectangle
+         * @param {sGis.Crs} [crs=sGis.CRS.geo] - coordinate system of the point coordinates
          */
         constructor(point1, point2, crs)
         {
@@ -28,8 +27,9 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Returns a new Bbox in the specified coordinate system
+         * Returns a new Bbox in the specified coordinate system.
          * @param {sGis.Crs} crs - target coordinate system
+         * @throws If the instance coordinates cannot be projected into the target crs.
          * @returns {sGis.Bbox}
          */
         projectTo(crs) {
@@ -39,8 +39,9 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Center of the bounding box
+         * Center point of the bounding box
          * @type sGis.Point
+         * @readonly
          */
         get center() { return new Point([(this.xMax + this.xMin)/2, (this.yMax + this.yMin)/2], this.crs); }
 
@@ -53,7 +54,8 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Returns true if the given bbox is equal (geographically) to the target bbox
+         * Returns true if the given bbox is equal (geographically) to the target bbox. It will return false if the target
+         * bbox is set in different coordinate system or if any of the 4 coordinates are different by more then 0.0001%.
          * @param {sGis.Bbox} bbox - target bbox
          * @returns {boolean}
          */
@@ -64,7 +66,7 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Returns true if at list one point of the given bbox lies inside the target bbox
+         * Returns true if at list one point of the given bbox lies inside the target bbox.
          * @param {sGis.Bbox} bbox - target bbox
          * @returns {boolean}
          */
