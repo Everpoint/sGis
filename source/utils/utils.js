@@ -4,7 +4,8 @@ sGis.module('utils', [
     'use strict';
 
     /**
-     * @namespace sGis.utils
+     * @namespace
+     * @alias sGis.utils
      */
     var utils = {
         /**

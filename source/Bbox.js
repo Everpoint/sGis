@@ -2,10 +2,10 @@ sGis.module('Bbox', [
     'utils',
     'CRS',
     'Point'
-], function(/**sGis.utils*/ utils, /**sGis.CRS*/ CRS, /** sGis.Point.constructor */ Point) {
+], function(utils, CRS, Point) {
     'use strict';
 
-    var defaults = {
+    let defaults = {
         _crs: CRS.geo
     };
 
@@ -23,7 +23,7 @@ sGis.module('Bbox', [
          */
         constructor(point1, point2, crs)
         {
-            this._crs = crs;
+            if (crs) this._crs = crs;
             this._p = [Math.min(point1[0], point2[0]), Math.min(point1[1], point2[1]), Math.max(point1[0], point2[0]), Math.max(point1[1], point2[1])];
         }
 
@@ -33,8 +33,8 @@ sGis.module('Bbox', [
          * @returns {sGis.Bbox}
          */
         projectTo(crs) {
-            var projected1 = new Point(this._p.slice(0,2), this._crs).projectTo(crs).position;
-            var projected2 = new Point(this._p.slice(2,4), this._crs).projectTo(crs).position;
+            let projected1 = new Point(this._p.slice(0,2), this._crs).projectTo(crs).position;
+            let projected2 = new Point(this._p.slice(2,4), this._crs).projectTo(crs).position;
             return new Bbox(projected1, projected2, crs);
         }
 
@@ -58,8 +58,8 @@ sGis.module('Bbox', [
          * @returns {boolean}
          */
         equals(bbox) {
-            var target = bbox.coordinates;
-            for (var i = 0; i < 4; i++) if (!utils.softEquals(this._p[i], target[i])) return false;
+            let target = bbox.coordinates;
+            for (let i = 0; i < 4; i++) if (!utils.softEquals(this._p[i], target[i])) return false;
             return this._crs.equals(bbox.crs);
         }
 
@@ -69,7 +69,7 @@ sGis.module('Bbox', [
          * @returns {boolean}
          */
         intersects(bbox) {
-            var projected = bbox.projectTo(this._crs);
+            let projected = bbox.projectTo(this._crs);
             return this.xMax > projected.xMin && this.xMin < projected.xMax && this.yMax > projected.yMin && this.yMin < projected.yMax;
         }
 
@@ -79,7 +79,7 @@ sGis.module('Bbox', [
          * @returns {boolean}
          */
         contains(point) {
-            var projected = point.projectTo(this.crs);
+            let projected = point.projectTo(this.crs);
             return this.xMin <= projected.x && this.xMax >= projected.x && this.yMin <= projected.y && this.yMax >= projected.y;
         }
 
@@ -157,7 +157,7 @@ sGis.module('Bbox', [
         /** @deprecated */
         _setPoint(index, point) {
             if (point instanceof Point) {
-                var projected = point.projectTo(this._crs);
+                let projected = point.projectTo(this._crs);
                 this._p[index * 2] = projected.x;
                 this._p[1 + index * 2] = projected.y;
             } else if (utils.isArray(point)) {
