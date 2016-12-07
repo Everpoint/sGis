@@ -142,31 +142,6 @@ sGis.module('Bbox', [
          * @type number[]
          */
         get coordinates() { return utils.copyArray(this._p); }
-
-        /** @deprecated */
-        get p() { return [this.p1, this.p2]; }
-
-        /** @deprecated */
-        get p1() { return new Point([this._p[0], this._p[1]], this._crs); }
-        set p1(point){ this._setPoint(0, point); }
-
-        /** @deprecated */
-        get p2() { return new Point([this._p[2], this._p[3]]); }
-        set p2(point) { this._setPoint(1, point); }
-
-        /** @deprecated */
-        _setPoint(index, point) {
-            if (point instanceof Point) {
-                let projected = point.projectTo(this._crs);
-                this._p[index * 2] = projected.x;
-                this._p[1 + index * 2] = projected.y;
-            } else if (utils.isArray(point)) {
-                this._p[index * 2] = point[0];
-                this._p[1 + index * 2] = point[1];
-            } else {
-                utils.error('Point is expected but got ' + point + ' instead');
-            }
-        }
     }
 
     utils.extend(Bbox.prototype, defaults);
