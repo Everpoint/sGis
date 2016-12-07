@@ -121,8 +121,6 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
      * @returns {boolean|Array} - true, if the point is inside of polygon, [ring, index] - index of vertex if the point is closer then 'tolerance' to one of the sides of polygon, false otherwise
      */
     geotools.contains = function (polygon, point, tolerance) {
-        sGis.utils.validate(polygon[0], 'array');
-        sGis.utils.validate(point, 'array');
         tolerance = tolerance || 0;
         var intersectionCount = 0;
 

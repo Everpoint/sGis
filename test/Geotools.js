@@ -10,22 +10,6 @@ describe('Geotools', function() {
             expect(function() { sGis.geotools.contains(undefined, [1, 1]); }).toThrow();
         });
 
-        it('should throw exception in case of incorrect polygon format', function() {
-            expect(function() { sGis.geotools.contains(1, point); }).toThrow();
-            expect(function() { sGis.geotools.contains('1, 1', point); }).toThrow();
-            expect(function() { sGis.geotools.contains({x: 1, y: 1}, point); }).toThrow();
-            expect(function() { sGis.geotools.contains(null, point); }).toThrow();
-            expect(function() { sGis.geotools.contains([1, 1], point); }).toThrow();
-            expect(function() { sGis.geotools.contains([], point); }).toThrow();
-        });
-
-        it('should throw exception in case of incorrect point format', function() {
-            expect(function() { sGis.geotools.contains(polygon, 1); }).toThrow();
-            expect(function() { sGis.geotools.contains(polygon, '1, 1'); }).toThrow();
-            expect(function() { sGis.geotools.contains(polygon, {x: 1, y: 1}); }).toThrow();
-            expect(function() { sGis.geotools.contains(polygon, null); }).toThrow();
-        });
-
         it('should return true if the point is inside of polygon', function() {
             expect(sGis.geotools.contains(polygon, point)).toBe(true);
             expect(sGis.geotools.contains(polygon, [0, 9])).toBe(true);
