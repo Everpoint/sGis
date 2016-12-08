@@ -274,7 +274,7 @@ sGis.module('painter.DomPainter', [
 
         resolveLayerOverlay() {
             var prevContainerIndex = 0;
-            this._map.getLayers(true).forEach(layer => {
+            this._map.getLayers(true, true).forEach(layer => {
                 let renderer = this._layerRenderers.get(layer);
                 if (!renderer) return;
                 
