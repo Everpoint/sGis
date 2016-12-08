@@ -37,11 +37,12 @@ sGis.module('LayerGroup', [
             }
 
             this._layers.push(layer);
+            this._setChildListeners(layer);
+
             if (layer instanceof LayerGroup) {
                 this._setForwardListeners(layer);
-            } else {
-                this._setChildListeners(layer);
             }
+
             this.fire('layerAdd', {layer: layer});
             this.fire('contentsChange');
         }
@@ -58,10 +59,9 @@ sGis.module('LayerGroup', [
             var index = this._layers.indexOf(layer);
             if (index !== -1) {
                 this._layers.splice(index, 1);
+                this._removeChildListeners(layer);
                 if (layer instanceof LayerGroup) {
                     this._removeForwardListeners(layer);
-                } else {
-                    this._removeChildListeners(layer);
                 }
                 this.fire('layerRemove', {layer: layer});
                 this.fire('contentsChange');
