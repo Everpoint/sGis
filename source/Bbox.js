@@ -66,7 +66,9 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Returns true if at list one point of the given bbox lies inside the target bbox.
+         * Returns true if at list one point of the given bbox lies inside the target bbox. NOTE that this method will return true
+         * if on of the bboxes is completely inside the other. It will return false if bboxes are adjustened, e.g. a side of one bbox
+         * touches a side of another one.
          * @param {sGis.Bbox} bbox - target bbox
          * @returns {boolean}
          */
@@ -76,7 +78,7 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Returns true, if the target point is inside the bbox
+         * Returns true, if the target point is inside the bbox.
          * @param {sGis.Point} point
          * @returns {boolean}
          */
@@ -86,62 +88,70 @@ sGis.module('Bbox', [
         }
 
         /**
-         * Coordinate system of the bbox
+         * Coordinate system of the bbox.
          * @type sGis.Crs
+         * @readonly
          */
         get crs() { return this._crs; }
 
         /**
-         * Right border of the bbox
+         * Coordinate of the right border of the bbox. Cannot be assigned value less then xMin.
+         * @type Number
          */
         get xMax() { return this._p[2] }
-        set xMax(value) {
+        set xMax(/** Number */ value) {
             if (value < this.xMin) utils.error('Max value cannot be lower than the min value');
             this._p[2] = value;
         }
 
         /**
-         * Top border of the bbox
+         * Coordinate of the top border of the bbox. Cannot be assigned value less then yMin.
+         * @type Number
          */
         get yMax() { return this._p[3]; }
-        set yMax(value) {
+        set yMax(/** Number */ value) {
             if (value < this.yMin) utils.error('Max value cannot be lower than the min value');
             this._p[3] = value;
         }
 
         /**
-         * Left border of the bbox
+         * Coordinate of the left border of the bbox. Cannot be assigned value larger then xMax.
+         * @type Number
          */
         get xMin() { return this._p[0]; }
-        set xMin(value) {
+        set xMin(/** Number */ value) {
             if (value > this.xMax) utils.error('Min value cannot be higher than the max value');
             this._p[0] = value;
         }
 
         /**
-         * Bottom border of the bbox
+         * Coordinate of the bottom border of the bbox. Cannot be assigned value larger then yMax.
+         * @type Number
          */
         get yMin() { return this._p[1]; }
-        set yMin(value) {
+        set yMin(/** Number */ value) {
             if (value > this.yMax) utils.error('Min value cannot be higher than the max value');
             this._p[1] = value;
         }
 
         /**
-         * Width of the bbox
-         * @type number
+         * Width of the bbox.
+         * @type Number
+         * @readonly
          */
         get width() { return this.xMax - this.xMin; }
 
         /**
-         * Height of the bbox
+         * Height of the bbox.
          * @type number
+         * @readonly
          */
         get height() { return this.yMax - this.yMin; }
 
         /**
-         * Coordinates of the bbox in the form [xMin, yMin, xMax, yMax]
+         * Coordinates of the bbox in the form [xMin, yMin, xMax, yMax].
          * @type number[]
+         * @readonly
          */
         get coordinates() { return utils.copyArray(this._p); }
     }
