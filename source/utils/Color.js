@@ -85,28 +85,28 @@ sGis.module('utils.Color', [
          * @type {Number}
          */
         get r() { return this._channels.r; }
-        set r(v) { this._channels.r = v; }
+        set r(/** Number */ v) { this._channels.r = v; }
 
         /**
          * Returns green channel value as integer from 0 to 255.
          * @type {Number}
          */
         get g() { return this._channels.g; }
-        set g(v) { this._channels.g = v; }
+        set g(/** Number */ v) { this._channels.g = v; }
 
         /**
          * Returns blue channel value as integer from 0 to 255.
          * @type {Number}
          */
         get b() { return this._channels.b; }
-        set b(v) { this._channels.b = v; }
+        set b(/** Number */ v) { this._channels.b = v; }
 
         /**
          * Returns opacity channel value as integer from 0 to 255.
          * @type {Number}
          */
         get a() { return this._channels.a; }
-        set a(v) { this._channels.a = v; }
+        set a(/** Number */ v) { this._channels.a = v; }
 
         /**
          * Returns values of the channels as integers from 0 to 255. Format is { r: r, g: g, b: b, a: a }.
