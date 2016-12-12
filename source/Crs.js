@@ -3,7 +3,7 @@ sGis.module('Crs', [
 ], function() {
     'use strict';
 
-    var identityProjection = ([x,y]) => [x,y];
+    let identityProjection = ([x,y]) => [x,y];
 
     /**
      * @class
@@ -116,7 +116,7 @@ sGis.module('CRS', [
     /**
      * @namespace sGis.CRS
      */
-    var CRS = {};
+    let CRS = {};
 
     /**
      * Plain euclidean coordinate system. This projection cannot be projected to any other projection.
@@ -164,18 +164,18 @@ sGis.module('CRS', [
          */
         CRS.webMercator = new Crs({wkid: 102113});
         CRS.webMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
-            var rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-y / a));
-            var rLong = x / a;
-            var lon = math.radToDeg(rLong);
-            var lat = math.radToDeg(rLat);
+            let rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-y / a));
+            let rLong = x / a;
+            let lon = math.radToDeg(rLong);
+            let lat = math.radToDeg(rLat);
 
             return [lon, lat];
         });
         CRS.wgs84.setProjectionTo(CRS.webMercator, ([x,y]) => {
-            var rLon = math.degToRad(x);
-            var rLat = math.degToRad(y);
-            var X = a * rLon;
-            var Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2));
+            let rLon = math.degToRad(x);
+            let rLat = math.degToRad(y);
+            let X = a * rLon;
+            let Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2));
 
             return [X, Y];
         });
@@ -184,14 +184,14 @@ sGis.module('CRS', [
          * @deprecated
          */
         CRS.webMercator.from = (x,y) => {
-            var [lat, lon] = CRS.webMercator.projectionTo(CRS.geo)([x,y]);
+            let [lat, lon] = CRS.webMercator.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
         CRS.webMercator.to = (lon,lat) => {
-            var [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
+            let [x, y] = CRS.geo.projectionTo(CRS.webMercator)([lat,lon]);
             return {x: x, y: y};
         }
     }
@@ -210,10 +210,10 @@ sGis.module('CRS', [
          */
         CRS.ellipticalMercator = new Crs({wkid: 667});
         CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
-            var ts = Math.exp(-y/a);
-            var phi = pih - 2 * Math.atan(ts);
-            var i = 0;
-            var dphi = 1;
+            let ts = Math.exp(-y/a);
+            let phi = pih - 2 * Math.atan(ts);
+            let i = 0;
+            let dphi = 1;
 
             while (Math.abs(dphi) > 0.000000001 && i++ < 15) {
                 let con = e * Math.sin(phi);
@@ -221,7 +221,7 @@ sGis.module('CRS', [
                 phi += dphi;
             }
 
-            var rLong = x / a,
+            let rLong = x / a,
                 rLat = phi,
                 lon = math.radToDeg(rLong),
                 lat = math.radToDeg(rLat);
@@ -229,10 +229,10 @@ sGis.module('CRS', [
             return [lon, lat];
         });
         CRS.wgs84.setProjectionTo(CRS.ellipticalMercator, ([x,y]) => {
-            var rLat = math.degToRad(y);
-            var rLon = math.degToRad(x);
-            var X = a * rLon;
-            var Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e/2)));
+            let rLat = math.degToRad(y);
+            let rLon = math.degToRad(x);
+            let X = a * rLon;
+            let Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e/2)));
 
             return [X, Y];
         });
@@ -241,14 +241,14 @@ sGis.module('CRS', [
          * @deprecated
          */
         CRS.ellipticalMercator.from = (x,y) => {
-            var [lat, lon] = CRS.ellipticalMercator.projectionTo(CRS.geo)([x,y]);
+            let [lat, lon] = CRS.ellipticalMercator.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */
         CRS.ellipticalMercator.to = (lat,lon) => {
-            var [x, y] = CRS.geo.projectionTo(CRS.ellipticalMercator)([lat,lon]);
+            let [x, y] = CRS.geo.projectionTo(CRS.ellipticalMercator)([lat,lon]);
             return {x: x, y: y};
         }
     }
@@ -275,30 +275,30 @@ sGis.module('CRS', [
             constructor(lat0, lon0, stLat1, stLat2) {
                 super('Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2);
 
-                var _lat0 = math.degToRad(lat0);
-                var _lon0 = math.degToRad(lon0);
-                var _stLat1 = math.degToRad(stLat1);
-                var _stLat2 = math.degToRad(stLat2);
-                var _n = (Math.sin(_stLat1) + Math.sin(_stLat2)) / 2;
-                var _c = Math.pow(Math.cos(_stLat1), 2) + 2 * _n * Math.sin(_stLat1);
-                var _ro0 = Math.sqrt(_c - 2 * _n * Math.sin(_lat0)) / _n;
+                let _lat0 = math.degToRad(lat0);
+                let _lon0 = math.degToRad(lon0);
+                let _stLat1 = math.degToRad(stLat1);
+                let _stLat2 = math.degToRad(stLat2);
+                let _n = (Math.sin(_stLat1) + Math.sin(_stLat2)) / 2;
+                let _c = Math.pow(Math.cos(_stLat1), 2) + 2 * _n * Math.sin(_stLat1);
+                let _ro0 = Math.sqrt(_c - 2 * _n * Math.sin(_lat0)) / _n;
 
                 this.setProjectionTo(CRS.wgs84, ([x,y]) => {
-                    var xRad = x / R;
-                    var yRad = y / R;
-                    var th = Math.atan(xRad / (_ro0 - yRad));
-                    var ro = xRad / Math.sin(th);
-                    var rLat = Math.asin((_c - ro * ro * _n * _n) / 2 / _n);
-                    var rLon = _lon0 + th / _n;
+                    let xRad = x / R;
+                    let yRad = y / R;
+                    let th = Math.atan(xRad / (_ro0 - yRad));
+                    let ro = xRad / Math.sin(th);
+                    let rLat = Math.asin((_c - ro * ro * _n * _n) / 2 / _n);
+                    let rLon = _lon0 + th / _n;
 
-                    var lat = math.radToDeg(rLat);
-                    var lon = math.radToDeg(rLon);
+                    let lat = math.radToDeg(rLat);
+                    let lon = math.radToDeg(rLon);
 
                     return [lon, lat];
                 });
 
                 CRS.wgs84.setProjectionTo(this, ([lon,lat]) => {
-                    var rLon = math.degToRad(lon),
+                    let rLon = math.degToRad(lon),
                         rLat = math.degToRad(lat),
                         th = _n * (rLat - _lon0),
                         ro = Math.sqrt(_c - 2 * _n * Math.sin(rLon)) / _n,
@@ -314,13 +314,13 @@ sGis.module('CRS', [
          * @deprecated
          */
         AlbersEqualArea.prototype.from = function(x, y) {
-            var [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
+            let [lat, lon] = this.projectionTo(CRS.geo)([x,y]);
             return {x: lon, y: lat, lon: lon, lat: lat};
         };
         /**
          * @deprecated
          */        AlbersEqualArea.prototype.to = function(lat, lon)  {
-            var [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
+            let [x, y] = CRS.geo.projectionTo(this)([lat,lon]);
             return {x: x, y: y};
         };
 
