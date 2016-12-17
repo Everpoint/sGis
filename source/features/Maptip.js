@@ -1,31 +1,53 @@
 sGis.module('feature.Maptip', [
-    'utils',
     'Feature',
     'Point',
+    'Bbox',
     'symbol.maptip.Simple'
-], function(utils, Feature, Point, MaptipSymbol) {
+], function(Feature, Point, Bbox, MaptipSymbol) {
 
     'use strict';
-
-    var defaults = {
-        _content: '',
-        _symbol: new MaptipSymbol()
-    };
 
     /**
      * @alias sGis.feature.Maptip
      * @extends sGis.Feature
+     * @implements sGis.IPoint
      */
     class Maptip extends Feature {
         constructor(position, properties) {
             super(properties);
             this._position = position;
         }
+
+        get content() { return this._content; }
+        set content(content) {
+            this._content = content;
+            this.redraw();
+        }
         
         get position() { return this._position; }
-        // set position(point) {
-        //
-        // }
+        set position(position) {
+            this._position = position;
+            this.redraw();
+        }
+
+        projectTo(crs) {
+            let projected = this.point.projectTo(crs);
+            return new Maptip(projected.position, { crs: crs, content: this.content });
+        }
+
+        get point() {
+            return new Point(this.position, this.crs);
+        }
+
+        get x() {
+            return this.position[0];
+        }
+
+        get y() {
+            return this.position[1];
+        }
+
+        get bbox() { return new Bbox(this._position, this._position, this.crs); }
     }
 
     /**
@@ -36,43 +58,8 @@ sGis.module('feature.Maptip', [
      * @instance
      * @default new sGis.symbol.Maptip()
      */
+    Maptip.prototype._symbol = new MaptipSymbol();
 
-    utils.extend(Maptip.prototype, defaults);
-
-    Object.defineProperties(Maptip.prototype, {
-        position: {
-            get: function() {
-                return this._position.clone();
-            },
-            set: function(position) {
-                if (position instanceof sGis.Point) {
-                    this._position = position.projectTo(this._crs);
-                } else if (sGis.utils.isArray(position) && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1])) {
-                    this._position = new sGis.Point(position, this._crs);
-                } else {
-                    sGis.utils.error('Point is expected but got ' + position + ' instead');
-                }
-
-                this.redraw();
-            }
-        },
-
-        content: {
-            get: function() {
-                return this._content;
-            },
-            set: function(content) {
-                this._content = content;
-                this.redraw();
-            }
-        },
-
-        type: {
-            get: function() {
-                return 'maptip';
-            }
-        }
-    });
 
     return Maptip;
 
