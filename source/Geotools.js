@@ -1,10 +1,10 @@
-sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis.CRS */ CRS) {
+sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
     'use strict';
 
     /**
      * @namespace sGis.geotools
      */
-    var geotools = {};
+    let geotools = {};
 
     /**
      * Finds distance between two geographical points. If the coordinate system of the points can be projected to the
@@ -14,6 +14,7 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
      * @returns {Number}
      */
     geotools.distance = function (a, b) {
+        let l;
         if (a.crs.canProjectTo(CRS.wgs84)) {
             let p1 = a.projectTo(CRS.wgs84);
             let p2 = b.projectTo(CRS.wgs84);
@@ -26,7 +27,7 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
             let c = 2 * Math.atan2(Math.sqrt(d), Math.sqrt(1-d));
             let R = 6371009;
 
-            var l = R * c;
+            l = R * c;
         } else {
             l = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
         }
@@ -34,24 +35,15 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
         return l;
     };
 
-    /**
-     * 
-     * @param geometry
-     * @param crs
-     * @returns {number}
-     */
-    geotools.length = function(geometry, crs) {
-        let coord = geometry.rings ? geometry.rings : geometry;
+    geotools.length = function(coord, crs, enclose = false) {
         let length = 0;
         let ringTemp;
 
-        crs = geometry instanceof sGis.feature.Poly ? geometry.crs : crs ? crs : sGis.CRS.geo;
-
-        for (var ring = 0, l = coord.length; ring < l; ring++) {
+        for (let ring = 0, l = coord.length; ring < l; ring++) {
             ringTemp = [].concat(coord[ring]);
-            if (geometry instanceof sGis.feature.Polygon) ringTemp.push(ringTemp[0]);
+            if (enclose) ringTemp.push(ringTemp[0]);
 
-            for (var i = 0, m = ringTemp.length - 1; i < m; i++) {
+            for (let i = 0, m = ringTemp.length - 1; i < m; i++) {
                 length += geotools.distance(new sGis.Point(ringTemp[i], crs), new sGis.Point(ringTemp[i + 1], crs));
             }
         }
@@ -59,31 +51,37 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, /** sGis
         return length;
     };
 
-    geotools.area = function (geometry, crs) {
-        var coord = geometry instanceof sGis.feature.Poly ? geometry.rings : geometry;
-        crs = geometry instanceof sGis.feature.Poly ? geometry.crs : crs ? crs : sGis.CRS.geo;
-
-        var tempFeature = new sGis.feature.Polyline(coord, {crs: crs}),
-            area = 0;
-
-
+    geotools.area = function (rings, crs) {
+        let projected;
         if (crs.canProjectTo(CRS.cylindricalEqualArea)) {
-            var projected = tempFeature.projectTo(sGis.CRS.cylindricalEqualArea).rings;
+            projected = geotools.projectRings(rings, crs, CRS.cylindricalEqualArea);
         } else {
-            projected = tempFeature.rings;
+            projected = rings;
         }
 
-        for (var ring = 0, l = projected.length; ring < l; ring++) {
-            area += polygonArea(projected[ring]);
-        }
+        let area = 0;
+        projected.forEach(ring => area += polygonArea(ring));
         return area;
+    };
+
+    geotools.projectRings = function(rings, fromCrs, toCrs) {
+        let projection = fromCrs.projectionTo(toCrs);
+        let result = [];
+        rings.forEach(ring => {
+            let projectedRing = [];
+            ring.forEach(position => {
+                projectedRing.push(projection(position));
+            });
+            result.push(projectedRing);
+        });
+        return result;
     };
 
     function polygonArea(coord) {
         coord = coord.concat([coord[0]]);
 
-        var area = 0;
-        for (var i = 0, l = coord.length - 1; i < l; i++) {
+        let area = 0;
+        for (let i = 0, l = coord.length - 1; i < l; i++) {
             area += (coord[i][0] + coord[i + 1][0]) * (coord[i][1] - coord[i + 1][1]);
         }
         return Math.abs(area / 2);
