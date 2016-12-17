@@ -205,7 +205,7 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
      * @returns {boolean}
      */
     geotools.isPolygonValid = function (polygon) {
-        var coordinates = (polygon instanceof sGis.feature.Polygon) ? polygon.rings : polygon;
+        var coordinates = polygon.rings ? polygon.rings : polygon;
         if (coordinates.length === 0) return false;
 
         for (var ring = 0; ring < coordinates.length; ring++) {
