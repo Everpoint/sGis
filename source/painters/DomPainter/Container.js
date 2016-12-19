@@ -1,8 +1,8 @@
 sGis.module('painter.domPainter.Container', [
-    
-], () => {
+    'utils'
+], (utils) => {
 
-    var containerStyle = 'width: 100%; height: 100%; transform-origin: left top; position: absolute;';
+    let containerStyle = 'width: 100%; height: 100%; transform-origin: left top; position: absolute;';
 
     /**
      * @alias sGis.painter.domPainter.Container
@@ -97,7 +97,7 @@ sGis.module('painter.domPainter.Container', [
     }
 
     function browserAdj(n) {
-        if (!sGis.isIE) {
+        if (!utils.isIE) {
             return Math.round(n);
         }
         return n;
