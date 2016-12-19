@@ -4,13 +4,13 @@
     /**
      * @namespace sGis
      */
-    var sGis = {};
+    let sGis = {};
 
     sGis.version = "0.2.1";
     sGis.releaseDate = "05.12.2016";
 
-    var loadedModules = { 'sGis': sGis };
-    var loadingDefs = [];
+    let loadedModules = { 'sGis': sGis };
+    let loadingDefs = [];
 
     /**
      * This function is used to define sGis library modules and their dependencies. It should not be used if a module loading system (like CommonJS or AMD) is used.
@@ -32,12 +32,12 @@
     sGis.module.onLoad = null;
 
     function loadModules() {
-        var loaded = 0;
-        var list = loadingDefs.slice();
-        var remains = [];
+        let loaded = 0;
+        let list = loadingDefs.slice();
+        let remains = [];
         list.forEach(function(def, index) {
-            var deps = [];
-            for (var i = 0; i < def[1].length; i++) {
+            let deps = [];
+            for (let i = 0; i < def[1].length; i++) {
                 if (!loadedModules[def[1][i]]) {
                     remains.push(def);
                     // console.log('Tried to load: ' + def[0] + '. Not found: ' + def[1][i]);
@@ -47,7 +47,7 @@
             }
 
             if (loadedModules[def[0]]) debugger;
-            var module = def[2].apply(this, deps);
+            let module = def[2].apply(this, deps);
             loadedModules[def[0]] = module;
             setModuleReference(module, def[0]);
             loaded ++;
@@ -67,9 +67,9 @@
     window.sGis = sGis;
 
     function setModuleReference(module, name) {
-        var ns = name.split('.');
-        var curr = sGis;
-        for (var i = 0; i < ns.length - 1; i++) {
+        let ns = name.split('.');
+        let curr = sGis;
+        for (let i = 0; i < ns.length - 1; i++) {
             if (!curr[ns[i]]) curr[ns[i]] = {};
             curr = curr[ns[i]];
         }
