@@ -1,8 +1,9 @@
 sGis.module('feature.Poly', [
     'utils',
     'Feature',
-    'Bbox'
-], function(utils, /** sGis.Feature */ Feature, Bbox) {
+    'Bbox',
+    'geotools'
+], function(utils, /** sGis.Feature */ Feature, Bbox, geotools) {
 
     'use strict';
 
@@ -88,14 +89,8 @@ sGis.module('feature.Poly', [
          * @returns {sGis.feature.Poly}
          */
         projectTo(crs) {
-            var projected = this._rings.map(ring => {
-                return ring.map(point => { return this.crs.projectionTo(crs)(point); });
-            });
-
-            let clone = this.clone();
-            clone.rings = projected;
-
-            return clone;
+            let projected = geotools.projectRings(this.rings, this.crs, crs);
+            return new Poly(projected, { crs: crs, symbol: this.symbol });
         }
 
         /**
