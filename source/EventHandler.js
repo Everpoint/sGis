@@ -72,7 +72,7 @@ sGis.module('EventHandler', [
          */
         addListener (description, handler) {
             if (!(handler instanceof Function)) utils.error('Function is expected but got ' + handler + ' instead');
-            if (!sGis.utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
+            if (!utils.isString(description)) utils.error('String is expected but got ' + description + ' instead');
 
             var types = getTypes(description);
             if (types.length < 1) utils.error('No event type is specified');

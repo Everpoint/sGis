@@ -1,4 +1,9 @@
-sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
+sGis.module('geotools', [
+    'math',
+    'utils',
+    'CRS',
+    'Point'
+], function(math, utils, CRS, Point) {
     'use strict';
 
     /**
@@ -53,7 +58,7 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
             if (enclose) ringTemp.push(ringTemp[0]);
 
             for (let i = 0, m = ringTemp.length - 1; i < m; i++) {
-                length += geotools.distance(new sGis.Point(ringTemp[i], crs), new sGis.Point(ringTemp[i + 1], crs));
+                length += geotools.distance(new Point(ringTemp[i], crs), new Point(ringTemp[i + 1], crs));
             }
         }
 
