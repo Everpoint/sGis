@@ -299,7 +299,7 @@ sGis.module('painter.DomPainter', [
         getPointFromPxPosition(x, y) {
             var resolution = this._map.resolution;
             var bbox = this.bbox;
-            return new sGis.Point([
+            return new Point([
                 bbox.xMin + x * resolution,
                 bbox.yMax - y * resolution],
                 bbox.crs

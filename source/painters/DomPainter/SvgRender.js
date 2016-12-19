@@ -3,8 +3,9 @@ sGis.module('painter.domPainter.SvgRender', [
     'render.Point',
     'render.Polyline',
     'render.Polygon',
-    'utils.Color'
-], (Arc, Point, Polyline, Polygon, Color) => {
+    'utils.Color',
+    'utils'
+], (Arc, Point, Polyline, Polygon, Color, utils) => {
     
     'use strict';
    
@@ -84,7 +85,7 @@ sGis.module('painter.domPainter.SvgRender', [
             if (properties.fillImage) {
                 var defs = document.createElementNS(NS, 'defs');
                 var pattern = document.createElementNS(NS, 'pattern');
-                var id = sGis.utils.getGuid();
+                var id = utils.getGuid();
                 pattern.setAttribute('id', id);
                 pattern.setAttribute('patternUnits', 'userSpaceOnUse');
                 pattern.setAttribute('x', properties.x);

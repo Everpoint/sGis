@@ -8,6 +8,7 @@
     "es6": true
   },
   "globals": {
+    "sGis": true
   },
   "rules": {
 

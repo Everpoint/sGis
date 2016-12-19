@@ -1,5 +1,6 @@
 sGis.module('render.Image', [
-], () => {
+    'Point'
+], (Point) => {
 
     'use strict';
     
@@ -46,7 +47,7 @@ sGis.module('render.Image', [
         get bbox() { return this._bbox; }
 
         contains(position) {
-            var point = new sGis.Point([position.x * resolution, position.y * resolution], this._bbox.crs);
+            var point = new Point([position.x * resolution, position.y * resolution], this._bbox.crs);
             return this._bbox.contains(point);
         }
         
