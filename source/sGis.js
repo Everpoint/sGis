@@ -9,9 +9,6 @@
     sGis.version = "0.2.1";
     sGis.releaseDate = "05.12.2016";
 
-    sGis.useCanvas = true;
-
-
     var loadedModules = { 'sGis': sGis };
     var loadingDefs = [];
 
