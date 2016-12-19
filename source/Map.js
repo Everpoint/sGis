@@ -1,17 +1,18 @@
 sGis.module('Map', [
     'utils',
     'Crs',
+    'CRS',
     'EventHandler',
     'Point',
     'Bbox',
     'LayerGroup',
     'feature.Point'
-], function(utils, Crs, EventHandler, Point, Bbox, LayerGroup, PointF) {
+], function(utils, Crs, CRS, EventHandler, Point, Bbox, LayerGroup, PointF) {
     'use strict';
 
     let defaults = {
-        _crs: sGis.CRS.webMercator,
-        _position: new sGis.Point([55.755831, 37.617673]).projectTo(sGis.CRS.webMercator),
+        _crs: CRS.webMercator,
+        _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator),
         _resolution: 611.4962262812505 / 2,
         _animationTime: 300,
         _tileScheme: null
@@ -21,13 +22,6 @@ sGis.module('Map', [
      *
      * @alias sGis.Map
      * @extends sGis.LayerGroup
-     * @param {Object} [options]
-     * @param {sGis.Crs} [options.crs=sGis.CRS.webMercator] - setting a crs that cannot be converted into WGS resets default values of position to [0, 0].
-     * @param {sGis.Point|sGis.feature.Point|Array} [options.position] - the start position of the map. If the array is specified as [x, y], it should be in map crs. By default center it is of Moscow.
-     * @param {Number} [options.resolution=305.74811] - initial resolution of the map
-     * @param {String} [options.wrapper] - Id of the DOM container that will contain the map. It should be block element. If not specified, the map will not be displayed.
-     * @param {sGis.Layer} [options.layers[]] - the list of layers that will be initially on the map. The first in the list will be displayed at the bottom.
-     * @constructor
      */
     class Map extends LayerGroup {
         constructor(properties) {
@@ -40,8 +34,8 @@ sGis.module('Map', [
         
         _listenForBboxChange () {
             this.on('bboxChange', function () {
-                var map = this;
-                var CHANGE_END_DELAY = 300;
+                let map = this;
+                const CHANGE_END_DELAY = 300;
                 if (map._changeTimer) clearTimeout(map._changeTimer);
                 map._changeTimer = setTimeout((function (map) {
                     return function () {
@@ -58,8 +52,7 @@ sGis.module('Map', [
          * @param {Number} dy - Offset along Y axis in map coordinates, positive direction is down
          */
         move (dx, dy) {
-            if (!sGis.utils.isNumber(dx) || !sGis.utils.isNumber(dy)) sGis.utils.error('Number, Number is expected but got ' + dx + ', ' + dy + ' instead');
-            var position = this.position;
+            let position = this.position;
             position.x += dx;
             position.y += dy;
             this.position = position;
@@ -72,7 +65,7 @@ sGis.module('Map', [
          * @param {Boolean} [doNotAdjust=false] - do not adjust resolution to the round ones
          */
         changeScale (scalingK, basePoint, doNotAdjust) {
-            var resolution = this.resolution;
+            let resolution = this.resolution;
             this.setResolution(resolution * scalingK, basePoint, doNotAdjust);
         }
 
@@ -159,7 +152,7 @@ sGis.module('Map', [
                     var x = self._easeFunction(time, originalPosition.x, dx, self._animationTime);
                     var y = self._easeFunction(time, originalPosition.y, dy, self._animationTime);
                     var r = self._easeFunction(time, originalResolution, dr, self._animationTime);
-                    self.setPosition(new sGis.Point([x, y], self.crs), r);
+                    self.setPosition(new Point([x, y], self.crs), r);
                 }
             }, 1000 / 60);
         }
@@ -169,7 +162,7 @@ sGis.module('Map', [
             basePoint = basePoint ? basePoint.projectTo(this.crs) : position;
             var resolution = this.resolution;
             var scalingK = newResolution / resolution;
-            return new sGis.Point([(position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y], position.crs);
+            return new Point([(position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y], position.crs);
         }
 
         stopAnimation () {
@@ -212,13 +205,11 @@ sGis.module('Map', [
                 return this._crs;
             },
             set: function(crs) {
-                if (!(crs instanceof sGis.Crs)) sGis.utils.error('sGis.Crs instance is expected but got ' + crs + ' instead');
-
                 var currentCrs = this._crs;
                 this._crs = crs;
 
                 if (currentCrs !== crs && (!currentCrs.to || !crs.to)) {
-                    this.setPosition(new sGis.Point([0, 0], crs), 1);
+                    this.setPosition(new Point([0, 0], crs), 1);
                 } else {
                     this.position = this.position.projectTo(crs);
                 }
@@ -235,7 +226,6 @@ sGis.module('Map', [
             },
 
             set: function(resolution) {
-                if (!sGis.utils.isNumber(resolution) || resolution <= 0) sGis.utils.error('Positive number is expected but got ' + resolution + ' instead');
                 this._resolution = resolution;
                 this.fire('bboxChange');
             }
@@ -253,13 +243,13 @@ sGis.module('Map', [
 
             set: function(position) {
                 var point;
-                if (position instanceof sGis.feature.Point || (sGis.utils.isArray(position) && position.length === 2 && sGis.utils.isNumber(position[0]) && sGis.utils.isNumber(position[1]))) {
+                if (position instanceof PointF || (utils.isArray(position) && position.length === 2 && utils.isNumber(position[0]) && utils.isNumber(position[1]))) {
                     var coordinates = position.position || position;
-                    point = new sGis.Point([coordinates[0], coordinates[1]], position.crs || this.crs);
-                } else if (position instanceof sGis.Point) {
+                    point = new Point([coordinates[0], coordinates[1]], position.crs || this.crs);
+                } else if (position instanceof Point) {
                     point = position;
                 } else {
-                    sGis.utils.error('sGis.Point or sGis.feature.Point instance is expected but got ' + position + ' instead');
+                    utils.error('sGis.Point or sGis.feature.Point instance is expected but got ' + position + ' instead');
                 }
 
                 this._position = point.projectTo(this.crs);
@@ -278,7 +268,7 @@ sGis.module('Map', [
                     var layers = this.getLayers(true);
                     var tileScheme = null;
                     for (var i = 0, len = layers.length; i < len; i++) {
-                        if (layers[i] instanceof sGis.TileLayer) {
+                        if (layers[i].tileScheme) {
                             tileScheme = layers[i].tileScheme;
                             break;
                         }
@@ -301,7 +291,7 @@ sGis.module('Map', [
             set: function(resolution) {
                 if (resolution !== null) {
                     var minResolution = this.minResolution;
-                    if (resolution < minResolution) sGis.utils.error('maxResolution cannot be less then minResolution');
+                    if (resolution < minResolution) utils.error('maxResolution cannot be less then minResolution');
                 }
                 this._maxResolution = resolution;
                 if (this.resolution > this.maxResolution) this.resolution = resolution;
@@ -315,7 +305,7 @@ sGis.module('Map', [
             set: function(resolution) {
                 if (resolution !== null) {
                     var maxResolution = this.maxResolution;
-                    if (resolution < maxResolution) sGis.utils.error('maxResolution cannot be less then minResolution');
+                    if (resolution < maxResolution) utils.error('maxResolution cannot be less then minResolution');
                 }
                 this._maxResolution = resolution;
                 if (this.resolution > this.minResolution) this.resolution = resolution;
