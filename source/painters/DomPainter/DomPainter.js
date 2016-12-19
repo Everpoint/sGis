@@ -185,17 +185,17 @@ sGis.module('painter.DomPainter', [
         
         _updateBbox() {
             let mapPosition = this._map.position;
-            if (!mapPosition.equals(this._position) || !utils.softEquals(this._map.resolution, this._resolution) || this._bboxWidth !== this._width || this._bboxHeight !== this._height) {
-                this._position = mapPosition;
+            if (this._position[0] !== mapPosition[0] || this._position[1] !== mapPosition[1] || !utils.softEquals(this._map.resolution, this._resolution) || this._bboxWidth !== this._width || this._bboxHeight !== this._height) {
+                this._position = [mapPosition[0], mapPosition[1]];
                 this._resolution = this._map.resolution;
 
                 let dx = this._width * this._resolution / 2;
                 let dy = this._height * this._resolution / 2;
                 
-                this._bbox = new Bbox([mapPosition.x - dx, mapPosition.y - dy], [mapPosition.x + dx, mapPosition.y + dy], mapPosition.crs);
+                this._bbox = new Bbox([mapPosition[0] - dx, mapPosition[1] - dy], [mapPosition[0] + dx, mapPosition[1] + dy], this._map.crs);
 
                 this._containers.forEach(container => {
-                    if (container.crs.canProjectTo(mapPosition.crs)) {
+                    if (container.crs.canProjectTo(this._map.crs)) {
                         container.updateTransform(this._bbox, this._resolution);
                     } else {
                         this._removeContainer(this._containers.indexOf(container));

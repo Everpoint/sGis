@@ -12,10 +12,11 @@ sGis.module('Map', [
 
     let defaults = {
         _crs: CRS.webMercator,
-        _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator),
+        _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator).position,
         _resolution: 611.4962262812505 / 2,
         _animationTime: 300,
-        _tileScheme: null
+        _tileScheme: null,
+        changeEndDelay: 300
     };
 
     /**
@@ -33,16 +34,12 @@ sGis.module('Map', [
         }
         
         _listenForBboxChange () {
-            this.on('bboxChange', function () {
-                let map = this;
-                const CHANGE_END_DELAY = 300;
-                if (map._changeTimer) clearTimeout(map._changeTimer);
-                map._changeTimer = setTimeout((function (map) {
-                    return function () {
-                        map.fire('bboxChangeEnd', {map: map});
-                        map._changeTimer = null;
-                    };
-                })(map), CHANGE_END_DELAY);
+            this.on('bboxChange', () => {
+                if (this._changeTimer) clearTimeout(this._changeTimer);
+                this._changeTimer = setTimeout(() => {
+                    this._changeTimer = null;
+                    this.fire('bboxChangeEnd');
+                }, this.changeEndDelay);
             });
         }
 
@@ -52,10 +49,9 @@ sGis.module('Map', [
          * @param {Number} dy - Offset along Y axis in map coordinates, positive direction is down
          */
         move (dx, dy) {
-            let position = this.position;
-            position.x += dx;
-            position.y += dy;
-            this.position = position;
+            this._position[0] += dx;
+            this._position[1] += dy;
+            this.fire('bboxChange');
         }
 
         /**
@@ -132,7 +128,7 @@ sGis.module('Map', [
         _animateTo (position, resolution) {
             this.stopAnimation();
 
-            var originalPosition = this.position;
+            var originalPosition = this.centerPoint;
             var originalResolution = this.resolution;
             var dx = position.x - originalPosition.x;
             var dy = position.y - originalPosition.y;
@@ -158,7 +154,7 @@ sGis.module('Map', [
         }
 
         _getScaledPosition (newResolution, basePoint) {
-            var position = this.position;
+            var position = this.centerPoint;
             basePoint = basePoint ? basePoint.projectTo(this.crs) : position;
             var resolution = this.resolution;
             var scalingK = newResolution / resolution;
@@ -177,7 +173,7 @@ sGis.module('Map', [
 
         setPosition (position, resolution) {
             this.prohibitEvent('bboxChange');
-            this.position = position;
+            this.centerPoint = position;
             if (resolution) this.resolution = resolution;
             this.allowEvent('bboxChange');
             this.fire('bboxChange');
@@ -192,30 +188,33 @@ sGis.module('Map', [
         setResolution (resolution, basePoint, doNotAdjust) {
             this.setPosition(this._getScaledPosition(this.resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
         }
+
+        get position() { return this._position; }
+        set position(position) {
+            this._position = position;
+            this.fire('bboxChange');
+        }
+
+        get centerPoint() { return new Point(this.position, this.crs); }
+        set centerPoint(point) {
+            this.position = point.projectTo(this.crs).position;
+        }
+
+        get crs() { return this._crs; }
+        set crs(crs) {
+            let projection = this._crs.projectionTo(crs);
+            this._crs = crs;
+            if (projection) {
+                this.position = projection(this.position);
+            } else {
+                this.position = [0, 0];
+            }
+        }
     }
     
     utils.extend(Map.prototype, defaults);
 
     Object.defineProperties(Map.prototype, {
-        /**
-         * Sets or returns the CRS of the map. If the old crs cannot be projected to the new one, the position and resolution of the map are discharged.
-         */
-        crs: {
-            get: function() {
-                return this._crs;
-            },
-            set: function(crs) {
-                var currentCrs = this._crs;
-                this._crs = crs;
-
-                if (currentCrs !== crs && (!currentCrs.to || !crs.to)) {
-                    this.setPosition(new Point([0, 0], crs), 1);
-                } else {
-                    this.position = this.position.projectTo(crs);
-                }
-            }
-        },
-
         /**
          * Returns or sets the resolution of the map. Triggers the "bboxChange" event if assigned. Throws an exception if assigned value is invalid.<br>
          * Valid values are any positive numbers;
@@ -227,32 +226,6 @@ sGis.module('Map', [
 
             set: function(resolution) {
                 this._resolution = resolution;
-                this.fire('bboxChange');
-            }
-        },
-
-        /**
-         * The position of the center of the map. Returns a copy of position object (sGis.Point). Triggers "bboxChange" event if assigned.<br>
-         * Accepted values are sGis.Point and sGis.feature.Point instances or [x,y] array. Throws an exception if new position cannot be projected into map crs.
-         * If the assigned value, the coordinates are considered to be in map crs.
-         */
-        position: {
-            get: function() {
-                return this._position.projectTo(this.crs);
-            },
-
-            set: function(position) {
-                var point;
-                if (position instanceof PointF || (utils.isArray(position) && position.length === 2 && utils.isNumber(position[0]) && utils.isNumber(position[1]))) {
-                    var coordinates = position.position || position;
-                    point = new Point([coordinates[0], coordinates[1]], position.crs || this.crs);
-                } else if (position instanceof Point) {
-                    point = position;
-                } else {
-                    utils.error('sGis.Point or sGis.feature.Point instance is expected but got ' + position + ' instead');
-                }
-
-                this._position = point.projectTo(this.crs);
                 this.fire('bboxChange');
             }
         },
