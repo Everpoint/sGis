@@ -2,7 +2,8 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
     'use strict';
 
     /**
-     * @namespace sGis.geotools
+     * @namespace
+     * @alias sGis.geotools
      */
     let geotools = {};
 
@@ -35,12 +36,20 @@ sGis.module('geotools', ['math', 'utils', 'CRS'], function(math, utils, CRS) {
         return l;
     };
 
-    geotools.length = function(coord, crs, enclose = false) {
+    /**
+     * Finds geographical length of the polyline or polygon.
+     * @param {Position[][]} rings - the set of coordinates
+     * @param {sGis.Crs} crs - coordinate system
+     * @param {Boolean} [enclose=false] - if set to true, the geometry is treated as polygon, meaning that the result
+     *                                    will also include the distance between first and last point of every contour
+     * @returns {Number}
+     */
+    geotools.length = function(rings, crs, enclose = false) {
         let length = 0;
         let ringTemp;
 
-        for (let ring = 0, l = coord.length; ring < l; ring++) {
-            ringTemp = [].concat(coord[ring]);
+        for (let ring = 0, l = rings.length; ring < l; ring++) {
+            ringTemp = [].concat(rings[ring]);
             if (enclose) ringTemp.push(ringTemp[0]);
 
             for (let i = 0, m = ringTemp.length - 1; i < m; i++) {

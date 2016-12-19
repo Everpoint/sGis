@@ -36,8 +36,8 @@
 
 
 /**
- @typedef Position
- @type {Array}
- @prop {Number} 0 - first (X) coordinate
- @prop {Number} 1 - second (Y) coordinate
+ * @typedef Position
+ * @type {Array}
+ * @prop {Number} 0 - first (X) coordinate
+ * @prop {Number} 1 - second (Y) coordinate
  */

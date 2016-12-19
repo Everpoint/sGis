@@ -114,7 +114,8 @@ sGis.module('CRS', [
 ], function(Crs, math) {
 
     /**
-     * @namespace sGis.CRS
+     * @namespace
+     * @alias sGis.CRS
      */
     let CRS = {};
 
