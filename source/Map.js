@@ -5,9 +5,8 @@ sGis.module('Map', [
     'EventHandler',
     'Point',
     'Bbox',
-    'LayerGroup',
-    'feature.Point'
-], function(utils, Crs, CRS, EventHandler, Point, Bbox, LayerGroup, PointF) {
+    'LayerGroup'
+], function(utils, Crs, CRS, EventHandler, Point, Bbox, LayerGroup) {
     'use strict';
 
     let defaults = {
@@ -25,14 +24,14 @@ sGis.module('Map', [
      * @extends sGis.LayerGroup
      */
     class Map extends LayerGroup {
-        constructor(properties) {
+        constructor(properties = {}) {
             super();
-            if (properties && properties.crs) this.crs = properties.crs;
+            if (properties.crs) this.crs = properties.crs;
             utils.init(this, properties);
-            
+
             this._listenForBboxChange();
         }
-        
+
         _listenForBboxChange () {
             this.on('bboxChange', () => {
                 if (this._changeTimer) clearTimeout(this._changeTimer);
@@ -115,8 +114,8 @@ sGis.module('Map', [
          * @returns {undefined}
          */
         animateSetResolution (resolution, basePoint) {
-            var adjustedResolution = this.getAdjustedResolution(resolution);
-            var newPosition = this._getScaledPosition(adjustedResolution, basePoint);
+            let adjustedResolution = this.getAdjustedResolution(resolution);
+            let newPosition = this._getScaledPosition(adjustedResolution, basePoint);
             this._animateTo(newPosition, adjustedResolution);
             this.fire('animationStart');
         }
@@ -128,36 +127,36 @@ sGis.module('Map', [
         _animateTo (position, resolution) {
             this.stopAnimation();
 
-            var originalPosition = this.centerPoint;
-            var originalResolution = this.resolution;
-            var dx = position.x - originalPosition.x;
-            var dy = position.y - originalPosition.y;
-            var dr = resolution - originalResolution;
-            var startTime = Date.now();
+            let originalPosition = this.centerPoint;
+            let originalResolution = this.resolution;
+            let dx = position.x - originalPosition.x;
+            let dy = position.y - originalPosition.y;
+            let dr = resolution - originalResolution;
+            let startTime = Date.now();
             this._animationStopped = false;
             this._animationTarget = [position, resolution];
 
-            var self = this;
+            let self = this;
             this._animationTimer = setInterval(function() {
-                var time = Date.now() - startTime;
+                let time = Date.now() - startTime;
                 if (time >= self._animationTime || self._animationStopped) {
                     self.setPosition(position, resolution);
                     self.stopAnimation();
                     self.fire('animationEnd');
                 } else {
-                    var x = self._easeFunction(time, originalPosition.x, dx, self._animationTime);
-                    var y = self._easeFunction(time, originalPosition.y, dy, self._animationTime);
-                    var r = self._easeFunction(time, originalResolution, dr, self._animationTime);
+                    let x = self._easeFunction(time, originalPosition.x, dx, self._animationTime);
+                    let y = self._easeFunction(time, originalPosition.y, dy, self._animationTime);
+                    let r = self._easeFunction(time, originalResolution, dr, self._animationTime);
                     self.setPosition(new Point([x, y], self.crs), r);
                 }
             }, 1000 / 60);
         }
 
         _getScaledPosition (newResolution, basePoint) {
-            var position = this.centerPoint;
+            let position = this.centerPoint;
             basePoint = basePoint ? basePoint.projectTo(this.crs) : position;
-            var resolution = this.resolution;
-            var scalingK = newResolution / resolution;
+            let resolution = this.resolution;
+            let scalingK = newResolution / resolution;
             return new Point([(position.x - basePoint.x) * scalingK + basePoint.x, (position.y - basePoint.y) * scalingK + basePoint.y], position.crs);
         }
 
@@ -238,9 +237,9 @@ sGis.module('Map', [
                 if (this._tileScheme !== null) {
                     return this._tileScheme;
                 } else {
-                    var layers = this.getLayers(true);
-                    var tileScheme = null;
-                    for (var i = 0, len = layers.length; i < len; i++) {
+                    let layers = this.getLayers(true);
+                    let tileScheme = null;
+                    for (let i = 0, len = layers.length; i < len; i++) {
                         if (layers[i].tileScheme) {
                             tileScheme = layers[i].tileScheme;
                             break;
@@ -263,7 +262,7 @@ sGis.module('Map', [
             },
             set: function(resolution) {
                 if (resolution !== null) {
-                    var minResolution = this.minResolution;
+                    let minResolution = this.minResolution;
                     if (resolution < minResolution) utils.error('maxResolution cannot be less then minResolution');
                 }
                 this._maxResolution = resolution;
@@ -277,7 +276,7 @@ sGis.module('Map', [
             },
             set: function(resolution) {
                 if (resolution !== null) {
-                    var maxResolution = this.maxResolution;
+                    let maxResolution = this.maxResolution;
                     if (resolution < maxResolution) utils.error('maxResolution cannot be less then minResolution');
                 }
                 this._maxResolution = resolution;
