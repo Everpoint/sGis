@@ -35,7 +35,7 @@ gulp.task('minify', () => {
 gulp.task('minify-babel', () => {
     return gulp.src(['./source/sGis.js', './source/**/*.js', '!./source/interfaces/*'])
         .pipe(babel({
-            presets: ['es2015', 'babili'],
+            presets: ['es2015'],
             plugins: ['remove-comments'],
             passPerPreset: true
         }))
