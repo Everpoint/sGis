@@ -181,7 +181,7 @@ sGis.module('Map', [
 
         /**
          * Sets new position and resolution to the map
-         * @param {sGis.IPoint} point - new center point of the map
+         * @param {sGis.Point} point - new center point of the map
          * @param {Number} resolution - new resolution of the map
          */
         setPosition (point, resolution) {
@@ -282,8 +282,26 @@ sGis.module('Map', [
         _crs: CRS.webMercator,
         _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator).position,
         _resolution: 611.4962262812505 / 2,
+
+        /**
+         * Tile scheme of the map
+         * @member {sGis.TileScheme} sGis.Map.tileScheme
+         * @default TileScheme.default
+         */
         tileScheme: TileScheme.default,
+
+        /**
+         * Length of the map animations in milliseconds. Set higher values for slower animations.
+         * @member {Number} sGis.Map.animationTime
+         * @default 300
+         */
         animationTime: 300,
+
+        /**
+         * Delay value before bboxChangeEnd event is fired.
+         * @member {Number} sGis.Map.changeEndDelay
+         * @default 300
+         */
         changeEndDelay: 300
     });
 
