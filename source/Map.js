@@ -3,18 +3,10 @@ sGis.module('Map', [
     'CRS',
     'Point',
     'Bbox',
-    'LayerGroup'
-], function(utils, CRS, Point, Bbox, LayerGroup) {
+    'LayerGroup',
+    'TileScheme'
+], function(utils, CRS, Point, Bbox, LayerGroup, TileScheme) {
     'use strict';
-
-    let defaults = {
-        _crs: CRS.webMercator,
-        _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator).position,
-        _resolution: 611.4962262812505 / 2,
-        _animationTime: 300,
-        _tileScheme: null,
-        changeEndDelay: 300
-    };
 
     /**
      * Map object with set of layers, specified position, resolution, coordinate system.
@@ -151,16 +143,16 @@ sGis.module('Map', [
             this._animationTarget = [point, resolution];
 
             let self = this;
-            this._animationTimer = setInterval(function() {
+            this.animationTimer = setInterval(function() {
                 let time = Date.now() - startTime;
-                if (time >= self._animationTime || self._animationStopped) {
+                if (time >= self.animationTime || self._animationStopped) {
                     self.setPosition(point, resolution);
                     self.stopAnimation();
                     self.fire('animationEnd');
                 } else {
-                    let x = self._easeFunction(time, originalPosition.x, dx, self._animationTime);
-                    let y = self._easeFunction(time, originalPosition.y, dy, self._animationTime);
-                    let r = self._easeFunction(time, originalResolution, dr, self._animationTime);
+                    let x = self._easeFunction(time, originalPosition.x, dx, self.animationTime);
+                    let y = self._easeFunction(time, originalPosition.y, dy, self.animationTime);
+                    let r = self._easeFunction(time, originalResolution, dr, self.animationTime);
                     self.setPosition(new Point([x, y], self.crs), r);
                 }
             }, 1000 / 60);
@@ -180,7 +172,7 @@ sGis.module('Map', [
         stopAnimation () {
             this._animationStopped = true;
             this._animationTarget = null;
-            clearInterval(this._animationTimer);
+            clearInterval(this.animationTimer);
         }
 
         _easeFunction (t, b, c, d) {
@@ -254,91 +246,47 @@ sGis.module('Map', [
             this._resolution = resolution;
             this.fire('bboxChange');
         }
-    }
-    
-    utils.extend(Map.prototype, defaults);
-
-    Object.defineProperties(Map.prototype, {
-        /**
-         * Sets and returns the tile scheme of the map. If set to null (by default), the tile scheme of the first tile layer in the layer list is used.
-         */
-        tileScheme: {
-            get: function() {
-                if (this._tileScheme !== null) {
-                    return this._tileScheme;
-                } else {
-                    let layers = this.getLayers(true);
-                    let tileScheme = null;
-                    for (let i = 0, len = layers.length; i < len; i++) {
-                        if (layers[i].tileScheme) {
-                            tileScheme = layers[i].tileScheme;
-                            break;
-                        }
-                    }
-                    return tileScheme;
-                }
-            },
-            set: function(scheme) {
-                this._tileScheme = scheme;
-            }
-        },
 
         /**
-         * Sets and returns the maxim resolution allowed for the map. If set to null, the tileScheme settings will be used. If no tileScheme is set, no limit will be used.
+         * Minimum allowed resolution of the map. If not set, the minimum value from the map tile scheme will be used. Must be smaller then max resolution.
+         * If current resolution is smaller that the newly assigned minResolution, the current resolution will be adjusted accordingly.
+         * @type {Number}
          */
-        maxResolution: {
-            get: function() {
-                return this._maxResolution || this.tileScheme && this.tileScheme.maxResolution;
-            },
-            set: function(resolution) {
-                if (resolution !== null) {
-                    let minResolution = this.minResolution;
-                    if (resolution < minResolution) utils.error('maxResolution cannot be less then minResolution');
-                }
-                this._maxResolution = resolution;
-                if (this.resolution > this.maxResolution) this.resolution = resolution;
+        get minResolution() { return this._minResolution || this.tileScheme && this.tileScheme.minResolution; }
+        set minResolution(/** Number */ resolution) {
+            if (resolution !== null) {
+                let maxResolution = this.maxResolution;
+                if (resolution < maxResolution) utils.error('maxResolution cannot be less then minResolution');
             }
-        },
-
-        minResolution: {
-            get: function() {
-                return this._minResolution || this.tileScheme && this.tileScheme.minResolution;
-            },
-            set: function(resolution) {
-                if (resolution !== null) {
-                    let maxResolution = this.maxResolution;
-                    if (resolution < maxResolution) utils.error('maxResolution cannot be less then minResolution');
-                }
-                this._maxResolution = resolution;
-                if (this.resolution > this.minResolution) this.resolution = resolution;
-            }
+            this._minResolution = resolution;
+            if (this.resolution > this.minResolution) this.resolution = resolution;
         }
+
+        /**
+         * Maximum allowed resolution of the map. If not set, the maximum value from the map tile scheme will be used. Must be larger then min resolution.
+         * If current resolution is larger that the newly assigned maxResolution, the current resolution will be adjusted accordingly.
+         * @type {Number}
+         */
+        get maxResolution() { return this._maxResolution || this.tileScheme && this.tileScheme.maxResolution; }
+        set maxResolution(/** Number */ resolution) {
+            if (resolution !== null) {
+                let minResolution = this.minResolution;
+                if (resolution < minResolution) utils.error('maxResolution cannot be less then minResolution');
+            }
+            this._maxResolution = resolution;
+            if (this.resolution > this.maxResolution) this.resolution = resolution;
+        }
+    }
+
+    Object.assign(Map.prototype, {
+        _crs: CRS.webMercator,
+        _position: new Point([55.755831, 37.617673]).projectTo(CRS.webMercator).position,
+        _resolution: 611.4962262812505 / 2,
+        tileScheme: TileScheme.default,
+        animationTime: 300,
+        changeEndDelay: 300
     });
 
     return Map;
-
-    /**
-     * A layer is added to the map
-     * @event sGis.Map#layerAdd
-     * @mixes sGisEvent
-     * @type {Object}
-     * @property {sGis.Layer} layer - added layer
-     */
-
-    /**
-     * A layer is removed from the map
-     * @event sGis.Map#layerRemove
-     * @mixes sGisEvent
-     * @type {Object}
-     * @property {sGis.Layer} layer - removed layer
-     */
-
-    /**
-     * Position of one of the layers on the map is changed
-     * @event sGis.Map#layerOrderChange
-     * @mixes sGisEvent
-     * @type {Object}
-     * @property {sGis.Layer} layer - the layer that was moved
-     */
 
 });
