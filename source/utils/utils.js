@@ -59,10 +59,12 @@ sGis.module('utils', [
          * Copies the own properties of source to target, ignoring the properties already existing in target. Only one-level copy.
          * @param {Object} target
          * @param {Object} source
+         * @param {Boolean} [ignoreUndefined=false] - if set to true, properties in the source that have the value of undefined will be ignored
          */
-        extend: function(target, source) {
-            var keys = Object.keys(source);
+        extend: function(target, source, ignoreUndefined = false) {
+            let keys = Object.keys(source);
             keys.forEach(function(key) {
+                if (ignoreUndefined && source[key] === undefined) return;
                 target[key] = source[key];
             });
             return target;
