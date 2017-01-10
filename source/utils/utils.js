@@ -299,7 +299,15 @@ sGis.module('utils', [
             M = M[2] ? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
             if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
             return M.join(' ');
-        })()
+        })(),
+
+        createNode: function(nodeName, cssClass, properties = {}, children = []) {
+            let node = document.createElement(nodeName);
+            node.className = cssClass;
+            utils.extend(node, properties);
+            children.forEach(child => node.appendChild(child));
+            return node;
+        }
     };
 
     utils.isIE = utils.browser.search('IE') !== -1;
