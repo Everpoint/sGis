@@ -21,6 +21,7 @@ sGis.module('Map', [
         constructor(properties = {}) {
             super();
             if (properties.crs) this.crs = properties.crs;
+            this.position = properties.position || [this.position[0], this.position[1]];
             utils.extend(this, properties, true);
 
             this._listenForBboxChange();

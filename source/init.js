@@ -6,11 +6,22 @@ sGis.module('init', [
 
     'use strict';
 
-    function init({ position, resolution, crs, layers, wrapper}) {
+    function init({ position, resolution, crs, layers, wrapper, plugins = []}) {
         let map = new Map({crs, position, resolution, layers});
         let painter = new Painter(map, {wrapper});
 
-        return { map, painter };
+
+        plugins = plugins.map(pluginDefinition => {
+            let name = pluginDefinition.name;
+            if (!sGis.plugins || !sGis.plugins[name]) {
+                console.warn(`Plugin ${name} is not available. Skipping.`);
+                return null;
+            }
+
+            return new sGis.plugins[name](map, painter.innerWrapper, pluginDefinition.properties);
+        });
+
+        return { map, painter, plugins };
     }
 
     return init;
