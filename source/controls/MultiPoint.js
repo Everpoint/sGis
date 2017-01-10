@@ -8,7 +8,25 @@ sGis.module('controls.MultiPoint', [
 
     'use strict';
 
+    /**
+     * Control for creating multipoints. When active, every click on the map will add a new point to the current multipoint.
+     * Double click will finish drawing of current multipoint and start a new one.<br><br>
+     *
+     * When control is activated, a temporary feature layer is created and added to the map. Feature is drawn on that temp
+     * layer. After drawing is finished, if .activeLayer is set, the created feature is removed from the temp layer and
+     * added to the active layer.
+     *
+     * @alias sGis.controls.MultiPoint
+     * @extends sGis.Control
+     * @fires sGis.controls.MultiPoint#drawingBegin
+     * @fires sGis.controls.MultiPoint#pointAdd
+     * @fires sGis.controls.MultiPoint#drawingFinish
+     */
     class MultiPoint extends Control {
+        /**
+         * @param {sGis.Map} map - map the control will work with
+         * @param {Object} [properties] - key-value set of properties to be set to the instance
+         */
         constructor(map, properties) {
             super(map, properties);
             this._handleClick = this._handleClick.bind(this);
@@ -46,6 +64,10 @@ sGis.module('controls.MultiPoint', [
             sGisEvent.stopPropagation();
         }
 
+        /**
+         * Starts a new feature with the first point at given position. If the control was not active, this method will set it active.
+         * @param {sGis.IPoint} point
+         */
         startNewFeature(point) {
             this.activate();
             this.cancelDrawing();
@@ -60,6 +82,9 @@ sGis.module('controls.MultiPoint', [
             this.map.addListener('dblclick', this._handleDblclick);
         }
 
+        /**
+         * Cancels drawing of the current feature, removes the feature and the temp layer. No events are fired.
+         */
         cancelDrawing() {
             if (!this._activeFeature) return;
 
@@ -77,14 +102,21 @@ sGis.module('controls.MultiPoint', [
             this.fire('drawingFinish', { feature: feature, browserEvent: sGisEvent.browserEvent });
         }
 
+        /**
+         * Finishes drawing of the current feature and moves it to the active layer (if set).
+         */
         finishDrawing() {
             let feature = this._activeFeature;
             this.cancelDrawing();
             if (this.activeLayer) this.activeLayer.add(feature);
         }
 
+        /**
+         * The active drawing feature.
+         * @type {sGis.feature.MultiPoint}
+         */
         get activeFeature() { return this._activeFeature; }
-        set activeFeature(feature) {
+        set activeFeature(/** sGis.feature.MultiPoint */ feature) {
             if (!this._isActive) return;
             this.cancelDrawing();
 
@@ -97,5 +129,27 @@ sGis.module('controls.MultiPoint', [
     MultiPoint.prototype.symbol = new PointSymbol();
 
     return MultiPoint;
+
+    /**
+     * The drawing of a new feature is started by clicking on the map.
+     * @event sGis.controls.MultiPoint#drawingBegin
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * A new point is added to the feature by clicking on the map.
+     * @event sGis.controls.MultiPoint#pointAdd
+     * @type {Object}
+     * @mixes sGisEvent
+     */
+
+    /**
+     * Drawing of the feature is finished by double click and the feature is moved to the active layer (if set).
+     * @event sGis.controls.MultiPoint#drawingFinish
+     * @type {Object}
+     * @mixes sGisEvent
+     * @prop {sGis.feature.MultiPoint} feature - feature that was created
+     */
 
 });

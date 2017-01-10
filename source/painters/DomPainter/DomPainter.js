@@ -18,8 +18,8 @@ sGis.module('painter.DomPainter', [
      * @namespace sGis.painter.domPainter
      */
 
-    var innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
-    var layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
+    let innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
+    let layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
 
     /**
      * @alias sGis.painter.DomPainter
@@ -59,7 +59,7 @@ sGis.module('painter.DomPainter', [
             if (this._wrapper) this._clearDOM();
             if (node) {
                 this._initDOM(node);
-                this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
+                this._eventDispatcher = new EventDispatcher(this._layerWrapper, this);
             }
         }
 
@@ -81,7 +81,7 @@ sGis.module('painter.DomPainter', [
         }
         
         _updateLayerList() {
-            var mapLayers = this._map.getLayers(true, true);
+            let mapLayers = this._map.getLayers(true, true);
             for (let layer of this._layerRenderers.keys()) {
                 if (mapLayers.indexOf(layer) < 0) this._removeLayer(layer);
             }
@@ -246,7 +246,7 @@ sGis.module('painter.DomPainter', [
         get height() { return this._height; }
 
         _initDOM(node) {
-            var wrapper = node instanceof HTMLElement ? node : document.getElementById(node);
+            let wrapper = node instanceof HTMLElement ? node : document.getElementById(node);
             if (!wrapper) utils.error('The element with ID "' + node + '" is not found.');
 
             this._innerWrapper = document.createElement('div');
@@ -273,7 +273,7 @@ sGis.module('painter.DomPainter', [
         get innerWrapper() { return this._innerWrapper; }
 
         resolveLayerOverlay() {
-            var prevContainerIndex = 0;
+            let prevContainerIndex = 0;
             this._map.getLayers(true, true).forEach(layer => {
                 let renderer = this._layerRenderers.get(layer);
                 if (!renderer) return;
@@ -297,8 +297,8 @@ sGis.module('painter.DomPainter', [
          * @returns {sGis.Point}
          */
         getPointFromPxPosition(x, y) {
-            var resolution = this._map.resolution;
-            var bbox = this.bbox;
+            let resolution = this._map.resolution;
+            let bbox = this.bbox;
             return new Point([
                 bbox.xMin + x * resolution,
                 bbox.yMax - y * resolution],
