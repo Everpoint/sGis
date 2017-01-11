@@ -236,11 +236,13 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
                 node.style.zIndex = this._zIndex;
 
+                if (svgRender && svgRender.position) render.position = svgRender.position;
+
                 let container = this._master.currContainer;
                 if (render.bbox) {
                     container.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
-                } else if (render.position || svgRender.position) {
-                    container.addFixedSizeNode(node, render.position || svgRender.position);
+                } else if (render.position) {
+                    container.addFixedSizeNode(node, render.position);
                 }
 
                 this._renderNodeMap.set(render, node);
