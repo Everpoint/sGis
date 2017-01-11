@@ -15,8 +15,9 @@ sGis.module('painter.domPainter.SvgRender', [
      * @alias sGis.painter.domPainter.SvgRender
      */
     class SvgRender{
-        constructor(render) {
+        constructor(render, adjK) {
             this._baseRender = render;
+            this._adjK = adjK || 1;
         }
         
         getNode(callback) {
@@ -159,13 +160,13 @@ sGis.module('painter.domPainter.SvgRender', [
 
         _setArcNode() {
             var r2 = this._baseRender.radius * 2 + this._baseRender.strokeWidth;
-            var x = this._baseRender.center[0] - this._baseRender.radius - this._baseRender.strokeWidth / 2;
-            var y = this._baseRender.center[1] - this._baseRender.radius - this._baseRender.strokeWidth / 2;
+            var x = this._baseRender.center[0] * this._adjK - this._baseRender.radius - this._baseRender.strokeWidth / 2;
+            var y = this._baseRender.center[1] * this._adjK - this._baseRender.radius - this._baseRender.strokeWidth / 2;
 
             this._node = this._getCircle({
                 r: this._baseRender.radius,
-                cx: this._baseRender.center[0],
-                cy: this._baseRender.center[1],
+                cx: this._baseRender.center[0] * this._adjK,
+                cy: this._baseRender.center[1] * this._adjK,
                 stroke: this._baseRender.strokeColor,
                 'stroke-width': this._baseRender.strokeWidth,
                 fill: this._baseRender.fillColor,
@@ -199,19 +200,19 @@ sGis.module('painter.domPainter.SvgRender', [
         _getSvgPath() {
             var d = '';
             var coordinates = this._baseRender.coordinates;
-            var x = coordinates[0][0][0];
-            var y = coordinates[0][0][1];
+            var x = coordinates[0][0][0] * this._adjK;
+            var y = coordinates[0][0][1] * this._adjK;
             var xMax = x;
             var yMax = y;
 
             for (var ring = 0; ring < coordinates.length; ring++) {
-                d += 'M' + coordinates[ring][0].join(' ') + ' ';
+                d += 'M' + this._adj(coordinates[ring][0]).join(' ') + ' ';
                 for (var i = 1; i < coordinates[ring].length; i++) {
-                    d += 'L' + coordinates[ring][i].join(' ') + ' ';
-                    x = Math.min(x, coordinates[ring][i][0]);
-                    y = Math.min(y, coordinates[ring][i][1]);
-                    xMax = Math.max(xMax, coordinates[ring][i][0]);
-                    yMax = Math.max(yMax, coordinates[ring][i][1]);
+                    d += 'L' + this._adj(coordinates[ring][i]).join(' ') + ' ';
+                    x = Math.min(x, coordinates[ring][i][0] * this._adjK);
+                    y = Math.min(y, coordinates[ring][i][1] * this._adjK);
+                    xMax = Math.max(xMax, coordinates[ring][i][0] * this._adjK);
+                    yMax = Math.max(yMax, coordinates[ring][i][1] * this._adjK);
                 }
             }
 
@@ -222,6 +223,10 @@ sGis.module('painter.domPainter.SvgRender', [
             d = d.trim();
 
             return {width: width, height: height, x: x, y: y, d: d};
+        }
+
+        _adj(position) {
+            return [position[0] * this._adjK, position[1] * this._adjK];
         }
     }
 
