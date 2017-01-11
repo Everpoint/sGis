@@ -58,17 +58,20 @@ sGis.module('painter.domPainter.Container', [
             this._container.appendChild(node);
         }
 
-        addFixedSizeNode(node, position) {
+        addFixedSizeNode(node, position, originalResolution) {
+            let k = originalResolution ? originalResolution / this._resolution : 1;
             Container._setNodeStyle(node);
             setNodeTransform(
                 node,
                 1,
-                position[0] - this._bbox.xMin / this._resolution,
-                position[1] + this._bbox.yMax / this._resolution
+                position[0] * k - this._bbox.xMin / this._resolution,
+                position[1] * k + this._bbox.yMax / this._resolution
             );
 
             this._container.appendChild(node);
         }
+
+        get resolution() { return this._resolution; }
 
         static _setNodeStyle(node) {
             node.style.position = 'absolute';
