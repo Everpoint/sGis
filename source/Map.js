@@ -123,7 +123,6 @@ sGis.module('Map', [
             let adjustedResolution = this.getAdjustedResolution(resolution);
             let newPosition = this._getScaledPosition(adjustedResolution, basePoint);
             this.animateTo(newPosition, adjustedResolution);
-            this.fire('animationStart');
         }
 
         /**
@@ -134,6 +133,7 @@ sGis.module('Map', [
         animateTo (point, resolution) {
             this.stopAnimation();
 
+            this.fire('animationStart');
             let originalPosition = this.centerPoint;
             let originalResolution = this.resolution;
             let dx = point.x - originalPosition.x;
