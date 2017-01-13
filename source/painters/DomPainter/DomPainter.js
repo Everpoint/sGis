@@ -59,7 +59,7 @@ sGis.module('painter.DomPainter', [
             if (this._wrapper) this._clearDOM();
             if (node) {
                 this._initDOM(node);
-                this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
+                this._eventDispatcher = new EventDispatcher(this._layerWrapper, this);
             }
         }
 

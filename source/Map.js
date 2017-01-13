@@ -21,7 +21,8 @@ sGis.module('Map', [
         constructor(properties = {}) {
             super();
             if (properties.crs) this.crs = properties.crs;
-            utils.extend(this, properties);
+            this.position = properties.position || [this.position[0], this.position[1]];
+            utils.extend(this, properties, true);
 
             this._listenForBboxChange();
         }
@@ -122,7 +123,6 @@ sGis.module('Map', [
             let adjustedResolution = this.getAdjustedResolution(resolution);
             let newPosition = this._getScaledPosition(adjustedResolution, basePoint);
             this.animateTo(newPosition, adjustedResolution);
-            this.fire('animationStart');
         }
 
         /**
@@ -133,6 +133,7 @@ sGis.module('Map', [
         animateTo (point, resolution) {
             this.stopAnimation();
 
+            this.fire('animationStart');
             let originalPosition = this.centerPoint;
             let originalResolution = this.resolution;
             let dx = point.x - originalPosition.x;

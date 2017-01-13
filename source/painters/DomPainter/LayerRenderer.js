@@ -385,7 +385,16 @@ sGis.module('painter.domPainter.LayerRenderer', [
                         if (render.bbox) {
                             lastContainer.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                         } else if (render.position) {
-                            lastContainer.addFixedSizeNode(node, render.position);
+                            let k = container.resolution / lastContainer.resolution;
+                            lastContainer.addFixedSizeNode(node, [render.position[0] * k, render.position[1] * k]);
+                        } else {
+                            let svgRender = new SvgRender(render, container.resolution / lastContainer.resolution);
+                            svgRender.getNode((err, newNode) => {
+                                if (!svgRender.position || !this._renderNodeMap.has(render)) return;
+                                container.removeNode(node);
+                                this._renderNodeMap.set(render, newNode);
+                                lastContainer.addFixedSizeNode(newNode, svgRender.position);
+                            });
                         }
                         this._renderContainerMap.set(render, lastContainer);
                     }

@@ -120,10 +120,12 @@ sGis.module('utils', [
          * Copies the own properties of source to target, ignoring the properties already existing in target. Only one-level copy.
          * @param {Object} target
          * @param {Object} source
+         * @param {Boolean} [ignoreUndefined=false] - if set to true, properties in the source that have the value of undefined will be ignored
          */
-        extend: function(target, source) {
-            var keys = Object.keys(source);
+        extend: function(target, source, ignoreUndefined = false) {
+            let keys = Object.keys(source);
             keys.forEach(function(key) {
+                if (ignoreUndefined && source[key] === undefined) return;
                 target[key] = source[key];
             });
             return target;
@@ -358,7 +360,15 @@ sGis.module('utils', [
             M = M[2] ? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
             if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
             return M.join(' ');
-        })()
+        })(),
+
+        createNode: function(nodeName, cssClass, properties = {}, children = []) {
+            let node = document.createElement(nodeName);
+            node.className = cssClass;
+            utils.extend(node, properties);
+            children.forEach(child => node.appendChild(child));
+            return node;
+        }
     };
 
     utils.isIE = utils.browser.search('IE') !== -1;
