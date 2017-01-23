@@ -257,10 +257,10 @@ sGis.module('Map', [
         set minResolution(/** Number */ resolution) {
             if (resolution !== null) {
                 let maxResolution = this.maxResolution;
-                if (resolution < maxResolution) utils.error('maxResolution cannot be less then minResolution');
+                if (resolution > maxResolution) utils.error('maxResolution cannot be less then minResolution');
             }
             this._minResolution = resolution;
-            if (this.resolution > this.minResolution) this.resolution = resolution;
+            if (this.resolution < this.minResolution) this.resolution = resolution;
         }
 
         /**
