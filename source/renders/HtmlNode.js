@@ -44,7 +44,10 @@ sGis.module('render.HtmlNode', [
             let width = this._node.clientWidth || this._node.offsetWidth || 0;
             let height = this._node.clientHeight || this._node.offsetHeight || 0;
 
-            return this._position[0] < position.x && this._position[1] < position.y && this._position[0] + width > position.x && this._position[1] + height > position.y;
+            let x = this._position[0] + (this.offset && this.offset[0] || 0);
+            let y = this._position[1] + (this.offset && this.offset[1] || 0);
+
+            return x < position[0] && y < position[1] && x + width > position[0] && y + height > position[1];
         }
     }
 

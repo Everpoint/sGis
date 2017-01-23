@@ -44,10 +44,13 @@ sGis.module('render.HtmlElement', [
         get position() { return this._position; }
 
         contains(position) {
-            var width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
-            var height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;
-            
-            return this._position[0] < position.x && this._position[1] < position.y && this._position[0] + width > position.x && this._position[1] + height > position.y;
+            let width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
+            let height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;
+
+            let x = this._position[0] + (this.offset && this.offset[0] || 0);
+            let y = this._position[1] + (this.offset && this.offset[1] || 0);
+
+            return x < position[0] && y < position[1] && x + width > position[0] && y + height > position[1];
         }
     }
 
