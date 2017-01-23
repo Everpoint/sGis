@@ -33,10 +33,10 @@ sGis.module('symbol.point.MaskedImage', [
 
             var position = feature.projectTo(crs).position;
             var pxPosition = [position[0] / resolution, - position[1] / resolution];
-            var renderPosition = [pxPosition[0] - this.anchorPoint.x, pxPosition[1] - this.anchorPoint.y];
+            var renderPosition = [pxPosition[0], pxPosition[1]];
 
             var html = '<img src="' + this._maskedSrc + '"' + (this.width > 0 ? ' width="' + this.width + '"' : '') + (this.height > 0 ? ' height="' + this.height + '"' : '') + '>';
-            return [new HtmlElement(html, renderPosition)];
+            return [new HtmlElement(html, renderPosition, null, [-this.anchorPoint.x, -this.anchorPoint.y])];
         }
 
         //noinspection SpellCheckingInspection

@@ -14,11 +14,13 @@ sGis.module('render.HtmlElement', [
          * @param {String} htmlText - the inner html value of html element
          * @param {Position} position - projected position of render in [x, y] format
          * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM
+         * @param offset
          */
-        constructor(htmlText, position, onAfterDisplayed) {
+        constructor(htmlText, position, onAfterDisplayed, offset) {
             this._htmlText = htmlText;
             this._position = position;
             this.onAfterDisplayed = onAfterDisplayed;
+            this.offset = offset;
         }
 
         static get isVector() { return false; }

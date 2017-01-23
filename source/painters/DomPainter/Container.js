@@ -58,14 +58,13 @@ sGis.module('painter.domPainter.Container', [
             this._container.appendChild(node);
         }
 
-        addFixedSizeNode(node, position, originalResolution) {
-            let k = originalResolution ? originalResolution / this._resolution : 1;
+        addFixedSizeNode(node, position, offset = [0, 0]) {
             Container._setNodeStyle(node);
             setNodeTransform(
                 node,
                 1,
-                position[0] * k - this._bbox.xMin / this._resolution,
-                position[1] * k + this._bbox.yMax / this._resolution
+                position[0] + offset[0] - this._bbox.xMin / this._resolution,
+                position[1] + offset[1] + this._bbox.yMax / this._resolution
             );
 
             this._container.appendChild(node);
