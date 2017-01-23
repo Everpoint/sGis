@@ -14,7 +14,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
         /** @memberof sGis.painter.domPainter.LayerRenderer */
         delayedUpdateTime: 500,
 
-        listensFor: ['click', 'dblclick', 'dragStart', 'mousemove']
+        listensFor: ['click', 'dblclick', 'dragStart', 'mousemove', 'mouseover']
     };
 
     /**

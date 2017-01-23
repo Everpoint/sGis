@@ -35,6 +35,11 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 for (var i = layerRenderers.length - 1; i >= 0; i--) {
                     var details = {};
                     var targetObject = layerRenderers[i].getEventCatcher(name, [data.position.x, data.position.y], details);
+
+                    if (name === 'mousemove' && !targetObject) {
+                        targetObject = layerRenderers[i].getEventCatcher('mouseover', [data.position.x, data.position.y], details);
+                    }
+
                     if (targetObject) {
                         data.intersectionType = details.intersectionType;
                         sGisEvent = targetObject.fire(name, data);
