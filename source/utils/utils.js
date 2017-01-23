@@ -56,6 +56,67 @@ sGis.module('utils', [
         },
 
         /**
+         * Debounce function calls
+         * @param {Function} func - callback function
+         * @param {number} ms - interval
+         * @return {Function}
+         */
+        debounce(func, ms) {
+
+            var state = null;
+
+            var COOLDOWN = 1;
+
+            return function () {
+                if (state) return;
+
+                func.apply(this, arguments);
+
+                state = COOLDOWN;
+
+                setTimeout(function () {
+                    state = null
+                }, ms);
+            }
+
+        },
+        /**
+         * Throttle function calls
+         * @param {Function} func - callback function
+         * @param {number} ms - interval
+         * @return {Function}
+         */
+        throttle(func, ms) {
+
+            var isThrottled = false,
+                savedArgs,
+                savedThis;
+
+            function wrapper () {
+
+                if (isThrottled) {
+                    savedArgs = arguments;
+                    savedThis = this;
+                    return;
+                }
+
+                func.apply(this, arguments);
+
+                isThrottled = true;
+
+                setTimeout(function () {
+                    isThrottled = false;
+                    if (savedArgs) {
+                        wrapper.apply(savedThis, savedArgs);
+                        savedArgs = savedThis = null;
+                    }
+                }, ms);
+            }
+
+            return wrapper;
+        },
+
+        /**
          * Copies the own properties of source to target, ignoring the properties already existing in target. Only one-level copy.
          * @param {Object} target
          * @param {Object} source
