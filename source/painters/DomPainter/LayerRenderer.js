@@ -179,7 +179,9 @@ sGis.module('painter.domPainter.LayerRenderer', [
             if (this._featureIsLoading(feature)) return;
             this._removeForRemoval(feature);
 
-            let renders = feature.render(this._master.map.resolution, this._master.map.crs);
+            this._currentResolution = this._master.map.resolution;
+
+            let renders = feature.render(this._currentResolution, this._master.map.crs);
 
             let isMixedRender = false;
             var canvasIsUsed = this._useCanvas && renders[0] && renders[0].isVector;
@@ -240,7 +242,9 @@ sGis.module('painter.domPainter.LayerRenderer', [
                 if (render.bbox) {
                     container.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                 } else if (render.position || svgRender.position) {
-                    container.addFixedSizeNode(node, render.position || svgRender.position, render.offset);
+                    let k = this._currentResolution / container.resolution;
+                    let position = render.position || svgRender.position;
+                    container.addFixedSizeNode(node, [position[0]*k, position[1]*k], render.offset);
                 }
 
                 this._renderNodeMap.set(render, node);
@@ -385,7 +389,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
                         if (render.bbox) {
                             lastContainer.addNode(node, render.width || node.width, render.height || node.height, render.bbox);
                         } else if (render.position) {
-                            let k = container.resolution / lastContainer.resolution;
+                            let k = this._currentResolution / lastContainer.resolution;
                             lastContainer.addFixedSizeNode(node, [render.position[0] * k, render.position[1] * k], render.offset);
                         } else {
                             let svgRender = new SvgRender(render, container.resolution / lastContainer.resolution);
