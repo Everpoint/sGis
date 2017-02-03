@@ -65,12 +65,17 @@ sGis.module('Bbox', [
             return this._crs.equals(bbox.crs);
         }
 
+        intersect(bbox) {
+            bbox = bbox.crs === this.crs ? bbox : bbox.projectTo(this.crs);
+            return new Bbox([Math.min(this.xMin, bbox.xMin), Math.min(this.yMin, bbox.yMin)], [Math.max(this.xMax, bbox.xMax), Math.max(this.yMax, bbox.yMax)], this.crs);
+        }
+
         /**
          * Returns true if at list one point of the given bbox lies inside the target bbox. NOTE that this method will return true
          * if on of the bboxes is completely inside the other. It will return false if bboxes are adjustened, e.g. a side of one bbox
          * touches a side of another one.
          * @param {sGis.Bbox} bbox - target bbox
-         * @returns {boolean}
+         * @returns {boolean}>
          */
         intersects(bbox) {
             let projected = bbox.projectTo(this._crs);

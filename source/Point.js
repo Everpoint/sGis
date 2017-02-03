@@ -80,6 +80,9 @@ sGis.module('Point', [
         equals(point) {
             return utils.softEquals(point.x, this.x) && utils.softEquals(point.y, this.y) && point.crs.equals(this.crs);
         }
+
+        get coordinates() { return this.position.slice(); }
+        set coordinates(position) { this.position = position.slice(); }
     }
 
     utils.extend(Point.prototype, defaults);
