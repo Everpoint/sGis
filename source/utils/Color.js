@@ -14,6 +14,9 @@ sGis.module('utils.Color', [
          */
         constructor(string) {
             this._original = string;
+
+            if (!utils.isString(string)) string = string.toString();
+
             this._color = string && string.trim() || 'transparent';
             this._setChannels();
         }
