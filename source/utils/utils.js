@@ -131,6 +131,13 @@ sGis.module('utils', [
             return target;
         },
 
+        mixin: function(target, source) {
+            Object.getOwnPropertyNames(source).forEach(key => {
+                if (key === 'constructor') return;
+                Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+            });
+        },
+
         /**
          * Returns true if a and b differ less then one millionth of a, otherwise false
          * @param {Number} a
