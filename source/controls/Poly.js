@@ -27,7 +27,7 @@ sGis.module('controls.Poly', [
          * @param {sGis.Map} map - map the control will work with
          * @param {Object} properties - key-value set of properties to be set to the instance
          */
-        constructor(FeatureClass, symbol, map, properties) {
+        constructor(FeatureClass, symbol, map, properties = {}) {
             super(map, properties);
 
             if (!this.symbol) this.symbol = symbol;

@@ -34,7 +34,7 @@ sGis.module('controls.Editor', [
          * @param {sGis.Map} map - map object the control will work with
          * @param {Object} [options] - key-value set of properties to be set to the instance
          */
-        constructor(map, options) {
+        constructor(map, options = {}) {
             super(map, options);
 
             this._ns = '.' + utils.getGuid();

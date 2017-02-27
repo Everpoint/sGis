@@ -20,7 +20,7 @@ sGis.module('controls.PolyDrag', [
          * @param {sGis.Map} map - map the control will work with
          * @param {Object} [properties] - key-value set of properties to be set to the instance
          */
-        constructor(map, properties) {
+        constructor(map, properties = {}) {
             super(map, properties);
 
             if (!this.symbol) this.symbol = new PolygonSymbol();

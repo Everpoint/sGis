@@ -17,7 +17,7 @@ sGis.module('controls.Point', [
          * @param {sGis.Map} map
          * @param {Object} properties - key-value set of properties to be set to the instance
          */
-        constructor(map, properties) {
+        constructor(map, properties = {}) {
             super(map, properties);
             this._handleClick = this._handleClick.bind(this);
             this.isActive = properties.isActive;
