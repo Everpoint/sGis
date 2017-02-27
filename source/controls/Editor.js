@@ -52,6 +52,8 @@ sGis.module('controls.Editor', [
             this._handleFeatureRemove = this._handleFeatureRemove.bind(this);
 
             this._handleKeyDown = this._handleKeyDown.bind(this);
+
+            this.isActive = options.isActive;
         }
 
         _setEditors() {

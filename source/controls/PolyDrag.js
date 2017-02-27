@@ -28,6 +28,8 @@ sGis.module('controls.PolyDrag', [
             this._handleDragStart = this._handleDragStart.bind(this);
             this._handleDrag = this._handleDrag.bind(this);
             this._handleDragEnd = this._handleDragEnd.bind(this);
+
+            this.isActive = properties.isActive;
         }
 
         _activate() {

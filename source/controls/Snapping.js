@@ -30,6 +30,7 @@ sGis.module('controls.Snapping', [
             super(map, options);
 
             this._onMouseMove = this._onMouseMove.bind(this);
+            this.isActive = options.isActive;
         }
 
         _activate() {

@@ -38,6 +38,8 @@ sGis.module('controls.PolyTransform', [
             this._handleRotationEnd = this._handleRotationEnd.bind(this);
             
             this._handleScalingEnd = this._handleScalingEnd.bind(this);
+
+            this.isActive = options.isActive;
         }
 
         /**

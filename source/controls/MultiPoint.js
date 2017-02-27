@@ -31,6 +31,8 @@ sGis.module('controls.MultiPoint', [
             super(map, properties);
             this._handleClick = this._handleClick.bind(this);
             this._handleDblclick = this._handleDblclick.bind(this);
+
+            this.isActive = properties.isActive;
         }
 
         _activate() {

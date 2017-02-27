@@ -17,8 +17,8 @@ sGis.module('Control', [
          */
         constructor(map, properties) {
             super();
-            this._map = map;
             utils.init(this, properties, true);
+            this._map = map;
         }
 
         /**
@@ -57,6 +57,7 @@ sGis.module('Control', [
          */
         get isActive() { return this._isActive; }
         set isActive(/** Boolean */ bool) {
+            if (!this._map) return;
             bool = !!bool;
             if (this._isActive === bool) return;
             this._isActive = bool;

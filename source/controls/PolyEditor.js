@@ -33,6 +33,8 @@ sGis.module('controls.PolyEditor', [
             this._handleDrag = this._handleDrag.bind(this);
             this._handleDragEnd = this._handleDragEnd.bind(this);
             this._handleDblClick = this._handleDblClick.bind(this);
+
+            this.isActive = options.isActive;
         }
 
         _activate() {

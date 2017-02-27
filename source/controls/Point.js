@@ -20,6 +20,7 @@ sGis.module('controls.Point', [
         constructor(map, properties) {
             super(map, properties);
             this._handleClick = this._handleClick.bind(this);
+            this.isActive = properties.isActive;
         }
 
         _activate() {

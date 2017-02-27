@@ -23,6 +23,7 @@ sGis.module('controls.PointEditor', [
             this._handleDragEnd = this._handleDragEnd.bind(this);
 
             this._snapping = new Snapping(map);
+            this.isActive = options.isActive;
         }
 
         _activate() {

@@ -38,6 +38,8 @@ sGis.module('controls.Poly', [
             this._handleClick = this._handleClick.bind(this);
             this._handleMousemove = this._handleMousemove.bind(this);
             this._handleDblclick = this._handleDblclick.bind(this);
+
+            this.isActive = properties.isActive;
         }
 
         _activate() {
