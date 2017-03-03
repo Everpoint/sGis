@@ -73,6 +73,7 @@ sGis.module('controls.Editor', [
             this.activeLayer.features.forEach(this._setListener, this);
             this.activeLayer.on('featureAdd', this._handleFeatureAdd);
             this.activeLayer.on('featureRemove', this._handleFeatureRemove);
+            this.activeLayer.redraw();
             this.map.on('click', this._onMapClick.bind(this));
 
             event.add(document, 'keydown', this._handleKeyDown);
@@ -95,7 +96,7 @@ sGis.module('controls.Editor', [
         }
         
         _onMapClick() {
-            if (!this.ignoreEvents) this._deactivate();
+            if (!this.ignoreEvents) this._deselect();
         }
 
         _deactivate() {

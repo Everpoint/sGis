@@ -93,25 +93,30 @@ sGis.module('controls.PolyEditor', [
             let activeIndex = intersection[1];
 
             let ring = this._activeFeature.rings[activeRing];
-            let point = ring[activeIndex];
-            let evPoint = sGisEvent.point.projectTo(this._activeFeature.crs).position;
+            let firstPoint = this._getProjectedPoint(ring[activeIndex], this._activeFeature.crs);
+            let evPoint = sGisEvent.point.position;
 
             let symbol = this.vertexHoverSymbol;
 
             let targetDist = this.vertexSize * this.map.resolution;
+            let point = firstPoint;
             let currDist = distance(point, evPoint);
             if (currDist > targetDist) {
                 let nextIndex = (activeIndex+1) % ring.length;
-                point = ring[nextIndex];
+                point = this._getProjectedPoint(ring[nextIndex], this._activeFeature.crs);
                 let nextDist = distance(point, evPoint);
                 if (nextDist > targetDist) {
                     symbol = this.sideHoverSymbol;
-                    point = geotools.pointToLineProjection(evPoint, [ring[activeIndex], point]);
+                    point = geotools.pointToLineProjection(evPoint, [firstPoint, point]);
                 }
             }
 
             let feature = new Point(point, {crs: this.map.crs, symbol: symbol});
             this._tempLayer.features = [feature];
+        }
+
+        _getProjectedPoint(position, fromCrs) {
+            return new sGis.Point(position, fromCrs).projectTo(this.map.crs).position;
         }
         
         _handleDragStart(sGisEvent) {
@@ -120,8 +125,8 @@ sGis.module('controls.PolyEditor', [
             let intersection = sGisEvent.intersectionType;
             if (Array.isArray(intersection) && this.vertexChangeAllowed) {
                 let ring = this._activeFeature.rings[intersection[0]];
-                let point = ring[intersection[1]];
-                let evPoint = sGisEvent.point.projectTo(this._activeFeature.crs).position;
+                let point = this._getProjectedPoint(ring[intersection[1]], this._activeFeature.crs);
+                let evPoint = sGisEvent.point.position;
 
                 this._activeRing = intersection[0];
 
@@ -131,7 +136,7 @@ sGis.module('controls.PolyEditor', [
                     this._activeIndex = intersection[1];
                 } else {
                     let nextIndex = (intersection[1]+1) % ring.length;
-                    point = ring[nextIndex];
+                    point = this._getProjectedPoint(ring[nextIndex], this._activeFeature.crs);
                     let nextDist = distance(point, evPoint);
                     if (nextDist < targetDist) {
                         this._activeIndex = nextIndex;
@@ -182,7 +187,7 @@ sGis.module('controls.PolyEditor', [
         }
 
         _handleFeatureDrag(sGisEvent) {
-            geotools.move([this._activeFeature], [-sGisEvent.offset.x, -sGisEvent.offset.y]);
+            geotools.move([this._activeFeature], [-sGisEvent.offset.x, -sGisEvent.offset.y], this.map.crs);
             this._activeFeature.redraw();
             if (this.activeLayer) this.activeLayer.redraw();
 

@@ -78,7 +78,7 @@ sGis.module('controls.PolyTransform', [
         }
         
         _setRotationHandle() {
-            this._rotationHandle = new PointFeature([0, 0], {crs: this._activeFeature.crs, symbol: this.rotationHandleSymbol});
+            this._rotationHandle = new PointFeature([0, 0], {crs: this.map.crs, symbol: this.rotationHandleSymbol});
             this._updateRotationHandle();
             this._rotationHandle.on('dragStart', this._handleRotationStart);
             this._rotationHandle.on('drag', this._handleRotation);
@@ -96,7 +96,7 @@ sGis.module('controls.PolyTransform', [
                 let yk = 1- Math.floor(i/3);
                 symbol.offset = { x: this.scaleHandleOffset * xk, y: this.scaleHandleOffset * yk };
 
-                this._scaleHandles[i] = new PointFeature([0, 0], {symbol: symbol, crs: this._activeFeature.crs});
+                this._scaleHandles[i] = new PointFeature([0, 0], {symbol: symbol, crs: this.map.crs});
                 this._scaleHandles[i].on('dragStart', this._handleScalingStart.bind(this, i));
                 this._scaleHandles[i].on('drag', this._handleScaling.bind(this, i));
                 this._scaleHandles[i].on('dragEnd', this._handleScalingEnd);
@@ -109,7 +109,7 @@ sGis.module('controls.PolyTransform', [
         _handleRotationStart(sGisEvent) {
             if (this.ignoreEvents) return;
 
-            this._rotationBase = this._activeFeature.bbox.center.position;
+            this._rotationBase = this._activeFeature.bbox.center.projectTo(this.map.crs).position;
             sGisEvent.draggingObject = this._rotationHandle;
             sGisEvent.stopPropagation();
 
@@ -124,7 +124,7 @@ sGis.module('controls.PolyTransform', [
             let alpha2 = sGisEvent.point.x === this._rotationBase[0] ? Math.PI / 2 : Math.atan2(sGisEvent.point.y - this._rotationBase[1], sGisEvent.point.x - this._rotationBase[0]);
             let angle = alpha2 - alpha1;
 
-            geotools.rotate(this._activeFeature, angle, this._rotationBase);
+            geotools.rotate(this._activeFeature, angle, this._rotationBase, this.map.crs);
             if (this.activeLayer) this.activeLayer.redraw();
             this._updateHandles();
         }
@@ -141,12 +141,12 @@ sGis.module('controls.PolyTransform', [
         }
 
         _updateRotationHandle() {
-            let bbox = this._activeFeature.bbox;
+            let bbox = this._activeFeature.bbox.projectTo(this.map.crs);
             this._rotationHandle.position = [(bbox.xMin + bbox.xMax)/2, bbox.yMax];
         }
 
         _updateScaleHandles() {
-            let bbox = this._activeFeature.bbox;
+            let bbox = this._activeFeature.bbox.projectTo(this.map.crs);
             let xs = [bbox.xMin, (bbox.xMin + bbox.xMax)/2, bbox.xMax];
             let ys = [bbox.yMin, (bbox.yMin + bbox.yMax)/2, bbox.yMax];
 
@@ -174,7 +174,7 @@ sGis.module('controls.PolyTransform', [
             let baseY = yIndex === 0 ? 2 : yIndex === 2 ? 0 : 1;
             let basePoint = this._scaleHandles[baseX + 3 * baseY].position;
 
-            let bbox = this._activeFeature.bbox;
+            let bbox = this._activeFeature.bbox.projectTo(this.map.crs);
             let resolution = this.map.resolution;
             let tolerance = MIN_SIZE * resolution;
             let width = bbox.width;
@@ -184,7 +184,7 @@ sGis.module('controls.PolyTransform', [
             let yScale = baseY === 1 ? 1 : (height + (baseY - 1) * sGisEvent.offset.y) / height;
             if (height < tolerance && yScale < 1) yScale = 1;
 
-            geotools.scale(this._activeFeature, [xScale, yScale], basePoint);
+            geotools.scale(this._activeFeature, [xScale, yScale], basePoint, this.map.crs);
             if (this.activeLayer) this.activeLayer.redraw();
             this._updateHandles();
         }

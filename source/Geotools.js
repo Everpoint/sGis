@@ -107,6 +107,15 @@ sGis.module('geotools', [
         return result;
     };
 
+    geotools.projectPoints = function(ring, fromCrs, toCrs) {
+        let projection = fromCrs.projectionTo(toCrs);
+        let projectedRing = [];
+        ring.forEach(position => {
+            projectedRing.push(projection(position));
+        });
+        return projectedRing;
+    };
+
     function polygonArea(coord) {
         coord = coord.concat([coord[0]]);
 
@@ -308,12 +317,14 @@ sGis.module('geotools', [
      * @param {sGis.Feature[]} features
      * @param {Number[][]} matrix - transformation matrix
      * @param {IPoint|Position} center - the center of transformation
+     * @param {sGis.Crs} [mapCrs] - coordinate system of transformation. If not specified, transformation will be preformed
+     * on the coordinates as is. This will result in errors with any non-cartesian coordinates (like lat/lon).
      */
-    geotools.transform = function(features, matrix, center) {
+    geotools.transform = function(features, matrix, center, mapCrs = null) {
         if (Array.isArray(features)) {
-            features.forEach(feature => transformFeature(feature, matrix, center));
+            features.forEach(feature => transformFeature(feature, matrix, center, mapCrs));
         } else {
-            transformFeature(features, matrix, center);
+            transformFeature(features, matrix, center, mapCrs);
         }
     };
 
@@ -322,12 +333,14 @@ sGis.module('geotools', [
      * @param {sGis.Feature[]} features
      * @param {Number} angle - rotation angle in radians. Positive values stand for counterclockwise rotation.
      * @param {IPoint|Position} center - rotation center
+     * @param {sGis.Crs} [mapCrs] - coordinate system of transformation. If not specified, transformation will be preformed
+     * on the coordinates as is. This will result in errors with any non-cartesian coordinates (like lat/lon).
      */
-    geotools.rotate = function(features, angle, center) {
+    geotools.rotate = function(features, angle, center, mapCrs = null) {
         let sin = Math.sin(angle);
         let cos = Math.cos(angle);
 
-        geotools.transform(features, [[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center);
+        geotools.transform(features, [[cos, sin, 0], [-sin, cos, 0], [0, 0, 1]], center, mapCrs);
     };
 
     /**
@@ -335,30 +348,62 @@ sGis.module('geotools', [
      * @param {sGis.Feature[]} features
      * @param {Number} scale - the magnitude of scaling. E.g. value of 2 means that the size of features will be increased 2 times.
      * @param {Position} center - center of scaling
+     * @param {sGis.Crs} [mapCrs] - coordinate system of transformation. If not specified, transformation will be preformed
+     * on the coordinates as is. This will result in errors with any non-cartesian coordinates (like lat/lon).
      */
-    geotools.scale = function(features, scale, center) {
-        geotools.transform(features, [[scale[0], 0, 0], [0, scale[1], 0], [0, 0, 1]], center);
+    geotools.scale = function(features, scale, center, mapCrs = null) {
+        geotools.transform(features, [[scale[0], 0, 0], [0, scale[1], 0], [0, 0, 1]], center, mapCrs);
     };
 
     /**
      * Moves the features
      * @param {sGis.Feature[]} features
      * @param {Number[]} translate - moving values in form [dx, dy]
+     * @param {sGis.Crs} [mapCrs] - coordinate system of transformation. If not specified, transformation will be preformed
+     * on the coordinates as is. This will result in errors with any non-cartesian coordinates (like lat/lon).
      */
-    geotools.move = function(features, translate) {
-        geotools.transform(features, [[1, 0 ,0], [0, 1, 1], [translate[0], translate[1], 1]], [0, 0]);
+    geotools.move = function(features, translate, mapCrs = null) {
+        geotools.transform(features, [[1, 0 ,0], [0, 1, 1], [translate[0], translate[1], 1]], [0, 0], mapCrs);
     };
     
-    function transformFeature(feature, matrix, center) {
-        let base = center.crs ? center.projectTo(feature.crs).position : center;
+    function transformFeature(feature, matrix, center, mapCrs = null) {
+        let targetCrs = mapCrs || feature.crs;
+        let base = center.crs ? center.projectTo(targetCrs).position : center;
+
         if (feature.rings) {
             let rings = feature.rings;
+            if (targetCrs !== feature.crs) {
+                rings = geotools.projectRings(rings, feature.crs, targetCrs);
+            }
             transformRings(rings, matrix, base);
+
+            if (targetCrs !== feature.crs) {
+                rings = geotools.projectRings(rings, targetCrs, feature.crs);
+            }
+
             feature.rings = rings;
         } else if (feature.points) {
-            feature.points = transformRing(feature.points, matrix, base);
+            let points = feature.points;
+            if (targetCrs !== feature.crs) {
+                points = geotools.projectRings(points, feature.crs, targetCrs);
+            }
+            points = transformRing(points, matrix, base);
+
+            if (targetCrs !== feature.crs) {
+                points = geotools.projectRings(points, targetCrs, feature.crs);
+            }
+            feature.points = points;
         } else if (feature.position) {
-            feature.position = transformRing([feature.position], matrix, base)[0];
+            let points = [feature.position];
+            if (targetCrs !== feature.crs) {
+                points = geotools.projectRings(points, feature.crs, targetCrs);
+            }
+            points = transformRing(points, matrix, base);
+
+            if (targetCrs !== feature.crs) {
+                points = geotools.projectRings(points, targetCrs, feature.crs);
+            }
+            feature.position = points[0];
         }
     }
     
