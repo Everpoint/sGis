@@ -6,8 +6,8 @@
      */
     let sGis = {};
 
-    sGis.version = "0.2.3";
-    sGis.releaseDate = "30.01.2017";
+    sGis.version = "0.2.4";
+    sGis.releaseDate = "06.03.2017";
 
     let loadedModules = { 'sGis': sGis };
     let loadingDefs = [];
