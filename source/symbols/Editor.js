@@ -50,13 +50,10 @@ sGis.module('symbol.Editor', [
                     });
                     break;
                 } else if (this.baseSymbol instanceof PointImageSymbol || this.baseSymbol instanceof PointMaskedImageSymbol) {
-                    const offsetX = (+this.baseSymbol.anchorPoint.x)/2;
-                    const offsetY = (+this.baseSymbol.anchorPoint.y)/2;
-    
                     halo = new ArcRender(
                         [
-                            baseRender[i].position[0] - offsetX,
-                            baseRender[i].position[1] - offsetY
+                            baseRender[i].position[0] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
+                            baseRender[i].position[1] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
                         ],
                         {
                             fillColor: this.color,
