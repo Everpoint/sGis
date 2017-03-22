@@ -64,7 +64,13 @@
 
     sGis.loadedModules = loadedModules;
 
-    window.sGis = sGis;
+    if (window.define && window.define.amd) {
+        window.define([], () => sGis);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = sGis;
+    } else {
+        window.sGis = sGis;
+    }
 
     function setModuleReference(module, name) {
         let ns = name.split('.');
