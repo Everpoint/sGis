@@ -2,11 +2,12 @@ sGis.module('symbol.Editor', [
     'Symbol',
     'symbol.point.Point',
     'symbol.point.Image',
+    'symbol.point.MaskedImage',
     'render.Point',
     'render.Polyline',
     'render.Polygon',
     'render.Arc'
-], function(Symbol, PointSymbol, PointImageSymbol, PointRender, PolylineRender, PolygonRender, ArcRender) {
+], function(Symbol, PointSymbol, PointImageSymbol, PointMaskedImageSymbol, PointRender, PolylineRender, PolygonRender, ArcRender) {
     
     'use strict';
 
@@ -48,11 +49,11 @@ sGis.module('symbol.Editor', [
                         strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
                     });
                     break;
-                } else if (this.baseSymbol instanceof PointImageSymbol) {
+                } else if (this.baseSymbol instanceof PointImageSymbol || this.baseSymbol instanceof PointMaskedImageSymbol) {
                     halo = new ArcRender(
                         [
-                            baseRender[i].position[0] + (+this.baseSymbol.anchorPoint.x),
-                            baseRender[i].position[1] + (+this.baseSymbol.anchorPoint.y)
+                            baseRender[i].position[0] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
+                            baseRender[i].position[1] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
                         ],
                         {
                             fillColor: this.color,
