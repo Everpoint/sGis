@@ -11,7 +11,7 @@
     "doc": "jsdoc source -r -d docs -c jsdoc.conf.json",
     "version": "gulp version && git add source/sGis.js",
     "lint": "eslint source/** -o lint.output",
-    "test": "karma start"
+    "test": "karma start && npm run lint"
   },
   "repository": {
     "type": "git",
