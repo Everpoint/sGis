@@ -134,8 +134,10 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
         _rerender() {
             let bbox = this._master.bbox;
+
             let newFeatures = this._layer.getFeatures(bbox, this._master.map.resolution);
-            
+            if (this._layer.updateProhibited) return;
+
             for (let feature of this._featureRenders.keys()) {
                 if (newFeatures.indexOf(feature) < 0) this._markForRemoval(feature);
             }

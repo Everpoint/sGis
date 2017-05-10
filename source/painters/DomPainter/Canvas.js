@@ -3,8 +3,9 @@ sGis.module('painter.domPainter.Canvas', [
     'render.Point',
     'render.Polygon',
     'render.Polyline',
+    'render.VectorImage',
     'utils'
-], (Arc, Point, Polygon, Polyline, utils) => {
+], (Arc, Point, Polygon, Polyline, VectorImage, utils) => {
 
     'use strict';
 
@@ -30,7 +31,7 @@ sGis.module('painter.domPainter.Canvas', [
             this._canvasNode.height = height;
             this._isEmpty = true;
             
-            this._ctx.translate(-bbox.xMin / resolution, bbox.yMax / resolution);
+            this._ctx.translate(Math.round(-bbox.xMin / resolution), Math.round(bbox.yMax / resolution));
         }
         
         get width() { return this._canvasNode.width; }
@@ -43,6 +44,8 @@ sGis.module('painter.domPainter.Canvas', [
                 this._drawPoint(render);
             } else if (render instanceof Polyline || render instanceof Polygon) {
                 this._drawPoly(render);
+            } else if (render instanceof VectorImage) {
+                this._drawImage(render);
             } else {
                 utils.error('Unknown vector geometry type.');
             }
@@ -76,6 +79,11 @@ sGis.module('painter.domPainter.Canvas', [
         _drawPoint(render) {
             this._ctx.strokeStyle = this._ctx.fillStyle = render.color;
             this._ctx.fillRect(render.coordinates[0], render.coordinates[1], 1, 1);
+        }
+
+        _drawImage(render) {
+            let [x, y] = render.origin;
+            this._ctx.drawImage(render.node, Math.round(x), Math.round(y));
         }
 
         _drawPoly(render) {

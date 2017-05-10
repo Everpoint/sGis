@@ -120,6 +120,12 @@ sGis.module('Layer', [
      */
     Layer.prototype.delayedUpdate = false;
 
+    /**
+     * If set to true, the layer rendering will not be updated (though the feature lists will be requested as needed). This is intended for lazy object update without "jumping" effect.
+     * @type {boolean}
+     */
+    Layer.prototype.updateProhibited = false;
+
     utils.extend(Layer.prototype, defaults);
 
     return Layer;
