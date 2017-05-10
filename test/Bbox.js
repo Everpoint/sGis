@@ -7,7 +7,7 @@ describe('sGis.Bbox', () => {
 
     describe('constructor', () => {
         it('should have geo crs by default', () => {
-            expect(new sGis.Bbox([0, 0], [10, 10]).crs).toBe(sGis.CRS);
+            expect(new sGis.Bbox([0, 0], [10, 10]).crs).toBe(sGis.CRS.geo);
         });
     });
 
