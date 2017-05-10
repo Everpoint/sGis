@@ -14,5 +14,7 @@ before_install:
 notification:
   email: false
   slack:
+    on_success: always
+    on_failure: always
     rooms:
       secure: efghcRc5j0zWuhk48mY3PQSuWdCEDT9fD0VxXy4RkIm2M9g+c7NPgAxAPBQMXEGX4XGx8ExFr2IVmPfQ2eCpXkMwNicWgRUYkz+copSkf7yQBu/R11XWs8EjQPZ3qOWnr68Jmrh5ajGjnPGj33Z4x5KF8UEJdjK9ObAiE3re5QgBwwYQraZ28BeK7Mst1eKTZAVWKPc7a+hX0wANQRNtklw1vk4pmAQUQS5zikN9AgAd81ypZEkEVM9TPz/4KRN3KJem7oEbxMIr+ueACHH5VLrP5drUn1NuINOtxBGnGQy+7qDleNhEtQcblDtsnp4wUK+9fvinKTascIUdpNeJ2Cc249s2tE0kC1liBpC/+OL/IluMue+6Tbh5PxAciizYCwdkVZMWpRgHsGAc9GMnXWuG1z6JicHAo0fQqme78clhNdJM6x3gLKYa1Iy/u4lp76In6h0axDoWuL3QF7t48z2j86pXTeH1FPPqjSST0EHcYox++8Xbn9w0wHSUdVihpf0l9Ok+57z9kaxx2GcvdKbue5ZSQLWTQ7Mry4pfov5MUMkl7VxKzyUTxMC0d/D5/wQFvVuYPuQey2X4Q1E95ZNqLvJBRJIJz+MUomjPFtA7PREBTCVjzEeTyz9QKeDwLMyKe3Q3e5+X+MODaekMNYtP7LtUIfy1y+4IFDFoUaA=
