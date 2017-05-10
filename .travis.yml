@@ -3,7 +3,6 @@ dist: trusty
 language: node_js
 node_js:
 - node
-
 before_install:
 - export CHROME_BIN=/usr/bin/google-chrome
 - export DISPLAY=:99.0
@@ -12,8 +11,8 @@ before_install:
 - sudo apt-get install -y libappindicator1 fonts-liberation
 - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 - sudo dpkg -i google-chrome*.deb
-
 notification:
   email: false
   slack:
-    secure: HPhmg3bPQe8beOxiublpPBcyjrAWl5z3ws2/JjPAHNmSRrpSx7tZDjU+Bsa65Gc5wtW3qgajt52oW/s24vIA1qZoHu9hB3gNm8uwOuIVzmHFsf8NCo9XyOGsWvc7hqj3ItPqk/24A0v9PfzqQsDkVBb3rQCYAfjY06Ww3BxQszX/fV/sp9UTJ655lYcwUdrXUmjuaYB+mz6z08EaWWH//tXT5q6oQ53/hTmkIEup04Bt+sZrfREpswBGhqtR2f6iEz8Dzzv72ntUttd6v6kA3A6usnKDyh8YcRwC7jHohaoNyMJaz5nFNiEsAdQmbp5K/BplohMAa33uRJ1nKGj5uTXZJz6lF3+VkfcGFcZ9FYkXl4i6mcs5u0p0j3D4S6fq+S7Y8aSY8ZD//JqDIqFcHvdRxG2m8PqBoBrT4IthPxNdjC+TRYg1ieUZsy99QRWQ5PvlOMmpk2bmOGACHTcUhUBmFUKsf0mx/mFzMlpQYpzcfGWvu9iEPTLERX7cQS67dSOtQixg7AyMAs2yDiJvE4T01oFvculepg9qU8bNRNIzeuQYKfCALNpvRaRZVp7Dv+jbwc16aVS/q31MTrBvjRhxAQAHxIn1gYkinPp5hGU/xNraPV2GZ9AqiJF65hardET7kyy90ufpO/JEjS7bKhSdvrZ7WyZo2H/BOLbMSlw=
+    rooms:
+      secure: efghcRc5j0zWuhk48mY3PQSuWdCEDT9fD0VxXy4RkIm2M9g+c7NPgAxAPBQMXEGX4XGx8ExFr2IVmPfQ2eCpXkMwNicWgRUYkz+copSkf7yQBu/R11XWs8EjQPZ3qOWnr68Jmrh5ajGjnPGj33Z4x5KF8UEJdjK9ObAiE3re5QgBwwYQraZ28BeK7Mst1eKTZAVWKPc7a+hX0wANQRNtklw1vk4pmAQUQS5zikN9AgAd81ypZEkEVM9TPz/4KRN3KJem7oEbxMIr+ueACHH5VLrP5drUn1NuINOtxBGnGQy+7qDleNhEtQcblDtsnp4wUK+9fvinKTascIUdpNeJ2Cc249s2tE0kC1liBpC/+OL/IluMue+6Tbh5PxAciizYCwdkVZMWpRgHsGAc9GMnXWuG1z6JicHAo0fQqme78clhNdJM6x3gLKYa1Iy/u4lp76In6h0axDoWuL3QF7t48z2j86pXTeH1FPPqjSST0EHcYox++8Xbn9w0wHSUdVihpf0l9Ok+57z9kaxx2GcvdKbue5ZSQLWTQ7Mry4pfov5MUMkl7VxKzyUTxMC0d/D5/wQFvVuYPuQey2X4Q1E95ZNqLvJBRJIJz+MUomjPFtA7PREBTCVjzEeTyz9QKeDwLMyKe3Q3e5+X+MODaekMNYtP7LtUIfy1y+4IFDFoUaA=
