@@ -21,7 +21,8 @@ sGis.module('symbol.image.Image', [
         }
 
         renderFunction(/** sGis.feature.Image */ feature, resolution, crs) {
-            var render = new ImageRender(feature.src, feature.bbox);
+            let bbox = feature.bbox.projectTo(crs);
+            let render = new ImageRender(feature.src, bbox);
 
             if (this.transitionTime > 0) {
                 render.opacity = 0;

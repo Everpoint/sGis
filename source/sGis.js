@@ -22,7 +22,9 @@
         if (loadedModules[moduleName]) throw new Error('Module definition conflict: ' + moduleName);
         loadingDefs.push(Array.prototype.slice.call(arguments));
 
-        while (loadModules()) {}
+        while (loadModules()) {
+            //continue
+        }
     };
 
     /**
@@ -35,7 +37,7 @@
         let loaded = 0;
         let list = loadingDefs.slice();
         let remains = [];
-        list.forEach(function(def, index) {
+        list.forEach(function(def) {
             let deps = [];
             for (let i = 0; i < def[1].length; i++) {
                 if (!loadedModules[def[1][i]]) {
@@ -46,7 +48,6 @@
                 deps.push(loadedModules[def[1][i]]);
             }
 
-            if (loadedModules[def[0]]) debugger;
             let module = def[2].apply(this, deps);
             loadedModules[def[0]] = module;
             setModuleReference(module, def[0]);

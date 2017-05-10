@@ -14,8 +14,7 @@ sGis.module('init', [
         plugins = plugins.map(pluginDefinition => {
             let name = pluginDefinition.name;
             if (!sGis.plugins || !sGis.plugins[name]) {
-                console.warn(`Plugin ${name} is not available. Skipping.`);
-                return null;
+                throw new Error(`Plugin ${name} is not available.`);
             }
 
             return new sGis.plugins[name](map, painter.innerWrapper, pluginDefinition.properties);

@@ -29,7 +29,7 @@ sGis.module('render.Image', [
          * @param {Function} callback - callback function that will be called after node is ready
          */
         getNode(callback) {
-            var node = new Image();
+            let node = new Image();
             node.style.opacity = this.opacity;
             node.onload = function() { callback(null, node); };
             node.onerror = function() { callback('Failed to load image', null); };
@@ -46,9 +46,9 @@ sGis.module('render.Image', [
          */
         get bbox() { return this._bbox; }
 
-        contains(position) {
-            var point = new Point([position.x * resolution, position.y * resolution], this._bbox.crs);
-            return this._bbox.contains(point);
+        contains(/*position*/) {
+            // TODO: Contains method works with pixel position, but Image render does not know about pixels. Should change its operation from bbox to px.
+            return false;
         }
         
         getCache() { return this._node; }

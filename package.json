@@ -10,7 +10,8 @@
     "build": "gulp",
     "doc": "jsdoc source -r -d docs -c jsdoc.conf.json",
     "version": "gulp version && git add source/sGis.js",
-    "lint": "eslint source/** -o lint.output"
+    "lint": "eslint source/** -o lint.output",
+    "test": "karma start"
   },
   "repository": {
     "type": "git",

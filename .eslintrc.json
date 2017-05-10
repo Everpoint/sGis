@@ -8,9 +8,10 @@
     "es6": true
   },
   "globals": {
-    "sGis": true
+    "sGis": true,
+    "module": true
   },
   "rules": {
-
+    "no-unused-vars": ["error", { "args": "none" }]
   }
 }
