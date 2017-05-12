@@ -60,6 +60,8 @@ sGis.module('painter.DomPainter', [
             if (node) {
                 this._initDOM(node);
                 this._eventDispatcher = new EventDispatcher(this._layerWrapper, this);
+                this._needUpdate = true;
+                this._redrawNeeded = true;
             }
         }
 
@@ -268,6 +270,14 @@ sGis.module('painter.DomPainter', [
             
             this._eventDispatcher.remove();
             this._eventDispatcher = null;
+
+            this._clearContainers();
+        }
+
+        _clearContainers() {
+            this._containers.forEach((container, i) => {
+                this._removeContainer(i);
+            });
         }
         
         get innerWrapper() { return this._innerWrapper; }
