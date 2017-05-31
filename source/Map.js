@@ -200,7 +200,7 @@ sGis.module('Map', [
          * @param {Boolean} [doNotAdjust=false] - do not adjust resolution to the round ones
          */
         setResolution (resolution, basePoint, doNotAdjust) {
-            this.setPosition(this._getScaledPosition(this.resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
+            this.setPosition(this._getScaledPosition(resolution, basePoint), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
         }
 
         /**

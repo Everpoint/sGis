@@ -23,7 +23,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
             this._onDocumentMouseup = this._onDocumentMouseup.bind(this);
 
             this._wheelTimer = 0;
-            this._touchHandler = {dragPrevPosition: {}};
+            this._touchHandler = {dragPrevPosition: []};
         }
         
         _dispatchEvent(name, data) {
@@ -189,85 +189,103 @@ sGis.module('painter.domPainter.EventDispatcher', [
         }
 
         _ontouchstart(event) {
-            for (var i = 0; i < event.changedTouches.length; i++) {
-                var touch = event.changedTouches[i];
-                this._touchHandler.dragPrevPosition[touch.identifier] = {x: touch.pageX, y: touch.pageY};
-                this._touchHandler.lastDrag = {x: 0, y: 0};
+            if (!this._touches) this._touches = [];
+
+            for (let  i = 0; i < event.changedTouches.length; i++) {
+                let touch = event.changedTouches[i];
+                if (!this._touches.some(t => t.id === touch.identifier)) this._touches.push({ id: touch.identifier, position: [touch.pageX, touch.pageY] });
             }
+
+            this._touchHandler.lastDrag = {x: 0, y: 0};
+            event.preventDefault();
         }
 
         _ontouchmove(event) {
-            var map = this._master.map;
-            if (event.touches.length === 1 && this._touchHandler.lastDrag) {
-                var touch = event.targetTouches[0];
-                var dxPx = this._touchHandler.dragPrevPosition[touch.identifier].x - touch.pageX;
-                var dyPx = this._touchHandler.dragPrevPosition[touch.identifier].y - touch.pageY;
-                var resolution = map.resolution;
-                var touchOffset = ev.getMouseOffset(event.currentTarget, touch);
-                var point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
-                var position = {x: point.x / resolution, y: 0 - point.y / resolution};
+            this._clearTouches(event);
+            let touches = Array.prototype.slice.apply(event.touches);
+
+            let map = this._master.map;
+            if (touches.length === 1 && this._touchHandler.lastDrag) {
+                let touch = event.targetTouches[0];
+                let [prevX, prevY] = this._touches[0].position;
+                let dxPx = prevX - touch.pageX;
+                let dyPx = prevY - touch.pageY;
+                let resolution = map.resolution;
+                let touchOffset = ev.getMouseOffset(event.currentTarget, touch);
+                let point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
+                let position = {x: point.x / resolution, y: 0 - point.y / resolution};
 
                 if (this._touchHandler.lastDrag.x === 0 && this._touchHandler.lastDrag.y === 0) {
-                    var sGisEvent = this._dispatchEvent('dragStart', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: this._touchHandler.lastDrag.x, y: this._touchHandler.lastDrag.y}});
+                    let sGisEvent = this._dispatchEvent('dragStart', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: this._touchHandler.lastDrag.x, y: this._touchHandler.lastDrag.y}});
                     this._draggingObject = sGisEvent.draggingObject || map;
                 }
 
                 this._touchHandler.lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
                 this._draggingObject.fire('drag', {point: point, position: position, offset: {xPx: dxPx, yPx: dyPx, x: this._touchHandler.lastDrag.x, y: this._touchHandler.lastDrag.y}});
 
-                this._touchHandler.dragPrevPosition[touch.identifier].x = touch.pageX;
-                this._touchHandler.dragPrevPosition[touch.identifier].y = touch.pageY;
-            } else if (event.touches.length > 1) {
+                this._touches[0].position = [touch.pageX, touch.pageY];
+            } else if (touches.length > 1) {
                 this._master.forbidUpdate();
                 this._touchHandler.lastDrag = null;
                 this._touchHandler.scaleChanged = true;
 
-                var touch1 = event.touches[0];
-                var touch2 = event.touches[1];
+                let t1 = touches.find(t => t.identifier === this._touches[0].id);
+                let t2 = touches.find(t => t.identifier === this._touches[1].id);
 
-                touch1.prevPosition = this._touchHandler.dragPrevPosition[touch1.identifier];
-                touch2.prevPosition = this._touchHandler.dragPrevPosition[touch2.identifier];
+                let [x11, y11] = this._touches[0].position;
+                let [x12, y12] = [t1.pageX, t1.pageY];
+                let [x21, y21] = this._touches[1].position;
+                let [x22, y22] = [t2.pageX, t2.pageY];
 
-                var x11 = touch1.prevPosition.x;
-                var x12 = touch1.pageX;
-                var x21 = touch2.prevPosition.x;
-                var x22 = touch2.pageX;
-                var baseX = (x11 - x12 - x21 + x22) === 0 ? (x11 + x21) / 2 : (x11*x22 - x12*x21) / (x11 - x12 - x21 + x22);
-                var y11 = touch1.prevPosition.y;
-                var y12 = touch1.pageY;
-                var y21 = touch2.prevPosition.y;
-                var y22 = touch2.pageY;
-                var baseY = (y11 - y12 - y21 + y22) === 0 ? (y11 + y21) / 2 : (y11*y22 - y12*y21) / (y11 - y12 - y21 + y22);
-                var len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2));
-                var len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
+                let c1 = [(x11 + x21) / 2, (y11 + y21) / 2];
+                let c2 = [(x12 + x22) / 2, (y12 + y22) / 2];
 
-                map.changeScale(len1/len2, this._master.getPointFromPxPosition(baseX, baseY), true);
+                let base = [(c1[0] + c2[0]) / 2, (c1[1] + c2[1]) / 2];
 
-                this._touchHandler.dragPrevPosition[touch1.identifier].x = touch1.pageX;
-                this._touchHandler.dragPrevPosition[touch1.identifier].y = touch1.pageY;
-                this._touchHandler.dragPrevPosition[touch2.identifier].x = touch2.pageX;
-                this._touchHandler.dragPrevPosition[touch2.identifier].y = touch2.pageY;
+                let len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2));
+                let len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
+
+                let basePoint = this._master.getPointFromPxPosition(base[0], base[1]);
+                let dc = [c1[0] - c2[0], c2[1] - c1[1]];
+
+                if (len1 !== len2 && len2 !== 0) map.changeScale(len1/len2, basePoint, true);
+                map.move(dc[0]*map.resolution, dc[1]*map.resolution);
+
+                this._touches[0].position = [x12, y12];
+                this._touches[1].position = [x22, y22];
             }
             event.preventDefault();
         }
 
         _ontouchend(event) {
-            for (var i = 0; i < event.changedTouches.length; i++) {
-                delete this._touchHandler.dragPrevPosition[event.changedTouches[i].identifier];
+            this._clearTouches(event);
+
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                let index = this._touches.findIndex(touch => touch.id === event.changedTouches[i].identifier);
+                if (index >= 0) this._touches.splice(index, 1);
             }
 
             this._touchHandler.lastDrag = null;
 
-            var map = this._master.map;
+
             if (this._touchHandler.scaleChanged) {
-                map.adjustResolution();
+                this._master.map.adjustResolution();
                 this._touchHandler.scaleChanged = false;
-                this._master.allowUpdate();
             } else {
                 if (this._draggingObject) {
                     this._draggingObject.fire('dragEnd');
                     this._draggingObject = null;
                 }
+            }
+
+            if (this._touches.length < 2) this._master.allowUpdate();
+        }
+
+        _clearTouches(event) {
+            let touches = Array.prototype.slice.apply(event.touches);
+
+            for (let i = this._touches.length - 1; i >= 0; i--) {
+                if (!touches.some(touch => touch.identifier === this._touches[i].id)) this._touches.splice(i, 1);
             }
         }
     }
