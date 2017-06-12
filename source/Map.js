@@ -91,10 +91,11 @@ sGis.module('Map', [
 
         /**
          * Changes resolution of the map so that the new resolution corresponds to an even tile scheme level. Resolution is changed with animation.
+         * @param {Boolean} [direction=false] - if false will adjust to smaller resolution, if true - to larger
          */
-        adjustResolution () {
+        adjustResolution (direction = false) {
             let resolution = this.resolution;
-            let newResolution = this.getAdjustedResolution(resolution);
+            let newResolution = this.getAdjustedResolution(resolution, direction);
             let ratio = newResolution / resolution;
             if (ratio > 1.1 || ratio < 0.9) {
                 this.animateSetResolution(newResolution);
@@ -106,11 +107,12 @@ sGis.module('Map', [
         /**
          * Returns closest resolution to the given one that corresponds to an even tile scheme level.
          * @param {Number} resolution - target resolution
+         * @param {Boolean} [direction=false] - if false will adjust to smaller resolution, if true - to larger
          * @returns {Number}
          */
-        getAdjustedResolution (resolution) {
+        getAdjustedResolution (resolution, direction = false) {
             if (!this.tileScheme) return resolution;
-            return this.tileScheme.getAdjustedResolution(resolution);
+            return this.tileScheme.getAdjustedResolution(resolution, direction);
         }
 
         /**

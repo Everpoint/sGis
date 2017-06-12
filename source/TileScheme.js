@@ -25,24 +25,31 @@ sGis.module('TileScheme', [
         }
 
         /**
-         * Returns resolution of the closest level in the tile scheme that has resolution smaller that the given one. If no such level is found, returns smallest possible resolution.
+         * Returns resolution of the closest level in the tile scheme in the given direction. If no such level is found, returns smallest or largest possible resolution.
          * @param {Number} resolution - resolution that will be used as a base for search
+         * @param {Boolean} [direction=false] - if false, will return resolution smaller then given, if true, will return resolution larger then given
          * @returns {Number}
          */
-        getAdjustedResolution(resolution) {
-            return this.levels[this.getLevel(resolution)].resolution;
+        getAdjustedResolution(resolution, direction = false) {
+            return this.levels[this.getLevel(resolution, direction)].resolution;
         }
 
         /**
-         * Returns closest level index in the tile scheme that has resolution smaller then the given one. If no such level is found, returns the last level index.
+         * Returns closest level index in the tile scheme that has resolution in the given direction. If no such level is found, returns the last level index.
          * @param {Number} resolution - resolution that will be used as a base for search
+         * @param {Boolean} [direction=false] - if false, resolution level with smaller resolution will be returned. If true, resolution level with larger resolution will be returned.
          * @returns {Number}
          */
-        getLevel(resolution) {
+        getLevel(resolution, direction = false) {
             if (!this.levels ||this.levels.length === 0) utils.error('Tile scheme levels are not set');
 
             for (var i = 0; i < this.levels.length; i++) {
-                if (resolution <= this.levels[i].resolution + math.tolerance) return i;
+                if (resolution <= this.levels[i].resolution + math.tolerance) {
+                    if (direction) {
+                        return i === 0 ? i : i - 1;
+                    }
+                    return i;
+                }
             }
             return i-1;
         }

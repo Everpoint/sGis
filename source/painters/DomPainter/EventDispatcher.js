@@ -197,7 +197,8 @@ sGis.module('painter.domPainter.EventDispatcher', [
             }
 
             this._touchHandler.lastDrag = {x: 0, y: 0};
-            event.preventDefault();
+
+            if (event.touches.length > 1) event.preventDefault();
         }
 
         _ontouchmove(event) {
@@ -248,11 +249,14 @@ sGis.module('painter.domPainter.EventDispatcher', [
                 let basePoint = this._master.getPointFromPxPosition(base[0], base[1]);
                 let dc = [c1[0] - c2[0], c2[1] - c1[1]];
 
-                if (len1 !== len2 && len2 !== 0) map.changeScale(len1/len2, basePoint, true);
+                let zoomK = len1 / len2;
+                if (len1 !== len2 && len2 !== 0) map.changeScale(zoomK, basePoint, true);
                 map.move(dc[0]*map.resolution, dc[1]*map.resolution);
 
                 this._touches[0].position = [x12, y12];
                 this._touches[1].position = [x22, y22];
+
+                this._touchHandler.lastZoomDirection = zoomK < 1;
             }
             event.preventDefault();
         }
@@ -269,7 +273,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
 
 
             if (this._touchHandler.scaleChanged) {
-                this._master.map.adjustResolution();
+                this._master.map.adjustResolution(this._touchHandler.lastZoomDirection);
                 this._touchHandler.scaleChanged = false;
             } else {
                 if (this._draggingObject) {
