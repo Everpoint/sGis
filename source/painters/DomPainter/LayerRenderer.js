@@ -310,9 +310,10 @@ sGis.module('painter.domPainter.LayerRenderer', [
         }
 
         _removeForRemoval(feature) {
-            var renders = this._rendersForRemoval.get(feature);
+            let renders = this._rendersForRemoval.get(feature);
             if (renders && !this._featureRenders.has(feature)) {
                 renders.forEach(render => { this._removeRender(render); });
+                this._rendersForRemoval.delete(feature);
             }
         }
 
