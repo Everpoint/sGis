@@ -273,6 +273,7 @@ sGis.module('painter.domPainter.EventDispatcher', [
 
 
             if (this._touchHandler.scaleChanged) {
+                this._master.allowUpdate();
                 this._master.map.adjustResolution(this._touchHandler.lastZoomDirection);
                 this._touchHandler.scaleChanged = false;
             } else {
@@ -281,8 +282,6 @@ sGis.module('painter.domPainter.EventDispatcher', [
                     this._draggingObject = null;
                 }
             }
-
-            if (this._touches.length < 2) this._master.allowUpdate();
         }
 
         _clearTouches(event) {
