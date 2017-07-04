@@ -1,7 +1,8 @@
 sGis.module('TileScheme', [
-    'utils',
-    'math'
-], function(utils, math) {
+    'utils'
+], function(utils) {
+
+    const TOLERANCE = 0.001;
 
     /**
      * Tile scheme used by tile layers to calculate indexes and coordinates of the tiles. The properties .levels and .origin must me set to a valid value before tile scheme can be used.
@@ -43,8 +44,9 @@ sGis.module('TileScheme', [
         getLevel(resolution, direction = false) {
             if (!this.levels ||this.levels.length === 0) utils.error('Tile scheme levels are not set');
 
-            for (var i = 0; i < this.levels.length; i++) {
-                if (resolution <= this.levels[i].resolution + math.tolerance) {
+            let i;
+            for (i = 0; i < this.levels.length; i++) {
+                if (resolution <= this.levels[i].resolution + TOLERANCE) {
                     if (direction) {
                         return i === 0 ? i : i - 1;
                     }
@@ -78,14 +80,14 @@ sGis.module('TileScheme', [
         set origin(/** Position */ origin) { this._origin = origin; }
     }
 
-    var defaultLevels = [{
+    let defaultLevels = [{
         resolution: 156543.03392800014,
         scale: 591657527.591555,
         indexCount: 1,
         zIndex: 0
     }];
 
-    for (var i = 1; i < 18; i ++) {
+    for (let i = 1; i < 18; i ++) {
         defaultLevels[i] = {
             resolution: defaultLevels[i-1].resolution / 2,
             scale: defaultLevels[i-1].scale / 2,
@@ -102,7 +104,9 @@ sGis.module('TileScheme', [
         tileWidth: 256,
         tileHeight: 256,
         origin: [-20037508.342787, 20037508.342787],
-        levels: defaultLevels
+        levels: defaultLevels,
+        reversedY: false,
+        limits: [-Infinity, -20037508.342787, Infinity, 20037508.342787]
     });
 
     return TileScheme;

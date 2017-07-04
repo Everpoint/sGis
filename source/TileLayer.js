@@ -84,21 +84,30 @@ sGis.module('TileLayer', [
             if (!ownCrs.canProjectTo(bbox.crs)) return [];
             if (!this.checkVisibility(resolution)) return [];
 
-            var level = this.tileScheme.getLevel(resolution);
+            let level = this.tileScheme.getLevel(resolution);
             if (level < 0) return [];
 
             bbox = bbox.projectTo(ownCrs);
+            let trimmedBbox = this._getTrimmedBbox(bbox);
+            if (trimmedBbox.width === 0 || trimmedBbox.height === 0) return [];
 
-            var layerResolution = this.tileScheme.levels[level].resolution;
+            let layerResolution = this.tileScheme.levels[level].resolution;
             if (layerResolution * 2 < resolution) return [];
             
-            var xStartIndex = Math.floor((bbox.xMin - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
-            var xEndIndex = Math.ceil((bbox.xMax - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
-            var yStartIndex = Math.floor((this.tileScheme.origin[1] - bbox.yMax) / this.tileHeight / layerResolution);
-            var yEndIndex = Math.ceil((this.tileScheme.origin[1] - bbox.yMin) / this.tileHeight / layerResolution);
+            let xStartIndex = Math.floor((trimmedBbox.xMin - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
+            let xEndIndex = Math.ceil((trimmedBbox.xMax - this.tileScheme.origin[0]) / this.tileWidth / layerResolution);
 
-            var tiles = this._tiles;
-            var features = [];
+            let yStartIndex, yEndIndex;
+            if (this.tileScheme.reversedY) {
+                yStartIndex = Math.floor((trimmedBbox.yMin - this.tileScheme.origin[0]) / this.tileHeight / layerResolution);
+                yEndIndex = Math.ceil((trimmedBbox.yMax - this.tileScheme.origin[0]) / this.tileHeight / layerResolution);
+            } else {
+                yStartIndex = Math.floor((this.tileScheme.origin[1] - trimmedBbox.yMax) / this.tileHeight / layerResolution);
+                yEndIndex = Math.ceil((this.tileScheme.origin[1] - trimmedBbox.yMin) / this.tileHeight / layerResolution);
+            }
+
+            let tiles = this._tiles;
+            let features = [];
             for (var xIndex = xStartIndex; xIndex < xEndIndex; xIndex++) {
                 var xIndexAdj = this.cycleX ? this._getAdjustedIndex(xIndex, level) : xIndex;
 
@@ -121,9 +130,13 @@ sGis.module('TileLayer', [
         }
 
         _getTileBbox(level, xIndex, yIndex) {
-            var resolution = this.tileScheme.levels[level].resolution;
-            var startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin[0], -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1]], this.crs);
-            var endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin[0], -yIndex * this.tileHeight * resolution + this.tileScheme.origin[1]], this.crs);
+            let resolution = this.tileScheme.levels[level].resolution;
+
+            let minY = this.tileScheme.reversedY ? yIndex * this.tileHeight * resolution + this.tileScheme.origin[1] : -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1];
+            let startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin[0], minY], this.crs);
+
+            let maxY = this.tileScheme.reversedY ? (yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1] : -yIndex * this.tileHeight * resolution + this.tileScheme.origin[1];
+            let endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin[0], maxY], this.crs);
 
             return new Bbox(startPoint.position, endPoint.position, this.crs);
         }
@@ -202,6 +215,21 @@ sGis.module('TileLayer', [
                 let image = cache.renders[0].getCache();
                 if (image) image.style.opacity = this._symbol.opacity;
             });
+        }
+
+        _getTrimmedBbox(bbox) {
+            if (!this.tileScheme.limits) return bbox;
+
+            let limits = this.tileScheme.limits;
+            let xMin = Math.max(bbox.xMin, limits[0]);
+            let yMin = Math.max(bbox.yMin, limits[1]);
+            let xMax = Math.min(bbox.xMax, limits[2]);
+            let yMax = Math.min(bbox.yMax, limits[3]);
+
+            if (xMax < xMin) xMax = xMin;
+            if (yMax < yMin) yMax = yMin;
+
+            return new Bbox([xMin, yMin], [xMax, yMax], bbox.crs);
         }
     }
 
