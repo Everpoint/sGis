@@ -114,6 +114,7 @@ sGis.module('painter.domPainter.LayerRenderer', [
             }
 
             if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
+            if (this._updateTimer) clearTimeout(this._updateTimer);
         }
 
         update() {
