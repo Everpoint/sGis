@@ -234,7 +234,12 @@ sGis.module('painter.domPainter.LayerRenderer', [
 
             var callback = (error, node) => {
                 this._loadingRenders.delete(render);
-                if (error || !this._featureRenders.has(feature)
+
+                if (error) {
+                    return this._clean(feature);
+                }
+
+                if (!this._featureRenders.has(feature)
                     || !render.baseRender && this._featureRenders.get(feature).indexOf(render) < 0
                     || render.baseRender && this._featureRenders.get(feature).indexOf(render.baseRender) < 0
                     || this._outdatedFeatureRenders.has(render) || this._rendersForRemoval.has(render)) return;

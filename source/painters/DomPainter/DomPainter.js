@@ -144,7 +144,12 @@ sGis.module('painter.DomPainter', [
                     this._map.getLayers(true, true).reverse().forEach(layer => {
                         let renderer = this._layerRenderers.get(layer);
                         if (this._redrawNeeded || renderer.updateNeeded) {
-                            renderer.update();
+                            try {
+                                renderer.update();
+                            } catch (e) {
+                                utils.warn(e);
+                                renderer.updateNeeded = false;
+                            }
                         }
                     });
 

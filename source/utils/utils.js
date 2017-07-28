@@ -16,6 +16,11 @@ sGis.module('utils', [
             throw new Error(message);
         },
 
+        warn: function(exeption) {
+            // eslint-disable-next-line no-console
+            if (typeof console === 'object') console.warn(exeption);
+        },
+
         /**
          * Sets the values of the properties in 'options' to the 'object'.
          * Calls utils.error() in case of exception. It only sets the properties that already exist in the object if not setUndefined parameter is given

@@ -13,12 +13,25 @@ sGis.module('Crs', [
     class Crs {
         /**
          * @constructor
-         * @param {Object} description - description of the crs
+         * @param {Object} [description] - description of the crs
          * @param {Map} [projectionsMap]
          */
-        constructor(description, projectionsMap) {
-            this.description = description;
-            this._projections = projectionsMap || new Map();
+        constructor(description = {}, projectionsMap = new Map()) {
+            let { wkid, authority, wkt, details } = description;
+
+            this.wkid = wkid;
+            this.authority = authority;
+            this.wkt = wkt;
+            this.details = details;
+
+            this._projections = projectionsMap;
+        }
+
+        toString() {
+            if (this.wkid) return this.wkid.toString();
+            if (this.wkt) return this.wkt;
+
+            return this.details;
         }
 
         /**
@@ -27,13 +40,10 @@ sGis.module('Crs', [
          * @returns {boolean}
          */
         equals(crs) {
-            if (this === crs || this.description === crs.description) return true;
+            if (this === crs) return true;
+            if (this.wkid && this.wkid === crs.wkid) return true;
 
-            if (this.description instanceof Object && crs.description instanceof Object) {
-                return JSON.stringify(this.description) === JSON.stringify(crs.description);
-            }
-
-            return false;
+            return this.wkt && this.wkt === crs.wkt;
         }
 
         /**
@@ -133,14 +143,22 @@ sGis.module('CRS', [
      * @alias sGis.CRS.wgs84
      * @memberof sGis.CRS
      */
-    CRS.wgs84 = new Crs({wkid:4326});
+    CRS.wgs84 = new Crs({
+        wkid: 84,
+        authority: 'OCG',
+        wkt: 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
+    });
 
     /**
      * @type sGis.Crs
      * @alias sGis.CRS.geo
      * @memberof sGis.CRS
      */
-    CRS.geo = new Crs('Native geographical coordinate system. It is same as wgs84, but x is longitude, rather then latitude.');
+    CRS.geo = new Crs({
+        wkid: 4326,
+        authority: 'EPSG'
+    });
+
     CRS.geo.setProjectionTo(CRS.wgs84, ([x,y]) => [y,x]);
 
     /**
@@ -163,7 +181,12 @@ sGis.module('CRS', [
          * @memberof sGis.CRS
 
          */
-        CRS.webMercator = new Crs({wkid: 102113});
+        CRS.webMercator = new Crs({
+            wkid: 3857,
+            authority: 'EPSG',
+            wkt: 'PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]'
+        });
+
         CRS.webMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
             let rLat = Math.PI / 2 - 2 * Math.atan(Math.exp(-y / a));
             let rLong = x / a;
@@ -199,7 +222,7 @@ sGis.module('CRS', [
 
     {
         let a = 6378137;
-        let b = 6356752.3142;
+        let b = 6356752.3142451793;
         let e =  Math.sqrt(1 - b*b/a/a);
         let eh = e/2;
         let pih = Math.PI/2;
@@ -209,7 +232,12 @@ sGis.module('CRS', [
          * @alias sGis.CRS.ellipticalMercator
          * @memberof sGis.CRS
          */
-        CRS.ellipticalMercator = new Crs({wkid: 667});
+        CRS.ellipticalMercator = new Crs({
+            wkid: 3395,
+            authority: 'EPSG',
+            wkt: 'PROJCS["WGS 84 / World Mercator",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]'
+        });
+
         CRS.ellipticalMercator.setProjectionTo(CRS.wgs84, ([x,y]) => {
             let ts = Math.exp(-y/a);
             let phi = pih - 2 * Math.atan(ts);
@@ -255,7 +283,9 @@ sGis.module('CRS', [
     }
 
     //noinspection SpellCheckingInspection
-    CRS.moscowBessel = new Crs({"wkt":"PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"});
+    CRS.moscowBessel = new Crs({
+        wkt: "PROJCS[\"Moscow_bessel\",GEOGCS[\"GCS_Bessel_1841\",DATUM[\"D_Bessel_1841\",SPHEROID[\"Bessel_1841\",6377397.155,299.1528128]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",37.5],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",55.66666666666666],UNIT[\"Meter\",1.0]]"
+    });
 
     {
         //http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
@@ -274,7 +304,9 @@ sGis.module('CRS', [
              * @param {Number} stLat2 - second standard parallel
              */
             constructor(lat0, lon0, stLat1, stLat2) {
-                super('Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2);
+                super({
+                    details: 'Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2
+                });
 
                 let _lat0 = math.degToRad(lat0);
                 let _lon0 = math.degToRad(lon0);
