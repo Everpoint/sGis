@@ -1,23 +1,5 @@
 describe('sGis.Crs', () => {
 
-    it('should correctly check sameness', () => {
-        var crs1 = new sGis.Crs('crs1');
-        var crs2 = new sGis.Crs('crs2');
-        expect(crs1.equals(crs2)).toBe(false);
-        expect(crs2.equals(crs1)).toBe(false);
-
-        var crs3 = new sGis.Crs('crs1');
-        expect(crs1.equals(crs3)).toBe(true);
-        expect(crs3.equals(crs1)).toBe(true);
-
-        var crs4 = new sGis.Crs({ESPG: 123});
-        var crs5 = new sGis.Crs({ESPG: 567});
-        var crs6 = new sGis.Crs({ESPG: 567});
-
-        expect(crs4.equals(crs5)).toBe(false);
-        expect(crs5.equals(crs6)).toBe(true);
-    });
-
     it('should find first-row projections', () => {
         var crs1 = new sGis.Crs('crs1');
 
