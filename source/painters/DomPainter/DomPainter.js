@@ -79,7 +79,11 @@ sGis.module('painter.DomPainter', [
 
             let method = animate ? 'animateTo' : 'setPosition';
 
-            this.map[method](projected.center, this.map.getAdjustedResolution(Math.max(xResolution, yResolution)));
+            let center = projected.center;
+            this.map[method](center, this.map.getAdjustedResolution(Math.max(xResolution, yResolution)));
+
+            return new Bbox([center.x - this.width * xResolution, center.y - this.height * yResolution],
+                            [center.x + this.width * xResolution, center.y + this.height * yResolution], this.map.crs);
         }
         
         _updateLayerList() {
