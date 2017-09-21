@@ -1,9 +1,9 @@
 import * as math from './utils/math';
-import {Position} from './baseTypes';
+import {Coordinates} from './baseTypes';
 
-type Projection = (Point) => Position;
+type Projection = (Coordinates) => Coordinates;
 
-let identityProjection = ([x,y]: Position): Position => [x,y];
+let identityProjection = ([x,y]: Coordinates): Coordinates => [x,y];
 
 /**
  * @class

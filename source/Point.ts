@@ -1,10 +1,10 @@
-import {Position} from './baseTypes';
+import {Coordinates} from './baseTypes';
 import {Crs, geo} from './Crs';
 import {error} from './utils/utils';
 import {softEquals} from "./utils/math";
 
 export interface IPoint {
-    position: Position;
+    position: Coordinates;
     x: number;
     y: number;
     readonly crs: Crs;
@@ -21,14 +21,14 @@ export interface IPoint {
 class Point implements IPoint {
     private _crs: Crs = geo;
 
-    public position: Position = [0, 0];
+    public position: Coordinates;
 
     /**
      * @constructor
      * @param position
      * @param {sGis.Crs} [crs=sGis.CRS.geo]
      */
-    constructor(position: Position, crs: Crs) {
+    constructor(position: Coordinates, crs: Crs) {
         if (crs !== undefined) this._crs = crs;
         this.position = position;
     }
@@ -78,6 +78,6 @@ class Point implements IPoint {
         return softEquals(point.x, this.x) && softEquals(point.y, this.y) && point.crs.equals(this.crs);
     }
 
-    get coordinates(): Position { return [this.position[0], this.position[1]]; }
-    set coordinates(position: Position) { this.position = [position[0], position[1]]; }
+    get coordinates(): Coordinates { return [this.position[0], this.position[1]]; }
+    set coordinates(position: Coordinates) { this.position = [position[0], position[1]]; }
 }

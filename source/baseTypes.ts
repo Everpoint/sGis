@@ -1,2 +1,2 @@
-export type Position = [number, number];
-export type Contour = Position[];
+export type Coordinates = [number, number];
+export type Contour = Coordinates[];
