@@ -40,7 +40,7 @@ sGis.module('controls.Editor', [
             this._ns = '.' + utils.getGuid();
             this._setListener = this._setListener.bind(this);
             this._removeListener = this._removeListener.bind(this);
-            this._saveState = this._saveState.bind(this);
+            this._onEdit = this._onEdit.bind(this);
             this._setEditors();
 
             this._states = new StateManager();
@@ -58,14 +58,19 @@ sGis.module('controls.Editor', [
 
         _setEditors() {
             this._pointEditor = new PointEditor(this.map);
-            this._pointEditor.on('edit', this._saveState);
+            this._pointEditor.on('edit', this._onEdit);
 
             this._polyEditor = new PolyEditor(this.map, { onFeatureRemove: this._delete.bind(this) });
-            this._polyEditor.on('edit', this._saveState);
+            this._polyEditor.on('edit', this._onEdit);
             this._polyEditor.on('change', this._updateTransformControl.bind(this));
 
             this._polyTransform = new PolyTransform(this.map);
-            this._polyTransform.on('rotationEnd scalingEnd', this._saveState);
+            this._polyTransform.on('rotationEnd scalingEnd', this._onEdit);
+        }
+
+        _onEdit() {
+            this.fire('edit');
+            this._saveState();
         }
 
         _activate() {
