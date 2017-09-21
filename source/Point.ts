@@ -18,8 +18,8 @@ export interface IPoint {
  * @alias sGis.Point
  * @implements IPoint
  */
-class Point implements IPoint {
-    private _crs: Crs = geo;
+export class Point implements IPoint {
+    private _crs: Crs;
 
     public position: Coordinates;
 
@@ -28,7 +28,7 @@ class Point implements IPoint {
      * @param position
      * @param {sGis.Crs} [crs=sGis.CRS.geo]
      */
-    constructor(position: Coordinates, crs: Crs) {
+    constructor(position: Coordinates, crs: Crs = geo) {
         if (crs !== undefined) this._crs = crs;
         this.position = position;
     }

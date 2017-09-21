@@ -4,15 +4,7 @@
     "allowJs": true,
     "target": "es2015"
   },
-  "files": [],
   "include": [
     "./source/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "dist",
-    "es",
-    "lib"
   ]
 }
