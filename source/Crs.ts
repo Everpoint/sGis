@@ -16,9 +16,8 @@ export class Crs {
     public readonly wkt: string;
     public readonly details: string;
 
-    private projections: Map<Crs, Projection>;
-
-    private discoveryMode: boolean = false;
+    private _projections: Map<Crs, Projection>;
+    private _discoveryMode: boolean = false;
 
     /**
      * @constructor
@@ -53,7 +52,7 @@ export class Crs {
      * @returns {Function|null}
      */
     public projectionTo(crs: Crs): Projection {
-        if (this.projections.get(crs)) return this.projections.get(crs);
+        if (this._projections.get(crs)) return this._projections.get(crs);
         return this.discoverProjectionTo(crs);
     }
 
@@ -72,30 +71,30 @@ export class Crs {
      * @param {Projection} projection
      */
     public setProjectionTo(crs: Crs, projection: Projection): void {
-        this.projections.set(crs, projection);
+        this._projections.set(crs, projection);
     }
 
     private discoverProjectionTo(crs: Crs): Projection {
-        if (this.discoveryMode) return null;
+        if (this._discoveryMode) return null;
         if (this.equals(crs)) return identityProjection;
 
-        this.discoveryMode = true;
-        for (let [ownCrs, func] of this.projections) {
+        this._discoveryMode = true;
+        for (let [ownCrs, func] of this._projections) {
             if (ownCrs.equals(crs)) {
-                this.projections.set(crs, func);
+                this._projections.set(crs, func);
                 break;
             }
 
             let innerProjection = ownCrs.discoverProjectionTo(crs);
             if (innerProjection) {
                 let result = function([x, y]) { return innerProjection(func([x, y])); };
-                this.projections.set(crs, result);
+                this._projections.set(crs, result);
                 break;
             }
         }
-        this.discoveryMode = false;
+        this._discoveryMode = false;
 
-        return this.projections.get(crs) || null;
+        return this._projections.get(crs) || null;
     }
 }
 
