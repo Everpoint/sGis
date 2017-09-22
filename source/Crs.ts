@@ -53,7 +53,7 @@ export class Crs {
      */
     public projectionTo(crs: Crs): Projection {
         if (this._projections.get(crs)) return this._projections.get(crs);
-        return this.discoverProjectionTo(crs);
+        return this._discoverProjectionTo(crs);
     }
 
     /**
@@ -74,7 +74,7 @@ export class Crs {
         this._projections.set(crs, projection);
     }
 
-    private discoverProjectionTo(crs: Crs): Projection {
+    private _discoverProjectionTo(crs: Crs): Projection {
         if (this._discoveryMode) return null;
         if (this.equals(crs)) return identityProjection;
 
@@ -85,7 +85,7 @@ export class Crs {
                 break;
             }
 
-            let innerProjection = ownCrs.discoverProjectionTo(crs);
+            let innerProjection = ownCrs._discoverProjectionTo(crs);
             if (innerProjection) {
                 let result = function([x, y]) { return innerProjection(func([x, y])); };
                 this._projections.set(crs, result);
