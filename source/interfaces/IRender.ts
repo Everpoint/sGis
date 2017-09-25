@@ -1,3 +1,7 @@
+export interface IRender {
+
+}
+
 /**
  * @interface sGis.IRender
  */

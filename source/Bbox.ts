@@ -8,7 +8,7 @@ import {error} from "./utils/utils";
  * Object representing a rectangular area on a map between two point.
  * @alias sGis.Bbox
  */
-export default class Bbox {
+export class Bbox {
     private _crs: Crs;
     private _p: [number, number, number, number];
 
