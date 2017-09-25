@@ -1,5 +1,11 @@
-export interface IRender {
+export type CoordinatesObj = {
+    x: number,
+    y: number
+};
 
+export interface IRender {
+    contains(position: CoordinatesObj): boolean;
+    isVector: boolean
 }
 
 /**
