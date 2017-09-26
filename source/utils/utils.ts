@@ -336,8 +336,8 @@ const getCssText = function(className, styles) {
     return '.' + className + '{' + styles + '}';
 };
 
-const setStyleNode = function(text) {
-    var node = document.createElement('style');
+export const setStyleNode = function(text) {
+    let node = document.createElement('style');
     node.type = 'text/css';
     if ((<any>node).styleSheet) {
         (<any>node).styleSheet.cssText = text;
