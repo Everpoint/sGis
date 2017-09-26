@@ -136,16 +136,6 @@ export const mixin = function(target, source) {
 };
 
 /**
- * Returns true if a and b differ less then one millionth of a, otherwise false
- * @param {Number} a
- * @param {Number} b
- * @returns {boolean}
- */
-export const softEquals = function(a, b) {
-    return (Math.abs(a - b) < 0.000001 * Math.max(a, 1));
-};
-
-/**
  * Returns true is obj is Array, otherwise false
  * @param {Any} obj
  * @returns {boolean}
