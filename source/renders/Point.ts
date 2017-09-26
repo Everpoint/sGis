@@ -1,12 +1,12 @@
 import {Coordinates} from "../baseTypes";
-import {CoordinatesObj} from "../interfaces/IRender";
+import {IRender} from "../interfaces/IRender";
 
 /**
  * Point geometry rendered to the screen coordinates for drawing.
  * @alias sGis.render.Point
  * @implements sGis.IRender
  */
-export class Point {
+export class Point implements IRender {
     private _coord: Coordinates;
 
     /** The color of the point. Can be any valid css color string. */
@@ -26,9 +26,9 @@ export class Point {
 
     get isVector(): boolean { return true; }
 
-    contains(position: CoordinatesObj, tolerance: number = 2) {
-        let dx = position.x - this._coord[0];
-        let dy = position.y - this._coord[1];
+    contains(position: Coordinates, tolerance: number = 2) {
+        let dx = position[0] - this._coord[0];
+        let dy = position[1] - this._coord[1];
         let distance2 = dx * dx + dy * dy;
 
         return distance2 < tolerance*tolerance;
