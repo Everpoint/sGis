@@ -1,10 +1,7 @@
-export type CoordinatesObj = {
-    x: number,
-    y: number
-};
+import {Coordinates} from "../baseTypes";
 
 export interface IRender {
-    contains(position: CoordinatesObj): boolean;
+    contains(position: Coordinates): boolean | [number, number];
     isVector: boolean
 }
 
