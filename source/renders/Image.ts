@@ -4,14 +4,16 @@
  * @implements sGis.IRender
  */
 import {Bbox} from "../Bbox";
+import {IRender} from "../interfaces/IRender";
 
-export class ImageRender {
-    /** Opacity of the image */
-    opacity: number = 1;
+export class ImageRender implements IRender{
     private _src: string;
     private _bbox: Bbox;
-    private onAfterDisplayed: Function;
     private _node: HTMLImageElement;
+
+    /** Opacity of the image */
+    opacity: number = 1;
+    onAfterDisplayed: Function;
 
     /**
      * @constructor
@@ -19,7 +21,7 @@ export class ImageRender {
      * @param {sGis.Bbox} bbox - bbox that will contain image. The rendered image will be adjusted to fit the given bbox.
      * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM.
      */
-    constructor(src, bbox, onAfterDisplayed) {
+    constructor(src, bbox, onAfterDisplayed?: Function) {
         this._src = src;
         this._bbox = bbox;
         this.onAfterDisplayed = onAfterDisplayed;
@@ -53,6 +55,8 @@ export class ImageRender {
         // TODO: Contains method works with pixel position, but Image render does not know about pixels. Should change its operation from bbox to px.
         return false;
     }
+
+    get isVector() { return false; }
 
     getCache() { return this._node; }
 }
