@@ -10,7 +10,7 @@ import {ResolutionLimits} from "./baseTypes";
  */
 export abstract class Layer extends EventHandler {
     private _isDisplayed: boolean = true;
-    private _opacity: number = 1.0;
+    protected _opacity: number = 1.0;
     private _resolutionLimits: ResolutionLimits = [-1, -1];
 
     /** If set to true, the layer will be updated only after map position change has ended (e.g. pan or zoom end). If set to true, the layer will be redrawn on every change. */
@@ -35,7 +35,7 @@ export abstract class Layer extends EventHandler {
      * @param {Number} resolution - current resolution
      * @returns {sGis.Feature[]}
      */
-    abstract getFeatures(bbox: Bbox, resolution: number): Feature
+    abstract getFeatures(bbox: Bbox, resolution: number): Feature[]
 
     /**
      * Whether the layer is drawn to map
