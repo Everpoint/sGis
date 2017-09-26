@@ -4,8 +4,9 @@
  * @implements sGis.IRender
  */
 import {Coordinates} from "../baseTypes";
+import {IRender} from "../interfaces/IRender";
 
-export class HtmlElement {
+export class HtmlElement implements IRender {
     private _htmlText: string;
     private _position: Coordinates;
     private onAfterDisplayed: Function;
@@ -18,7 +19,7 @@ export class HtmlElement {
      * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM
      * @param offset
      */
-    constructor(htmlText, position, onAfterDisplayed, offset) {
+    constructor(htmlText, position, onAfterDisplayed?: Function, offset: [number, number] = [0, 0]) {
         this._htmlText = htmlText;
         this._position = position;
         this.onAfterDisplayed = onAfterDisplayed;
@@ -54,4 +55,6 @@ export class HtmlElement {
 
         return x < position[0] && y < position[1] && x + width > position[0] && y + height > position[1];
     }
+
+    get isVector() { return false; }
 }
