@@ -206,11 +206,11 @@ export abstract class EventHandler {
     /**
      * @see sGis.EventHandler#addListener
      */
-    on() { this.addListener.apply(this, arguments); }
+    on(description: string, handler: Handler, oneTime: boolean = false) { this.addListener.apply(this, arguments); }
     /**
      * @see sGis.EventHandler#removeListener
      */
-    off() { this.removeListener.apply(this, arguments); }
+    off(description: string, handler?: Handler) { this.removeListener.apply(this, arguments); }
 }
 
 function getTypes(string) {

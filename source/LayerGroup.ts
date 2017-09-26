@@ -6,7 +6,7 @@
 import {EventHandler} from "./EventHandler";
 import {error} from "./utils/utils";
 
-class LayerGroup extends EventHandler {
+export class LayerGroup extends EventHandler {
     _fireContentChange: () => void;
     _forwardEvent: (sGisEvent: any) => void;
     _layers: any[];
