@@ -1,4 +1,3 @@
-
 import {Symbol} from "../Symbol";
 import {HtmlElement} from "../../renders/HtmlElement";
 import {registerSymbol} from "../../serializers/symbolSerializer";
@@ -8,7 +7,7 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
  * @alias sGis.symbol.point.Image
  * @extends sGis.Symbol
  */
-class ImageSymbol extends Symbol {
+export class PointImageSymbol extends Symbol {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width = 32;
 
@@ -44,4 +43,4 @@ class ImageSymbol extends Symbol {
     }
 }
 
-registerSymbol(ImageSymbol, 'point.Image', ['width', 'height', 'anchorPoint', 'source']);
+registerSymbol(PointImageSymbol, 'point.Image', ['width', 'height', 'anchorPoint', 'source']);

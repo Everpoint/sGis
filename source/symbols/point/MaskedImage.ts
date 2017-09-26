@@ -8,7 +8,7 @@ import {Color} from "../../utils/Color";
  * @alias sGis.symbol.point.MaskedImage
  * @extends sGis.Symbol
  */
-class MaskedImage extends Symbol {
+export class MaskedImage extends Symbol {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width = 32;
 
