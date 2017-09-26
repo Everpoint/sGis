@@ -3,7 +3,7 @@ import {Layer} from "./Layer";
 import {webMercator} from "./Crs";
 import {Feature} from "./features/Feature";
 import {Bbox} from "./Bbox";
-import {ImageFeature} from "./features/Image";
+import {ImageFeature} from "./features/ImageFeature";
 import {Point} from "./Point";
 import {ImageSymbol} from "./symbols/Image";
 
