@@ -23,7 +23,7 @@ export class PolylineSymbol extends Symbol {
      * @constructor
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties) {
+    constructor(properties?: Object) {
         super(properties);
     }
 

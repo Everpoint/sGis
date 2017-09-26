@@ -18,10 +18,10 @@ export type RenderCache = {
 export abstract class Feature extends EventHandler {
     private _crs: Crs = geo;
     private _hidden: boolean = false;
-    private _rendered: RenderCache;
     private _tempSymbol: Symbol;
 
     protected _symbol: Symbol;
+    protected _rendered: RenderCache;
 
     /**
      * Sets default coordinate system for all features.<br><br>
@@ -77,7 +77,7 @@ export abstract class Feature extends EventHandler {
         return this._rendered.renders;
     }
 
-    private _needToRender(resolution: number, crs: Crs): boolean {
+    protected _needToRender(resolution: number, crs: Crs): boolean {
         return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs;
     }
 
