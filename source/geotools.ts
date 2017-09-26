@@ -153,7 +153,7 @@ export const pointToLineProjection = function(point: Coordinates, line: Line) {
  * @param {Number} [tolerance=0] - the tolerance of check. If the point is out of the polygon, but is closer then tolerance, the returned result will be true.
  * @returns {boolean|Array} - true, if the point is inside of polygon, [ring, index] - index of vertex if the point is closer then 'tolerance' to one of the sides of polygon, false otherwise
  */
-export const contains = function(polygon: Coordinates[][], point: Coordinates, tolerance: number) {
+export const contains = function(polygon: Coordinates[][], point: Coordinates, tolerance: number): boolean | [number, number] {
     tolerance = tolerance || 0;
     let intersectionCount = 0;
 

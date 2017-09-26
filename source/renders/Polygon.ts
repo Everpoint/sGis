@@ -7,7 +7,7 @@ import {Coordinates} from "../baseTypes";
  * @alias sGis.render.Polygon
  * @implements sGis.IRender
  */
-export class Polygon implements IRender {
+export class PolygonRender implements IRender {
     coordinates: Coordinates[][];
 
     /** Fill style of the polygon. Possible values: "color", "image". */

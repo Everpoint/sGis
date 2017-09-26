@@ -17,10 +17,11 @@ export type RenderCache = {
  */
 export abstract class Feature extends EventHandler {
     private _crs: Crs = geo;
-    private _symbol: Symbol;
     private _hidden: boolean = false;
     private _rendered: RenderCache;
     private _tempSymbol: Symbol;
+
+    protected _symbol: Symbol;
 
     /**
      * Sets default coordinate system for all features.<br><br>

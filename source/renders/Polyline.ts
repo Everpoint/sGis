@@ -8,7 +8,7 @@ import {Coordinates} from "../baseTypes";
  * @implements sGis.IRender
  */
 
-export class Polyline implements IRender {
+export class PolylineRender implements IRender {
     coordinates: Coordinates[][];
 
     /** Stroke color of the polygon. Can be any valid css color string. */
