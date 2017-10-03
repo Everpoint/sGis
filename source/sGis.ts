@@ -60,7 +60,7 @@ import * as geotools from "./geotools";
 import * as symbolSerializer from "./serializers/symbolSerializer";
 import * as event from "./utils/domEvent";
 
-let sGis: any = {};
+export const sGis: any = {};
 
 sGis.version = "0.3.0";
 sGis.releaseDate = "02.10.2017";
