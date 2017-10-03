@@ -11,7 +11,7 @@ const ALPHA_NORMALIZER = 65025;
  * @alias sGis.symbol.polygon.BrushFill
  * @extends sGis.Symbol
  */
-class PolygonSymbol extends Symbol {
+export class BrushFill extends Symbol {
     _brush: HTMLImageElement;
     _fillBackground = 'transparent';
     _fillForeground = 'black';
@@ -112,4 +112,4 @@ class PolygonSymbol extends Symbol {
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth']);

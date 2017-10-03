@@ -12,7 +12,7 @@ import {Coordinates} from "../../baseTypes";
 let innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
 let layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
 
-export class DomRenderer {
+export class DomPainter {
     private _map: sGisMap;
     private _layerRenderers: Map<Layer, LayerRenderer>;
     private _position: Coordinates;

@@ -9,7 +9,7 @@ import {Bbox} from "../Bbox";
  * @alias sGis.feature.Maptip
  * @extends sGis.Feature
  */
-class Maptip extends Feature implements IPoint {
+export class Maptip extends Feature implements IPoint {
     _symbol = new MaptipSymbol();
     private _position: Coordinates;
     private _content: string;

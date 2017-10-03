@@ -1,10 +1,10 @@
 import {Map} from "./Map";
-import {DomRenderer} from "./painters/DomPainter/DomPainter";
+import {DomPainter} from "./painters/DomPainter/DomPainter";
 import {warn} from "./utils/utils";
 
 export const init = function({ position, resolution, crs, layers, wrapper, pluginDefinitions = []}) {
     let map = new Map({crs, position, resolution, layers});
-    let painter = new DomRenderer(map, {wrapper});
+    let painter = new DomPainter(map, {wrapper});
 
     let p = pluginDefinitions.map(pluginDefinition => {
         let name = pluginDefinition.name;

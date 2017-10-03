@@ -23,7 +23,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'source/sGis.js',
+      'source/sGis.ts',
       'source/**/*.js',
 
       'test/**/*.js',

@@ -8,7 +8,7 @@ import {Symbol} from "../Symbol";
  * @alias sGis.symbol.polygon.ImageFill
  * @extends sGis.Symbol
  */
-class PolygonSymbol extends Symbol {
+export class ImageFill extends Symbol {
     private _image: HTMLImageElement;
 
     //noinspection SpellCheckingInspection
@@ -55,4 +55,4 @@ class PolygonSymbol extends Symbol {
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth']);

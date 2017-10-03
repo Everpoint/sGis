@@ -7,7 +7,7 @@ import {Polyline} from "../features/Polyline";
  * @alias sGis.controls.Polyline
  * @extends sGis.controls.Poly
  */
-class PolylineControl extends PolyControl {
+export class PolylineControl extends PolyControl {
     /**
      * @param {sGis.Map} map - map the control will work with
      * @param {Object} [properties] - key-value set of properties to be set to the instance
