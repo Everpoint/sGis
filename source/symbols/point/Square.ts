@@ -7,7 +7,7 @@ import {Symbol} from "../Symbol";
  * @alias sGis.symbol.point.Square
  * @extends sGis.Symbol
  */
-class SquareSymbol extends Symbol {
+export class SquareSymbol extends Symbol {
     /** Size of the square. */
     size = 10;
 

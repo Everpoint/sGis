@@ -129,7 +129,7 @@ function polygonArea(coord) {
  * @param {Position[]} line - line coordinates in the form [[x1, y1], [x2, y2]]
  * @returns {Position}
  */
-export const pointToLineProjection = function(point: Coordinates, line: Line) {
+export const pointToLineProjection = function(point: Coordinates, line: Line): Coordinates {
     if (line[0][0] === line[1][0]) {
         return [line[0][0], point[1]];
     } else if (line[0][1] === line[1][1]) {
@@ -353,7 +353,7 @@ export const rotate = function(features: Feature[], angle: number, center: IPoin
  * @param {sGis.Crs} [mapCrs] - coordinate system of transformation. If not specified, transformation will be preformed
  * on the coordinates as is. This will result in errors with any non-cartesian coordinates (like lat/lon).
  */
-export const scale = function(features: Feature[], scale: number, center: IPoint | Coordinates, mapCrs: Crs = null) {
+export const scale = function(features: Feature[], scale: [number, number], center: IPoint | Coordinates, mapCrs: Crs = null) {
     transform(features, [[scale[0], 0, 0], [0, scale[1], 0], [0, 0, 1]], center, mapCrs);
 };
 
