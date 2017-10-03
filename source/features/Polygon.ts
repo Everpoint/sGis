@@ -6,7 +6,7 @@ import {PolygonSymbol} from "../symbols/polygon/Simple";
  * @alias sGis.feature.Polygon
  * @extends sGis.feature.Poly
  */
-class Polygon extends Poly {
+export class Polygon extends Poly {
     /** Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol. */
     _symbol = new PolygonSymbol();
     isEnclosed = true;
