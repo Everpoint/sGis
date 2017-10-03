@@ -9,8 +9,9 @@ import {FeatureLayer} from "../FeatureLayer";
  */
 export class Control extends EventHandler {
     private _map: Map;
-    private _isActive: boolean = false;
     private _activeLayer: FeatureLayer;
+
+    protected _isActive: boolean = false;
 
     /**
      * @param {sGis.Map} map
