@@ -366,13 +366,19 @@ export const createNode = function(nodeName, cssClass, properties = {}, children
 export const isIE = browser.search('IE') !== -1;
 export const isTouch = 'ontouchstart' in document.documentElement;
 
+/**
+ * Contains prefixed css properties for transition, transform and transformOrigin
+ * @type {{transition: {func: string, rule: string}, transform: {func: string, rule: string}, transformOrigin: {func: string, rule: string}}}
+ */
+export const css : any = {};
+
 if (document.body) {
     setCssRules();
 } else {
     listenDomEvent(document, 'DOMContentLoaded', setCssRules);
 }
-
 function setCssRules() {
+    console.log("Hello", css);
     css.transition = document.body.style.transition !== undefined ? {func: 'transition', rule: 'transition'} :
         document.body.style.webkitTransition !== undefined ? {
                 func: 'webkitTransition',
@@ -408,9 +414,3 @@ function setCssRules() {
                     rule: '-ms-transform-origin'
                 } : null;
 }
-
-/**
- * Contains prefixed css properties for transition, transform and transformOrigin
- * @type {{transition: {func: string, rule: string}, transform: {func: string, rule: string}, transformOrigin: {func: string, rule: string}}}
- */
-export const css : any = {};

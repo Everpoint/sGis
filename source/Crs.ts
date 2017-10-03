@@ -16,7 +16,7 @@ export class Crs {
     public readonly wkt: string;
     public readonly details: string;
 
-    private _projections: Map<Crs, Projection>;
+    private _projections: Map<Crs, Projection> = new Map();
     private _discoveryMode: boolean = false;
 
     /**
