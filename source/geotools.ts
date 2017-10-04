@@ -6,6 +6,7 @@ import {Poly} from "./features/Poly";
 import {Feature} from "./features/Feature";
 import {MultiPoint} from "./features/MultiPoint";
 import {PointFeature} from "./features/Point";
+import {isArray} from "./utils/utils";
 
 export type Line = [Coordinates, Coordinates];
 
@@ -153,12 +154,12 @@ export const pointToLineProjection = function(point: Coordinates, line: Line): C
  * @param {Number} [tolerance=0] - the tolerance of check. If the point is out of the polygon, but is closer then tolerance, the returned result will be true.
  * @returns {boolean|Array} - true, if the point is inside of polygon, [ring, index] - index of vertex if the point is closer then 'tolerance' to one of the sides of polygon, false otherwise
  */
-export const contains = function(polygon: Coordinates[][], point: Coordinates, tolerance: number): boolean | [number, number] {
-    tolerance = tolerance || 0;
+export const contains = function(polygon: Coordinates[][] | Coordinates[], point: Coordinates, tolerance: number = 0): boolean | [number, number] {
     let intersectionCount = 0;
+    let adjusted = isArray(polygon[0][0]) ? <Coordinates[][]>polygon : [<Coordinates[]>polygon];
 
     for (let ring = 0, l = polygon.length; ring < l; ring++) {
-        let points = polygon[ring].concat([polygon[ring][0]]);
+        let points = adjusted[ring].concat([adjusted[ring][0]]);
         let prevD = points[0][0] - point[0];
         let prevH = points[0][1] - point[1];
 
@@ -241,7 +242,7 @@ export const getLineAngle = function(line: Line) {
  * @param {Number} distance - distance
  * @returns {Position}
  */
-export const getPointFromAngleAndDistance = function(point: Point, angle: number, distance: number) {
+export const getPointFromAngleAndDistance = function(point: Coordinates, angle: number, distance: number) {
     return [point[0] + Math.cos(angle) * distance, point[1] + Math.sin(angle) * distance];
 };
 

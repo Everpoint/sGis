@@ -1,4 +1,4 @@
-import {copyArray, arrayIntersect} from "./utils/utils";
+import {copyArray, arrayIntersect, error} from "./utils/utils";
 
 /**
  * Base of all sGis library events
@@ -97,6 +97,9 @@ export abstract class EventHandler {
     addListener(description: string, handler: Handler, oneTime: boolean = false): void {
         let types = getTypes(description);
         let namespaces = getNamespaces(description);
+
+        if (types.length === 0) error('No event types are specified.');
+        if (!handler) error('No handler is given.');
 
         for (let i = 0; i < types.length; i++) {
             if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];

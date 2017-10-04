@@ -22,9 +22,11 @@ export class Crs {
     /**
      * @constructor
      * @param {Object} [description] - description of the crs
+     * @param projectionMap
      */
-    public constructor(description?:Partial<Crs>) {
+    public constructor(description?:Partial<Crs>, projectionMap?: Map<Crs, Projection>) {
         Object.assign(this, description);
+        if (projectionMap) this._projections = projectionMap;
     }
 
     public toString(): string {

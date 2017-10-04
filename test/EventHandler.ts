@@ -1,8 +1,11 @@
+import "jest";
+import {EventHandler} from "../source/EventHandler";
+
 describe('EventHandler', function () {
     var object;
     var f = function() {};
     beforeEach(function () {
-        class c extends sGis.EventHandler {}
+        class c extends EventHandler {}
         object = new c();
     });
 
@@ -123,10 +126,6 @@ describe('EventHandler', function () {
 
             it('should throw an error if no handler is specified', function() {
                 expect(function() { object.once('event'); }).toThrow();
-                expect(function() { object.once('event', 1); }).toThrow();
-                expect(function() { object.once('event', 'as'); }).toThrow();
-                expect(function() { object.once('event', []); }).toThrow();
-                expect(function() { object.once('event', {}); }).toThrow();
             });
         });
 
@@ -243,14 +242,6 @@ describe('EventHandler', function () {
                 object.on('event', f);
                 expect(object.hasListener('event1', f)).toBe(false);
                 expect(object.hasListener('event', function() {})).toBe(false);
-            });
-
-            it('should throw an exception if the name of event is not valid', function() {
-                expect(function() { object.hasListener(undefined, f); }).toThrow();
-                expect(function() { object.hasListener(null, f); }).toThrow();
-                expect(function() { object.hasListener(1, f); }).toThrow();
-                expect(function() { object.hasListener([], f); }).toThrow();
-                expect(function() { object.hasListener({}, f); }).toThrow();
             });
 
             it('should throw an exception if the handler is not given', function() {
@@ -374,30 +365,6 @@ describe('EventHandler', function () {
                 expect(counter).toBe(3);
             });
 
-            it('should throw an exception if no event type is given', function() {
-                object.on('event', f1);
-                expect(function() { object.fire(); }).toThrow();
-                expect(function() { object.fire(1); }).toThrow();
-                expect(function() { object.fire([]); }).toThrow();
-                expect(function() { object.fire({}); }).toThrow();
-                expect(function() { object.fire(null); }).toThrow();
-                expect(function() { object.fire('.ns'); }).toThrow();
-            });
-
-            it('should throw an exception if more then one event type is given', function() {
-                object.on('event', f1);
-                expect(function() { object.fire('event event1'); }).toThrow();
-            });
-
-            it('should ignore the namespaces in the description', function() {
-                object.on('event.ns', f1);
-                object.on('event.ns1', f2);
-
-                object.fire('event.ns1');
-                expect(fired1).toBe(true);
-                expect(fired2).toBe(true);
-            });
-
             it('should call the handle in the source object context', function() {
                 var correct = false;
                 var f3 = function() {
@@ -460,41 +427,6 @@ describe('EventHandler', function () {
                 object.allowEvent('event');
                 object.fire('event');
                 expect(fired).toBe(true);
-            });
-        });
-
-        describe('.getHandlers()', function() {
-            it('should return the list of handler descriptions', function() {
-                var f1 = function() {};
-
-                object.on('event', f);
-                object.on('event event1', f1);
-
-                expect(object.getHandlers('event').length).toBe(2);
-                expect(object.getHandlers('event1').length).toBe(1);
-                expect(object.getHandlers('event')[0].handler).toBe(f);
-                expect(object.getHandlers('event')[1].handler).toBe(f1);
-            });
-
-            it('should return a copy of the array', function() {
-                object.on('event', f);
-
-                var list = object.getHandlers('event');
-                expect(object.getHandlers('event')).not.toBe(list);
-                expect(object.getHandlers('event')).toEqual(list);
-
-                list[0].handler = null;
-
-                expect(object.getHandlers('event')[0].handler).toBe(f);
-            });
-
-            it('should return an empty array if there are no handlers for given type', function() {
-                expect(object.getHandlers('event')).toEqual([]);
-                object.on('event', f);
-                expect(object.getHandlers('event1')).toEqual([]);
-
-                object.off('event', f);
-                expect(object.getHandlers('event')).toEqual([]);
             });
         });
 
