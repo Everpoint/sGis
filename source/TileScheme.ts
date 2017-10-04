@@ -48,10 +48,9 @@ export class TileScheme {
 
     /**
      * Array of level definitions of the tile scheme
-     * @type {sGis.TileScheme.LevelDefinition[]}
      */
     get levels() { return this._levels; }
-    set levels(/** sGis.TileScheme.LevelDefinition[] */ levels) {
+    set levels(levels) {
         this._levels = levels.sort((a, b) => a.resolution - b.resolution);
     }
 

@@ -158,10 +158,10 @@ export const contains = function(polygon: Coordinates[][] | Coordinates[], point
     let intersectionCount = 0;
     let adjusted = isArray(polygon[0][0]) ? <Coordinates[][]>polygon : [<Coordinates[]>polygon];
 
-    for (let ring = 0, l = polygon.length; ring < l; ring++) {
+    for (let ring = 0, l = adjusted.length; ring < l; ring++) {
         let points = adjusted[ring].concat([adjusted[ring][0]]);
         let prevD = points[0][0] - point[0];
-        let prevH = points[0][1] - point[1];
+        let prevH = points[0][1] > point[1];
 
         for (let i = 1; i < points.length; i++) {
             if (pointToLineDistance(point, [points[i - 1], points[i]]) <= tolerance) {
@@ -169,7 +169,7 @@ export const contains = function(polygon: Coordinates[][] | Coordinates[], point
             }
 
             let D = points[i][0] - point[0];
-            let H = points[i][1] - point[1];
+            let H = points[i][1] > point[1];
 
             if (!H !== !prevH //otherwise line does not intersect horizontal line
                 && (D > 0 || prevD > 0) //line is to the left from the point, but we look to the right

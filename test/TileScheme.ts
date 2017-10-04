@@ -1,12 +1,16 @@
+import "jest";
+import {TileScheme} from "../source/TileScheme";
+import {tolerance} from "../source/utils/math";
+
 describe('TileScheme', () => {
 
     describe('.levels', () => {
         it('should sort levels by resolution', () => {
-            let scheme = new sGis.TileScheme();
+            let scheme = new TileScheme();
             scheme.levels = [
-                { resolution: 20 },
-                { resolution: 10 },
-                { resolution: 40 }
+                { resolution: 20, zIndex: 0, indexCount: 4 },
+                { resolution: 10, zIndex: 1, indexCount: 2 },
+                { resolution: 40, zIndex: 2, indexCount: 8 }
             ];
 
             expect(scheme.levels[0].resolution).toBe(10);
@@ -19,7 +23,7 @@ describe('TileScheme', () => {
     describe('.getLevel()', () => {
         let scheme;
         beforeEach(() => {
-            scheme = new sGis.TileScheme({levels: [
+            scheme = new TileScheme({levels: [
                 { resolution: 10 },
                 { resolution: 20 },
                 { resolution: 40 }
@@ -27,7 +31,7 @@ describe('TileScheme', () => {
         });
 
         it('should throw exception if no levels are set', () => {
-            let tileScheme = new sGis.TileScheme();
+            let tileScheme = new TileScheme();
             expect(() => { tileScheme.getLevel(0); }).toThrow();
             expect(() => { tileScheme.getLevel(10); }).toThrow();
         });
@@ -51,15 +55,15 @@ describe('TileScheme', () => {
         });
 
         it('should consider resolutions equal if difference is less then math.tolerance', () => {
-            expect(scheme.getLevel(10 + sGis.math.tolerance)).toBe(0);
-            expect(scheme.getLevel(10 + sGis.math.tolerance/2)).toBe(0);
+            expect(scheme.getLevel(10 + tolerance)).toBe(0);
+            expect(scheme.getLevel(10 + tolerance/2)).toBe(0);
         });
     });
     
     describe('resolution limits', () => {
         let scheme;
         beforeEach(() => {
-            scheme = new sGis.TileScheme({levels: [
+            scheme = new TileScheme({levels: [
                 { resolution: 10 },
                 { resolution: 20 },
                 { resolution: 40 }

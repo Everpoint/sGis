@@ -24,7 +24,7 @@ export class DynamicLayer extends Layer {
      * @param {function(sGis.Bbox, Number)} getUrlDelegate
      * @param {Object} [properties] - key-value set of properties to be assigned to the instance
      */
-    constructor(getUrlDelegate, properties) {
+    constructor(getUrlDelegate, properties?: Object) {
         super(properties);
         this._getUrl = getUrlDelegate;
     }

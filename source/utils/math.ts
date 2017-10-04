@@ -16,7 +16,7 @@ export const radToDeg = function (r) {
     return r / Math.PI * 180;
 };
 
-const tolerance = 0.000001;
+export const tolerance = 0.000001;
 /**
  * Returns true if a and b differ less then one millionth of a, otherwise false
  * @param {Number} a
