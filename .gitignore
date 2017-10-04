@@ -54,6 +54,8 @@ node_modules/
 # compilations
 dist/
 build/
+source/**/*.js
+test/**/*.js
 
 # documentation
 docs/
