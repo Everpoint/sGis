@@ -49,6 +49,9 @@
       "<rootDir>/source/",
       "<rootDir>/test/"
     ],
+    "setupFiles": [
+      "<rootDir>/test/setup.js"
+    ],
     "moduleFileExtensions": [
       "ts",
       "js"

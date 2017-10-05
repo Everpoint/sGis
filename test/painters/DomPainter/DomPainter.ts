@@ -1,10 +1,7 @@
 import "jest";
 import {init as sGisInit} from "../../../source/init";
-import {FeatureLayer} from "../../../source/FeatureLayer";
-import {requestAnimationFrame} from "../../../source/utils/utils";
 
 describe('painters.DomPainter', () => {
-
     'use strict';
 
     let map, painter, container;
@@ -50,22 +47,12 @@ describe('painters.DomPainter', () => {
             done();
         });
 
-        it('should request all layers repaint after new container is assigned', (done) => {
-            let layers = [new FeatureLayer(), new FeatureLayer()];
-            map.layers = layers;
-
-            requestAnimationFrame(() => {
-                let spies = layers.map(layer => spyOn(layer, 'getFeatures'));
-
-                let newContainer = getContainer();
-                document.body.appendChild(newContainer);
-                painter.wrapper = newContainer;
-
-                requestAnimationFrame(() => {
-                    spies.forEach(spy => expect(spy).toHaveBeenCalled());
-                    done();
-                });
-            });
+        it('should request all layers repaint after new container is assigned', () => {
+            let newContainer = getContainer();
+            document.body.appendChild(newContainer);
+            painter.wrapper = newContainer;
+            expect(painter._needUpdate).toBe(true);
+            expect(painter._redrawNeeded).toBe(true);
         });
     });
 
