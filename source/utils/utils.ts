@@ -14,18 +14,16 @@ export const warn = function(exeption) {
 };
 
 /**
- * Sets the values of the properties in 'options' to the 'object'.
- * Calls utils.error() in case of exception. It only sets the properties that already exist in the object if not setUndefined parameter is given
+ * Sets the values of the properties in 'options' to the 'object' ignoring any undefined properties.
  * @param {Object} object
  * @param {Object} options
- * @param {Boolean} [setUndefined]
  */
-export const init = function(object, options, setUndefined) {
+export const assignDefined = function(object, options) {
     if (!options) return;
 
-    var keys = Object.keys(options);
+    let keys = Object.keys(options);
     keys.forEach(function(key) {
-        if ((setUndefined || object[key] !== undefined) && options[key] !== undefined) {
+        if (options[key] !== undefined) {
             try {
                 object[key] = options[key];
             } catch (e) {
@@ -40,7 +38,7 @@ export const init = function(object, options, setUndefined) {
  * @param {Function} callback - callback function
  * @param {HTMLElement} [element] - the target of rendering
  */
-export const requestAnimationFrame = function(callback, element) {
+export const requestAnimationFrame = function(callback, element?: HTMLElement) {
     var requestAnimationFrame = window.requestAnimationFrame || (<any>window).mozRequestAnimationFrame || window.webkitRequestAnimationFrame || (<any>window).msRequestAnimationFrame;
 
     if (requestAnimationFrame) {
@@ -378,7 +376,6 @@ if (document.body) {
     listenDomEvent(document, 'DOMContentLoaded', setCssRules);
 }
 function setCssRules() {
-    console.log("Hello", css);
     css.transition = document.body.style.transition !== undefined ? {func: 'transition', rule: 'transition'} :
         document.body.style.webkitTransition !== undefined ? {
                 func: 'webkitTransition',

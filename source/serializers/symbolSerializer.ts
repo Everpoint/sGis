@@ -7,7 +7,7 @@ export const registerSymbol = (constructor, description, properties) => {
     symbolDescriptions[description] = {Constructor: constructor, properties: properties};
 };
 
-export const serialize = (symbol, colorsFormat = null) => {
+export const serialize = (symbol, colorsFormat = null): any => {
     let keys = Object.keys(symbolDescriptions);
     for (let i = 0; i < keys.length; i++) {
         let desc = symbolDescriptions[keys[i]];

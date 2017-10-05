@@ -35,18 +35,21 @@ export class BrushFill extends Symbol {
 
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
     lineDash = [];
+    
+    private _initialized: boolean = false;
 
     /**
      * @constructor
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties) {
+    constructor(properties?: Object) {
         super(properties);
+        this._initialized = true;
         this._updateBrush();
     }
 
     renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
-        var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+        let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
         return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: 'image', fillImage: this._brush, lineDash: this.lineDash })];
     }
@@ -84,18 +87,20 @@ export class BrushFill extends Symbol {
     }
 
     _updateBrush() {
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var brush = this.fillBrush;
-        var foreground = new Color(this.fillForeground);
-        var background = new Color(this.fillBackground);
+        if (!this._initialized) return;
+        
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        let brush = this.fillBrush;
+        let foreground = new Color(this.fillForeground);
+        let background = new Color(this.fillBackground);
 
         canvas.height = brush.length;
         canvas.width = brush[0].length;
 
-        for (var i = 0, l = brush.length; i < l; i++) {
-            for (var j = 0, m = brush[i].length; j < m; j++) {
-                var srcA = brush[i][j] * foreground.a / ALPHA_NORMALIZER,
+        for (let i = 0, l = brush.length; i < l; i++) {
+            for (let j = 0, m = brush[i].length; j < m; j++) {
+                let srcA = brush[i][j] * foreground.a / ALPHA_NORMALIZER,
                     dstA = background.a / 255 * (1 - srcA),
                     a = + Math.min(1, (srcA + dstA)).toFixed(2),
                     r = Math.round(Math.min(255, background.r * dstA + foreground.r * srcA)),

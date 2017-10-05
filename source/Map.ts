@@ -2,7 +2,7 @@ import {Point} from "./Point";
 import {TileScheme} from "./TileScheme";
 import {webMercator} from "./Crs";
 import {LayerGroup} from "./LayerGroup";
-import {error} from "./utils/utils";
+import {assignDefined, error} from "./utils/utils";
 
 /**
  * Map object with set of layers, specified position, resolution, coordinate system.
@@ -47,7 +47,7 @@ export class Map extends LayerGroup {
         super();
         if (properties.crs) this.crs = properties.crs;
         this.position = properties.position || [this.position[0], this.position[1]];
-        if (properties) Object.assign(this, properties);
+        assignDefined(this, properties);
 
         this._listenForBboxChange();
     }

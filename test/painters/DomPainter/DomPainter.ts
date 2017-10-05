@@ -1,3 +1,8 @@
+import "jest";
+import {init as sGisInit} from "../../../source/init";
+import {FeatureLayer} from "../../../source/FeatureLayer";
+import {requestAnimationFrame} from "../../../source/utils/utils";
+
 describe('painters.DomPainter', () => {
 
     'use strict';
@@ -14,7 +19,7 @@ describe('painters.DomPainter', () => {
     beforeEach(() => {
         container = getContainer();
         document.body.appendChild(container);
-        let init = sGis.init({wrapper: container});
+        let init = sGisInit(<any>{wrapper: container});
         [map, painter] = [init.map, init.painter];
     });
 
@@ -46,18 +51,18 @@ describe('painters.DomPainter', () => {
         });
 
         it('should request all layers repaint after new container is assigned', (done) => {
-            let layers = [new sGis.Layer(), new sGis.Layer()];
+            let layers = [new FeatureLayer(), new FeatureLayer()];
             map.layers = layers;
 
-            window.requestAnimationFrame(() => {
-                layers.forEach(layer => spyOn(layer, 'getFeatures').and.callThrough());
+            requestAnimationFrame(() => {
+                let spies = layers.map(layer => spyOn(layer, 'getFeatures'));
 
                 let newContainer = getContainer();
                 document.body.appendChild(newContainer);
                 painter.wrapper = newContainer;
 
-                window.requestAnimationFrame(() => {
-                    layers.forEach(layer => expect(layer.getFeatures).toHaveBeenCalled());
+                requestAnimationFrame(() => {
+                    spies.forEach(spy => expect(spy).toHaveBeenCalled());
                     done();
                 });
             });

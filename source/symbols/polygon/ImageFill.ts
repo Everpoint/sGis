@@ -27,7 +27,7 @@ export class ImageFill extends Symbol {
      * @constructor
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties) {
+    constructor(properties?: Object) {
         super(properties);
         if (!this._image) this.src = this._src;
     }

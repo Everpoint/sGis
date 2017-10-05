@@ -5,7 +5,7 @@ import {Container} from "./Container";
 import {Map as sGisMap} from "../../Map";
 import {Layer} from "../../Layer";
 import {Bbox} from "../../Bbox";
-import {error, warn} from "../../utils/utils";
+import {error, warn, requestAnimationFrame} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
 
