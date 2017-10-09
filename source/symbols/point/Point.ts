@@ -3,7 +3,7 @@ import {Symbol} from "../Symbol";
 import {PointFeature} from "../../features/Point";
 import {Arc} from "../../renders/Arc";
 
-type Offset = {
+export type Offset = {
     x: number;
     y: number;
 }
@@ -34,7 +34,8 @@ export class PointSymbol extends Symbol {
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
     constructor(properties?: Object) {
-        super(properties);
+        super();
+        if (properties) Object.assign(this, properties);
     }
 
     renderFunction(feature, resolution, crs) {

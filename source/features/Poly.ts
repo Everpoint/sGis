@@ -1,4 +1,4 @@
-import {Feature} from "./Feature";
+import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {Coordinates} from "../baseTypes";
 import {copyArray} from "../utils/utils";
 import {IPoint, Point} from "../Point";
@@ -19,7 +19,7 @@ export class Poly extends Feature {
      * @param {Position[][]} rings - coordinates of the feature
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(rings: Coordinates[][], properties?: Object) {
+    constructor(rings: Coordinates[][], properties?: IFeatureConstructorArgs) {
         super(properties);
         if (rings && rings.length > 0) {
             this.rings = copyArray(rings);

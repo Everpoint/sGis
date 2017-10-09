@@ -1,6 +1,6 @@
 import {TileScheme} from "./TileScheme";
 import {Layer} from "./Layer";
-import {webMercator} from "./Crs";
+import {webMercator, Crs} from "./Crs";
 import {Feature} from "./features/Feature";
 import {Bbox} from "./Bbox";
 import {ImageFeature} from "./features/ImageFeature";
@@ -157,11 +157,11 @@ export class TileLayer extends Layer {
     set opacity(opacity) {
         opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
         this._opacity = opacity;
-        this._symbol.opacity = opacity;
-
-        this._updateFeatures();
-
-        this.fire('propertyChange', {property: 'opacity'});
+        if (this._symbol) {
+            this._symbol.opacity = opacity;
+            this._updateFeatures();
+            this.fire('propertyChange', {property: 'opacity'});
+        }
     }
 
     _updateSymbol() {
@@ -175,10 +175,13 @@ export class TileLayer extends Layer {
      */
     get transitionTime() { return this._transitionTime; }
     set transitionTime(/** Number */ time) {
-        this._transitionTime = this._symbol.transitionTime = time;
-        this._updateFeatures();
+        this._transitionTime = time;
 
-        this.fire('propertyChange', {property: 'transitionTime'});
+        if (this._symbol) {
+            this._symbol.transitionTime = time;
+            this._updateFeatures();
+            this.fire('propertyChange', {property: 'transitionTime'});
+        }
     }
 
     _clearFeaturesCache() {
@@ -188,6 +191,8 @@ export class TileLayer extends Layer {
     }
 
     _updateFeatures() {
+        if (!this._tiles) return;
+
         Object.keys(this._tiles).forEach(key => {
             let cache = this._tiles[key].getRenderCache();
             if (!cache || !cache.renders || !cache.renders[0]) return;

@@ -38,8 +38,9 @@ export class MaskedImage extends Symbol {
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
     constructor(properties?: Object) {
-        super(properties);
+        super();
 
+        if (properties) Object.assign(this, properties);
         if (!this._image) this.imageSource = this._imageSource;
         if (!this._mask) this.maskSource = this._maskSource;
 

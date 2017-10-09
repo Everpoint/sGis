@@ -52,8 +52,9 @@ bower_components/
 node_modules/
 
 # compilations
-dist/
 build/
+dist/
+temp/
 source/**/*.js
 
 # documentation

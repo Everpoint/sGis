@@ -27,7 +27,9 @@ export class PolygonSymbol extends Symbol {
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
     constructor(properties?: Object) {
-        super(properties);
+        super();
+        if (properties) Object.assign(this, properties);
+
     }
 
     renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {

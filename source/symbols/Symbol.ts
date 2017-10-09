@@ -9,14 +9,6 @@ import {IRender} from "../interfaces/IRender";
  */
 export abstract class Symbol {
     /**
-     * @constructor
-     * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
-     */
-    constructor(properties?: Object) {
-        if (properties) Object.assign(this, properties);
-    }
-
-    /**
      * This function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map.
      * If the symbol cannot render provided feature, empty array is returned.
      * @param {sGis.Feature} feature - feature to be drawn.

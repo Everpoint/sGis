@@ -10,13 +10,18 @@ export type RenderCache = {
     renders: IRender[]
 };
 
+export interface IFeatureConstructorArgs {
+    crs?: Crs,
+    symbol?: Symbol
+}
+
 /**
  * Abstract feature object without any geometry. All other features inherit from this class. It can be used to store attributes in the way compatible with other features.
  * @alias sGis.Feature
  * @extends sGis.EventHandler
  */
 export abstract class Feature extends EventHandler {
-    private _crs: Crs = geo;
+    private _crs: Crs;
     private _hidden: boolean = false;
     private _tempSymbol: Symbol;
 
@@ -36,22 +41,11 @@ export abstract class Feature extends EventHandler {
         Feature.prototype._crs = crs;
     }
 
-    /**
-     * @constructor
-     * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
-     */
-    constructor(properties?: Object) {
+    constructor({ crs = geo, symbol }: IFeatureConstructorArgs = {}) {
         super();
 
-        if (properties) {
-            let copy = <any>Object.assign({}, properties);
-            if (copy.crs){
-                this._crs = copy.crs;
-                delete copy.crs;
-            }
-
-            Object.assign(this, copy);
-        }
+        this._symbol = symbol;
+        this._crs = crs;
     }
 
     /**

@@ -1,4 +1,4 @@
-import {Feature} from "./Feature";
+import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {IPoint, Point} from "../Point";
 import {Coordinates} from "../baseTypes";
 import {Bbox} from "../Bbox";
@@ -12,14 +12,14 @@ import {Symbol} from "../symbols/Symbol";
  */
 export class PointFeature extends Feature implements IPoint {
     private _position: Coordinates;
-    protected _symbol: Symbol = new PointSymbol();
+    protected _symbol: Symbol;
 
     /**
      * @param {Position} position - coordinates of the point
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(position: Coordinates, properties?: Object) {
-        super(properties);
+    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: IFeatureConstructorArgs = {}) {
+        super({ symbol, crs });
         this._position = position;
     }
 

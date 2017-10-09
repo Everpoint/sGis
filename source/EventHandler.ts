@@ -29,7 +29,7 @@ export class sGisEvent {
     get isCanceled(): boolean { return this._cancelPropagation; }
 }
 
-type Handler = (sGisEvent) => void;
+export type Handler = (sGisEvent) => void;
 
 type HandlerDescription = {
     handler: Handler;

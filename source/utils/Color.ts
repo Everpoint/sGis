@@ -1,6 +1,6 @@
 import {isString, isNumber} from "./utils";
 
-type Channels = {
+export type Channels = {
     r: number,
     g: number,
     b: number,

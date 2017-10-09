@@ -1,7 +1,7 @@
 import * as math from './utils/math';
 import {Coordinates} from './baseTypes';
 
-type Projection = (Coordinates) => Coordinates;
+export type Projection = (Coordinates) => Coordinates;
 
 let identityProjection = ([x,y]: Coordinates): Coordinates => [x,y];
 

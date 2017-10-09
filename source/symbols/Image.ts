@@ -12,17 +12,20 @@ import {IRender} from "../interfaces/IRender";
  */
 export class ImageSymbol extends Symbol {
     /** Transition (fade in) time of the image node in ms. */
-    transitionTime = 0;
+    transitionTime: number;
 
     /** Opacity of the image. */
-    opacity = 1;
+    opacity: number;
 
     /**
      * @constructor
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
-        super(properties);
+    constructor({ opacity = 1, transitionTime = 0 }: { opacity?: number, transitionTime?: number } = {}) {
+        super();
+
+        this.transitionTime = transitionTime;
+        this.opacity = opacity;
     }
 
     renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {

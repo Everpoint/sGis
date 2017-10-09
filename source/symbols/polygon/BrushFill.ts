@@ -43,7 +43,9 @@ export class BrushFill extends Symbol {
      * @param {Object} properties - key-value list of the properties to be assigned to the instance.
      */
     constructor(properties?: Object) {
-        super(properties);
+        super();
+        if (properties) Object.assign(this, properties);
+
         this._initialized = true;
         this._updateBrush();
     }

@@ -1,8 +1,13 @@
-import {Feature} from "./Feature";
+import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {Point} from "../Point";
 import {LabelSymbol} from "../symbols/LabelSymbol";
 import {Coordinates} from "../baseTypes";
 import {Bbox} from "../Bbox";
+
+export interface ILabelConstructorArgs extends IFeatureConstructorArgs {
+    symbol?: LabelSymbol,
+    content?: string
+}
 
 /**
  * Text label on the map.
@@ -10,18 +15,19 @@ import {Bbox} from "../Bbox";
  * @extends sGis.Feature
  */
 export class Label extends Feature {
-    private _content: '';
+    private _content: string;
     private _position: Coordinates;
 
-    protected _symbol = new LabelSymbol();
+    protected _symbol: LabelSymbol;
 
     /**
      * @constructor
      * @param {Number[]|sGis.Point} position - anchor point of the label. Array is in [x,y] format.
      * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
      */
-    constructor(position, properties) {
-        super(properties);
+    constructor(position, { symbol = new LabelSymbol(), content = '', crs }: ILabelConstructorArgs = {}) {
+        super({ symbol, crs });
+        this.content = content;
         this.coordinates = position;
     }
 

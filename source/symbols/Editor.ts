@@ -26,7 +26,9 @@ export class EditorSymbol extends Symbol {
      * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
      */
     constructor(properties) {
-        super(properties);
+        super();
+        if (properties) Object.assign(this, properties);
+
     }
 
     renderFunction(feature, resolution, crs) {

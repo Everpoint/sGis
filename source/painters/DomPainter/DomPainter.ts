@@ -5,7 +5,7 @@ import {Container} from "./Container";
 import {Map as sGisMap} from "../../Map";
 import {Layer} from "../../Layer";
 import {Bbox} from "../../Bbox";
-import {error, warn, requestAnimationFrame} from "../../utils/utils";
+import {error, warn, requestAnimationFrame, assignDefined} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
 
@@ -38,9 +38,9 @@ export class DomPainter {
      * @param {sGis.Map} map - the map to be drawn.
      * @param {Object} options - key-value list of properties to be assigned to the instance.
      */
-    constructor(map, options) {
+    constructor(map, options = null) {
         this._map = map;
-        Object.assign(this, options);
+        assignDefined(this, options);
 
         this._layerRenderers = new Map();
         this._containers = [];
@@ -347,14 +347,14 @@ export class DomPainter {
 
     _onMapDrag(sGisEvent) {
         setTimeout(() => {
-            if (sGisEvent.isCanceled()) return;
+            if (sGisEvent.isCanceled) return;
             this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
         }, 0);
     }
 
     _onMapDblClick(sGisEvent) {
         setTimeout(() => {
-            if (sGisEvent.isCanceled()) return;
+            if (sGisEvent.isCanceled) return;
             this._map.animateSetResolution(this._map.resolution/2, sGisEvent.point);
         }, 0);
     }

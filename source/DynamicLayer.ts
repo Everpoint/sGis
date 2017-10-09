@@ -71,7 +71,7 @@ export class DynamicLayer extends Layer {
     }
 
     _createFeature(bbox) {
-        var feature = new ImageFeature(bbox, { crs: this.crs || bbox.crs, opacity: this.opacity});
+        var feature = new ImageFeature(bbox, { src: '', crs: this.crs || bbox.crs});
         this._features = [feature];
         this._updateSymbol();
     }

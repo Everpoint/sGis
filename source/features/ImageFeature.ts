@@ -1,6 +1,11 @@
 import {ImageSymbol} from "../symbols/Image";
-import {Feature} from "./Feature";
+import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {Bbox} from "../Bbox";
+
+export interface IImageFeatureConstructorArgs extends IFeatureConstructorArgs {
+    symbol?: ImageSymbol,
+    src: string
+}
 
 /**
  * @alias sGis.feature.Image
@@ -10,15 +15,17 @@ export class ImageFeature extends Feature {
     private _bbox: Bbox;
 
     _src: string;
-    _symbol = new ImageSymbol();
+    _symbol: ImageSymbol;
 
     /**
      * @constructor
      * @param {sGis.Bbox} bbox - bbox that the image will fit
      * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
      */
-    constructor(bbox, properties) {
-        super(properties);
+    constructor(bbox, { src, crs, symbol = new ImageSymbol() }: IImageFeatureConstructorArgs) {
+        super({ symbol, crs });
+
+        this._src = src;
         this.bbox = bbox;
     }
 

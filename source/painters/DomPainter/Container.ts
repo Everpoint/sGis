@@ -1,5 +1,6 @@
 import {isIE} from "../../utils/utils";
 import {Bbox} from "../../Bbox";
+import {Crs} from "../../Crs";
 
 let containerStyle = 'width: 100%; height: 100%; transform-origin: left top; position: absolute;';
 
@@ -34,7 +35,7 @@ export class Container {
 
     get isEmpty() { return this._container.childElementCount === 0; }
     get scale() { return this._scale; }
-    get crs() { return this._bbox.crs; }
+    get crs(): Crs { return this._bbox.crs; }
 
     updateTransform(parentBbox, parentResolution) {
         if (parentBbox.crs !== this._bbox.crs) parentBbox = parentBbox.projectTo(this._bbox.crs);

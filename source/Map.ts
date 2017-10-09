@@ -1,6 +1,6 @@
 import {Point} from "./Point";
 import {TileScheme} from "./TileScheme";
-import {webMercator} from "./Crs";
+import {webMercator, Crs} from "./Crs";
 import {LayerGroup} from "./LayerGroup";
 import {assignDefined, error} from "./utils/utils";
 
@@ -12,7 +12,7 @@ import {assignDefined, error} from "./utils/utils";
 
 
 export class Map extends LayerGroup {
-    _crs = webMercator;
+    private _crs = webMercator;
     _position = new Point([55.755831, 37.617673]).projectTo(webMercator).position;
     _resolution = 611.4962262812505 / 2;
 

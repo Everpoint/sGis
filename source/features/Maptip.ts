@@ -1,8 +1,13 @@
 import {MaptipSymbol} from "../symbols/MaptipSymbol";
-import {Feature} from "./Feature";
+import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {IPoint, Point} from "../Point";
 import {Coordinates} from "../baseTypes";
 import {Bbox} from "../Bbox";
+
+export interface IMaptipConstructorArgs extends IFeatureConstructorArgs{
+    symbol?: MaptipSymbol,
+    content?: string
+}
 
 /**
  * Information box on the map
@@ -10,7 +15,7 @@ import {Bbox} from "../Bbox";
  * @extends sGis.Feature
  */
 export class Maptip extends Feature implements IPoint {
-    _symbol = new MaptipSymbol();
+    _symbol: MaptipSymbol;
     private _position: Coordinates;
     private _content: string;
 
@@ -19,8 +24,10 @@ export class Maptip extends Feature implements IPoint {
      * @param {Position} position - reference point of the information box
      * @param {Object} properties - key-value set of properties to be assigned to the instance
      */
-    constructor(position, properties) {
-        super(properties);
+    constructor(position, { symbol = new MaptipSymbol(), content = '', crs }: IMaptipConstructorArgs = {}) {
+        super({ symbol, crs });
+
+        this._content = content;
         this._position = position;
     }
 

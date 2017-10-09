@@ -1,6 +1,4 @@
-import {Map} from "./Map";
-import {Bbox} from "./Bbox";
-import {Control} from "./controls/Control";
+export {Map} from "./Map";
 import {Circle} from "./controls/Circle";
 import {Editor} from "./controls/Editor";
 import {MultiPoint} from "./features/MultiPoint";
@@ -15,31 +13,31 @@ import {PolygonControl} from "./controls/PolygonControl";
 import {PolyTransform} from "./controls/PolyTransform";
 import {Rectangle} from "./controls/Rectangle";
 import {Snapping} from "./controls/Snapping";
-import * as CRS from "./Crs";
-import {DynamicLayer} from "./DynamicLayer";
-import {EventHandler} from "./EventHandler";
-import {Feature} from "./features/Feature";
+import * as CrsModule from "./Crs";
+export {DynamicLayer} from "./DynamicLayer";
+export {EventHandler} from "./EventHandler";
+export {Feature} from "./features/Feature";
 import {ImageFeature} from "./features/ImageFeature";
 import {Label} from "./features/Label";
 import {Maptip} from "./features/Maptip";
 import {PointFeature} from "./features/Point";
 import {Polygon} from "./features/Polygon";
-import {FeatureLayer} from "./FeatureLayer";
-import {Layer} from "./Layer";
-import {LayerGroup} from "./LayerGroup";
+export {FeatureLayer} from "./FeatureLayer";
+export {Layer} from "./Layer";
+export {LayerGroup} from "./LayerGroup";
 import {DomPainter} from "./painters/DomPainter/DomPainter";
 import {Container} from "./painters/DomPainter/Container";
 import {EventDispatcher} from "./painters/DomPainter/EventDispatcher";
 import {SvgRender} from "./painters/DomPainter/SvgRender";
 import {LayerRenderer} from "./painters/DomPainter/LayerRenderer";
 import {Canvas} from "./painters/DomPainter/Canvas";
-import {Point} from "./Point";
+export {Point} from "./Point";
 import {Arc} from "./renders/Arc";
 import {ImageRender} from "./renders/Image";
 import {Point as PointRender} from "./renders/Point";
 import {PolygonRender} from "./renders/Polygon";
 import {PolylineRender} from "./renders/Polyline";
-import {Symbol} from "./symbols/Symbol";
+export {Symbol} from "./symbols/Symbol";
 import {ImageSymbol} from "./symbols/Image";
 import {LabelSymbol} from "./symbols/LabelSymbol";
 import {MaptipSymbol} from "./symbols/MaptipSymbol";
@@ -51,25 +49,29 @@ import {BrushFill} from "./symbols/polygon/BrushFill";
 import {ImageFill} from "./symbols/polygon/ImageFill";
 import {PolygonSymbol} from "./symbols/polygon/Simple";
 import {PolylineSymbol} from "./symbols/Polyline";
-import {TileLayer} from "./TileLayer";
-import {TileScheme} from "./TileScheme";
-import * as utils from "./utils/utils";
+export {TileLayer} from "./TileLayer";
+export {TileScheme} from "./TileScheme";
+import * as utilsModule from "./utils/utils";
 import {Color} from "./utils/Color";
-import * as math from "./utils/math";
-import * as geotools from "./geotools";
+import * as mathModule from "./utils/math";
+import * as geotoolsModule from "./geotools";
 import * as symbolSerializer from "./serializers/symbolSerializer";
-import * as event from "./utils/domEvent";
+import * as eventModule from "./utils/domEvent";
 
-export const sGis: any = {};
+export const math = mathModule;
+export const geotools = geotoolsModule;
+export const event = eventModule;
 
-sGis.version = "0.3.0";
-sGis.releaseDate = "02.10.2017";
+export {Bbox} from "./Bbox";
+export {Control} from "./controls/Control";
 
+export const version = "0.3.0";
+export const releaseDate = "06.10.2017";
 
-sGis.Bbox = Bbox;
-sGis.Control = Control;
+let utilsModulesExt = <any>{};
+Object.assign(utilsModulesExt, utilsModule, { Color: Color });
 
-sGis.controls = {
+export const controls = {
     Circle: Circle,
     Editor: Editor,
     MultiPoint: MultiPoint,
@@ -85,13 +87,10 @@ sGis.controls = {
     Snapping: Snapping
 };
 
-sGis.Crs = CRS.Crs;
-sGis.CRS = CRS;
-sGis.DynamicLayer = DynamicLayer;
-sGis.EventHandler = EventHandler;
-sGis.Feature = Feature;
+export const Crs = CrsModule.Crs;
+export const CRS = CrsModule;
 
-sGis.feature = {
+export const feature = {
     Image: ImageFeature,
     Label: Label,
     Maptip: Maptip,
@@ -102,12 +101,7 @@ sGis.feature = {
     Polyline: Polyline
 };
 
-sGis.FeatureLayer = FeatureLayer;
-sGis.Layer = Layer;
-sGis.LayerGroup = LayerGroup;
-sGis.Map = Map;
-
-sGis.painter = {
+export const painter = {
     DomPainter: DomPainter,
     domPainter: {
         Container: Container,
@@ -118,8 +112,7 @@ sGis.painter = {
     }
 };
 
-sGis.Point = Point;
-sGis.render = {
+export const render = {
     Arc: Arc,
     HtmlElement: HTMLElement,
     ImageRender: ImageRender,
@@ -128,8 +121,7 @@ sGis.render = {
     Polyline: PolylineRender
 };
 
-sGis.Symbol = Symbol;
-sGis.symbol = {
+export const symbol = {
     image: { Image: ImageSymbol },
     label: { Label: LabelSymbol },
     maptip: { Simple: MaptipSymbol },
@@ -147,13 +139,11 @@ sGis.symbol = {
     polyline: { Simple: PolylineSymbol }
 };
 
-sGis.TileLayer = TileLayer;
-sGis.TileScheme = TileScheme;
-sGis.utils = utils;
-sGis.utils.Color = Color;
-sGis.math = math;
-sGis.geotools = geotools;
-sGis.serializers = {
+
+export const utils = utilsModule;
+
+export const serializers = {
     symbolSerializer: symbolSerializer
 };
-sGis.event = event;
+
+export {init} from "./init";
