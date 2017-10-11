@@ -9,36 +9,28 @@ export interface IPoint {
     y: number;
     readonly crs: Crs;
 
+    /**
+     * Returns a new point with same position in new crs
+     * @param newCrs - target coordinate system
+     * @throws Cannot project to specified crs.
+     */
     projectTo(newCrs: Crs): IPoint;
 }
 
 /**
  * Simple geographical point
- * @class
  * @alias sGis.Point
- * @implements IPoint
  */
 export class Point implements IPoint {
     private _crs: Crs;
 
     public position: Coordinates;
 
-    /**
-     * @constructor
-     * @param position
-     * @param {sGis.Crs} [crs=sGis.CRS.geo]
-     */
     constructor(position: Coordinates, crs: Crs = geo) {
         if (crs !== undefined) this._crs = crs;
         this.position = position;
     }
 
-    /**
-     * Returns a new point with same position in new crs
-     * @param {sGis.Crs} newCrs - target coordinate system
-     * @returns {sGis.Point}
-     * @throws Cannot project to specified crs.
-     */
     projectTo(newCrs: Crs): Point {
         let projection = this.crs.projectionTo(newCrs);
         if (projection === null) error("Cannot project point to crs: " + newCrs.toString());

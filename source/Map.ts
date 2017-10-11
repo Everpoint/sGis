@@ -31,13 +31,13 @@ export class Map extends LayerGroup {
      */
     changeEndDelay = 300;
 
-    private _changeTimer: number;
     private _animationStopped: boolean;
     private _animationTarget: [any, any];
-    private animationTimer: number;
+    private animationTimer: any;
 
     private _minResolution: number;
     private _maxResolution: number;
+    private _changeTimer: any;
 
     /**
      * @constructor

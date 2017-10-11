@@ -109,7 +109,7 @@ export abstract class EventHandler {
 
     /**
      * Sets a one time handler for the given event. This handler is removed from the list of handlers just before it is called.
-     * @param {String} description - description of the event. Can contain <s>ONLY ONE EVENT TYPE</s> and any number of namespaces (namespaces start with .).
+     * @param {String} description - description of the event. Can contain <u>ONLY ONE EVENT TYPE</u> and any number of namespaces (namespaces start with .).
      * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
      */
     once(description: string, handler: Handler): void {

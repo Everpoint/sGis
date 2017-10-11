@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "npm run build-ts && npm run rollup",
-    "doc": "jsdoc source -r -d docs -c jsdoc.conf.json",
+    "doc": "typedoc --out doc/ source/ --excludePrivate --excludeNotExported",
     "version": "node ./config/set_version.js && git add source/sGis.js",
     "lint": "eslint -c ./config/.eslintrc.json source/** -o lint.output",
     "test": "jest --no-cache",
@@ -31,6 +31,7 @@
     "jsdoc": "^3.4.0",
     "rollup": "^0.50.0",
     "ts-jest": "^21.0.1",
+    "typedoc": "^0.9.0",
     "typescript": "^2.5.2"
   },
   "jest": {

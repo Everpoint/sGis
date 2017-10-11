@@ -58,7 +58,7 @@ temp/
 source/**/*.js
 
 # documentation
-docs/
+doc/
 coverage/
 
 lint.output
