@@ -1,7 +1,7 @@
 import {IPoint, Point} from "./Point";
-import {Crs, cylindricalEqualArea, wgs84} from "./Crs";
+import {Crs, conicEqualArea, wgs84} from "./Crs";
 import {collapseCoordinates, degToRad, extendCoordinates, multiplyMatrix} from "./utils/math";
-import {Coordinates} from "./baseTypes";
+import {Contour, Coordinates} from "./baseTypes";
 import {Poly} from "./features/Poly";
 import {Feature} from "./features/Feature";
 import {MultiPoint} from "./features/MultiPoint";
@@ -73,8 +73,8 @@ export const length = function(rings: Coordinates[][], crs: Crs, enclose: boolea
  */
 export const area = function(rings: Coordinates[][], crs: Crs) {
     let projected;
-    if (crs.canProjectTo(cylindricalEqualArea)) {
-        projected = projectRings(rings, crs, cylindricalEqualArea);
+    if (crs.canProjectTo(conicEqualArea)) {
+        projected = projectRings(rings, crs, conicEqualArea);
     } else {
         projected = rings;
     }
@@ -105,7 +105,7 @@ export const projectRings = function(rings: Coordinates[][], fromCrs: Crs, toCrs
     return result;
 };
 
-export const projectPoints = function(ring: Coordinates[][], fromCrs: Crs, toCrs: Crs) {
+export const projectPoints = function(ring: Contour, fromCrs: Crs, toCrs: Crs) {
     let projection = fromCrs.projectionTo(toCrs);
     let projectedRing = [];
     ring.forEach(position => {

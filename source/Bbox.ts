@@ -17,7 +17,7 @@ export class Bbox {
      * points can be arbitrary.
      * @param point1 - first corner point of rectangle
      * @param point2 - second corner point of rectangle
-     * @param [crs=sGis.CRS.geo] - coordinate system of the point coordinates
+     * @param crs - coordinate system of the point coordinates
      */
     constructor(point1: Coordinates, point2: Coordinates, crs: Crs = geo)
     {

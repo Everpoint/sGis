@@ -1,19 +1,44 @@
 import * as math from './utils/math';
 import {Coordinates} from './baseTypes';
 
-export type Projection = (Coordinates) => Coordinates;
+/**
+ * A function that receives a pair of coordinates and converts them to the coordinates in another coordinate system.
+ * This type shall be used for high performance mass converting of coordinates and for declaring custom coordinate systems.
+ * In other cases .projectTo(crs) methods are preferred.
+ */
+export type Projection = (coord: Coordinates) => Coordinates;
 
 let identityProjection = ([x,y]: Coordinates): Coordinates => [x,y];
 
+export interface CrsInitializationParams {
+    wkid?: number,
+    authority?: string,
+    wkt?: string,
+    details?: string
+}
+
 /**
- * @class
  * @alias sGis.Crs
- * @property {Object} description - description of the crs
  */
 export class Crs {
+    /**
+     * Numeric code of the projection. Usually it is EPSG, OCG or ESRI code.
+     */
     public readonly wkid: number;
+
+    /**
+     * Authority that registered this crs. Combined with wkid it makes full id of the crs. E.g. EPSG:4326
+     */
     public readonly authority: string;
+
+    /**
+     * Well known text representation of the crs.
+     */
     public readonly wkt: string;
+
+    /**
+     * Any addition descriptions for the crs.
+     */
     public readonly details: string;
 
     private _projections: Map<Crs, Projection> = new Map();
@@ -21,14 +46,21 @@ export class Crs {
 
     /**
      * @constructor
-     * @param {Object} [description] - description of the crs
-     * @param projectionMap
+     * @param description - properties describing crs. If given, the values will be set to the corresponding fields of the crs instance.
+     * @param projectionMap - set of projections to different coordinate systems. If not specified, .setProjectionTo() method
+     *                        must be used in order to enable projecting to a needed crs.
      */
-    public constructor(description?:Partial<Crs>, projectionMap?: Map<Crs, Projection>) {
-        Object.assign(this, description);
+    public constructor(description?: CrsInitializationParams, projectionMap?: Map<Crs, Projection>) {
+        if (description) Object.assign(this, description);
         if (projectionMap) this._projections = projectionMap;
     }
 
+    /**
+     * Returns string definition of the crs.<br>
+     *     If .wkid is set, returning value will be wkid string;<br>
+     *     Else if .wkt is set, returning value will be wkt;<br>
+     *     Otherwise .details property will be returned.
+     */
     public toString(): string {
         if (this.wkid) return this.wkid.toString();
         if (this.wkt) return this.wkt;
@@ -37,9 +69,8 @@ export class Crs {
     }
 
     /**
-     * Returns true if given crs represents the same spatial reference system
-     * @param {sGis.Crs} crs
-     * @returns {boolean}
+     * Returns true if given crs represents the same spatial reference system. The objects are compared by wkid or by wkt text.
+     * In case neither is specified, true will be returned only if both this and 'crs' represent same JS object.
      */
     public equals(crs: Crs): boolean {
         if (this === crs) return true;
@@ -49,9 +80,10 @@ export class Crs {
     }
 
     /**
-     * Returns projection function from the current coordinate system to specified. Returned function takes one [x,y] parameter and returns projected [x,y] (corresponding to crs parameter)
-     * @param {sGis.Crs} crs
-     * @returns {Function|null}
+     * Returns projection function from the current coordinate system to the specified one. If it is possible to
+     * project current crs to the target through another crs, returning function will apply this route.<br>
+     * E.g. if trying to project from WebMercator to EllipticalMercator, the returned Projection function will
+     * first project from WebMercator to Lat/Lon, and then project the result to EllipticalMercator.
      */
     public projectionTo(crs: Crs): Projection {
         if (this._projections.get(crs)) return this._projections.get(crs);
@@ -59,18 +91,15 @@ export class Crs {
     }
 
     /**
-     * Returns true if the current coordinate system can be projected to the given crs
-     * @param {Crs} crs
-     * @returns {boolean}
+     * Returns true if the current coordinate system can be projected to the given crs. Projections through other coordinate
+     * systems are also considered if discovered.
      */
     public canProjectTo(crs: Crs): boolean {
         return this.projectionTo(crs) !== null;
     }
 
     /**
-     * Adds the projection function to the coordinate system
-     * @param {sGis.Crs} crs
-     * @param {Projection} projection
+     * Sets the projection function from current crs to the given one.
      */
     public setProjectionTo(crs: Crs, projection: Projection): void {
         this._projections.set(crs, projection);
@@ -102,47 +131,63 @@ export class Crs {
 
 /**
  * Plain euclidean coordinate system. This projection cannot be projected to any other projection.
- * @type sGis.Crs
  * @alias sGis.CRS.plain
- * @memberof sGis.CRS
  */
 export const plain = new Crs({ details: 'Plain crs without any projection functions' });
 
+const OCG84_WKT = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],' +
+    'PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]';
 
 /**
- * Geographical coordinate system, which has longitude set as X coordinate, and latitude as Y coordinate.
- * @type sGis.Crs
+ * Geographic coordinate system on WGS84 datum, which has longitude set as first coordinate, and latitude as second coordinate.<br>
+ * <b>NOTE:</b> A lot of GIS software incorrectly implement EPSG:4326 as this longitude/latitude coordinate system. If you
+ * are used to using such systems as OpenLayers or PostGIS, you want to use this crs instead of 4326 in those system.
  * @alias sGis.CRS.wgs84
- * @memberof sGis.CRS
  */
 export const wgs84 = new Crs({
     wkid: 84,
     authority: 'OCG',
-    wkt: 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]'
+    wkt: OCG84_WKT
 });
 
+const EPSG4326_WKT = `GEODCRS["WGS 84",
+  DATUM["World Geodetic System 1984",
+    ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1.0]]],
+  CS[ellipsoidal,2],
+    AXIS["latitude",north,ORDER[1]],
+    AXIS["longitude",east,ORDER[2]],
+    ANGLEUNIT["degree",0.01745329252],
+  ID["EPSG",4326]]`;
+
 /**
- * @type sGis.Crs
+ * Geographic coordinate system on WGS84 datum with latitude being first coordinate, and longitude as second coordinate.<br>
+ * <b>NOTE:</b> This coordinate system is registered by EPSG as EPSG:4326, but a lot of GIS software implements 4326 as
+ * longitude/latitude. If you are used to that coordinate order use wgs84 crs instead of this one.
  * @alias sGis.CRS.geo
- * @memberof sGis.CRS
  */
 export const geo = new Crs({
     wkid: 4326,
-    authority: 'EPSG'
+    authority: 'EPSG',
+    wkt: EPSG4326_WKT
 });
 
 geo.setProjectionTo(wgs84, ([x,y]) => [y,x]);
 wgs84.setProjectionTo(geo, ([x,y]) => [y,x]);
 
+const EPSG3857_WKT = 'PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["GCS_WGS_1984",' +
+    'DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],' +
+    'UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator"],PARAMETER["central_meridian",0],' +
+    'PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]';
+
 /**
- * @type sGis.Crs
+ * Coordinate system used by many gis web applications. The coordinates are given in meters, as projected by Mercator projection
+ * using WGS84 datum assuming that the Earth is a sphere. Has high distortions near the poles.
  * @alias sGis.CRS.webMercator
- * @memberof sGis.CRS
  */
 export const webMercator = new Crs({
     wkid: 3857,
     authority: 'EPSG',
-    wkt: 'PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]'
+    wkt: EPSG3857_WKT
 });
 
 {
@@ -166,15 +211,19 @@ export const webMercator = new Crs({
     });
 }
 
+const EPSG3395_WKT = 'PROJCS["WGS 84 / World Mercator",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",' +
+    'SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],' +
+    'PROJECTION["Mercator"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],' +
+    'PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]';
+
 /**
- * @type sGis.Crs
+ * Mercator projection from WGS84 datum. This crs considers the fact that the Earth is not a sphere. Coordinates are in meters.
  * @alias sGis.CRS.ellipticalMercator
- * @memberof sGis.CRS
  */
 export const ellipticalMercator = new Crs({
     wkid: 3395,
     authority: 'EPSG',
-    wkt: 'PROJCS["WGS 84 / World Mercator",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1]]'
+    wkt: EPSG3395_WKT
 });
 
 {
@@ -218,20 +267,19 @@ export const ellipticalMercator = new Crs({
 //http://mathworld.wolfram.com/AlbersEqual-AreaConicProjection.html
 
 /**
- * Class constructor of Alber's equal area projections.
+ * Class constructor of <a href="https://en.wikipedia.org/wiki/Albers_projection">Alber's equal area projections</a> from wgs84 datum.
  * @alias sGis.CRS.AlbersEqualArea
- * @extends Crs
  */
 export class AlbersEqualArea extends Crs {
     private R = 6372795;
 
     /**
-     * @param {Number} lat0 - latitude of origin
-     * @param {Number} lon0 - longitude of origin
-     * @param {Number} stLat1 - first standard parallel
-     * @param {Number} stLat2 - second standard parallel
+     * @param lat0 - latitude of origin
+     * @param lon0 - longitude of origin
+     * @param stLat1 - first standard parallel
+     * @param stLat2 - second standard parallel
      */
-    constructor(lat0, lon0, stLat1, stLat2) {
+    constructor(lat0: number, lon0: number, stLat1: number, stLat2: number) {
         super({
             details: 'Albers Equal-Area Conic Projection: ' + lat0 + ',' + lon0 + ',' + stLat1 + ',' + stLat2
         });
@@ -272,9 +320,8 @@ export class AlbersEqualArea extends Crs {
 }
 
 /**
-* @type sGis.Crs
-* @alias sGis.CRS.cylindricalEqualArea
-* @memberof sGis.CRS
-*/
-export const cylindricalEqualArea = new AlbersEqualArea(0, 180, 60, 50);
+ * Alber's equal area projection with parameters 0, 180, 60, 50. Used internally for precise geographic area calculations.
+ * @alias sGis.CRS.conicEqualArea
+ */
+export const conicEqualArea = new AlbersEqualArea(0, 180, 60, 50);
 
