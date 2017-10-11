@@ -19,8 +19,8 @@ export class Poly extends Feature {
      * @param {Position[][]} rings - coordinates of the feature
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(rings: Coordinates[][], properties?: IFeatureConstructorArgs) {
-        super(properties);
+    constructor(rings: Coordinates[][], properties?: IFeatureConstructorArgs, extension?: Object) {
+        super(properties, extension);
         if (rings && rings.length > 0) {
             this.rings = copyArray(rings);
         } else {

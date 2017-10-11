@@ -22,8 +22,8 @@ export class ImageFeature extends Feature {
      * @param {sGis.Bbox} bbox - bbox that the image will fit
      * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
      */
-    constructor(bbox, { src, crs, symbol = new ImageSymbol() }: IImageFeatureConstructorArgs) {
-        super({ symbol, crs });
+    constructor(bbox, { src, crs, symbol = new ImageSymbol() }: IImageFeatureConstructorArgs, extension?: Object) {
+        super({ symbol, crs }, extension);
 
         this._src = src;
         this.bbox = bbox;

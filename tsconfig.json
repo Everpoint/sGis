@@ -4,7 +4,7 @@
     "target": "es2015",
     "module": "amd",
     "sourceMap": true,
-    "outDir": "./dist/compilation",
+    "outDir": "./dist",
     "declaration": true
   },
   "include": [

@@ -41,8 +41,10 @@ export abstract class Feature extends EventHandler {
         Feature.prototype._crs = crs;
     }
 
-    constructor({ crs = geo, symbol }: IFeatureConstructorArgs = {}) {
+    constructor({ crs = geo, symbol }: IFeatureConstructorArgs = {}, extension?: Object) {
         super();
+
+        if (extension) Object.assign(this, extension);
 
         this._symbol = symbol;
         this._crs = crs;

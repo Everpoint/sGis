@@ -21,8 +21,8 @@ export class MultiPoint extends Feature {
      * @param {Position[]} points - set of the points' coordinates
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(points = [], { symbol = new PointSymbol(), crs }: IFeatureConstructorArgs  = {}) {
-        super({ symbol, crs });
+    constructor(points = [], { symbol = new PointSymbol(), crs }: IFeatureConstructorArgs  = {}, extension?: Object) {
+        super({ symbol, crs }, extension);
         this._points = points;
     }
 

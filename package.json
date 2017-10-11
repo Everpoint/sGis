@@ -2,8 +2,8 @@
   "name": "sgis",
   "version": "0.3.0",
   "description": "",
-  "main": "dist/compilation/sGis.js",
-  "types": "dist/compilation/sGis.d.ts",
+  "main": "dist/sGis.js",
+  "types": "dist/sGis.d.ts",
   "directories": {
     "test": "test"
   },

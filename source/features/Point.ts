@@ -18,8 +18,8 @@ export class PointFeature extends Feature implements IPoint {
      * @param {Position} position - coordinates of the point
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: IFeatureConstructorArgs = {}) {
-        super({ symbol, crs });
+    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: IFeatureConstructorArgs = {}, extension?: Object) {
+        super({ symbol, crs }, extension);
         this._position = position;
     }
 

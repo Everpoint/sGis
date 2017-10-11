@@ -25,8 +25,8 @@ export class Label extends Feature {
      * @param {Number[]|sGis.Point} position - anchor point of the label. Array is in [x,y] format.
      * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
      */
-    constructor(position, { symbol = new LabelSymbol(), content = '', crs }: ILabelConstructorArgs = {}) {
-        super({ symbol, crs });
+    constructor(position, { symbol = new LabelSymbol(), content = '', crs }: ILabelConstructorArgs = {}, extension?: Object) {
+        super({ symbol, crs }, extension);
         this.content = content;
         this.coordinates = position;
     }

@@ -24,8 +24,8 @@ export class Maptip extends Feature implements IPoint {
      * @param {Position} position - reference point of the information box
      * @param {Object} properties - key-value set of properties to be assigned to the instance
      */
-    constructor(position, { symbol = new MaptipSymbol(), content = '', crs }: IMaptipConstructorArgs = {}) {
-        super({ symbol, crs });
+    constructor(position, { symbol = new MaptipSymbol(), content = '', crs }: IMaptipConstructorArgs = {}, extension?: Object) {
+        super({ symbol, crs }, extension);
 
         this._content = content;
         this._position = position;

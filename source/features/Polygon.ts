@@ -13,8 +13,8 @@ export class Polygon extends Poly {
     _symbol: Symbol;
     isEnclosed = true;
 
-    constructor(rings, {symbol = new PolygonSymbol(), crs}: IFeatureConstructorArgs = {}) {
-        super(rings, {symbol, crs});
+    constructor(rings, {symbol = new PolygonSymbol(), crs}: IFeatureConstructorArgs = {}, extension?: Object) {
+        super(rings, {symbol, crs}, extension);
     }
 
     /**
