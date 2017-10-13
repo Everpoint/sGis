@@ -1,20 +1,22 @@
 import {ImageSymbol} from "./symbols/Image";
-import {Layer} from "./Layer";
+import {Layer, PropertyChangeEvent} from "./Layer";
 import {ImageFeature} from "./features/ImageFeature";
 import {Crs} from "./Crs";
+import {Bbox} from "./Bbox";
+import {Feature} from "./features/Feature";
+
+export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
 
 /**
  * Represents a layer that is fully drawn by server and is displayed as an image overlay.
  * @alias sGis.DynamicLayer
- * @extends sGis.Layer
  */
 export class DynamicLayer extends Layer {
-    private _url: string;
     private _crs: Crs;
     private _currHeight: number;
     private _currWidth: number;
     private _forceUpdate: boolean = false;
-    private _features: ImageFeature[];
+    private _image: ImageFeature;
     private _getUrl: Function;
 
     delayedUpdate = true;
@@ -24,12 +26,12 @@ export class DynamicLayer extends Layer {
      * @param {function(sGis.Bbox, Number)} getUrlDelegate
      * @param {Object} [properties] - key-value set of properties to be assigned to the instance
      */
-    constructor(getUrlDelegate, properties?: Object) {
+    constructor(getUrlDelegate: GetUrlDelegate, properties?: Object) {
         super(properties);
         this._getUrl = getUrlDelegate;
     }
 
-    getFeatures(bbox, resolution) {
+    getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
 
         if (this.crs) {
@@ -40,26 +42,29 @@ export class DynamicLayer extends Layer {
             }
         }
 
-        if (this._features && this._features[0].crs !== bbox.crs) this._features = null;
+        if (this._image && this._image.crs !== bbox.crs) this._image = null;
 
-        if (!this._features) this._createFeature(bbox);
-        var width  = bbox.width / resolution;
-        var height = bbox.height / resolution;
-        if (this._forceUpdate || !this._features[0].bbox.equals(bbox) || this._currWidth !== width || this._currHeight !== height) {
-            var url = this._getUrl(bbox, resolution);
-            if (url == null) return [];
+        if (!this._image) this._createFeature(bbox);
+
+        let width  = bbox.width / resolution;
+        let height = bbox.height / resolution;
+
+        let needRedraw = this._forceUpdate || !this._image.bbox.equals(bbox) || this._currWidth !== width || this._currHeight !== height;
+        if (needRedraw) {
+            let url = this._getUrl(bbox, resolution);
+            if (!url) return [];
             if (this._forceUpdate) {
                 url += '&ts=' + Date.now();
                 this._forceUpdate = false;
             }
 
-            this._features[0].src = url;
-            this._features[0].bbox = bbox;
+            this._image.src = url;
+            this._image.bbox = bbox;
             this._currWidth = bbox.width / resolution;
             this._currHeight = bbox.height / resolution;
         }
 
-        return this._features;
+        return [this._image];
     }
 
     /**
@@ -67,12 +72,11 @@ export class DynamicLayer extends Layer {
      */
     forceUpdate() {
         this._forceUpdate = true;
-        this.fire('propertyChange', {property: 'source'});
+        this.fire(new PropertyChangeEvent('source'));
     }
 
     _createFeature(bbox) {
-        var feature = new ImageFeature(bbox, { src: '', crs: this.crs || bbox.crs});
-        this._features = [feature];
+        this._image = new ImageFeature(bbox, { src: '', crs: this.crs || bbox.crs});
         this._updateSymbol();
     }
 
@@ -90,13 +94,7 @@ export class DynamicLayer extends Layer {
     get crs() { return this._crs; }
     set crs(/** sGis.Crs */ crs) { this._crs = crs; }
 
-    /**
-     * Base url of the service
-     * @type {String}
-     */
-    get url() { return this._url; }
-
     _updateSymbol() {
-        if (this._features) this._features[0].symbol = new ImageSymbol({ opacity: this.opacity });
+        if (this._image) this._image.symbol = new ImageSymbol({ opacity: this.opacity });
     }
 }

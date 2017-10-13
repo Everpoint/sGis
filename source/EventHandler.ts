@@ -75,14 +75,17 @@ export abstract class EventHandler {
 
     /**
      * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added.
-     * @param {String} eventType - exact name of the event to be triggered.
+     * TODO: Remove string overload
+     * @param event - exact name of the event to be triggered.
      * @param {Object} [parameters] - parameters to be transferred to the event object.
      * @returns {Object} - event object
      */
-    fire(eventType: string, parameters?: Object) {
-        if (this._prohibitedEvents.indexOf(eventType) !== -1) return null;
+    fire(event: sGisEvent|string, parameters?: Object) {
+        if (typeof event === 'string') {
+            event = new sGisEvent(event, parameters);
+        }
 
-        let event = new sGisEvent(eventType, parameters);
+        if (this._prohibitedEvents.indexOf(event.type) !== -1) return null;
         this.forwardEvent(event);
 
         return event;

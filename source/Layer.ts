@@ -1,58 +1,92 @@
-import {EventHandler} from "./EventHandler";
+import {EventHandler, sGisEvent} from "./EventHandler";
 import {Bbox} from "./Bbox";
 import {Feature} from "./features/Feature";
 import {ResolutionLimits} from "./baseTypes";
 
+export interface LayerConstructorParams {
+    delayedUpdate?: boolean,
+    resolutionLimits?: ResolutionLimits,
+    opacity?: number,
+    isDisplayed?: boolean
+}
+
 /**
- * Base class for all map layers.
+ * @event PropertyChangeEvent
+ */
+export class PropertyChangeEvent extends sGisEvent {
+    static type: string = 'propertyChange';
+
+    readonly property: string;
+
+    constructor(property: string) {
+        super(PropertyChangeEvent.type);
+        this.property = property;
+    }
+}
+
+/**
+ * @event VisibilityChangeEvent
+ */
+export class VisibilityChangeEvent extends sGisEvent {
+    static type: string = 'visibilityChange';
+
+    constructor() {
+        super(VisibilityChangeEvent.type);
+    }
+}
+
+/**
+ * Base class for all map layers. A layer is a container for features, that is responsible for filter out (or create)
+ * features for requested bbox and resolution.
  * @alias sGis.Layer
- * @extends sGis.EventHandler
  */
 export abstract class Layer extends EventHandler {
     private _isDisplayed: boolean = true;
-    protected _opacity: number = 1.0;
-    private _resolutionLimits: ResolutionLimits = [-1, -1];
+    private _resolutionLimits: ResolutionLimits;
+
+    protected _opacity: number = 1;
 
     /** If set to true, the layer will be updated only after map position change has ended (e.g. pan or zoom end). If set to true, the layer will be redrawn on every change. */
-    delayedUpdate: boolean = false;
+    delayedUpdate: boolean;
 
     /** If set to true, the layer rendering will not be updated (though the feature lists will be requested as needed). This is intended for lazy object update without "jumping" effect. */
-    updateProhibited: boolean = false;
+    updateProhibited: boolean;
 
     /**
-     * @constructor
-     * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
+     * @param __namedParameters - properties to be set to the corresponding fields
+     * @param extensions - additional properties to be copied to the created instance (JS only)
      */
-    constructor(properties?: Object) {
+    constructor({ delayedUpdate = false, resolutionLimits = [-1, -1], opacity = 1, isDisplayed = true}: LayerConstructorParams, extensions?: Object) {
         super();
 
-        if (properties) Object.assign(this, properties);
+        this.delayedUpdate = delayedUpdate;
+        this._resolutionLimits = <any>resolutionLimits;
+        this._opacity = opacity;
+        this._isDisplayed = isDisplayed;
+
+        if (extensions) Object.assign(this, extensions);
     }
 
     /**
      * Returns the array of features to be drawn for given parameters.
-     * @param {sGis.Bbox} bbox - bounding box of the area to get features from
-     * @param {Number} resolution - current resolution
-     * @returns {sGis.Feature[]}
+     * @param bbox - bounding box of the area to get features from
+     * @param resolution - current resolution
      */
     abstract getFeatures(bbox: Bbox, resolution: number): Feature[]
 
     /**
      * Whether the layer is drawn to map
-     * @type Boolean
-     * @default true
-     * @fires sGis.Layer#propertyChange
+     * @fires VisibilityChangeEvent
      */
     get isDisplayed(): boolean { return this._isDisplayed; }
     set isDisplayed(bool: boolean) {
         this._isDisplayed = bool;
-        this.fire('visibilityChange');
+        this.fire(new VisibilityChangeEvent());
     }
 
     /**
      * Return true if the layer is displayed and the resolution is inside the limits
      * @param resolution
-     * @returns {Boolean|*|boolean}
      */
     checkVisibility(resolution: number): boolean {
         return this._isDisplayed && (this.resolutionLimits[0] < 0 || resolution >= this.resolutionLimits[0]) && (this.resolutionLimits[1] < 0 || resolution <= this.resolutionLimits[1]);
@@ -60,7 +94,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Makes the layer visible
-     * @fires sGis.Layer#propertyChange
+     * @fires PropertyChangeEvent
      */
     show(): void {
         this.isDisplayed = true;
@@ -68,17 +102,15 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Makes the layer invisible
-     * @fires sGis.Layer#propertyChange
+     * @fires PropertyChangeEvent
      */
     hide(): void {
         this.isDisplayed = false;
     }
 
     /**
-     * Opacity of the layer. It sets the opacity of all objects in this layer. Valid values: [0..1].
-     * @type Number
-     * @default 1
-     * @fires sGis.Layer#propertyChange
+     * Opacity of the layer. It sets the opacity of all features in this layer. Valid values: [0..1].
+     * @fires PropertyChangeEvent
      */
     get opacity(): number { return this.getOpacity(); }
     set opacity(opacity: number) { this.setOpacity(opacity); }
@@ -87,41 +119,24 @@ export abstract class Layer extends EventHandler {
     protected setOpacity(opacity) {
         opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
         this._opacity = opacity;
-        this.fire('propertyChange', {property: 'opacity'});
+        this.fire(new PropertyChangeEvent('opacity'));
     }
 
     /**
      * Min and max resolution between which the layer will be displayed. Must be in [min, max] format. Negative values are treated as no limit.
-     * @type Number[]
-     * @default [-1, -1]
-     * @fires sGis.Layer#propertyChange
-     * @fires sGis.Layer#propertyChange
+     * @fires PropertyChangeEvent
      */
     get resolutionLimits(): ResolutionLimits { return this._resolutionLimits; }
     set resolutionLimits(limits: ResolutionLimits) {
         this._resolutionLimits = limits;
-        this.fire('propertyChange', {property: 'resolutionLimits'});
+        this.fire(new PropertyChangeEvent('resolutionLimits'));
     }
 
     /**
      * Forces redrawing of the layer
-     * @fires sGis.Layer#propertyChange
+     * @fires PropertyChangeEvent
      */
     redraw(): void {
-        this.fire('propertyChange', {property: 'content'});
+        this.fire(new PropertyChangeEvent('content'));
     }
 }
-
-
-/**
- * A property of the layer has changed. Fired when redrawing is required.
- * @event sGis.Layer#propertyChange
- * @type {Object}
- * @mixes sGisEvent
- * @prop {String} property - the name of the property that has been changed
- */
-
-/**
- * @typedef {function(Object)} sGis.Layer.constructor
- * @returns sGis.Layer
- */
