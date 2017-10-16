@@ -18,7 +18,7 @@ export class LayerGroup extends EventHandler {
     constructor (layers = []) {
         super();
         this._layers = [];
-        this._forwardEvent = (sGisEvent) => { this.fire(sGisEvent.eventType, sGisEvent); };
+        this._forwardEvent = (sGisEvent) => { this.fire(sGisEvent.type, sGisEvent); };
         this._fireContentChange = () => { this.fire('contentsChange'); };
 
         this.layers = layers || [];

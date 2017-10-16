@@ -2,7 +2,7 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "target": "es2015",
-    "module": "amd",
+    "module": "es2015",
     "sourceMap": true,
     "outDir": "./dist",
     "declaration": true

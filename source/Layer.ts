@@ -56,7 +56,7 @@ export abstract class Layer extends EventHandler {
      * @param __namedParameters - properties to be set to the corresponding fields
      * @param extensions - additional properties to be copied to the created instance (JS only)
      */
-    constructor({ delayedUpdate = false, resolutionLimits = [-1, -1], opacity = 1, isDisplayed = true}: LayerConstructorParams, extensions?: Object) {
+    constructor({ delayedUpdate = false, resolutionLimits = [-1, -1], opacity = 1, isDisplayed = true}: LayerConstructorParams = {}, extensions?: Object) {
         super();
 
         this.delayedUpdate = delayedUpdate;

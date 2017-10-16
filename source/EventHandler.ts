@@ -83,6 +83,7 @@ export abstract class EventHandler {
     fire(event: sGisEvent|string, parameters?: Object) {
         if (typeof event === 'string') {
             event = new sGisEvent(event, parameters);
+            event.sourceObject = this;
         }
 
         if (this._prohibitedEvents.indexOf(event.type) !== -1) return null;

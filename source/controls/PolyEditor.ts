@@ -106,7 +106,7 @@ export class PolyEditor extends Control {
     }
 
     _handleMousemove(sGisEvent) {
-        if (this.ignoreEvents || !this.vertexChangeAllowed || this._activeRing !== null || this._activeIndex !== null || sGisEvent.eventType === 'mouseout') {
+        if (this.ignoreEvents || !this.vertexChangeAllowed || this._activeRing !== null || this._activeIndex !== null || sGisEvent.type === 'mouseout') {
             this._tempLayer.features = [];
         }
 

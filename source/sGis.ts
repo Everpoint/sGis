@@ -1,3 +1,5 @@
+import {PolyControl} from "./controls/PolyControl";
+
 export {Map} from "./Map";
 import {Circle} from "./controls/Circle";
 import {Editor} from "./controls/Editor";
@@ -57,6 +59,7 @@ import * as mathModule from "./utils/math";
 import * as geotoolsModule from "./geotools";
 import * as symbolSerializer from "./serializers/symbolSerializer";
 import * as eventModule from "./utils/domEvent";
+import {EditorSymbol} from "./symbols/Editor";
 
 export const math = mathModule;
 export const geotools = geotoolsModule;
@@ -77,7 +80,7 @@ export const controls = {
     MultiPoint: MultiPoint,
     Point: PointControl,
     PointEditor: PointEditor,
-    Poly: Poly,
+    Poly: PolyControl,
     PolyDrag: PolyDrag,
     PolyEditor: PolyEditor,
     Polyline: PolylineControl,
@@ -136,16 +139,15 @@ export const symbol = {
         ImageFill: ImageFill,
         Simple: PolygonSymbol
     },
-    polyline: { Simple: PolylineSymbol }
+    polyline: { Simple: PolylineSymbol },
+    Editor: EditorSymbol
 };
 
 
-export const utils = utilsModule;
+export const utils = utilsModulesExt;
 
-export const serializers = {
+export const serializer = {
     symbolSerializer: symbolSerializer
 };
 
 export {init} from "./init";
-
-export const sp = {};
