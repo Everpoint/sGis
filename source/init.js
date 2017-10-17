@@ -17,7 +17,7 @@ sGis.module('init', [
                 throw new Error(`Plugin ${name} is not available.`);
             }
 
-            return new sGis.plugins[name](map, painter.innerWrapper, pluginDefinition.properties);
+            return new sGis.plugins[name](map, painter, pluginDefinition.properties);
         });
 
         return { map, painter, plugins };

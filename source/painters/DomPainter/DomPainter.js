@@ -2,12 +2,14 @@ sGis.module('painter.DomPainter', [
     'painter.domPainter.LayerRenderer',
     'painter.domPainter.Container',
     'painter.domPainter.EventDispatcher',
+    'EventHandler',
     'Point',
     'Bbox',
     'utils'
 ], (/** sGis.painter.domPainter.LayerRenderer */ LayerRenderer,
     /** sGis.painter.domPainter.Container */ Container,
     /** sGis.painter.domPainter.EventDispatcher */ EventDispatcher,
+    EventHandler,
     /** sGis.Point */ Point,
     /** sGis.Bbox */ Bbox,
     /** sGis.utils */ utils) => {
@@ -24,13 +26,14 @@ sGis.module('painter.DomPainter', [
     /**
      * @alias sGis.painter.DomPainter
      */
-    class DomRenderer {
+    class DomRenderer extends EventHandler {
         /**
          * @constructor
          * @param {sGis.Map} map - the map to be drawn.
          * @param {Object} options - key-value list of properties to be assigned to the instance.
          */
         constructor(map, options) {
+            super();
             this._map = map;
             utils.init(this, options, true);
 
@@ -63,6 +66,8 @@ sGis.module('painter.DomPainter', [
                 this._needUpdate = true;
                 this._redrawNeeded = true;
             }
+
+            this.fire('wrapperChange');
         }
 
         get layerRenderers() { return Array.from(this._layerRenderers.values()); }
@@ -286,6 +291,10 @@ sGis.module('painter.DomPainter', [
         _clearContainers() {
             this._containers.forEach((container, i) => {
                 this._removeContainer(i);
+            });
+            this._map.getLayers(true, true).reverse().forEach(layer => {
+                let renderer = this._layerRenderers.get(layer);
+                renderer.clear();
             });
         }
         
