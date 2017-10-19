@@ -12,7 +12,7 @@
     "doc": "typedoc --out doc/ source/ --excludePrivate",
     "version": "node ./config/set_version.js && git add source/sGis.js",
     "test": "jest --no-cache",
-    "build-ts": "tsc",
+    "build-ts": "tsc --listEmittedFiles",
     "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js"
   },
   "repository": {
