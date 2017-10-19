@@ -172,7 +172,7 @@ export class LayerRenderer {
         }
 
         // TODO: здесь ошибка, что-то не так...
-        //this._clean();
+        this._clean();
     }
 
     _resetCanvas(bbox) {
@@ -293,8 +293,8 @@ export class LayerRenderer {
         }
     }
 
-    _clean(feature) {
-        var outdated = this._outdatedFeatureRenders.get(feature);
+    _clean(feature = null) {
+        var outdated = feature && this._outdatedFeatureRenders.get(feature);
         if (outdated) {
             outdated.forEach(render => {
                 this._removeRender(render);

@@ -40,12 +40,12 @@ export class SquareSymbol extends Symbol {
         var pxPosition = [position[0] / resolution, - position[1] / resolution];
         var halfSize = this.size / 2;
         var offset = this.offset;
-        var coordinates = [
+        var coordinates = [[
             [pxPosition[0] - halfSize + offset.x, pxPosition[1] - halfSize + offset.y],
             [pxPosition[0] - halfSize + offset.x, pxPosition[1] + halfSize + offset.y],
             [pxPosition[0] + halfSize + offset.x, pxPosition[1] + halfSize + offset.y],
             [pxPosition[0] + halfSize + offset.x, pxPosition[1] - halfSize + offset.y]
-        ];
+        ]];
 
         return [new PolygonRender(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
     }

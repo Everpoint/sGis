@@ -47,7 +47,7 @@ export class EventDispatcher {
                     data.intersectionType = details.intersectionType;
                     sGisEvent = targetObject.fire(name, data);
                     topObject = targetObject;
-                    if (sGisEvent && sGisEvent.isCanceled()) return sGisEvent;
+                    if (sGisEvent && sGisEvent.isCanceled) return sGisEvent;
                     break;
                 }
             }
