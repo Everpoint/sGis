@@ -12,7 +12,7 @@ export const init = function({ position, resolution, crs, layers, wrapper, plugi
             throw new Error(`Plugin ${name} is not available.`);
         }
 
-        return new plugins[name](map, painter.innerWrapper, pluginDefinition.properties);
+        return new plugins[name](map, painter, pluginDefinition.properties);
     });
 
     return { map, painter, p };

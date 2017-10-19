@@ -8,11 +8,12 @@ import {Bbox} from "../../Bbox";
 import {error, warn, requestAnimationFrame, assignDefined} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
+import {EventHandler} from "../../EventHandler";
 
 let innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
 let layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
 
-export class DomPainter {
+export class DomPainter extends EventHandler {
     private _map: sGisMap;
     private _layerRenderers: Map<Layer, LayerRenderer>;
     private _position: Coordinates;
@@ -39,6 +40,8 @@ export class DomPainter {
      * @param {Object} options - key-value list of properties to be assigned to the instance.
      */
     constructor(map, options = null) {
+        super();
+
         this._map = map;
         assignDefined(this, options);
 
@@ -71,6 +74,8 @@ export class DomPainter {
             this._needUpdate = true;
             this._redrawNeeded = true;
         }
+
+        this.fire('wrapperChange');
     }
 
     get layerRenderers() { return Array.from(this._layerRenderers.values()); }
@@ -294,6 +299,10 @@ export class DomPainter {
     _clearContainers() {
         this._containers.forEach((container, i) => {
             this._removeContainer(i);
+        });
+        this._map.getLayers(true, true).reverse().forEach(layer => {
+            let renderer = this._layerRenderers.get(layer);
+            renderer.clear();
         });
     }
 
