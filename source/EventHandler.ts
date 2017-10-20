@@ -2,33 +2,47 @@ import {copyArray, arrayIntersect, error} from "./utils/utils";
 
 /**
  * Base of all sGis library events
- * @name sGisEvent
- * @mixin
- * @type {Object}
- * @prop {String} eventType - name of the event
- * @prop {Object} sourceObject - object that triggered the event
- * @prop {Function} stopPropagation - prevents event to be handled by any further handlers
- * @prop {Function} isCanceled - returns true if the .stopPropagation() method was called
  */
 
 export class sGisEvent {
     private _cancelPropagation: boolean = false;
 
+    /**
+     * Name of the event.
+     */
     readonly type: string;
+
+    /**
+     * Original object that triggered the event. If the event is forwarded to another object, the original source object
+     * will be set in this parameter.
+     */
     sourceObject: EventHandler;
 
+    /**
+     * @param type - name of the event
+     * @param parameters - [JS ONLY]  dictionary of parameters to be added to the event object
+     */
     constructor(type: string, parameters?: Object) {
         this.type = type;
         if (parameters) Object.assign(this, parameters);
     }
 
+    /**
+     * Prevents any further event handlers to be called for this event.
+     */
     stopPropagation(): void {
         this._cancelPropagation = true;
     }
 
+    /**
+     * Whether the .stopPropagation() method has been called for this event.
+     */
     get isCanceled(): boolean { return this._cancelPropagation; }
 }
 
+/**
+ * Callback method for event.
+ */
 export type Handler = (sGisEvent) => void;
 
 type HandlerDescription = {

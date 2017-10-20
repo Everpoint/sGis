@@ -11,20 +11,28 @@ export interface LayerConstructorParams {
 }
 
 /**
+ * Some property of the layer has been changed
  * @event PropertyChangeEvent
  */
 export class PropertyChangeEvent extends sGisEvent {
     static type: string = 'propertyChange';
 
+    /**
+     * Name of the property that has been changed
+     */
     readonly property: string;
 
-    constructor(property: string) {
+    /**
+     * @param propertyName - ame of the property that has been changed
+     */
+    constructor(propertyName: string) {
         super(PropertyChangeEvent.type);
-        this.property = property;
+        this.property = propertyName;
     }
 }
 
 /**
+ * Visibility property of the layer has been changed.
  * @event VisibilityChangeEvent
  */
 export class VisibilityChangeEvent extends sGisEvent {
@@ -44,7 +52,7 @@ export abstract class Layer extends EventHandler {
     private _isDisplayed: boolean = true;
     private _resolutionLimits: ResolutionLimits;
 
-    protected _opacity: number = 1;
+    protected _opacity: number;
 
     /** If set to true, the layer will be updated only after map position change has ended (e.g. pan or zoom end). If set to true, the layer will be redrawn on every change. */
     delayedUpdate: boolean;
@@ -123,7 +131,7 @@ export abstract class Layer extends EventHandler {
     }
 
     /**
-     * Min and max resolution between which the layer will be displayed. Must be in [min, max] format. Negative values are treated as no limit.
+     * Min and max resolution between which the layer will be displayed. Negative values are treated as no limit.
      * @fires PropertyChangeEvent
      */
     get resolutionLimits(): ResolutionLimits { return this._resolutionLimits; }
