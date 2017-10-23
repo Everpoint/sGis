@@ -49,7 +49,7 @@ export class VisibilityChangeEvent extends sGisEvent {
  * @alias sGis.Layer
  */
 export abstract class Layer extends EventHandler {
-    private _isDisplayed: boolean = true;
+    private _isDisplayed: boolean;
     private _resolutionLimits: ResolutionLimits;
 
     protected _opacity: number;
@@ -62,7 +62,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * @param __namedParameters - properties to be set to the corresponding fields
-     * @param extensions - additional properties to be copied to the created instance (JS only)
+     * @param extensions - [JS ONLY]additional properties to be copied to the created instance
      */
     constructor({ delayedUpdate = false, resolutionLimits = [-1, -1], opacity = 1, isDisplayed = true}: LayerConstructorParams = {}, extensions?: Object) {
         super();

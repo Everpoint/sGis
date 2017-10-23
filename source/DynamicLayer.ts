@@ -1,5 +1,5 @@
 import {ImageSymbol} from "./symbols/Image";
-import {Layer, PropertyChangeEvent} from "./Layer";
+import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
 import {ImageFeature} from "./features/ImageFeature";
 import {Crs} from "./Crs";
 import {Bbox} from "./Bbox";
@@ -11,25 +11,24 @@ export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
  * Represents a layer that is fully drawn by server and is displayed as an image overlay.
  * @alias sGis.DynamicLayer
  */
-export class DynamicLayer extends Layer {
+export abstract class DynamicLayer extends Layer {
     private _crs: Crs;
     private _currHeight: number;
     private _currWidth: number;
     private _forceUpdate: boolean = false;
     private _image: ImageFeature;
-    private _getUrl: Function;
 
     delayedUpdate = true;
 
     /**
-     * @constructor
-     * @param {function(sGis.Bbox, Number)} getUrlDelegate
-     * @param {Object} [properties] - key-value set of properties to be assigned to the instance
+     * @param properties - properties to be set to the corresponding fields
+     * @param extensions - [JS ONLY]additional properties to be copied to the created instance
      */
-    constructor(getUrlDelegate: GetUrlDelegate, properties?: Object) {
-        super(properties);
-        this._getUrl = getUrlDelegate;
+    constructor(properties: LayerConstructorParams = {}, extensions?: Object) {
+        super(properties, extensions);
     }
+
+    abstract getUrl(bbox: Bbox, resolution: number);
 
     getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
@@ -51,7 +50,7 @@ export class DynamicLayer extends Layer {
 
         let needRedraw = this._forceUpdate || !this._image.bbox.equals(bbox) || this._currWidth !== width || this._currHeight !== height;
         if (needRedraw) {
-            let url = this._getUrl(bbox, resolution);
+            let url = this.getUrl(bbox, resolution);
             if (!url) return [];
             if (this._forceUpdate) {
                 url += '&ts=' + Date.now();
