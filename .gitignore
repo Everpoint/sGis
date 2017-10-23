@@ -52,10 +52,13 @@ bower_components/
 node_modules/
 
 # compilations
+build/
 dist/
+temp/
+source/**/*.js
 
 # documentation
-docs/
+doc/
 coverage/
 
 lint.output
