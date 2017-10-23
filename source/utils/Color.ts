@@ -37,6 +37,12 @@ export class Color {
         }
     }
 
+    get _min(): number { return Math.min(this._channels.r, this._channels.g, this._channels.b); }
+
+    get _max(): number { return Math.max(this._channels.r, this._channels.g, this._channels.b); }
+
+    get _delta(): number { return this._max - this._min; }
+
     /**
      * Returns the color as a string in the requested format
      * @param {String} [format="rgba"] - target format. Available values: "hex" - #AARRGGBB, "rgb" - "rgb(r, g, b)", "rgba" - "rgba(r, g, b, a)"
@@ -64,6 +70,52 @@ export class Color {
      * @returns {Boolean}
      */
     get isValid(): boolean { return isNumber(this._channels.a) && isNumber(this._channels.r) && isNumber(this._channels.g) && isNumber(this._channels.b); }
+
+    /**
+     *
+     * @param h
+     * @param s
+     * @param v
+     * @returns {number[]}
+     */
+    setHsv(h: number, s: number, v: number): number[] {
+        let rgbColors = [0, 0, 0];
+        h /= 60;
+        s /= 100;
+        v /= 100;
+        let mod = Math.floor(h) % 6;
+
+        let f = h - Math.floor(h);
+        let p = Math.round(255 * v * (1 - s));
+        let q = Math.round(255 * v * (1 - s * f));
+        let t = Math.round(255 * v * (1 - s * (1 - f)));
+        v = Math.round(255 * v);
+
+        switch (mod) {
+            case 0:
+                rgbColors = [v, t, p];
+                break;
+            case 1:
+                rgbColors = [q, v, p];
+                break;
+            case 2:
+                rgbColors = [p, v, t];
+                break;
+            case 3:
+                rgbColors = [p, q, v];
+                break;
+            case 4:
+                rgbColors = [t, p, v];
+                break;
+            case 5:
+                rgbColors = [v, p, q];
+                break;
+        }
+        this._channels.r = rgbColors[0];
+        this._channels.g = rgbColors[1];
+        this._channels.b = rgbColors[2];
+        return rgbColors;
+    }
 
     /**
      * Returns the format of the input color sting. Possible values: hex3, hex6, hex4, hex8, rgb, rgba, name.
@@ -117,6 +169,47 @@ export class Color {
      */
     get a(): number { return this._channels.a; }
     set a(v: number) { this._channels.a = v; }
+
+
+    /**
+     * Returns hue channel value as integer from 0 to 360.
+     * @type {Number}
+     */
+    get h(): number {
+        let max = this._max;
+        let min = this._min;
+        let delta = this._delta;
+        let h;
+        let {r, g, b} = this._channels;
+        if (max === min) h = 0;
+        else if (r === max) h = (g - b) / delta;
+        else if (g === max) h = 2 + (b - r) / delta;
+        else if (b === max) h = 4 + (r - g) / delta;
+
+        h = Math.min(h * 60, 360);
+        if (h < 0) h += 360;
+        h = Math.round(h);
+        return h;
+    }
+
+    /**
+     * Returns saturation channel value as integer from 0 to 100.
+     * @type {Number}
+     */
+    get s(): number {
+        let s;
+        let max = this._max;
+        if (max === 0) s = 0;
+        else s = this._delta / max * 1000 / 10;
+        s = Math.round(s);
+        return s;
+    }
+
+    /**
+     * Returns 'value' channel value as integer from 0 to 100.
+     * @type {Number}
+     */
+    get v(): number { return Math.round(this._max / 255 * 1000 / 10); }
 
     /**
      * Returns values of the channels as integers from 0 to 255. Format is { r: r, g: g, b: b, a: a }.
