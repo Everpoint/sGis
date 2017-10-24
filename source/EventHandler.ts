@@ -3,7 +3,6 @@ import {copyArray, arrayIntersect, error} from "./utils/utils";
 /**
  * Base of all sGis library events
  */
-
 export class sGisEvent {
     private _cancelPropagation: boolean = false;
 
@@ -67,9 +66,9 @@ export abstract class EventHandler {
 
     /**
      * Triggers event with the given parameters. It is supposed to be used to transfer event from one object to another (for example, from layer to a feature).
-     * @param {Object} event - event object of the original event
+     * @param event - event object of the original event
      */
-    forwardEvent(event: sGisEvent) {
+    forwardEvent(event: sGisEvent): void {
         if (this._prohibitedEvents && this._prohibitedEvents.indexOf(event.type) !== -1) return;
         let eventType = event.type;
         if (this._eventHandlers && this._eventHandlers[eventType]) {
@@ -88,13 +87,13 @@ export abstract class EventHandler {
     }
 
     /**
-     * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added.
+     * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added. Returns
+     * the event object, or null in case the event was not triggered (if it is prohibited).
      * TODO: Remove string overload
-     * @param event - exact name of the event to be triggered.
-     * @param {Object} [parameters] - parameters to be transferred to the event object.
-     * @returns {Object} - event object
+     * @param event - event object or exact name of the event to be triggered.
+     * @param parameters - [JS ONLY] parameters to be transferred to the event object. Applied only if the first argument is string.
      */
-    fire(event: sGisEvent|string, parameters?: Object) {
+    fire(event: sGisEvent|string, parameters?: Object): sGisEvent {
         if (typeof event === 'string') {
             event = new sGisEvent(event, parameters);
             event.sourceObject = this;
@@ -108,9 +107,9 @@ export abstract class EventHandler {
 
     /**
      * Sets a listener for the given event type.
-     * @param {String} description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either..
-     * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
-     * @param {boolean} [oneTime=false] - if set to true, the event will be triggered only once.
+     * @param description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either..
+     * @param handler - handler to be executed. The handler is called in the event source object context.
+     * @param oneTime - if set to true, the event will be triggered only once.
      */
     addListener(description: string, handler: Handler, oneTime: boolean = false): void {
         let types = getTypes(description);
@@ -127,8 +126,8 @@ export abstract class EventHandler {
 
     /**
      * Sets a one time handler for the given event. This handler is removed from the list of handlers just before it is called.
-     * @param {String} description - description of the event. Can contain <u>ONLY ONE EVENT TYPE</u> and any number of namespaces (namespaces start with .).
-     * @param {Function} handler - handler to be executed. The handler is called in the event source object context.
+     * @param description - description of the event. Can contain <u>ONLY ONE EVENT TYPE</u> and any number of namespaces (namespaces start with .).
+     * @param handler - handler to be executed. The handler is called in the event source object context.
      */
     once(description: string, handler: Handler): void {
         this.addListener(description, handler, true);
@@ -136,8 +135,8 @@ export abstract class EventHandler {
 
     /**
      * Removes the given handlers from the event listener list.
-     * @param {String} description - description of the event. Can contain any number of type names and namespaces, but must have at least one of either.
-     * @param {Function} [handler] - handler to be removed. If no handler is specified, all handlers from the given namespaces will be removed. If no handler and namespace are specified, error will be thrown.
+     * @param description - description of the event. Can contain any number of type names and namespaces, but must have at least one of either.
+     * @param handler - handler to be removed. If no handler is specified, all handlers from the given namespaces will be removed. If no handler and namespace are specified, error will be thrown.
      */
     removeListener(description: string, handler?: Handler): void {
         let types = getTypes(description);
@@ -159,7 +158,7 @@ export abstract class EventHandler {
 
     /**
      * Prohibits triggering of the event. The prohibitions are stacked - if the same event is prohibited N times, you need to allow it N times to make it work.
-     * @param {String} type - name of the event to be prohibited.
+     * @param type - name of the event to be prohibited.
      */
     prohibitEvent(type: string): void {
         this._prohibitedEvents.push(type);
@@ -167,7 +166,7 @@ export abstract class EventHandler {
 
     /**
      * Allows a previously prohibited event. The prohibitions are stacked - if the same event is prohibited N times, you need to allow it N times to make it work. If no prohibitions were set for the event, the operation is ignored.
-     * @param {String} type - name of the event to be allowed.
+     * @param type - name of the event to be allowed.
      */
     allowEvent(type: string): void {
         let index = this._prohibitedEvents.indexOf(type);
@@ -176,9 +175,8 @@ export abstract class EventHandler {
 
     /**
      * Checks if the object has the handler for the given event type.
-     * @param {String} type - name of the event.
-     * @param {Function} handler - handler to be checked
-     * @returns {boolean}
+     * @param type - name of the event.
+     * @param handler - handler to be checked
      */
     hasListener(type: string, handler: Handler): boolean {
         if (this._eventHandlers[type]) {
@@ -192,8 +190,8 @@ export abstract class EventHandler {
 
     /**
      * Checks if the object has any handlers corresponding to the following description.
-     * @param {String} description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either.
-     * @returns {boolean} - true if the object has at least one handler of the given types with the given namespaces. If no event type is given, checks if there are any handlers in the given namespaces exist. If no namespace is given, the namespace check is ignored.
+     * @param description - description of the event. Can contain any number of type names and namespaces (namespaces start with .), but must have at least one of either.
+     * @returns true if the object has at least one handler of the given types with the given namespaces. If no event type is given, checks if there are any handlers in the given namespaces exist. If no namespace is given, the namespace check is ignored.
      */
     hasListeners(description: string): boolean {
         let types = getTypes(description);
@@ -225,11 +223,11 @@ export abstract class EventHandler {
     }
 
     /**
-     * @see sGis.EventHandler#addListener
+     * @see EventHandler#addListener
      */
     on(description: string, handler: Handler, oneTime: boolean = false) { this.addListener.apply(this, arguments); }
     /**
-     * @see sGis.EventHandler#removeListener
+     * @see EventHandler#removeListener
      */
     off(description: string, handler?: Handler) { this.removeListener.apply(this, arguments); }
 }
