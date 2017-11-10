@@ -44,7 +44,7 @@ export class TileLayer extends Layer {
 
         this._source = tileSource;
         this._tiles = {};
-        if (options.tileScheme) this.tileScheme = options.tileScheme;
+        if (options && options.tileScheme) this.tileScheme = options.tileScheme;
     }
 
     /**
