@@ -1,5 +1,5 @@
 import * as math from './utils/math';
-import {Coordinates} from './baseTypes';
+import { Coordinates } from './baseTypes';
 
 /**
  * A function that receives a pair of coordinates and converts them to the coordinates in another coordinate system.
@@ -8,7 +8,7 @@ import {Coordinates} from './baseTypes';
  */
 export type Projection = (coord: Coordinates) => Coordinates;
 
-let identityProjection = ([x,y]: Coordinates): Coordinates => [x,y];
+let identityProjection = ([x, y]: Coordinates): Coordinates => [x, y];
 
 export interface CrsInitializationParams {
     wkid?: number,
@@ -76,7 +76,7 @@ export class Crs {
         if (this === crs) return true;
         if (this.wkid && this.wkid === crs.wkid) return true;
 
-        return this.wkt && this.wkt === crs.wkt;
+        return !!this.wkt && this.wkt === crs.wkt;
     }
 
     /**
@@ -85,9 +85,8 @@ export class Crs {
      * E.g. if trying to project from WebMercator to EllipticalMercator, the returned Projection function will
      * first project from WebMercator to Lat/Lon, and then project the result to EllipticalMercator.
      */
-    public projectionTo(crs: Crs): Projection {
-        if (this._projections.get(crs)) return this._projections.get(crs);
-        return this._discoverProjectionTo(crs);
+    public projectionTo(crs: Crs): Projection | null {
+        return this._projections.get(crs) || this._discoverProjectionTo(crs);
     }
 
     /**
@@ -105,7 +104,7 @@ export class Crs {
         this._projections.set(crs, projection);
     }
 
-    private _discoverProjectionTo(crs: Crs): Projection {
+    private _discoverProjectionTo(crs: Crs): Projection | null {
         if (this._discoveryMode) return null;
         if (this.equals(crs)) return identityProjection;
 
@@ -116,9 +115,11 @@ export class Crs {
                 break;
             }
 
-            let innerProjection = ownCrs._discoverProjectionTo(crs);
+            const innerProjection = ownCrs._discoverProjectionTo(crs);
             if (innerProjection) {
-                let result = function([x, y]) { return innerProjection(func([x, y])); };
+                let result = function ([x, y]: Coordinates): Coordinates {
+                    return innerProjection(func([x, y]));
+                };
                 this._projections.set(crs, result);
                 break;
             }
@@ -171,8 +172,8 @@ export const geo = new Crs({
     wkt: EPSG4326_WKT
 });
 
-geo.setProjectionTo(wgs84, ([x,y]) => [y,x]);
-wgs84.setProjectionTo(geo, ([x,y]) => [y,x]);
+geo.setProjectionTo(wgs84, ([x, y]) => [y, x]);
+wgs84.setProjectionTo(geo, ([x, y]) => [y, x]);
 
 const EPSG3857_WKT = 'PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["GCS_WGS_1984",' +
     'DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],' +
@@ -229,12 +230,12 @@ export const ellipticalMercator = new Crs({
 {
     const a = 6378137;
     const b = 6356752.3142451793;
-    const e =  Math.sqrt(1 - b*b/a/a);
-    const eh = e/2;
-    const pih = Math.PI/2;
+    const e = Math.sqrt(1 - b * b / a / a);
+    const eh = e / 2;
+    const pih = Math.PI / 2;
 
-    ellipticalMercator.setProjectionTo(wgs84, ([x,y]) => {
-        let ts = Math.exp(-y/a);
+    ellipticalMercator.setProjectionTo(wgs84, ([x, y]) => {
+        let ts = Math.exp(-y / a);
         let phi = pih - 2 * Math.atan(ts);
         let i = 0;
         let dphi = 1;
@@ -253,11 +254,11 @@ export const ellipticalMercator = new Crs({
         return [lon, lat];
     });
 
-    wgs84.setProjectionTo(ellipticalMercator, ([x,y]) => {
+    wgs84.setProjectionTo(ellipticalMercator, ([x, y]) => {
         let rLat = math.degToRad(y);
         let rLon = math.degToRad(x);
         let X = a * rLon;
-        let Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e/2)));
+        let Y = a * Math.log(Math.tan(Math.PI / 4 + rLat / 2) * Math.pow((1 - e * Math.sin(rLat)) / (1 + e * Math.sin(rLat)), (e / 2)));
 
         return [X, Y];
     });
@@ -292,7 +293,7 @@ export class AlbersEqualArea extends Crs {
         let _c = Math.pow(Math.cos(_stLat1), 2) + 2 * _n * Math.sin(_stLat1);
         let _ro0 = Math.sqrt(_c - 2 * _n * Math.sin(_lat0)) / _n;
 
-        this.setProjectionTo(wgs84, ([x,y]) => {
+        this.setProjectionTo(wgs84, ([x, y]) => {
             let xRad = x / this.R;
             let yRad = y / this.R;
             let th = Math.atan(xRad / (_ro0 - yRad));
@@ -306,7 +307,7 @@ export class AlbersEqualArea extends Crs {
             return [lon, lat];
         });
 
-        wgs84.setProjectionTo(this, ([lon,lat]) => {
+        wgs84.setProjectionTo(this, ([lon, lat]) => {
             let rLon = math.degToRad(lon),
                 rLat = math.degToRad(lat),
                 th = _n * (rLat - _lon0),
