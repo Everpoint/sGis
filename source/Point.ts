@@ -68,7 +68,7 @@ export class Point implements IPoint {
         if (projection) {
             return new Point(projection(this.position), newCrs);
         } else {
-            throw new Error("Cannot project point to crs: " + newCrs.toString());
+            return error(new Error("Cannot project point to crs: " + newCrs.toString()));
         }
     }
 
