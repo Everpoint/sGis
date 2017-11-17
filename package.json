@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm run build-ts && npm run rollup",
     "doc": "typedoc --out doc/ source/ --excludePrivate",
-    "version": "node ./config/set_version.js && git add source/sGis.js",
+    "version": "node ./config/set_version.js && git add source/sGis.ts",
     "test": "jest --no-cache",
     "build-ts": "tsc --listEmittedFiles",
     "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js"
