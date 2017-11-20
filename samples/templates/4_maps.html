@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>%TITLE%</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js"></script>
+    <style>
+        body, html { height: 100%; margin: 0; padding: 0; }
+        .row {
+            height: 50%;
+        }
+        .row > div {
+            width: 50%;
+            padding: 5px;
+            height: 100%;
+            box-sizing: border-box;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="row"><div id="map1"></div><div id="map2"></div></div>
+<div class="row"><div id="map3"></div><div id="map4"></div></div>
+    <script>
+        window.onload = function() {
+            require.config({
+                paths: {
+                    "sgis/dist": "../../source"
+                }
+            });
+            require(["../code/%FILENAME%"], function() {});
+        }
+    </script>
+</body>
+</html>

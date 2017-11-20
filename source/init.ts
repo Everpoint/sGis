@@ -2,8 +2,19 @@ import {Map} from "./Map";
 import {DomPainter} from "./painters/DomPainter/DomPainter";
 import {warn} from "./utils/utils";
 
-export const init = function({ position, resolution, crs, layers, wrapper, pluginDefinitions = []}) {
-    let map = new Map({crs, position, resolution, layers});
+/**
+ * Convenience method for simple map initialization
+ * @param position
+ * @param centerPoint
+ * @param resolution
+ * @param crs
+ * @param layers
+ * @param wrapper
+ * @param pluginDefinitions
+ * @example init_Setting_position_and_resolution
+ */
+export const init = function({ position = undefined, centerPoint = undefined, resolution, crs = undefined, layers, wrapper, pluginDefinitions = []}: any) {
+    let map = new Map({crs, position, centerPoint, resolution, layers});
     let painter = new DomPainter(map, {wrapper});
 
     let p = pluginDefinitions.map(pluginDefinition => {

@@ -46,7 +46,7 @@ export class Map extends LayerGroup {
     constructor(properties: any = {}) {
         super();
         if (properties.crs) this.crs = properties.crs;
-        this.position = properties.position || [this.position[0], this.position[1]];
+        if (!properties.centerPoint) this.position = properties.position || [this.position[0], this.position[1]];
         assignDefined(this, properties);
 
         this._listenForBboxChange();

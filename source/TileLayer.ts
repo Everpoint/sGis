@@ -38,7 +38,7 @@ export class TileLayer extends Layer {
      * @param {String} tileSource - Url of the source for tiles in format http(s)://...../..{x}..{y}..{z} - where x an y are indexes of tiles for the scale level z
      * @param {Object} [options] - Set of properties to override
      */
-    constructor(tileSource, options) {
+    constructor(tileSource, options: any = {}) {
         super(options);
         this._updateSymbol();
 

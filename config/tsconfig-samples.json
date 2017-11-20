@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "amd",
+    "outDir": "../temp/",
+    "baseUrl": "./",
+    "paths": {
+      "sgis/dist/*": ["../../source/*"]
+    }
+  },
+  "include": [
+    "../source/**/*.ts",
+    "../samples/code/**/*.ts"
+  ]
+}

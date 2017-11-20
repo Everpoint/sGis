@@ -1,5 +1,5 @@
 /* eslint-disable */
-let fs = require('fs')
+let fs = require('fs');
 
 fs.readFile('./source/sGis.ts', 'utf8', function(err, data) {
     if (err) {
