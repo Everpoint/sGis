@@ -6,6 +6,7 @@ import {PolyTransform} from "./PolyTransform";
 import {getGuid} from "../utils/utils";
 import {listenDomEvent, removeDomEventListener} from "../utils/domEvent";
 import {EditorSymbol} from "../symbols/Editor";
+import {FeaturesAddEvent, FeaturesRemoveEvent} from "../FeatureLayer";
 
 const modes = ['vertex', 'rotate', 'scale', 'drag'];
 
@@ -22,7 +23,7 @@ export class Editor extends Control {
     _scaling: boolean;
     _rotation: boolean;
     _dragging: boolean;
-    _activeFeature: any;
+    _activeFeature: any = null;
     _polyTransform: PolyTransform;
     _polyEditor: PolyEditor;
     _pointEditor: PointEditor;
@@ -84,20 +85,20 @@ export class Editor extends Control {
     _activate() {
         if (!this.activeLayer) return;
         this.activeLayer.features.forEach(this._setListener, this);
-        this.activeLayer.on('featureAdd', this._handleFeatureAdd);
-        this.activeLayer.on('featureRemove', this._handleFeatureRemove);
+        this.activeLayer.on('featuresAdd', this._handleFeatureAdd);
+        this.activeLayer.on('featuresRemove', this._handleFeatureRemove);
         this.activeLayer.redraw();
         this.map.on('click', this._onMapClick.bind(this));
 
         listenDomEvent(document, 'keydown', this._handleKeyDown);
     }
 
-    _handleFeatureAdd(sGisEvent) {
-        this._setListener(sGisEvent.feature);
+    _handleFeatureAdd(ev: FeaturesAddEvent) {
+        ev.features.forEach(f => this._setListener(f));
     }
 
-    _handleFeatureRemove(sGisEvent) {
-        this._removeListener(sGisEvent.feature);
+    _handleFeatureRemove(ev: FeaturesRemoveEvent) {
+        ev.features.forEach(f => this._removeListener(f));
     }
 
     _setListener(feature) {

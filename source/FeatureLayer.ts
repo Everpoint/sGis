@@ -1,26 +1,69 @@
-/**
- * A layer that contains arbitrary set of vector objects
- * @alias sGis.FeatureLayer
- */
-import {Layer} from "./Layer";
+import {Layer, LayerConstructorParams} from "./Layer";
 import {error} from "./utils/utils";
+import {Feature} from "./features/Feature";
+import {Bbox} from "./Bbox";
+import {sGisEvent} from "./EventHandler";
 
-export class FeatureLayer extends Layer {
-    _features: any;
-    delayedUpdate = true;
+export interface FeatureLayerConstructorParams extends LayerConstructorParams {
+    features?: Feature[]
+}
+
+/**
+ * New features are added to the feature layer
+ * @event FeaturesAddEvent
+ */
+export class FeaturesAddEvent extends sGisEvent {
+    static type: string = 'featuresAdd';
 
     /**
-     * @param {Object} [properties] - key-value set of properties to be assigned to the instance
+     * Array of features that were added
      */
-    constructor(properties: any = {}) {
-        super(properties);
-        this._features = properties.features || [];
+    readonly features: Feature[];
+
+    constructor(features: Feature[]) {
+        super(FeaturesAddEvent.type);
+        this.features = features;
+    }
+}
+
+/**
+ * Some features were removed from the feature layer
+ * @event FeaturesRemoveEvent
+ */
+export class FeaturesRemoveEvent extends sGisEvent {
+    static type: string = 'featuresRemove';
+
+    /**
+     * Array of features that were removed
+     */
+    readonly features: Feature[];
+
+    constructor(features: Feature[]) {
+        super(FeaturesRemoveEvent.type);
+        this.features = features;
+    }
+}
+
+/**
+ * A layer that contains arbitrary set of features.
+ * @alias sGis.FeatureLayer
+ */
+export class FeatureLayer extends Layer {
+    private _features: Feature[];
+
+    /**
+     * @param __namedParameters - properties to be set to the corresponding fields
+     * @param extensions - [JS ONLY]additional properties to be copied to the created instance
+     */
+    constructor({delayedUpdate = true, resolutionLimits, opacity, isDisplayed, features = []}: FeatureLayerConstructorParams = {}, extensions?: Object) {
+        super({delayedUpdate, resolutionLimits, opacity, isDisplayed}, extensions);
+        this._features = features;
     }
 
-    getFeatures(bbox, resolution) {
+    getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
 
-        var obj = [];
+        let obj = [];
         this._features.forEach(feature => {
             if (feature.crs.canProjectTo(bbox.crs) && feature.bbox.intersects(bbox)) obj.push(feature);
         });
@@ -30,50 +73,53 @@ export class FeatureLayer extends Layer {
 
     /**
      * Adds a feature or an array of features to the layer
-     * @param {sGis.Feature|sGis.Feature[]} features - features to add
-     * @fires sGis.FeatureLayer#featureAdd - for each feature to be added
+     * @param features - features to add
+     * @throws if one of the features is already in the layer
+     * @fires FeaturesAddEvent
      */
-    add(features) {
-        if (Array.isArray(features)) {
-            features.forEach(feature => {
-                this.add(feature);
-            });
-        } else {
-            this._features.push(features);
-            this.fire('featureAdd', {feature: features});
-            this.redraw();
-        }
+    add(features: Feature | Feature[]): void {
+        const toAdd = Array.isArray(features) ? features : [features];
+        if (toAdd.length === 0) return;
+        toAdd.forEach(f => {
+            if (this._features.indexOf(f) !== -1) error(new Error(`Feature ${f} is already in the layer`));
+        });
+        this._features = this._features.concat(toAdd);
+        this.fire(new FeaturesAddEvent(toAdd));
+        this.redraw();
     }
 
     /**
-     * Removes a feature from the layer
-     * @param {sGis.Feature} feature - feature to be removed
-     * @throws if the feature is not in the layer
+     * Removes a feature or an array of features from the layer
+     * @param features - feature or features to be removed
+     * @throws if the one of the features is not in the layer
      * @fires sGis.FeatureLayer#featureRemove
      */
-    remove(feature) {
-        var index = this._features.indexOf(feature);
-        if (index === -1) error('The feature does not belong to the layer');
-        this._features.splice(index, 1);
-        this.fire('featureRemove', {feature: feature});
+    remove(features: Feature | Feature[]): void {
+        const toRemove = Array.isArray(features) ? features : [features];
+        if (toRemove.length === 0) return;
+        toRemove.forEach(f => {
+            let index = this._features.indexOf(f);
+            if (index === -1) error(new Error(`Feature ${f} is not in the layer`));
+            this._features.splice(index, 1);
+        });
+        this.fire(new FeaturesRemoveEvent(toRemove));
         this.redraw();
     }
 
     /**
      * Returns true if the given feature is in the layer
-     * @param {sGis.Feature} feature
-     * @returns {boolean}
+     * @param feature
      */
-    has(feature) {
+    has(feature: Feature): boolean {
         return this._features.indexOf(feature) !== -1;
     }
 
     /**
-     * Moves the given feature to the top of the layer (end of the list). If the feature is not in the layer, the command is ignored
-     * @param {sGis.Feature} feature
+     * Moves the given feature to the top of the layer (end of the list). If the feature is not in the layer, the command is ignored.
+     * @param feature
      */
-    moveToTop(feature) {
-        var index = this._features.indexOf(feature);
+    moveToTop(feature: Feature): void {
+        let index = this._features.indexOf(feature);
         if (index !== -1) {
             this._features.splice(index, 1);
             this._features.push(feature);
@@ -83,38 +129,19 @@ export class FeatureLayer extends Layer {
 
     /**
      * List of features in the layer. If assigned, it removes all features and add new ones, firing all the respective events.
-     * @type {sGis.Feature[]}
      * @default []
-     * @fires sGis.FeatureLayer#featureAdd
-     * @fires sGis.FeatureLayer#featureRemove
+     * @fires FeaturesAddEvent
+     * @fires FeaturesRemoveEvent
      */
-    get features() { return this._features.slice(); }
-    set features(/** sGis.Feature[] */ features) {
-        this.prohibitEvent('propertyChange');
-        var currFeatures = this.features;
-        for (var i = 0; i < currFeatures.length; i++) {
-            this.remove(currFeatures[i]);
-        }
-
+    get features(): Feature[] {
+        return this._features;
+    }
+    set features(features: Feature[]) {
+        const currFeatures = this._features;
+        this._features = [];
+        this.fire(new FeaturesRemoveEvent(currFeatures));
         this.add(features);
-        this.allowEvent('propertyChange');
 
         this.redraw();
     }
 }
-
-/**
- * A feature has been added to the layer
- * @event sGis.FeatureLayer#featureAdd
- * @type {Object}
- * @mixes sGisEvent
- * @prop {sGis.Feature} feature - feature that is added to the layer
- */
-
-/**
- * A feature has been removed from the layer
- * @event sGis.FeatureLayer#featureRemove
- * @type {Object}
- * @mixes sGisEvent
- * @prop {sGis.Feature} feature - feature that is removed from the layer
- */
