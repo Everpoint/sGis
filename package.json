@@ -13,7 +13,7 @@
     "version": "node ./config/set_version.js && git add source/sGis.ts",
     "test": "jest --no-cache",
     "build-doc": "typedoc --out doc/ source/ --excludePrivate --theme doc-theme",
-    "build-ts": "tsc --listEmittedFiles",
+    "build-ts": "tsc",
     "build-samples": "tsc -p ./config/tsconfig-samples.json && node ./config/build-samples.js",
     "copy-samples": "ncp ./temp/samples ./doc/samples && ncp ./temp/source ./doc/source",
     "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js"
