@@ -1,13 +1,32 @@
 import {Coordinates} from "../baseTypes";
 import {IRender} from "../interfaces/IRender";
 
+export interface ArcRenderConstructorParams {
+    /** @see Arc.radius */
+    radius?: number,
+    /** @see Arc.strokeColor */
+    strokeColor?: string,
+    /** @see Arc.strokeWidth */
+    strokeWidth?: number,
+    /** @see Arc.fillColor */
+    fillColor?: string,
+    /** @see Arc.ignoreEvents */
+    ignoreEvents?: boolean,
+    /** @see Arc.startAngle */
+    startAngle?: number,
+    /** @see Arc.endAngle */
+    endAngle?: number,
+    /** @see Arc.isSector */
+    isSector?: boolean,
+    /** @see Arc.clockwise */
+    clockwise?: boolean
+}
+
 /**
  * Rendered arc (circle) on a map.
  * @alias sGis.render.Arc
- * @implements sGis.IRender
  */
 export class Arc implements IRender {
-
     /** The center of the arc in [x, y] format. */
     center: Coordinates = [0, 0];
 
@@ -39,10 +58,10 @@ export class Arc implements IRender {
     clockwise: boolean = true;
 
     /**
-     * @param {Position} center - the center of the arc, in the [x, y] format.
-     * @param {Object} [options] - key-value options of any Arc parameters
+     * @param center - the center of the arc, in the [x, y] format.
+     * @param [options] - key-value options of any Arc parameters
      */
-    constructor(center, options) {
+    constructor(center, options: ArcRenderConstructorParams = {}) {
         Object.assign(this, options);
         this.center = center;
     }
