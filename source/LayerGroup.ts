@@ -58,7 +58,7 @@ export class LayerGroup extends EventHandler {
     /**
      * Adds a layer to the end of the list.
      * @param layer - layer to add.
-     * @fires ContentsChangeEvent
+     * @fires [[ContentsChangeEvent]]
      * @throws If the layer is already in the group, or in any of the child groups.
      */
     addLayer(layer: GroupItem): void {
@@ -81,7 +81,7 @@ export class LayerGroup extends EventHandler {
      * Removes the layer from the group.
      * @param layer - layer to remove.
      * @param recurse - if set to true, the layer will be removed from all child groups containing this layer.
-     * @fires ContentsChangeEvent
+     * @fires [[ContentsChangeEvent]]
      * @throws If the layer not in the group.
      */
     removeLayer(layer: GroupItem, recurse: boolean = false): void {
@@ -158,7 +158,7 @@ export class LayerGroup extends EventHandler {
      * If the index is larger than number of the layers in the group, layer will be added to the end of the list.
      * @param layer - layer to insert.
      * @param index - integer position of the layer after insertion.
-     * @fires ContentsChangeEvent
+     * @fires [[ContentsChangeEvent]]
      * @throws If the given layer cannot be added to the group (e.g. if the result of reordering creates recursive nesting).
      */
     insertLayer(layer: GroupItem, index: number): void {
@@ -216,7 +216,7 @@ export class LayerGroup extends EventHandler {
     /**
      * The list of the layers and child groups in the group. If assigned, two change event will be fired: one for layers
      * removal and one for layers adding.
-     * @fires ContentsChangeEvent
+     * @fires [[ContentsChangeEvent]]
      */
     get layers(): GroupItem[] {
         return this._layers;
@@ -240,7 +240,7 @@ export class LayerGroup extends EventHandler {
 
     /**
      * Whether the group is active and should be displayed on the map.
-     * @fires VisibilityChangeEvent
+     * @fires [[VisibilityChangeEvent]]
      */
     get isDisplayed(): boolean {
         return this._isDisplayed;

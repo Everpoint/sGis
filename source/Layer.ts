@@ -84,7 +84,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Whether the layer is drawn to map
-     * @fires VisibilityChangeEvent
+     * @fires [[VisibilityChangeEvent]]
      */
     get isDisplayed(): boolean { return this._isDisplayed; }
     set isDisplayed(bool: boolean) {
@@ -102,7 +102,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Makes the layer visible
-     * @fires PropertyChangeEvent
+     * @fires [[PropertyChangeEvent]]
      */
     show(): void {
         this.isDisplayed = true;
@@ -110,7 +110,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Makes the layer invisible
-     * @fires PropertyChangeEvent
+     * @fires [[PropertyChangeEvent]]
      */
     hide(): void {
         this.isDisplayed = false;
@@ -118,7 +118,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Opacity of the layer. It sets the opacity of all features in this layer. Valid values: [0..1].
-     * @fires PropertyChangeEvent
+     * @fires [[PropertyChangeEvent]]
      */
     get opacity(): number { return this.getOpacity(); }
     set opacity(opacity: number) { this.setOpacity(opacity); }
@@ -132,7 +132,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Min and max resolution between which the layer will be displayed. Negative values are treated as no limit.
-     * @fires PropertyChangeEvent
+     * @fires [[PropertyChangeEvent]]
      */
     get resolutionLimits(): ResolutionLimits { return this._resolutionLimits; }
     set resolutionLimits(limits: ResolutionLimits) {
@@ -142,7 +142,7 @@ export abstract class Layer extends EventHandler {
 
     /**
      * Forces redrawing of the layer
-     * @fires PropertyChangeEvent
+     * @fires [[PropertyChangeEvent]]
      */
     redraw(): void {
         this.fire(new PropertyChangeEvent('content'));

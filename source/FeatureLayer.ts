@@ -92,7 +92,7 @@ export class FeatureLayer extends Layer {
      * Removes a feature or an array of features from the layer
      * @param features - feature or features to be removed
      * @throws if the one of the features is not in the layer
-     * @fires sGis.FeatureLayer#featureRemove
+     * @fires [[FeaturesRemoveEvent]]
      */
     remove(features: Feature | Feature[]): void {
         const toRemove = Array.isArray(features) ? features : [features];
@@ -129,9 +129,8 @@ export class FeatureLayer extends Layer {
 
     /**
      * List of features in the layer. If assigned, it removes all features and add new ones, firing all the respective events.
-     * @default []
-     * @fires FeaturesAddEvent
-     * @fires FeaturesRemoveEvent
+     * @fires [[FeaturesAddEvent]]
+     * @fires [[FeaturesRemoveEvent]]
      */
     get features(): Feature[] {
         return this._features;
