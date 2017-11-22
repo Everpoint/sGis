@@ -55,8 +55,8 @@ export class FeatureLayer extends Layer {
      * @param __namedParameters - properties to be set to the corresponding fields
      * @param extensions - [JS ONLY]additional properties to be copied to the created instance
      */
-    constructor({delayedUpdate = true, resolutionLimits, opacity, isDisplayed, features = []}: FeatureLayerConstructorParams = {}, extensions?: Object) {
-        super({delayedUpdate, resolutionLimits, opacity, isDisplayed}, extensions);
+    constructor({delayedUpdate = true, features = [], ...layerParams}: FeatureLayerConstructorParams = {}, extensions?: Object) {
+        super({delayedUpdate, ...layerParams}, extensions);
         this._features = features;
     }
 
