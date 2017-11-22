@@ -52,8 +52,8 @@ export class FeatureLayer extends Layer {
     private _features: Feature[];
 
     /**
-     * @param __namedParameters - properties to be set to the corresponding fields
-     * @param extensions - [JS ONLY]additional properties to be copied to the created instance
+     * @param __namedParameters - properties to be set to the corresponding fields.
+     * @param extensions - [JS ONLY]additional properties to be copied to the created instance.
      */
     constructor({delayedUpdate = true, features = [], ...layerParams}: FeatureLayerConstructorParams = {}, extensions?: Object) {
         super({delayedUpdate, ...layerParams}, extensions);
@@ -72,9 +72,9 @@ export class FeatureLayer extends Layer {
     }
 
     /**
-     * Adds a feature or an array of features to the layer
-     * @param features - features to add
-     * @throws if one of the features is already in the layer
+     * Adds a feature or an array of features to the layer.
+     * @param features - features to add.
+     * @throws if one of the features is already in the layer.
      * @fires FeaturesAddEvent
      */
     add(features: Feature | Feature[]): void {
@@ -89,9 +89,9 @@ export class FeatureLayer extends Layer {
     }
 
     /**
-     * Removes a feature or an array of features from the layer
-     * @param features - feature or features to be removed
-     * @throws if the one of the features is not in the layer
+     * Removes a feature or an array of features from the layer.
+     * @param features - feature or features to be removed.
+     * @throws if the one of the features is not in the layer.
      * @fires [[FeaturesRemoveEvent]]
      */
     remove(features: Feature | Feature[]): void {
@@ -107,7 +107,7 @@ export class FeatureLayer extends Layer {
     }
 
     /**
-     * Returns true if the given feature is in the layer
+     * Returns true if the given feature is in the layer.
      * @param feature
      */
     has(feature: Feature): boolean {

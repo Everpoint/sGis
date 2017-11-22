@@ -54,7 +54,7 @@ export class TileLayer extends Layer {
 
     /**
      * @param urlMask - url of the source for tiles in format http(s)://...../..{x}..{y}..{z} - where x an y are indexes of tiles for the scale level z
-     * @param __namedParameters - properties to be set to the corresponding fields
+     * @param __namedParameters - properties to be set to the corresponding fields.
      * @param extensions - [JS ONLY]additional properties to be copied to the created instance
      */
     constructor(urlMask, {
