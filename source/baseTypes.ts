@@ -14,3 +14,8 @@ export type Contour = Coordinates[];
  * greater than the first one.
  */
 export type ResolutionLimits = [number, number];
+
+/**
+ * A set of coordinates that represent a rectangular area in the format [xmin, ymin, xmax, ymax].
+ */
+export type RectCoordinates = [number, number, number, number];

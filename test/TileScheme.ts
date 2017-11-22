@@ -6,12 +6,12 @@ describe('TileScheme', () => {
 
     describe('.levels', () => {
         it('should sort levels by resolution', () => {
-            let scheme = new TileScheme();
-            scheme.levels = [
-                { resolution: 20, zIndex: 0, indexCount: 4 },
-                { resolution: 10, zIndex: 1, indexCount: 2 },
-                { resolution: 40, zIndex: 2, indexCount: 8 }
+            let levels = [
+                {resolution: 20, zIndex: 0, indexCount: 4},
+                {resolution: 10, zIndex: 1, indexCount: 2},
+                {resolution: 40, zIndex: 2, indexCount: 8}
             ];
+            let scheme = new TileScheme({origin: [0, 0], levels: levels});
 
             expect(scheme.levels[0].resolution).toBe(10);
             expect(scheme.levels[1].resolution).toBe(20);
@@ -23,17 +23,13 @@ describe('TileScheme', () => {
     describe('.getLevel()', () => {
         let scheme;
         beforeEach(() => {
-            scheme = new TileScheme({levels: [
-                { resolution: 10 },
-                { resolution: 20 },
-                { resolution: 40 }
-            ]});
-        });
+            let levels = [
+                {resolution: 20, zIndex: 0, indexCount: 4},
+                {resolution: 10, zIndex: 1, indexCount: 2},
+                {resolution: 40, zIndex: 2, indexCount: 8}
+            ];
 
-        it('should throw exception if no levels are set', () => {
-            let tileScheme = new TileScheme();
-            expect(() => { tileScheme.getLevel(0); }).toThrow();
-            expect(() => { tileScheme.getLevel(10); }).toThrow();
+            scheme = new TileScheme({levels, origin: [0, 0]});
         });
 
         it('should return the closest level with resolution equal to or larger then given', () => {
@@ -56,26 +52,28 @@ describe('TileScheme', () => {
 
         it('should consider resolutions equal if difference is less then math.tolerance', () => {
             expect(scheme.getLevel(10 + tolerance)).toBe(0);
-            expect(scheme.getLevel(10 + tolerance/2)).toBe(0);
+            expect(scheme.getLevel(10 + tolerance / 2)).toBe(0);
         });
     });
-    
+
     describe('resolution limits', () => {
         let scheme;
         beforeEach(() => {
-            scheme = new TileScheme({levels: [
-                { resolution: 10 },
-                { resolution: 20 },
-                { resolution: 40 }
-            ]});
+            let levels = [
+                {resolution: 20, zIndex: 0, indexCount: 4},
+                {resolution: 10, zIndex: 1, indexCount: 2},
+                {resolution: 40, zIndex: 2, indexCount: 8}
+            ];
+
+            scheme = new TileScheme({levels, origin: [0, 0]});
         });
-        
+
         it('.maxResolution should return maximum resolution', () => {
             expect(scheme.maxResolution).toBe(40);
         });
-        
+
         it('.minResolution should return minimum resolution', () => {
-            
+            expect(scheme.minResolution).toBe(10);
         });
     });
 
