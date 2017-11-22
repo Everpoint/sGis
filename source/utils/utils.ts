@@ -1,11 +1,15 @@
-import {listenDomEvent} from './domEvent';
+import { listenDomEvent } from './domEvent';
 
 /**
  * Throws an exception with given message. If you need to handle all errors in one place, redefined this method to your needed handler.
- * @param message
+ * @param error
  */
-export const error = function(message) {
-    throw new Error(message);
+export const error = function (error: string | Error) {
+    if (isString(error)) {
+        throw new Error(error as string);
+    } else {
+        throw error;
+    }
 };
 
 export const warn = function(exeption) {
