@@ -2,7 +2,7 @@ import {Arc} from "../../renders/Arc";
 import {PolylineRender} from "../../renders/Polyline";
 import {VectorImage} from "../../renders/VectorImage";
 import {Point} from "../../renders/Point";
-import {PolygonRender} from "../../renders/Polygon";
+import {FillStyle, PolygonRender} from "../../renders/Polygon";
 import {error} from "../../utils/utils";
 
 /**
@@ -108,9 +108,9 @@ export class Canvas {
         }
 
         if (render instanceof PolygonRender) {
-            if (render.fillStyle === 'color') {
+            if (render.fillStyle === FillStyle.Color) {
                 this._ctx.fillStyle = render.fillColor;
-            } else if (render.fillStyle === 'image') {
+            } else if (render.fillStyle === FillStyle.Image) {
                 this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
                 var patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
                     patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
