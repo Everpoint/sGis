@@ -219,7 +219,7 @@ export class LayerGroup extends EventHandler {
      * @fires ContentsChangeEvent
      */
     get layers(): GroupItem[] {
-        return [].concat(this._layers);
+        return this._layers;
     }
     set layers(layers: GroupItem[]) {
         let currLayers = this._layers;
