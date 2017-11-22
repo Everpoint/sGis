@@ -1,15 +1,26 @@
 import {IRender} from "../interfaces/IRender";
 import {pointToLineDistance} from "../geotools";
-import {Coordinates} from "../baseTypes";
+import {Contour, Coordinates} from "../baseTypes";
+
+export interface PolylineRenderConstructorParams {
+    /** @see PolylineRender.strokeColor */
+    strokeColor?: string,
+    /** @see PolylineRender.strokeWidth */
+    strokeWidth?: number,
+    /** @see PolylineRender.ignoreEvents */
+    ignoreEvents?: boolean,
+    /** @see PolylineRender.lineContainsTolerance */
+    lineContainsTolerance?: number,
+    /** @see PolylineRender.lineDash */
+    lineDash?: number[]
+}
 
 /**
  * Rendered polyline.
  * @alias sGis.render.Polyline
- * @implements sGis.IRender
  */
-
 export class PolylineRender implements IRender {
-    coordinates: Coordinates[][];
+    coordinates: Contour[];
 
     /** Stroke color of the polygon. Can be any valid css color string. */
     strokeColor: string = 'black';
@@ -27,22 +38,16 @@ export class PolylineRender implements IRender {
     lineDash: number[] = [];
 
     /**
-     * @constructor
-     * @param {Number[][][]} coordinates - the coordinates of the polyline: [[[x11, y11], [x12, y12], ...], [[x21, y21], [x22, y22], ...]].
-     * @param {Object} [properties] - key-value list of any properties of sGis.render.Polyline
+     * @param coordinates - rendered (px) coordinates of the polyline.
+     * @param options - properties to be assigned to the instance
      */
-    constructor(coordinates: Coordinates[][], properties?: Object) {
-        if (properties) Object.assign(this, properties);
+    constructor(coordinates: Coordinates[][], options: PolylineRenderConstructorParams = {}) {
+        Object.assign(this, options);
         this.coordinates = coordinates;
     }
 
     get isVector(): boolean { return true; }
 
-    /**
-     * Returns true if 'position' is inside the rendered polygon.
-     * @param {Object} position - position in the rendered (px) coordinates in {x: X, y: Y} format.
-     * @returns {boolean}
-     */
     contains(position: Coordinates): boolean | [number, number]{
         for (let ring = 0, l = this.coordinates.length; ring < l; ring++) {
             for (let i = 1, m = this.coordinates[ring].length; i < m; i++) {
