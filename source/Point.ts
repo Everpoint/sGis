@@ -35,7 +35,6 @@ export interface IPoint {
 /**
  * Simple geographical point
  * @alias sGis.Point
- * @example const point = new Point([0, 0], CRS.geo)
  */
 export class Point implements IPoint {
     readonly crs: Crs;
