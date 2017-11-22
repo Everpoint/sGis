@@ -12,11 +12,11 @@ export interface IPoint {
      */
     position: Coordinates;
     /**
-     * X coordinate of this point
+     * First coordinate of this point
      */
     x: number;
     /**
-     * Y coordinate of this point
+     * Second coordinate of this point
      */
     y: number;
     /**
@@ -38,18 +38,10 @@ export interface IPoint {
  * @example const point = new Point([0, 0], CRS.geo)
  */
 export class Point implements IPoint {
-    /**
-     * Coordinate system of this point
-     */
     readonly crs: Crs;
-
-    /**
-     * Position of this point
-     */
     position: Coordinates;
 
     /**
-     * @constructor
      * @param position - point position
      * @param crs - point coordinate system
      */
@@ -74,36 +66,28 @@ export class Point implements IPoint {
 
     /**
      * Returns a copy of the point
-     * @returns {sGis.Point}
      */
-    clone() {
+    clone(): Point {
         return new Point(this.position, this.crs);
     }
 
     /**
      * Getter returns clone of this point. Setter set point position.
      */
-    get point() { return this.clone(); }
+    get point(): Point { return this.clone(); }
     set point(point) { this.position = point.projectTo(this.crs).position; }
 
-    /**
-     * X coordinate of this point
-     */
-    get x() { return this.position[0]; }
+    get x(): number { return this.position[0]; }
     set x(x) { this.position[0] = x; }
 
-    /**
-     * Y coordinate of this point
-     */
-    get y() { return this.position[1]; }
+    get y(): number { return this.position[1]; }
     set y(y) { this.position[1] = y; }
 
     /**
      * Returns true if the target point has the same position and crs as the current one
-     * @param {sGis.Point} point - target point for comparison
-     * @returns {boolean}
+     * @param point - target point for comparison
      */
-    equals(point: Point) {
+    equals(point: Point): boolean {
         return softEquals(point.x, this.x) && softEquals(point.y, this.y) && point.crs.equals(this.crs);
     }
 
