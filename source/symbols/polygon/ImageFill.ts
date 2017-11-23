@@ -1,5 +1,5 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {FillStyle, PolygonRender} from "../../renders/Polygon";
+import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../Polyline";
 import {Symbol} from "../Symbol";
 
@@ -41,7 +41,14 @@ export class ImageFill extends Symbol {
         }
         var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
-        return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillStyle: FillStyle.Image, fillImage: this._image, lineDash: this.lineDash })];
+        return [new PolyRender(coordinates, {
+            enclosed: true,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            fillStyle: FillStyle.Image,
+            fillImage: this._image,
+            lineDash: this.lineDash
+        })];
     }
 
     /**

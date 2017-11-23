@@ -1,6 +1,5 @@
 import {PointSymbol} from "./point/Point";
-import {PolylineRender} from "../renders/Polyline";
-import {PolygonRender} from "../renders/Polygon";
+import {FillStyle, PolyRender} from "../renders/Poly";
 import {Arc} from "../renders/Arc";
 import {PointImageSymbol} from "./point/PointImageSymbol";
 import {MaskedImage} from "./point/MaskedImage";
@@ -42,16 +41,12 @@ export class EditorSymbol extends Symbol {
                     strokeColor: 'transparent'
                 });
                 break;
-            } else if (baseRender[i] instanceof PolygonRender) {
-                halo = new PolygonRender(baseRender[i].coordinates, {
+            } else if (baseRender[i] instanceof PolyRender) {
+                halo = new PolyRender(baseRender[i].coordinates, {
+                    enclosed: baseRender[i].enclosed,
+                    fillStyle: baseRender[i].fillStyle === FillStyle.None ? FillStyle.None : FillStyle.Color,
                     strokeColor: this.color,
                     fillColor: this.color,
-                    strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
-                });
-                break;
-            } else if (baseRender[i] instanceof PolylineRender) {
-                halo = new PolylineRender(baseRender[i].coordinates, {
-                    strokeColor: this.color,
                     strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
                 });
                 break;

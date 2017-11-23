@@ -1,8 +1,7 @@
 import {Arc} from "../../renders/Arc";
-import {PolylineRender} from "../../renders/Polyline";
 import {VectorImage} from "../../renders/VectorImage";
 import {Point} from "../../renders/Point";
-import {FillStyle, PolygonRender} from "../../renders/Polygon";
+import {FillStyle, PolyRender} from "../../renders/Poly";
 import {error} from "../../utils/utils";
 
 /**
@@ -42,7 +41,7 @@ export class Canvas {
             this._drawArc(render);
         } else if (render instanceof Point) {
             this._drawPoint(render);
-        } else if (render instanceof PolylineRender || render instanceof PolygonRender) {
+        } else if (render instanceof PolyRender) {
             this._drawPoly(render);
         } else if (render instanceof VectorImage) {
             this._drawImage(render);
@@ -86,7 +85,7 @@ export class Canvas {
         this._ctx.drawImage(render.node, Math.round(x), Math.round(y));
     }
 
-    _drawPoly(render) {
+    _drawPoly(render: PolyRender) {
         var coordinates = render.coordinates;
 
         this._ctx.beginPath();
@@ -102,24 +101,23 @@ export class Canvas {
                 this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
             }
 
-            if (render instanceof PolygonRender) {
+            if (render.enclosed) {
                 this._ctx.closePath();
             }
         }
 
-        if (render instanceof PolygonRender) {
-            if (render.fillStyle === FillStyle.Color) {
-                this._ctx.fillStyle = render.fillColor;
-            } else if (render.fillStyle === FillStyle.Image) {
-                this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
-                var patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
-                    patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
-                this._ctx.translate(patternOffsetX, patternOffsetY);
-            }
+        if (render.fillStyle === FillStyle.Color) {
+            this._ctx.fillStyle = render.fillColor;
             this._ctx.fill();
-
+        } else if (render.fillStyle === FillStyle.Image) {
+            this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
+            let patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
+                patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
+            this._ctx.translate(patternOffsetX, patternOffsetY);
+            this._ctx.fill();
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
+
 
         this._ctx.stroke();
     }

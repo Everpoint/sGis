@@ -37,8 +37,7 @@ export {Point} from "./Point";
 import {Arc} from "./renders/Arc";
 import {ImageRender} from "./renders/Image";
 import {Point as PointRender} from "./renders/Point";
-import {PolygonRender} from "./renders/Polygon";
-import {PolylineRender} from "./renders/Polyline";
+import {PolyRender} from "./renders/Poly";
 export {Symbol} from "./symbols/Symbol";
 import {ImageSymbol} from "./symbols/Image";
 import {LabelSymbol} from "./symbols/LabelSymbol";
@@ -120,8 +119,7 @@ export const render = {
     HtmlElement: HTMLElement,
     ImageRender: ImageRender,
     Point: PointRender,
-    Polygon: PolygonRender,
-    Polyline: PolylineRender
+    Polygon: PolyRender
 };
 
 export const symbol = {

@@ -1,6 +1,6 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
-import {PolygonRender} from "../../renders/Polygon";
+import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../Polyline";
 
 /**
@@ -35,7 +35,14 @@ export class PolygonSymbol extends Symbol {
     renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
         let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
-        return [new PolygonRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, fillColor: this.fillColor, lineDash: this.lineDash })];
+        return [new PolyRender(coordinates, {
+            enclosed: true,
+            fillStyle: FillStyle.Color,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            fillColor: this.fillColor,
+            lineDash: this.lineDash
+        })];
     }
 }
 

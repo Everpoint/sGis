@@ -1,8 +1,8 @@
 import {Symbol} from "./Symbol";
-import {PolylineRender} from "../renders/Polyline";
 import {isArray} from "../utils/utils";
 import {registerSymbol} from "../serializers/symbolSerializer";
 import {simplifyCoordinates} from "../utils/math";
+import {PolyRender} from "../renders/Poly";
 
 /**
  * Symbol of polyline drawn as simple line
@@ -31,7 +31,7 @@ export class PolylineSymbol extends Symbol {
     renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
         let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
-        return [new PolylineRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, lineDash: this.lineDash })];
+        return [new PolyRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, lineDash: this.lineDash })];
     }
 
     static _getRenderedCoordinates(feature, resolution, crs) {

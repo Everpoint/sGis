@@ -1,5 +1,5 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {PolygonRender} from "../../renders/Polygon";
+import {PolyRender} from "../../renders/Poly";
 import {Symbol} from "../Symbol";
 
 /**
@@ -47,7 +47,7 @@ export class SquareSymbol extends Symbol {
             [pxPosition[0] + halfSize + offset.x, pxPosition[1] - halfSize + offset.y]
         ]];
 
-        return [new PolygonRender(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
+        return [new PolyRender(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
     }
 }
 

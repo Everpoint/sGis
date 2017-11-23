@@ -1,6 +1,5 @@
 import {Arc} from "../../renders/Arc";
-import {PolylineRender} from "../../renders/Polyline";
-import {PolygonRender} from "../../renders/Polygon";
+import {FillStyle, PolyRender} from "../../renders/Poly";
 import {getGuid} from "../../utils/utils";
 import {Color} from "../../utils/Color";
 
@@ -35,42 +34,25 @@ export class SvgRender{
             } else {
                 this._setSegmentNode();
             }
-        } else if (this._baseRender instanceof PolygonRender) {
-            this._setPolygonNode();
-        } else if (this._baseRender instanceof PolylineRender) {
-            this._setPolylineNode();
+        } else if (this._baseRender instanceof PolyRender) {
+            this._setPolyNode();
         }
     }
 
-    _setPolygonNode() {
+    _setPolyNode() {
         var path = this._getSvgPath();
-        path.d += ' Z';
-        path.d = path.d.replace(/ M/g, ' Z M');
+
+        if (this._baseRender.enclosed) {
+            path.d += ' Z';
+            path.d = path.d.replace(/ M/g, ' Z M');
+        }
 
         this._node = this._getPathNode({
             stroke: this._baseRender.strokeColor,
             'stroke-dasharray': this._baseRender.lineDash && this._baseRender.lineDash.length > 0 ? this._baseRender.lineDash.join(',') : undefined,
             'stroke-width': this._baseRender.strokeWidth,
-            fill: this._baseRender.fillStyle === 'color' ? this._baseRender.fillColor : undefined,
-            fillImage: this._baseRender.fillStyle === 'image' ? this._baseRender.fillImage : undefined,
-            width: path.width,
-            height: path.height,
-            x: path.x,
-            y: path.y,
-            viewBox: [path.x, path.y, path.width, path.height].join(' '),
-            d: path.d
-        });
-
-        this._position = [path.x, path.y];
-    }
-
-    _setPolylineNode() {
-        var path = this._getSvgPath();
-        this._node = this._getPathNode({
-            stroke: this._baseRender.strokeColor,
-            'stroke-dasharray': this._baseRender.lineDash && this._baseRender.lineDash.length > 0 ? this._baseRender.lineDash.join(',') : undefined,
-            'stroke-width': this._baseRender.strokeWidth,
-            fill: 'transparent',
+            fill: this._baseRender.fillStyle === FillStyle.Color ? this._baseRender.fillColor : undefined,
+            fillImage: this._baseRender.fillStyle === FillStyle.Image ? this._baseRender.fillImage : undefined,
             width: path.width,
             height: path.height,
             x: path.x,

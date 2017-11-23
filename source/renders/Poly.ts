@@ -3,35 +3,41 @@ import {contains} from "../geotools";
 import {Coordinates} from "../baseTypes";
 
 export enum FillStyle {
+    None,
     Color,
     Image
 }
 
-export interface PolygonRenderConstructorParams {
-    /** @see PolylineRender.fillStyle */
+export interface PolyRenderConstructorParams {
+    /** @see PolyRender.enclosed */
+    enclosed?: boolean,
+    /** @see PolyRender.fillStyle */
     fillStyle?: FillStyle
-    /** @see PolylineRender.strokeColor */
+    /** @see PolyRender.strokeColor */
     strokeColor?: string,
-    /** @see PolylineRender.strokeWidth */
+    /** @see PolyRender.strokeWidth */
     strokeWidth?: number,
-    /** @see PolylineRender.fillColor */
+    /** @see PolyRender.fillColor */
     fillColor?: string,
-    /** @see PolylineRender.ignoreEvents */
+    /** @see PolyRender.ignoreEvents */
     ignoreEvents?: boolean,
-    /** @see PolylineRender.lineContainsTolerance */
+    /** @see PolyRender.lineContainsTolerance */
     lineContainsTolerance?: number,
-    /** @see PolylineRender.lineDash */
+    /** @see PolyRender.lineDash */
     lineDash?: number[],
-    /** @see PolylineRender.fillImage */
+    /** @see PolyRender.fillImage */
     fillImage?: HTMLImageElement
 }
 
 /**
  * Rendered polygon
- * @alias sGis.render.Polygon
+ * @alias sGis.render.Poly
  */
-export class PolygonRender implements IRender {
+export class PolyRender implements IRender {
     coordinates: Coordinates[][];
+
+    /** Whether the first and the last points should be connected. */
+    enclosed: boolean = false;
 
     /** Fill style of the polygon. */
     fillStyle: FillStyle = FillStyle.Color;
@@ -61,7 +67,7 @@ export class PolygonRender implements IRender {
      * @param coordinates - the coordinates of the polygon.
      * @param options - properties to be assigned to the instance
      */
-    constructor(coordinates, options: PolygonRenderConstructorParams = {}) {
+    constructor(coordinates, options: PolyRenderConstructorParams = {}) {
         Object.assign(this, options);
         this.coordinates = coordinates;
     }
