@@ -27,13 +27,14 @@ function processDirectory(dir) {
 
 function processFile(f, rawFileName) {
     fs.readFile(f, 'utf8', function(err, jsCode) {
-        let match = jsCode.match(/\/\/ %([a-z0-9_.]+)%/i);
-        if (!match || match.length < 2) throw new Error(`Template name not found for file ${f}`);
+        let templateMatch = jsCode.match(/\/\/\/ Template:\s*"([a-z0-9_.]+)"/i);
+        if (!templateMatch || templateMatch.length < 2) throw new Error(`Template name not found for file ${f}`);
+        let templateName = templateMatch[1];
 
-        let templateName = match[1];
+        let titleMatch = jsCode.match(/\/\/\/ Title:\s*"(.+)"/i);
+        let title = titleMatch && titleMatch[1] || rawFileName.replace('_', ' ').replace('.js', '');
 
         fs.readFile(path.join(TEMPL_DIR, templateName), 'utf8', function(err, templateCode) {
-            let title = rawFileName.replace('_', ' ').replace('.js', '');
             let output = templateCode.replace('%TITLE%', title).replace('%FILENAME%', path.relative(BASE_DIR, f));
             let outputFileName = path.join(COMPILED_DIR, path.basename(path.relative(BASE_DIR, f), '.js') + '.html');
 

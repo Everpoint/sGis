@@ -1,4 +1,5 @@
-// %4_maps.html%
+/// Template: "4_maps.html"
+/// Title: "Setting position and resolution with init function"
 
 import {init} from "sgis/dist/init";
 import {TileLayer} from "sgis/dist/TileLayer";
