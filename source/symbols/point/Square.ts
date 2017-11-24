@@ -1,53 +1,75 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {PolyRender} from "../../renders/Poly";
+import {FillStyle, PolyRender} from "../../renders/Poly";
 import {Symbol} from "../Symbol";
+import {Offset} from "../../baseTypes";
+import {Feature} from "../../features/Feature";
+import {Crs} from "../../Crs";
+import {IRender} from "../../interfaces/IRender";
+import {PointFeature} from "../../features/Point";
+
+export interface SquareSymbolConstructorParams {
+    /** @see [[SquareSymbol.size]] */
+    size?: number,
+    /** @see [[SquareSymbol.offset]] */
+    offset?: Offset,
+    /** @see [[SquareSymbol.fillColor]] */
+    fillColor?: string,
+    /** @see [[SquareSymbol.strokeColor]] */
+    strokeColor?: string,
+    /** @see [[SquareSymbol.strokeWidth]] */
+    strokeWidth?: number
+}
 
 /**
  * Symbol of point drawn as a square.
  * @alias sGis.symbol.point.Square
- * @extends sGis.Symbol
  */
 export class SquareSymbol extends Symbol {
     /** Size of the square. */
-    size = 10;
+    size: number = 10;
 
     /** Offset of the point from the feature position in {x: dx, y: dy} format. If set to {x:0, y:0}, center of the square will be at the position of the feature. */
-    offset = {x: 0, y: 0};
+    offset: Offset = [0, 0];
 
     /** Color of the inner part of the square. Can be any valid css color string. */
-    fillColor = 'black';
+    fillColor: string = 'black';
 
     /** Color of the outline of the square. Can be any valid css color string. */
-    strokeColor = 'transparent';
+    strokeColor: string = 'transparent';
 
     /** Width of the outline. */
-    strokeWidth = 1;
+    strokeWidth: number = 1;
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: SquareSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
 
     }
 
-    renderFunction(/** sGis.feature.Point */ feature, resolution, crs) {
-        if (feature.position === undefined) return [];
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof PointFeature)) return [];
 
-        var position = feature.projectTo(crs).position;
-        var pxPosition = [position[0] / resolution, - position[1] / resolution];
-        var halfSize = this.size / 2;
-        var offset = this.offset;
-        var coordinates = [[
-            [pxPosition[0] - halfSize + offset.x, pxPosition[1] - halfSize + offset.y],
-            [pxPosition[0] - halfSize + offset.x, pxPosition[1] + halfSize + offset.y],
-            [pxPosition[0] + halfSize + offset.x, pxPosition[1] + halfSize + offset.y],
-            [pxPosition[0] + halfSize + offset.x, pxPosition[1] - halfSize + offset.y]
+        let position = feature.projectTo(crs).position;
+        let pxPosition = [position[0] / resolution, - position[1] / resolution];
+        let halfSize = this.size / 2;
+        let offset = this.offset;
+        let coordinates = [[
+            [pxPosition[0] - halfSize + offset[0], pxPosition[1] - halfSize + offset[1]],
+            [pxPosition[0] - halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
+            [pxPosition[0] + halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
+            [pxPosition[0] + halfSize + offset[0], pxPosition[1] - halfSize + offset[1]]
         ]];
 
-        return [new PolyRender(coordinates, {fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth})];
+        return [new PolyRender(coordinates, {
+            fillColor: this.fillColor,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            enclosed: true,
+            fillStyle: FillStyle.Color
+        })];
     }
 }
 
