@@ -5,10 +5,14 @@ import {Feature} from "../features/Feature";
 import {Crs} from "../Crs";
 import {IRender} from "../interfaces/IRender";
 
+export interface ImageSymbolConstructorParams {
+    transitionTime?: number,
+    opacity?: number
+}
+
 /**
  * Symbol for image with size bound by feature bbox.
  * @alias sGis.symbol.image.Image
- * @extends sGis.Symbol
  */
 export class ImageSymbol extends Symbol {
     /** Transition (fade in) time of the image node in ms. */
@@ -18,10 +22,9 @@ export class ImageSymbol extends Symbol {
     opacity: number;
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param __namedParameters - key-value list of the properties to be assigned to the instance.
      */
-    constructor({ opacity = 1, transitionTime = 0 }: { opacity?: number, transitionTime?: number } = {}) {
+    constructor({ opacity = 1, transitionTime = 0 }: ImageSymbolConstructorParams = {}) {
         super();
 
         this.transitionTime = transitionTime;
