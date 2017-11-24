@@ -1,24 +1,23 @@
 import {setStyleNode} from "../utils/utils";
 import {HtmlElement} from "../renders/HtmlElement";
 import {Symbol} from "./Symbol";
+import {Feature} from "../features/Feature";
+import {Crs} from "../Crs";
+import {IRender} from "../interfaces/IRender";
+import {Maptip} from "../features/Maptip";
 
 /**
  * Balloon over a map with html content.
  * @alias sGis.symbol.maptip.Simple
- * @extends sGis.Symbol
  */
 export class MaptipSymbol extends Symbol {
-    /**
-     * @constructor
-     * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
-     */
-    constructor(properties?: Object) {
+    constructor() {
         super();
-        if (properties) Object.assign(this, properties);
     }
 
-    renderFunction(feature, resolution, crs) {
-        let position = feature.point.projectTo(crs).position;
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof Maptip)) return [];
+        let position = (<Maptip>feature).point.projectTo(crs).position;
         let pxPosition = [position[0]/resolution, position[1]/resolution];
         let render = new HtmlElement(`<div class="sGis-maptip-outerContainer"><div class="sGis-maptip-innerContainer">${feature.content}</div></div>`, pxPosition);
 
