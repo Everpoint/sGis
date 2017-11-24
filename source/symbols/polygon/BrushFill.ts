@@ -3,13 +3,31 @@ import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Color} from "../../utils/Color";
 import {Symbol} from "../Symbol";
+import {Feature} from "../../features/Feature";
+import {IRender} from "../../interfaces/IRender";
+import {Crs} from "../../Crs";
+import {Polygon} from "../../features/Polygon";
 
 const ALPHA_NORMALIZER = 65025;
+
+export interface BrushFillConstructorParams {
+    /** @see BrushFill.strokeColor */
+    strokeColor?: string,
+    /** @see BrushFill.strokeWidth */
+    strokeWidth?: number,
+    /** @see BrushFill.lineDash */
+    lineDash?: number[]
+    /** @see BrushFill.fillBrush */
+    fillBrush?: number[][],
+    /** @see BrushFill.fillForeground */
+    fillForeground?: string,
+    /** @see BrushFill.fillBackground */
+    fillBackground?: string
+}
 
 /**
  * Symbol of polygon with brush filling.
  * @alias sGis.symbol.polygon.BrushFill
- * @extends sGis.Symbol
  */
 export class BrushFill extends Symbol {
     _brush: HTMLImageElement;
@@ -28,31 +46,31 @@ export class BrushFill extends Symbol {
                     [255, 0, 0, 0, 0, 0, 0, 255, 255, 255]];
 
     /** Stroke color of the outline. Can be any valid css color string. */
-    strokeColor = 'black';
+    strokeColor: string = 'black';
 
     /** Stroke width of the outline. */
-    strokeWidth = 1;
+    strokeWidth: number = 1;
 
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
-    lineDash = [];
+    lineDash: number[] = [];
     
     private _initialized: boolean = false;
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: BrushFillConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        if (options) Object.assign(this, options);
 
         this._initialized = true;
         this._updateBrush();
     }
 
-    renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof Polygon)) return [];
+
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
-        if (!coordinates) return [];
         return [new PolyRender(coordinates, {
             enclosed: true,
             strokeColor: this.strokeColor,
@@ -65,37 +83,32 @@ export class BrushFill extends Symbol {
 
     /**
      * Brush pattern for filling.
-     * @type Number[][]
      */
-    get fillBrush() { return this._fillBrush; }
-    set fillBrush(/** Number[][] */ brush) {
+    get fillBrush(): number[][] { return this._fillBrush; }
+    set fillBrush(brush: number[][]) {
         this._fillBrush = brush;
         this._updateBrush();
     }
 
     /**
      * Brush background color. Can be any valid css color string.
-     * @type String
-     * @default "transparent"
      */
-    get fillBackground() { return this._fillBackground; }
-    set fillBackground(/** String */ color) {
+    get fillBackground(): string { return this._fillBackground; }
+    set fillBackground(color: string) {
         this._fillBackground = color;
         this._updateBrush();
     }
 
     /**
      * Brush foreground color. Can be any valid css color string.
-     * @type String
-     * @default "black"
      */
-    get fillForeground() { return this._fillForeground; }
-    set fillForeground(/** String */ color) {
+    get fillForeground(): string { return this._fillForeground; }
+    set fillForeground(color: string) {
         this._fillForeground = color;
         this._updateBrush();
     }
 
-    _updateBrush() {
+    _updateBrush(): void {
         if (!this._initialized) return;
         
         let canvas = document.createElement('canvas');
