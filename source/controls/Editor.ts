@@ -5,7 +5,7 @@ import {PolyEditor} from "./PolyEditor";
 import {PolyTransform} from "./PolyTransform";
 import {getGuid} from "../utils/utils";
 import {listenDomEvent, removeDomEventListener} from "../utils/domEvent";
-import {EditorSymbol} from "../symbols/Editor";
+import {EditorSymbol} from "../symbols/EditorSymbol";
 import {FeaturesAddEvent, FeaturesRemoveEvent} from "../FeatureLayer";
 
 const modes = ['vertex', 'rotate', 'scale', 'drag'];

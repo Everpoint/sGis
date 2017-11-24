@@ -58,7 +58,7 @@ import * as mathModule from "./utils/math";
 import * as geotoolsModule from "./geotools";
 import * as symbolSerializer from "./serializers/symbolSerializer";
 import * as eventModule from "./utils/domEvent";
-import {EditorSymbol} from "./symbols/Editor";
+import {EditorSymbol} from "./symbols/EditorSymbol";
 
 export const math = mathModule;
 export const geotools = geotoolsModule;

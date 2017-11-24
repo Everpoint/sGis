@@ -4,36 +4,46 @@ import {Arc} from "../renders/Arc";
 import {PointImageSymbol} from "./point/PointImageSymbol";
 import {MaskedImage} from "./point/MaskedImage";
 import {Symbol} from "./Symbol";
+import {Feature} from "../features/Feature";
+import {IRender} from "../interfaces/IRender";
+import {Crs} from "../Crs";
+
+export interface EditorSymbolConstructorParams {
+    /** @see EditorSymbol.baseSymbol */
+    baseSymbol?: Symbol,
+    /** @see EditorSymbol.color */
+    color?: string,
+    /** @see EditorSymbol.haloSize */
+    haloSize?: number
+}
 
 /**
  * Symbol of a highlighted feature for editor.
  * @alias sGis.symbol.Editor
- * @extends sGis.Symbol
  */
 export class EditorSymbol extends Symbol {
     /** Base symbol of the feature. Used to render original feature with the highlight. */
-    baseSymbol = new PointSymbol();
+    baseSymbol: Symbol = new PointSymbol();
 
     /** Color of the halo (highlight). Can be any valid css color string. */
-    color = 'rgba(97,239,255,0.5)';
+    color: string = 'rgba(97,239,255,0.5)';
 
     /** Size of the halo around the feature. */
-    haloSize = 5;
+    haloSize: number = 5;
 
     /**
-     * @constructor
-     * @param {Object} [properties] - key-value list of properties to be assigned to the instance.
+     * @param {Object} [options] - key-value list of properties to be assigned to the instance.
      */
-    constructor(properties) {
+    constructor(options: EditorSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
 
     }
 
-    renderFunction(feature, resolution, crs) {
-        var baseRender = <any>this.baseSymbol.renderFunction(feature, resolution, crs);
-        var halo;
-        for (var i = 0; i < baseRender.length; i++) {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        let baseRender = <any>this.baseSymbol.renderFunction(feature, resolution, crs);
+        let halo;
+        for (let i = 0; i < baseRender.length; i++) {
             if (baseRender[i] instanceof Arc) {
                 halo = new Arc(baseRender[i].center, {
                     fillColor: this.color,
