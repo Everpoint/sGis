@@ -4,23 +4,22 @@ import {Crs} from "../Crs";
 import {IRender} from "../interfaces/IRender";
 
 /**
- * Empty symbol, base class for all other symbol classes. If this symbol is assigned to a feature, the feature will not be rendered.
+ * Symbol that renders a feature to the screen coordinate system. All symbols take as input a feature, target resolution
+ * and target crs, and must return a set of renders (rendered primitives) that then can be used to draw the feature.
  * @alias sGis.Symbol
  */
 export abstract class Symbol {
     /**
      * This function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map.
      * If the symbol cannot render provided feature, empty array is returned.
-     * @param {sGis.Feature} feature - feature to be drawn.
-     * @param {Number} resolution - resolution of the render.
-     * @param {sGis.Crs} crs - target coordinate system of the render.
-     * @returns {sGis.IRender[]}
+     * @param feature - feature to be drawn.
+     * @param resolution - resolution of the render.
+     * @param crs - target coordinate system of the render.
      */
     abstract renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[]
 
     /**
      * Returns a copy of the symbol. Only essential properties are copied.
-     * @returns {sGis.Symbol}
      */
     clone(): Symbol {
         let desc = serialize(this);
