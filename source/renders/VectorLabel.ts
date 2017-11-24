@@ -1,15 +1,50 @@
 import {VectorImage} from "./VectorImage";
+import {Coordinates} from "../baseTypes";
 
+export enum HorizontalAlignment {
+    Left, Center, Top
+}
+
+export enum VerticalAlignment {
+    Top, Middle, Bottom
+}
+
+export interface VectorLabelConstructorParams {
+    /** @see VectorLabel.font */
+    font?: string,
+    /** @see VectorLabel.horizontalAlignment */
+    horizontalAlignment?: HorizontalAlignment,
+    /** @see VectorLabel.verticalAlignment */
+    verticalAlignment?: VerticalAlignment
+    /** @see VectorLabel.isFilled */
+    isFilled?: boolean
+}
+
+/**
+ * Text label that is drawn as a vector element. This render prerenders itself to the offscreen canvas and then allows
+ * layer renderer to draw it as a simple image.
+ */
 export class VectorLabel extends VectorImage {
+    /**
+     * Font of the label. Set as a valid css font string.
+     */
     font = '10px arial';
-    align = 'center middle';
-    isFilled = true;
+
+    /** Horizontal alignment of the label relative to the position. */
+    horizontalAlignment: HorizontalAlignment = HorizontalAlignment.Center;
+
+    /** Vertical alignment of the label relative to the position. */
+    verticalAlignment: VerticalAlignment = VerticalAlignment.Middle;
+
+    /** Whether the font should be drawn as outline or if the letters should be filled inside. */
+    isFilled: boolean = true;
 
     private _text: string;
 
-    constructor(position, text, properties) {
-        super(initCanvas(), position, properties);
+    constructor(position: Coordinates, text: string, options: VectorLabelConstructorParams = {}) {
+        super(initCanvas(), position, [0, 0]);
         this._text = text;
+        Object.assign(this, options);
         this._render();
     }
 
@@ -23,12 +58,11 @@ export class VectorLabel extends VectorImage {
         let fontSize = parseInt(this.font) || 10;
         this.node.height = Math.ceil(fontSize * 1.6);
 
-        let vAlign = this.vAlign;
         let dy = 0;
-        if (vAlign === 1) {
+        if (this.verticalAlignment === VerticalAlignment.Bottom) {
             ctx.textBaseline = 'bottom';
             dy = this.node.height;
-        } else if (vAlign === 0) {
+        } else if (this.verticalAlignment === VerticalAlignment.Middle) {
             ctx.textBaseline = 'middle';
             dy = this.node.height / 2;
         } else {
@@ -44,22 +78,19 @@ export class VectorLabel extends VectorImage {
         this._setOffset();
     }
 
-    get hAlign() { return this.align.indexOf('right') >= 0 ? 1 : this.align.indexOf('center') >= 0 ? 0 : -1; }
-    get vAlign() { return this.align.indexOf('bottom') >= 0 ? 1 : this.align.indexOf('middle') >= 0 ? 0 : -1; }
-
     _setOffset() {
         let dx = 0;
         let dy = 0;
 
-        if (this.hAlign === 1) {
+        if (this.horizontalAlignment === HorizontalAlignment.Left) {
             dx = -this.node.width;
-        } else if (this.hAlign === 0) {
+        } else if (this.horizontalAlignment === HorizontalAlignment.Center) {
             dx = -this.node.width / 2;
         }
 
-        if (this.vAlign === 1) {
+        if (this.verticalAlignment === VerticalAlignment.Top) {
             dy = -this.node.height;
-        } else if (this.vAlign === 0) {
+        } else if (this.verticalAlignment === VerticalAlignment.Middle) {
             dy = -this.node.height / 2;
         }
 
