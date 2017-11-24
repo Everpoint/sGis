@@ -1,23 +1,34 @@
-import {Coordinates} from "../baseTypes";
+import {Coordinates, HTMLRasterElement, Offset} from "../baseTypes";
+import {IRender} from "../interfaces/IRender";
 
-export class VectorImage {
-    private _node: HTMLImageElement | HTMLCanvasElement;
+/**
+ * Image render that is drawn to the vector container instead of DOM.
+ */
+export class VectorImage implements IRender {
+    private _node: HTMLRasterElement;
     private _position: Coordinates;
-    offset = [0, 0];
 
-    constructor(imageNode, position, properties) {
+    /**
+     * Offset of the element from its position.
+     */
+    offset: Offset;
+
+    constructor(imageNode: HTMLRasterElement, position: Coordinates, offset: Offset = [0, 0]) {
         this._node = imageNode;
         this._position = position;
-        Object.assign(this, properties);
+        this.offset = offset;
     }
 
-    get node() { return this._node; }
+    /**
+     * Image of the render.
+     */
+    get node(): HTMLRasterElement { return this._node; }
 
-    get isVector() { return true; }
+    get isVector(): boolean { return true; }
 
-    get origin() { return [this._position[0] + this.offset[0], this._position[1] + this.offset[1]]; }
+    get origin(): Coordinates { return [this._position[0] + this.offset[0], this._position[1] + this.offset[1]]; }
 
-    contains(position) {
+    contains(position: Coordinates): boolean {
          let [x, y] = this.origin;
          return position[0] >= x && position[0] <= x + this._node.width && position[1] >= y && position[1] <= y + this._node.height;
     }

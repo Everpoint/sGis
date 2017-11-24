@@ -24,3 +24,8 @@ export type ResolutionLimits = [number, number];
  * A set of coordinates that represent a rectangular area in the format [xmin, ymin, xmax, ymax].
  */
 export type RectCoordinates = [number, number, number, number];
+
+/**
+ * HTML element that can be rendered to DOM or canvas as an image.
+ */
+export type HTMLRasterElement = HTMLImageElement | HTMLCanvasElement;
