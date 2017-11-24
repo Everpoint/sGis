@@ -2,14 +2,27 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
+import {Feature} from "../../features/Feature";
+import {Crs} from "../../Crs";
+import {IRender} from "../../interfaces/IRender";
+import {Polygon} from "../../features/Polygon";
+
+export interface PolygonSymbolConstructorParams {
+    /** @see PolygonSymbol.fillColor */
+    fillColor?: string,
+    /** @see PolygonSymbol.strokeColor */
+    strokeColor?: string,
+    /** @see PolygonSymbol.strokeWidth */
+    strokeWidth?: number,
+    /** @see PolygonSymbol.lineDash */
+    lineDash?: number[]
+}
 
 /**
  * Symbol of polygon with one color filling.
  * @alias sGis.symbol.polygon.Simple
- * @extends sGis.Symbol
  */
 export class PolygonSymbol extends Symbol {
-
     /** Fill color of the polygon. Can be any valid css color string. */
     fillColor: string = 'transparent';
 
@@ -23,18 +36,18 @@ export class PolygonSymbol extends Symbol {
     lineDash: number[] = [];
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: PolygonSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
 
     }
 
-    renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof Polygon)) return [];
+
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
-        if (!coordinates) return [];
         return [new PolyRender(coordinates, {
             enclosed: true,
             fillStyle: FillStyle.Color,
