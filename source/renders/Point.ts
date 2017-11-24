@@ -33,7 +33,7 @@ export class Point implements IRender {
 
     get isVector(): boolean { return true; }
 
-    contains(position: Coordinates, tolerance: number = 2) {
+    contains(position: Coordinates, tolerance: number = 2): boolean {
         let dx = position[0] - this._coord[0];
         let dy = position[1] - this._coord[1];
         let distance2 = dx * dx + dy * dy;

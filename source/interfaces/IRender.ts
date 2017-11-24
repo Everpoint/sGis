@@ -12,3 +12,7 @@ export interface IRender {
      */
     isVector: boolean
 }
+
+export type OnAfterDisplayedHandler = (HTMLElement) => void;
+
+export type GetNodeCallback = (Error, HTMLElement) => void;

@@ -66,7 +66,7 @@ export class Arc implements IRender {
         this.center = center;
     }
 
-    contains(position) {
+    contains(position: Coordinates): boolean {
         let dx = position[0] - this.center[0];
         let dy = position[1] - this.center[1];
         let distance2 = dx * dx + dy * dy;

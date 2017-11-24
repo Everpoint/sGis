@@ -1,52 +1,49 @@
+import {Coordinates, Offset} from "../baseTypes";
+import {GetNodeCallback, IRender, OnAfterDisplayedHandler} from "../interfaces/IRender";
+
+
+
 /**
  * Custom HTML element on the map.
  * @alias sGis.render.HtmlElement
- * @implements sGis.IRender
  */
-import {Coordinates} from "../baseTypes";
-import {IRender} from "../interfaces/IRender";
-
 export class HtmlElement implements IRender {
     private _htmlText: string;
     private _position: Coordinates;
-    private onAfterDisplayed: Function;
-    private offset: [number, number];
+    private onAfterDisplayed: OnAfterDisplayedHandler;
+    private offset: Offset;
     private _lastNode: HTMLElement;
+
     /**
-     * @constructor
-     * @param {String} htmlText - the inner html value of html element
-     * @param {Position} position - projected position of render in [x, y] format
-     * @param {Function} [onAfterDisplayed] - callback function that will be called after a render node is drawn to the DOM
-     * @param offset
+     * @param htmlText - the inner html value of html element
+     * @param position - projected position of render
+     * @param onAfterDisplayed - callback function that will be called after a render node is drawn to the DOM
+     * @param offset - offset of the element from the position
      */
-    constructor(htmlText, position, onAfterDisplayed?: Function, offset: [number, number] = [0, 0]) {
+    constructor(htmlText, position, onAfterDisplayed: OnAfterDisplayedHandler = null, offset: Offset = [0, 0]) {
         this._htmlText = htmlText;
         this._position = position;
         this.onAfterDisplayed = onAfterDisplayed;
         this.offset = offset;
     }
 
-    static get isVector() { return false; }
-
     /**
      * Returns HTML div element as the second parameter to callback function
-     * @param {Function} callback - callback function that will be called after node is ready
+     * @param callback - callback function that will be called after node is ready
      */
-    getNode(callback) {
-        var node = document.createElement('div');
+    getNode(callback: GetNodeCallback) {
+        let node = document.createElement('div');
         node.innerHTML = this._htmlText;
         this._lastNode = node;
         callback(null, node);
     }
 
     /**
-     * Position of the render in [x, y] format
-     * @type Position
-     * @readonly
+     * Position of the render
      */
-    get position() { return this._position; }
+    get position(): Coordinates { return this._position; }
 
-    contains(position) {
+    contains(position: Coordinates): boolean {
         let width = this._lastNode.clientWidth || this._lastNode.offsetWidth || 0;
         let height = this._lastNode.clientHeight || this._lastNode.offsetHeight || 0;
 
