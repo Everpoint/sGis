@@ -27,3 +27,5 @@ export abstract class Symbol {
         return deserialize(desc);
     }
 }
+
+export type SymbolConstructor = new () => Symbol;
