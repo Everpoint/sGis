@@ -19,7 +19,7 @@ import {Coordinates} from "../baseTypes";
  */
 export class PolyTransform extends Control {
     /** Symbol of the rotation handle. */
-    rotationHandleSymbol = new PointSymbol({offset: {x: 0, y: -30}});
+    rotationHandleSymbol = new PointSymbol({offset: [0, -30]});
 
     /** Symbol of the scaling handles. */
     scaleHandleSymbol = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
@@ -109,7 +109,7 @@ export class PolyTransform extends Control {
             let symbol = <PointSymbol>this.scaleHandleSymbol.clone();
             let xk = i % 3 - 1;
             let yk = 1- Math.floor(i/3);
-            symbol.offset = { x: this.scaleHandleOffset * xk, y: this.scaleHandleOffset * yk };
+            symbol.offset = [this.scaleHandleOffset * xk, this.scaleHandleOffset * yk];
 
             this._scaleHandles[i] = new PointFeature([0, 0], {symbol: symbol, crs: this.map.crs});
             this._scaleHandles[i].on('dragStart', this._handleScalingStart.bind(this, i));

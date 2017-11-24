@@ -2,23 +2,34 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {PointFeature} from "../../features/Point";
 import {Arc} from "../../renders/Arc";
+import {Offset} from "../../baseTypes";
+import {Feature} from "../../features/Feature";
+import {IRender} from "../../interfaces/IRender";
+import {Crs} from "../../Crs";
 
-export type Offset = {
-    x: number;
-    y: number;
+export interface PointSymbolConstructorParams {
+    /** @see [[PointSymbol.size]] */
+    size?: number,
+    /** @see [[PointSymbol.offset]] */
+    offset?: Offset,
+    /** @see [[PointSymbol.fillColor]] */
+    fillColor?: string,
+    /** @see [[PointSymbol.strokeColor]] */
+    strokeColor?: string,
+    /** @see [[PointSymbol.strokeWidth]] */
+    strokeWidth?: number
 }
 
 /**
-* Symbol of point drawn as circle with outline.
+ * Symbol of point drawn as circle with outline.
  * @alias sGis.symbol.point.Point
- * @extends sGis.Symbol
  */
 export class PointSymbol extends Symbol {
     /** Diameter of the circle. */
     size: number = 10;
 
-    /** Offset of the point from the feature position in {x: dx, y: dy} format. If set to {x:0, y:0}, center of the circle will be at the position of the feature. */
-    offset: Offset = { x: 0, y: 0 };
+    /** Offset of the point from the feature position. If set to [0, 0], center of the circle will be at the position of the feature. */
+    offset: Offset = [0, 0];
 
     /** Color of the inner part of the circle. Can be any valid css color string. */
     fillColor: string = 'black';
@@ -30,19 +41,18 @@ export class PointSymbol extends Symbol {
     strokeWidth: number = 1;
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: PointSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
     }
 
-    renderFunction(feature, resolution, crs) {
-        if ((<PointFeature>feature).position === undefined) return [];
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution + this.offset.x, - position[1] / resolution + this.offset.y];
+        let pxPosition = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 
         let point = new Arc(pxPosition, { fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2 });
         return [point];
