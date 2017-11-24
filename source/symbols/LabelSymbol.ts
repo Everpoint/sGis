@@ -1,26 +1,35 @@
 import {HtmlElement} from "../renders/HtmlElement";
 import {setCssClasses} from "../utils/utils";
 import {Symbol} from "./Symbol";
+import {Feature} from "../features/Feature";
+import {Crs} from "../Crs";
+import {IRender} from "../interfaces/IRender";
+import {Label} from "../features/Label";
+
+export interface LabelSymbolConstructorParams {
+    /** @see [[LabelSymbol.css]] */
+    css?: string
+}
 
 /**
  * Symbol of simple html text label.
  * @alias sGis.symbol.label.Label
- * @extends sGis.Symbol
  */
 export class LabelSymbol extends Symbol {
     /** Css class to be added to the label node. */
     css: string = 'sGis-symbol-label-center-top';
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: LabelSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
     }
 
-    renderFunction(/** sGis.feature.Label */ feature, resolution, crs) {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof Label)) return [];
+
         let html = '<div' +  (this.css ? ' class="' + this.css + '"' : '') + '>' + feature.content + '</div>';
         let point = feature.point.projectTo(crs);
         let position = [point.x / resolution, -point.y / resolution];
