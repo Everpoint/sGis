@@ -10,9 +10,17 @@ import {GetNodeCallback, IRender, OnAfterDisplayedHandler} from "../interfaces/I
 export class HtmlElement implements IRender {
     private _htmlText: string;
     private _position: Coordinates;
-    private onAfterDisplayed: OnAfterDisplayedHandler;
-    private offset: Offset;
     private _lastNode: HTMLElement;
+
+    /**
+     * Handler to be called after the element is added to DOM.
+     */
+    onAfterDisplayed: OnAfterDisplayedHandler | null;
+
+    /**
+     * Offset of the element from its position.
+     */
+    offset: Offset;
 
     /**
      * @param htmlText - the inner html value of html element
@@ -31,7 +39,7 @@ export class HtmlElement implements IRender {
      * Returns HTML div element as the second parameter to callback function
      * @param callback - callback function that will be called after node is ready
      */
-    getNode(callback: GetNodeCallback) {
+    getNode(callback: GetNodeCallback): void {
         let node = document.createElement('div');
         node.innerHTML = this._htmlText;
         this._lastNode = node;
