@@ -6,7 +6,9 @@ import {Crs} from "../Crs";
 import {IRender} from "../interfaces/IRender";
 
 export interface ImageSymbolConstructorParams {
+    /** @see [[ImageSymbol.transitionTime]] */
     transitionTime?: number,
+    /** @see [[ImageSymbol.opacity]] */
     opacity?: number
 }
 

@@ -10,13 +10,13 @@ export enum VerticalAlignment {
 }
 
 export interface VectorLabelConstructorParams {
-    /** @see VectorLabel.font */
+    /** @see [[VectorLabel.font]] */
     font?: string,
-    /** @see VectorLabel.horizontalAlignment */
+    /** @see [[VectorLabel.horizontalAlignment]] */
     horizontalAlignment?: HorizontalAlignment,
-    /** @see VectorLabel.verticalAlignment */
+    /** @see [[VectorLabel.verticalAlignment]] */
     verticalAlignment?: VerticalAlignment
-    /** @see VectorLabel.isFilled */
+    /** @see [[VectorLabel.isFilled]] */
     isFilled?: boolean
 }
 

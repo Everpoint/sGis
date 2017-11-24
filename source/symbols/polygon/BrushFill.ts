@@ -11,17 +11,17 @@ import {Polygon} from "../../features/Polygon";
 const ALPHA_NORMALIZER = 65025;
 
 export interface BrushFillConstructorParams {
-    /** @see BrushFill.strokeColor */
+    /** @see [[BrushFill.strokeColor]] */
     strokeColor?: string,
-    /** @see BrushFill.strokeWidth */
+    /** @see [[BrushFill.strokeWidth]] */
     strokeWidth?: number,
-    /** @see BrushFill.lineDash */
+    /** @see [[BrushFill.lineDash]] */
     lineDash?: number[]
-    /** @see BrushFill.fillBrush */
+    /** @see [[BrushFill.fillBrush]] */
     fillBrush?: number[][],
-    /** @see BrushFill.fillForeground */
+    /** @see [[BrushFill.fillForeground]] */
     fillForeground?: string,
-    /** @see BrushFill.fillBackground */
+    /** @see [[BrushFill.fillBackground]] */
     fillBackground?: string
 }
 

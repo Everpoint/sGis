@@ -9,11 +9,11 @@ import {IRender} from "../interfaces/IRender";
 import {Crs} from "../Crs";
 
 export interface EditorSymbolConstructorParams {
-    /** @see EditorSymbol.baseSymbol */
+    /** @see [[EditorSymbol.baseSymbol]] */
     baseSymbol?: Symbol,
-    /** @see EditorSymbol.color */
+    /** @see [[EditorSymbol.color]] */
     color?: string,
-    /** @see EditorSymbol.haloSize */
+    /** @see [[EditorSymbol.haloSize]] */
     haloSize?: number
 }
 

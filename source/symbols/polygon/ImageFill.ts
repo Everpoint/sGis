@@ -8,13 +8,13 @@ import {IRender} from "../../interfaces/IRender";
 import {Polygon} from "../../features/Polygon";
 
 export interface ImageFillConstructorParams {
-    /** @see ImageFill.strokeColor */
+    /** @see [[ImageFill.strokeColor]] */
     strokeColor?: string,
-    /** @see ImageFill.strokeWidth */
+    /** @see [[ImageFill.strokeWidth]] */
     strokeWidth?: number,
-    /** @see ImageFill.lineDash */
+    /** @see [[ImageFill.lineDash]] */
     lineDash?: number[],
-    /** @see ImageFill.src */
+    /** @see [[ImageFill.src]] */
     src?: 'string'
 }
 

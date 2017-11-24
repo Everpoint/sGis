@@ -9,23 +9,23 @@ export enum FillStyle {
 }
 
 export interface PolyRenderConstructorParams {
-    /** @see PolyRender.enclosed */
+    /** @see [[PolyRender.enclosed]] */
     enclosed?: boolean,
-    /** @see PolyRender.fillStyle */
+    /** @see [[PolyRender.fillStyle]] */
     fillStyle?: FillStyle
-    /** @see PolyRender.strokeColor */
+    /** @see [[PolyRender.strokeColor]] */
     strokeColor?: string,
-    /** @see PolyRender.strokeWidth */
+    /** @see [[PolyRender.strokeWidth]] */
     strokeWidth?: number,
-    /** @see PolyRender.fillColor */
+    /** @see [[PolyRender.fillColor]] */
     fillColor?: string,
-    /** @see PolyRender.ignoreEvents */
+    /** @see [[PolyRender.ignoreEvents]] */
     ignoreEvents?: boolean,
-    /** @see PolyRender.lineContainsTolerance */
+    /** @see [[PolyRender.lineContainsTolerance]] */
     lineContainsTolerance?: number,
-    /** @see PolyRender.lineDash */
+    /** @see [[PolyRender.lineDash]] */
     lineDash?: number[],
-    /** @see PolyRender.fillImage */
+    /** @see [[PolyRender.fillImage]] */
     fillImage?: HTMLImageElement
 }
 

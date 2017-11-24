@@ -8,13 +8,13 @@ import {IRender} from "../../interfaces/IRender";
 import {Polygon} from "../../features/Polygon";
 
 export interface PolygonSymbolConstructorParams {
-    /** @see PolygonSymbol.fillColor */
+    /** @see [[PolygonSymbol.fillColor]] */
     fillColor?: string,
-    /** @see PolygonSymbol.strokeColor */
+    /** @see [[PolygonSymbol.strokeColor]] */
     strokeColor?: string,
-    /** @see PolygonSymbol.strokeWidth */
+    /** @see [[PolygonSymbol.strokeWidth]] */
     strokeWidth?: number,
-    /** @see PolygonSymbol.lineDash */
+    /** @see [[PolygonSymbol.lineDash]] */
     lineDash?: number[]
 }
 

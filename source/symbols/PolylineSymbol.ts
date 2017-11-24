@@ -9,11 +9,11 @@ import {Poly} from "../features/Poly";
 import {Polyline} from "../features/Polyline";
 
 export interface PolylineSymbolConstructorParams {
-    /** @see PolylineSymbol.strokeColor */
+    /** @see [[PolylineSymbol.strokeColor]] */
     strokeColor?: string,
-    /** @see PolylineSymbol.strokeWidth */
+    /** @see [[PolylineSymbol.strokeWidth]] */
     strokeWidth?: number,
-    /** @see PolylineSymbol.lineDash */
+    /** @see [[PolylineSymbol.lineDash]] */
     lineDash?: number[]
 }
 
