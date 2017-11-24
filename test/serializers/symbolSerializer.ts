@@ -92,7 +92,7 @@ describe('symbolSerializer', () => {
             expect(deserialized1.anchorPoint).toEqual(symbol1.anchorPoint);
             expect(deserialized1.source).toEqual(symbol1.source);
 
-            let symbol2 = new PointImageSymbol({width: 15, height: 15, source: 'url', anchorPoint: {x: 10, y: -20}});
+            let symbol2 = new PointImageSymbol({width: 15, height: 15, source: 'url', anchorPoint: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
             let deserialized2 = symbolSerializer.deserialize(desc2);
 

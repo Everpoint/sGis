@@ -63,8 +63,8 @@ export class EditorSymbol extends Symbol {
             } else if (this.baseSymbol instanceof PointImageSymbol || this.baseSymbol instanceof MaskedImage) {
                 halo = new Arc(
                     [
-                        baseRender[i].position[0] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
-                        baseRender[i].position[1] - (+this.baseSymbol.anchorPoint.x) + this.baseSymbol.width / 2,
+                        baseRender[i].position[0] - (+this.baseSymbol.anchorPoint[0]) + this.baseSymbol.width / 2,
+                        baseRender[i].position[1] - (+this.baseSymbol.anchorPoint[0]) + this.baseSymbol.width / 2,
                     ],
                     {
                         fillColor: this.color,

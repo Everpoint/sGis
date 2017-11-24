@@ -2,6 +2,8 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {HtmlElement} from "../../renders/HtmlElement";
 import {Color} from "../../utils/Color";
+import {Offset} from "../../baseTypes";
+import {warn} from "../../utils/utils";
 
 /**
  * Symbol of point drawn as masked image.
@@ -15,11 +17,25 @@ export class MaskedImage extends Symbol {
     /** Height of the image. If not set, image will be automatically resized according to width. If both width and height are not set, original image size will be used. */
     height = 32;
 
+    private _anchorPoint: Offset = [16, 32];
+
     /**
-     * Anchor point of the image in the {x: dx, y: dy} format. If set to {x: 0, y: 0}, image's left top corner will be at the feature position.<br>
+     * Anchor point of the image. If set to [0, 0], image's left top corner will be at the feature position.<br>
      *     Anchor point does not scale with width and height parameters.
      */
-    anchorPoint = {x: 16, y: 32};
+    get anchorPoint(): Offset {
+        return this._anchorPoint;
+    }
+    set anchorPoint(anchorPoint: Offset) {
+        // TODO: remove deprecated part after 2018
+        let deprecated = <any>anchorPoint;
+        if (deprecated.x !== undefined && deprecated.y !== undefined) {
+            warn('Using anchorPoint in {x, y} format is deprecated. Use [x, y] format instead.');
+            this._anchorPoint = [deprecated.x, deprecated.y];
+        } else {
+            this._anchorPoint = anchorPoint;
+        }
+    }
 
     angle = 0;
 
@@ -62,7 +78,8 @@ export class MaskedImage extends Symbol {
         let heightProp = this.height > 0 ? `height="${this.height}"` : '';
         let translateProp = this.angle !== 0 ? `style="transform-origin: 50% 50%; transform: rotate(${this.angle}rad)"` : '';
 
-        let html = `<img src="${this._maskedSrc}" ${widthProp} ${heightProp} ${translateProp}>`;        return [new HtmlElement(html, renderPosition, null, [-this.anchorPoint.x, -this.anchorPoint.y])];
+        let html = `<img src="${this._maskedSrc}" ${widthProp} ${heightProp} ${translateProp}>`;
+        return [new HtmlElement(html, renderPosition, null, [-this.anchorPoint[0], -this.anchorPoint[1]])];
     }
 
     //noinspection SpellCheckingInspection
