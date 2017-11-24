@@ -1,7 +1,7 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {FillStyle, PolyRender} from "../../renders/Poly";
-import {PolylineSymbol} from "../Polyline";
+import {PolylineSymbol} from "../PolylineSymbol";
 
 /**
  * Symbol of polygon with one color filling.
@@ -33,7 +33,7 @@ export class PolygonSymbol extends Symbol {
     }
 
     renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
-        let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+        let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
         return [new PolyRender(coordinates, {
             enclosed: true,

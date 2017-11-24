@@ -1,13 +1,25 @@
 import {Symbol} from "./Symbol";
-import {isArray} from "../utils/utils";
 import {registerSymbol} from "../serializers/symbolSerializer";
 import {simplifyCoordinates} from "../utils/math";
-import {PolyRender} from "../renders/Poly";
+import {FillStyle, PolyRender} from "../renders/Poly";
+import {Feature} from "../features/Feature";
+import {IRender} from "../interfaces/IRender";
+import {Crs} from "../Crs";
+import {Poly} from "../features/Poly";
+import {Polyline} from "../features/Polyline";
+
+export interface PolylineSymbolConstructorParams {
+    /** @see PolylineSymbol.strokeColor */
+    strokeColor?: string,
+    /** @see PolylineSymbol.strokeWidth */
+    strokeWidth?: number,
+    /** @see PolylineSymbol.lineDash */
+    lineDash?: number[]
+}
 
 /**
- * Symbol of polyline drawn as simple line
+ * Symbol of polyline drawn as simple line.
  * @alias sGis.symbol.polyline.Simple
- * @extends sGis.Symbol
  */
 export class PolylineSymbol extends Symbol {
     /** Stroke color of the outline. Can be any valid css color string. */
@@ -20,22 +32,33 @@ export class PolylineSymbol extends Symbol {
     lineDash: number[] = [];
 
     /**
-     * @constructor
-     * @param {Object} properties - key-value list of the properties to be assigned to the instance.
+     * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(properties?: Object) {
+    constructor(options: PolylineSymbolConstructorParams = {}) {
         super();
-        if (properties) Object.assign(this, properties);
+        Object.assign(this, options);
     }
 
-    renderFunction(/** sGis.feature.Polyline */ feature, resolution, crs) {
-        let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
-        if (!coordinates) return [];
-        return [new PolyRender(coordinates, { strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, lineDash: this.lineDash })];
+    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+        if (!(feature instanceof Polyline)) return [];
+
+        let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
+        return [new PolyRender(coordinates, {
+            fillStyle: FillStyle.None,
+            enclosed: false,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            lineDash: this.lineDash
+        })];
     }
 
-    static _getRenderedCoordinates(feature, resolution, crs) {
-        if (!feature.coordinates || !isArray(feature.coordinates) || !isArray(feature.coordinates[0])) return null;
+    /**
+     * Projects coordinates of a poly feature to the requested crs and resolution.
+     * @param feature
+     * @param resolution
+     * @param crs
+     */
+    static getRenderedCoordinates(feature: Poly, resolution: number, crs: Crs) {
         let projected = feature.crs.equals(crs) ? feature.rings : feature.projectTo(crs).rings;
 
         return simplifyCoordinates(projected.map(ring => {

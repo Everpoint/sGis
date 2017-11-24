@@ -1,5 +1,5 @@
 import {Poly} from "./Poly";
-import {PolylineSymbol} from "../symbols/Polyline";
+import {PolylineSymbol} from "../symbols/PolylineSymbol";
 import {IFeatureConstructorArgs} from "./Feature";
 import {Symbol} from "../symbols/Symbol";
 

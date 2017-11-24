@@ -1,6 +1,6 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {FillStyle, PolyRender} from "../../renders/Poly";
-import {PolylineSymbol} from "../Polyline";
+import {PolylineSymbol} from "../PolylineSymbol";
 import {Symbol} from "../Symbol";
 
 /**
@@ -39,7 +39,7 @@ export class ImageFill extends Symbol {
             this._image.onload = feature.redraw.bind(feature);
             return [];
         }
-        var coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+        var coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
         return [new PolyRender(coordinates, {
             enclosed: true,

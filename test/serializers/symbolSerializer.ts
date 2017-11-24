@@ -4,7 +4,7 @@ import * as symbolSerializer from "../../source/serializers/symbolSerializer";
 import {SquareSymbol} from "../../source/symbols/point/Square";
 import {PointImageSymbol} from "../../source/symbols/point/PointImageSymbol";
 import {MaskedImage} from "../../source/symbols/point/MaskedImage";
-import {PolylineSymbol} from "../../source/symbols/Polyline";
+import {PolylineSymbol} from "../../source/symbols/PolylineSymbol";
 import {PolygonSymbol} from "../../source/symbols/polygon/Simple";
 import {BrushFill} from "../../source/symbols/polygon/BrushFill";
 import {ImageFill} from "../../source/symbols/polygon/ImageFill";

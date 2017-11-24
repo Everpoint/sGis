@@ -1,6 +1,6 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {FillStyle, PolyRender} from "../../renders/Poly";
-import {PolylineSymbol} from "../Polyline";
+import {PolylineSymbol} from "../PolylineSymbol";
 import {Color} from "../../utils/Color";
 import {Symbol} from "../Symbol";
 
@@ -51,7 +51,7 @@ export class BrushFill extends Symbol {
     }
 
     renderFunction(/** sGis.feature.Polygon */ feature, resolution, crs) {
-        let coordinates = PolylineSymbol._getRenderedCoordinates(feature, resolution, crs);
+        let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         if (!coordinates) return [];
         return [new PolyRender(coordinates, {
             enclosed: true,

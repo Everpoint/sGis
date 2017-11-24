@@ -1,5 +1,5 @@
 import {PolyControl} from "./PolyControl";
-import {PolylineSymbol} from "../symbols/Polyline";
+import {PolylineSymbol} from "../symbols/PolylineSymbol";
 import {Polyline} from "../features/Polyline";
 
 /**

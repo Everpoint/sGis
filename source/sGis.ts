@@ -49,7 +49,7 @@ import {SquareSymbol} from "./symbols/point/Square";
 import {BrushFill} from "./symbols/polygon/BrushFill";
 import {ImageFill} from "./symbols/polygon/ImageFill";
 import {PolygonSymbol} from "./symbols/polygon/Simple";
-import {PolylineSymbol} from "./symbols/Polyline";
+import {PolylineSymbol} from "./symbols/PolylineSymbol";
 export {TileLayer} from "./TileLayer";
 export {TileScheme} from "./TileScheme";
 import * as utilsModule from "./utils/utils";
