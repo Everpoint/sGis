@@ -1,7 +1,7 @@
 import {Symbol} from "../Symbol";
 import {HtmlElement} from "../../renders/HtmlElement";
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {PIN_IMAGE} from "../../resourse/PIN_IMAGE";
+import {PIN_IMAGE} from "../../resourses/images";
 import {Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
@@ -56,6 +56,9 @@ export class PointImageSymbol extends Symbol {
     /** Source of the image. Can be url or data:url string. */
     source: string = PIN_IMAGE;
 
+    /**
+     * Clockwise rotation of the image in radians.
+     */
     angle: number = 0;
 
     /**
