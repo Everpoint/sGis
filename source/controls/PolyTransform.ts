@@ -37,7 +37,6 @@ export class PolyTransform extends Control {
 
     private _activeFeature: Poly;
     private _rotationHandle: PointFeature;
-    private _tempLayer: FeatureLayer;
     private _scaleHandles: PointFeature[];
     private _rotationBase: Coordinates;
 
@@ -45,8 +44,8 @@ export class PolyTransform extends Control {
      * @param {sGis.Map} map - map object the control will work with
      * @param {Object} [options] - key-value set of properties to be set to the instance
      */
-    constructor(map, options: any = {}) {
-        super(map, options);
+    constructor(map, {activeLayer = null, isActive = false} = {}) {
+        super(map, {activeLayer, useTempLayer: true});
 
         this._handleRotationStart = this._handleRotationStart.bind(this);
         this._handleRotation = this._handleRotation.bind(this);
@@ -54,7 +53,7 @@ export class PolyTransform extends Control {
 
         this._handleScalingEnd = this._handleScalingEnd.bind(this);
 
-        this.isActive = options.isActive;
+        this.isActive = isActive;
     }
 
     /**
@@ -75,16 +74,11 @@ export class PolyTransform extends Control {
 
     _activate() {
         if (!this._activeFeature) return;
-
-        this._tempLayer = new FeatureLayer();
         this._setHandles();
-        this.map.addLayer(this._tempLayer);
     }
 
     _deactivate() {
         if (!this._activeFeature) return;
-        this.map.removeLayer(this._tempLayer);
-        this._tempLayer = null;
     }
 
     _setHandles() {

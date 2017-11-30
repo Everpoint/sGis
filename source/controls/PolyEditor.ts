@@ -1,11 +1,10 @@
 import {Control} from "./Control";
-import {Snapping} from "./Snapping";
-import {FeatureLayer} from "../FeatureLayer";
 import {Poly} from "../features/Poly";
 import {PointSymbol} from "../symbols/point/Point";
 import {move, pointToLineProjection} from "../geotools";
 import {Point} from "../Point";
 import {PointFeature} from "../features/Point";
+import {Polygon} from "../features/Polygon";
 
 /**
  * Control for editing polyline and polygon features. When activeFeature is set, the feature becomes draggable.
@@ -17,18 +16,13 @@ import {PointFeature} from "../features/Point";
  * @fires sGis.controls.PolyEditor#edit
  */
 export class PolyEditor extends Control {
-    private _snapping: Snapping;
     private _activeFeature: Poly;
-    private _tempLayer: FeatureLayer;
 
     /** Distance from a vertex in pixels that will be considered as inside of the vertex. If the cursor is in this range from */
     vertexSize = 7;
 
     /** If user tries to remove the last point of the feature, the control will not remove it but will call this callback */
     onFeatureRemove = null;
-
-    /** Specifies which snapping functions to use. See {sGis.controls.Snapping#snappingTypes}. */
-    snappingTypes = ['vertex', 'midpoint', 'line', 'axis', 'orthogonal'];
 
     /** If set to false it will be not possible to change the shape of the feature. */
     vertexChangeAllowed = true;
@@ -47,10 +41,10 @@ export class PolyEditor extends Control {
      * @param {sGis.Map} map - map object the control will work with
      * @param {Object} [options] - key-value set of properties to be set to the instance
      */
-    constructor(map, options: any = {}) {
-        super(map, options);
+    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false, onFeatureRemove = null} = {}) {
+        super(map, {snappingProvider, activeLayer, useTempLayer: true});
 
-        this._snapping = new Snapping(map);
+        this.onFeatureRemove = onFeatureRemove;
 
         this._handleMousemove = this._handleMousemove.bind(this);
         this._handleDragStart = this._handleDragStart.bind(this);
@@ -58,12 +52,11 @@ export class PolyEditor extends Control {
         this._handleDragEnd = this._handleDragEnd.bind(this);
         this._handleDblClick = this._handleDblClick.bind(this);
 
-        this.isActive = options.isActive;
+        this.isActive = isActive;
     }
 
     _activate() {
         if (!this._activeFeature) return;
-        this._setTempLayer();
 
         this._activeFeature.on('mousemove mouseout', this._handleMousemove);
         this._activeFeature.on('dragStart', this._handleDragStart);
@@ -74,24 +67,12 @@ export class PolyEditor extends Control {
 
     _deactivate() {
         if (!this._activeFeature) return;
-        this._removeTempLayer();
 
         this._activeFeature.off('mousemove mouseout', this._handleMousemove);
         this._activeFeature.off('dragStart', this._handleDragStart);
         this._activeFeature.off('drag', this._handleDrag);
         this._activeFeature.off('dragEnd', this._handleDragEnd);
         this._activeFeature.off('dblclick', this._handleDblClick);
-    }
-
-    _setTempLayer() {
-        this._tempLayer = new FeatureLayer();
-        this.map.addLayer(this._tempLayer);
-    }
-
-    _removeTempLayer() {
-        if (!this._tempLayer) return;
-        this.map.removeLayer(this._tempLayer);
-        this._tempLayer = null;
     }
 
     /**
@@ -177,33 +158,24 @@ export class PolyEditor extends Control {
             sGisEvent.draggingObject = this._activeFeature;
             sGisEvent.stopPropagation();
         }
-
-        this._setSnapping();
-    }
-
-    _setSnapping() {
-        if (this._activeRing === null || !this.snappingTypes) return;
-
-        this._snapping.activeLayer = this.activeLayer;
-        this._snapping.snappingTypes = this.snappingTypes;
-        this._snapping.activeFeature = this._activeFeature;
-        this._snapping.activeRingIndex = this._activeRing;
-        this._snapping.activePointIndex = this._activeIndex;
-
-        this._snapping.activate();
     }
 
     _handleDrag(sGisEvent) {
         if (this._activeRing === null) return this._handleFeatureDrag(sGisEvent);
 
-        this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snapping.position || sGisEvent.point.projectTo(this._activeFeature.crs).position);
+        this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snap(
+            sGisEvent.point.position,
+            sGisEvent.browserEvent.altKey,
+            this._activeFeature.rings[this._activeRing],
+            this._activeIndex,
+            this._activeFeature instanceof Polygon
+        ));
         this._activeFeature.redraw();
         if (this.activeLayer) this.activeLayer.redraw();
         this.fire('change', { ringIndex: this._activeRing, pointIndex: this._activeIndex });
     }
 
     _handleDragEnd() {
-        this._snapping.deactivate();
         this._activeRing = null;
         this._activeIndex = null;
 

@@ -1,7 +1,10 @@
-import {Control} from "./Control";
+import {Control, ControlConstructorParams} from "./Control";
 import {FeatureLayer} from "../FeatureLayer";
 import {Symbol} from "../symbols/Symbol";
 import {Poly} from "../features/Poly";
+import {Coordinates} from "../baseTypes";
+import {sGisEvent} from "../EventHandler";
+import {Polygon} from "../features/Polygon";
 
 /**
  * Base class for polyline and polygon controls. When active, click on the map will start a new feature, then
@@ -13,15 +16,10 @@ import {Poly} from "../features/Poly";
  * added to the active layer.
  *
  * @alias sGis.controls.Poly
- * @extends sGis.Control
- * @fires sGis.controls.Poly#drawingBegin
- * @fires sGis.controls.Poly#pointAdd
- * @fires sGis.controls.Poly#drawingFinish
  */
 export class PolyControl extends Control {
     private symbol: Symbol;
     private _getNewFeature: (rings, options) => any;
-    private _tempLayer: FeatureLayer;
     private _dblClickTime: number;
     private _activeFeature: Poly;
 
@@ -29,10 +27,10 @@ export class PolyControl extends Control {
      * @param {sGis.feature.Poly.constructor} FeatureClass - class of the feature to be created (Polyline or Polygon)
      * @param {sGis.Symbol} symbol - symbol of the feature
      * @param {sGis.Map} map - map the control will work with
-     * @param {Object} properties - key-value set of properties to be set to the instance
+     * @param {Object} options - key-value set of properties to be set to the instance
      */
-    constructor(FeatureClass, symbol, map, properties: any = {}) {
-        super(map, properties);
+    constructor(FeatureClass, symbol, map, {snappingProvider = null, activeLayer = null, isActive = false} = {}) {
+        super(map, {snappingProvider, activeLayer, useTempLayer: true});
 
         if (!this.symbol) this.symbol = symbol;
         this._getNewFeature = function(rings, options) {
@@ -43,20 +41,20 @@ export class PolyControl extends Control {
         this._handleMousemove = this._handleMousemove.bind(this);
         this._handleDblclick = this._handleDblclick.bind(this);
 
-        this.isActive = properties.isActive;
+        this.isActive = isActive;
     }
 
     _activate() {
-        this._tempLayer = new FeatureLayer();
-        this.map.addLayer(this._tempLayer);
         this.map.on('click', this._handleClick);
+        this.map.on('mousemove', this._handleMousemove);
+        this.map.on('dblclick', this._handleDblclick);
     }
 
     _deactivate() {
         this.cancelDrawing();
-        this.map.removeLayer(this._tempLayer);
-        this._tempLayer = null;
         this.map.off('click', this._handleClick);
+        this.map.off('mousemove', this._handleMousemove);
+        this.map.off('dblclick', this._handleDblclick);
     }
 
     _handleClick(sGisEvent) {
@@ -66,7 +64,7 @@ export class PolyControl extends Control {
                 if (sGisEvent.ctrlKey) {
                     this.startNewRing();
                 } else {
-                    this._activeFeature.addPoint(sGisEvent.point, this._activeFeature.rings.length - 1);
+                    this._activeFeature.addPoint(this._snap(sGisEvent.point.position, sGisEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
                 }
             } else {
                 this.startNewFeature(sGisEvent.point);
@@ -82,7 +80,7 @@ export class PolyControl extends Control {
 
     /**
      * Starts a new feature with the first point at given position. If the control was not active, this method will set it active.
-     * @param {sGis.IPoint} point
+     * @param point
      */
     startNewFeature(point) {
         this.activate();
@@ -90,20 +88,18 @@ export class PolyControl extends Control {
 
         this._activeFeature = this._getNewFeature([point.position, point.position], { crs: this.map.crs, symbol: this.symbol });
         this._tempLayer.add(this._activeFeature);
-
-        this._setHandlers();
-    }
-
-    _setHandlers() {
-        this.map.addListener('mousemove', this._handleMousemove);
-        this.map.addListener('dblclick', this._handleDblclick);
     }
 
     _handleMousemove(sGisEvent) {
+        let position = this._snap(sGisEvent.point.position, sGisEvent.browserEvent.altKey);
+        if (!this._activeFeature) return;
+
         let ringIndex = this._activeFeature.rings.length - 1;
         let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
 
-        this._activeFeature.rings[ringIndex][pointIndex] = sGisEvent.point.position;
+        const isPolygon = this._activeFeature instanceof Polygon;
+
+        this._activeFeature.rings[ringIndex][pointIndex] = this._snap(position, sGisEvent.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, isPolygon);
         this._activeFeature.redraw();
         this._tempLayer.redraw();
 
@@ -112,6 +108,8 @@ export class PolyControl extends Control {
 
     _handleDblclick(sGisEvent) {
         let feature = this._activeFeature;
+        if (!feature) return;
+
         this.finishDrawing();
         sGisEvent.stopPropagation();
         this._dblClickTime = Date.now();
@@ -124,11 +122,9 @@ export class PolyControl extends Control {
     cancelDrawing() {
         if (!this._activeFeature) return;
 
-        this.map.removeListener('mousemove', this._handleMousemove);
-        this.map.removeListener('dblclick', this._handleDblclick);
-
         if (this._tempLayer.has(this._activeFeature)) this._tempLayer.remove(this._activeFeature);
         this._activeFeature = null;
+        this._unsnap();
     }
 
     /**
@@ -167,7 +163,6 @@ export class PolyControl extends Control {
         this.cancelDrawing();
 
         this._activeFeature = feature;
-        this._setHandlers();
     }
 }
 

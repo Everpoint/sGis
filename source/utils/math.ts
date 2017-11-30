@@ -3,6 +3,8 @@
  * @param {number} d - degrees
  * @returns {number}
  */
+import {Coordinates} from "../baseTypes";
+
 export const degToRad = function (d) {
     return d / 180 * Math.PI;
 };
@@ -95,4 +97,8 @@ export const multiplyMatrix = function(a, b) {
     }
 
     return c;
-}
+};
+
+export const squareDistance = function(a: Coordinates, b: Coordinates) {
+    return (a[0] - b[0])*(a[0] - b[0]) + (a[1] - b[1])*(a[1] - b[1]);
+};

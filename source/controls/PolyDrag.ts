@@ -14,15 +14,14 @@ import {Polygon} from "../features/Polygon";
  */
 export abstract class PolyDrag extends Control {
     symbol: PolygonSymbol;
-    private _tempLayer: FeatureLayer;
     protected _activeFeature: Polygon;
 
     /**
      * @param {sGis.Map} map - map the control will work with
      * @param {Object} [properties] - key-value set of properties to be set to the instance
      */
-    constructor(map, properties: any = {}) {
-        super(map, properties);
+    constructor(map, {activeLayer = null, isActive = false} = {}) {
+        super(map, {activeLayer, useTempLayer: true});
 
         if (!this.symbol) this.symbol = new PolygonSymbol();
 
@@ -30,18 +29,14 @@ export abstract class PolyDrag extends Control {
         this._handleDrag = this._handleDrag.bind(this);
         this._handleDragEnd = this._handleDragEnd.bind(this);
 
-        this.isActive = properties.isActive;
+        this.isActive = isActive;
     }
 
     _activate() {
         this.map.on('dragStart', this._handleDragStart);
-        this._tempLayer = new FeatureLayer();
-        this.map.addLayer(this._tempLayer);
     }
 
     _deactivate() {
-        this.map.removeLayer(this._tempLayer);
-        this._tempLayer = null;
         this._activeFeature = null;
         this._removeDragListeners();
         this.map.off('dragStart', this._handleDragStart);

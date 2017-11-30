@@ -14,7 +14,6 @@ import {PolylineControl} from "./controls/PolylineControl";
 import {PolygonControl} from "./controls/PolygonControl";
 import {PolyTransform} from "./controls/PolyTransform";
 import {Rectangle} from "./controls/Rectangle";
-import {Snapping} from "./controls/Snapping";
 import * as CrsModule from "./Crs";
 export {DynamicLayer} from "./DynamicLayer";
 export {EventHandler} from "./EventHandler";
@@ -59,6 +58,7 @@ import * as geotoolsModule from "./geotools";
 import * as symbolSerializer from "./serializers/symbolSerializer";
 import * as eventModule from "./utils/domEvent";
 import {EditorSymbol} from "./symbols/EditorSymbol";
+import {CombinedSnappingProvider} from "./controls/snapping/CombinedSnappingProvider";
 
 export const math = mathModule;
 export const geotools = geotoolsModule;
@@ -86,7 +86,9 @@ export const controls = {
     Polygon: PolygonControl,
     PolyTransform: PolyTransform,
     Rectangle: Rectangle,
-    Snapping: Snapping
+    snapping: {
+        CombinedSnappingProvider: CombinedSnappingProvider
+    }
 };
 
 export const Crs = CrsModule.Crs;
@@ -140,7 +142,6 @@ export const symbol = {
     polyline: { Simple: PolylineSymbol },
     Editor: EditorSymbol
 };
-
 
 export const utils = utilsModulesExt;
 

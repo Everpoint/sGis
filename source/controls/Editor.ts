@@ -7,16 +7,13 @@ import {getGuid} from "../utils/utils";
 import {listenDomEvent, removeDomEventListener} from "../utils/domEvent";
 import {EditorSymbol} from "../symbols/EditorSymbol";
 import {FeaturesAddEvent, FeaturesRemoveEvent} from "../FeatureLayer";
+import {ISnappingProvider} from "./snapping/ISnappingProvider";
 
 const modes = ['vertex', 'rotate', 'scale', 'drag'];
 
 /**
  * Control for editing points, polylines and polygons. It uses PointEditor, PolyEditor, PolyTransform and Snapping classes for editing corresponding features.
  * @alias sGis.controls.Editor
- * @extends sGis.Control
- * @fires sGis.controls.Editor#featureSelect
- * @fires sGis.controls.Editor#featureDeselect
- * @fires sGis.controls.Editor#featureRemove
  */
 export class Editor extends Control {
     _ignoreEvents: any;
@@ -40,11 +37,11 @@ export class Editor extends Control {
     private _vertexEditing: boolean;
 
     /**
-     * @param {sGis.Map} map - map object the control will work with
+     * @param map - map object the control will work with
      * @param {Object} [options] - key-value set of properties to be set to the instance
      */
-    constructor(map, options: any = {}) {
-        super(map, options);
+    constructor(map, {snappingProvider = null, isActive = false, activeLayer = null} = {}) {
+        super(map, {snappingProvider, activeLayer});
 
         this._ns = '.' + getGuid();
         this._setListener = this._setListener.bind(this);
@@ -62,19 +59,25 @@ export class Editor extends Control {
 
         this._handleKeyDown = this._handleKeyDown.bind(this);
 
-        this.isActive = options.isActive;
+        this.isActive = isActive;
     }
 
     _setEditors() {
-        this._pointEditor = new PointEditor(this.map);
+        this._pointEditor = new PointEditor(this.map, {snappingProvider: this.snappingProvider, activeLayer: this.activeLayer});
         this._pointEditor.on('edit', this._onEdit);
 
-        this._polyEditor = new PolyEditor(this.map, { onFeatureRemove: this._delete.bind(this) });
+        this._polyEditor = new PolyEditor(this.map, {snappingProvider: this.snappingProvider, onFeatureRemove: this._delete.bind(this), activeLayer: this.activeLayer});
         this._polyEditor.on('edit', this._onEdit);
         this._polyEditor.on('change', this._updateTransformControl.bind(this));
 
         this._polyTransform = new PolyTransform(this.map);
         this._polyTransform.on('rotationEnd scalingEnd', this._onEdit);
+    }
+
+    setSnappingProvider(provider: ISnappingProvider) {
+        this.snappingProvider = provider;
+        if (this._pointEditor) this._pointEditor.snappingProvider = provider;
+        if (this._polyEditor) this._polyEditor.snappingProvider = provider;
     }
 
     _onEdit() {

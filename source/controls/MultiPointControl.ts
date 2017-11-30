@@ -19,7 +19,6 @@ import {Symbol} from "../symbols/Symbol";
  * @fires sGis.controls.MultiPoint#drawingFinish
  */
 export class MultiPointControl extends Control {
-    private _tempLayer: FeatureLayer;
     private _dblClickTime: number;
     private _activeFeature: MultiPoint;
 
@@ -30,25 +29,20 @@ export class MultiPointControl extends Control {
      * @param {sGis.Map} map - map the control will work with
      * @param {Object} [properties] - key-value set of properties to be set to the instance
      */
-    constructor(map, properties: any = {}) {
-        super(map, properties);
+    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false} = {}) {
+        super(map, {snappingProvider, activeLayer, useTempLayer: true});
         this._handleClick = this._handleClick.bind(this);
         this._handleDblclick = this._handleDblclick.bind(this);
 
-        this.isActive = properties.isActive;
+        this.isActive = isActive;
     }
 
     _activate() {
-        this._tempLayer = new FeatureLayer();
-        this.map.addLayer(this._tempLayer);
-
         this.map.on('click', this._handleClick);
     }
 
     _deactivate() {
         this.cancelDrawing();
-        this.map.removeLayer(this._tempLayer);
-        this._tempLayer = null;
         this.map.off('click', this._handleClick);
     }
 
