@@ -8,8 +8,11 @@ import {CrossPointSymbol} from "../symbols/point/CrossPointSymbol";
 import {Symbol} from "../symbols/Symbol";
 
 export interface ControlConstructorParams {
+    /** @see [[Control.useTempLayer]] */
     useTempLayer?: boolean,
+    /** @see [[Control.snappingProvider]] */
     snappingProvider?: ISnappingProvider,
+    /** @see [[Control.activeLayer]] */
     activeLayer?: FeatureLayer
 }
 
@@ -19,49 +22,71 @@ export interface ControlConstructorParams {
  */
 export abstract class Control extends EventHandler {
     private _map: Map;
-    private _activeLayer: FeatureLayer;
     private _snappingFeature: PointFeature;
     private _snappingSymbol: Symbol = new CrossPointSymbol();
 
     protected _isActive: boolean = false;
+
+    /**
+     * Temporary feature layer that is added to the map when the control is activated. It is used to show snapping point
+     * and can be used as a temporary storage for features the control works with.
+     */
     protected _tempLayer: FeatureLayer | null = null;
 
+    /**
+     * If set to true, when activated the control will create a temporary feature layer and add in to the map. When
+     * control is deactivated, the layer is removed.
+     */
     useTempLayer: boolean = false;
+
+    /**
+     * Snapping provider to be used by the control. If set to null, the snapping will not be used.
+     * @see [[Control._snap]]
+     */
     snappingProvider: ISnappingProvider | null = null;
-
-    /**
-     * @param map
-     * @param options - key-value set of properties to be set to the instance
-     */
-    constructor(map, options: ControlConstructorParams = {}) {
-        super();
-        Object.assign(this, options);
-        this._map = map;
-    }
-
-    /**
-     * Makes the control active, setting event handlers on the map
-     */
-    activate() {
-        this.isActive = true;
-    }
-
-    /**
-     * Makes the control inactive, removing all event handlers and removing any temp objects
-     */
-    deactivate() {
-        this.isActive = false;
-    }
-
-    protected abstract _activate();
-
-    protected abstract _deactivate();
 
     /**
      * Vector layer the control will work with. Some controls do not require active layer to be set.
      */
-    get activeLayer() { return this._activeLayer; }
-    set activeLayer(layer) { this._activeLayer = layer; }
+    activeLayer: FeatureLayer | null = null;
+
+    /**
+     * @param map - map the control will work with.
+     * @param __namedParameters - key-value set of properties to be set to the instance
+     */
+    constructor(map: Map, {useTempLayer = false, snappingProvider = null, activeLayer = null}: ControlConstructorParams = {}) {
+        super();
+        this._map = map;
+        this.useTempLayer = useTempLayer;
+        this.snappingProvider = snappingProvider;
+        this.activeLayer = activeLayer;
+    }
+
+    /**
+     * Makes the control active.
+     */
+    activate(): void {
+        this.isActive = true;
+    }
+
+    /**
+     * Makes the control inactive.
+     */
+    deactivate(): void {
+        this.isActive = false;
+    }
+
+    /**
+     * This method is called after base procedures for control activation are complete. Child class should set
+     * the event listeners here and make all other necessary preparations.
+     */
+    protected abstract _activate(): void;
+
+    /**
+     * This method is called after base procedures for control deactivation are complete. Child class should remove
+     * its event listeners here.
+     */
+    protected abstract _deactivate(): void;
 
     /**
      * Active status of the control.
@@ -86,6 +111,18 @@ export abstract class Control extends EventHandler {
         }
     }
 
+    /**
+     * Using the provider set in .snappingProvider property, this method searches for snapping point based on given
+     * parameters. If such a point is found, it adds the snapping feature to the tempLayer (if temp layer is used).
+     * Then it returns the position of the snapping point as a return value.
+     * If no snapping point was found, it clears the snapping feature and removes the original coordinates.
+     * @param point - base point that should be snapped.
+     * @param isAltPressed - whether alt key is pressed (to cancel snapping).
+     * @param activeContour - active contour of the feature. This is used for axis and orthogonal snapping methods.
+     * @param activeIndex - index of the active point in the contour. This is used for axis and orthogonal snapping methods.
+     * @param isPolygon - specifies whether the contour should be treated as enclosed (meaning, that last and first
+     *                    points should be connected.
+     */
     protected _snap(point: Coordinates, isAltPressed: boolean, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean): Coordinates {
         let snappingPoint = null;
         if (!isAltPressed && this.snappingProvider) {
@@ -105,7 +142,10 @@ export abstract class Control extends EventHandler {
         return snappingPoint || point;
     }
 
-    protected _unsnap() {
+    /**
+     * Removes snapping point from the temp layer.
+     */
+    protected _unsnap(): void {
         if (this._tempLayer && this._snappingFeature && this._tempLayer.has(this._snappingFeature)) {
             this._tempLayer.remove(this._snappingFeature);
         }
@@ -126,5 +166,5 @@ export abstract class Control extends EventHandler {
     /**
      * Map the control works with.
      */
-    get map() { return this._map; }
+    get map(): Map { return this._map; }
 }
