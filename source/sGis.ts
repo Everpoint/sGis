@@ -4,7 +4,7 @@ export {Map} from "./Map";
 import {Circle} from "./controls/Circle";
 import {Editor} from "./controls/Editor";
 import {MultiPoint} from "./features/MultiPoint";
-import {PointControl} from "./controls/Point";
+import {PointControl} from "./controls/PointControl";
 import {PointEditor} from "./controls/PointEditor";
 import {Poly} from "./features/Poly";
 import {PolyDrag} from "./controls/PolyDrag";

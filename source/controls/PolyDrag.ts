@@ -3,10 +3,11 @@ import {PolygonSymbol} from "../symbols/polygon/Simple";
 import {Polygon} from "../features/Polygon";
 import {Map} from "../Map";
 import {Symbol} from "../symbols/Symbol";
-import {Contour, DragEndEvent, DragEvent, DragStartEvent} from "../baseTypes";
+import {Contour} from "../baseTypes";
 import {sGisEvent} from "../EventHandler";
 import {Feature} from "../features/Feature";
 import {Point} from "../Point";
+import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 
 export interface PolyDragConstructorParams extends ControlConstructorParams {
     /** @see [[PolyDrag.symbol]] */
