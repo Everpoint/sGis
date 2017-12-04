@@ -226,6 +226,7 @@ export abstract class EventHandler {
      * @see EventHandler#addListener
      */
     on(description: string, handler: Handler, oneTime: boolean = false) { this.addListener.apply(this, arguments); }
+
     /**
      * @see EventHandler#removeListener
      */
