@@ -2,10 +2,6 @@ import {PolyDrag} from "./PolyDrag";
 import {Point} from "../Point";
 import {Contour, Coordinates} from "../baseTypes";
 
-interface  test {
-    [key: number]: number | undefined
-}
-
 /**
  * Control for drawing circles by dragging from center to the radius.
  * @alias sGis.controls.Circle
