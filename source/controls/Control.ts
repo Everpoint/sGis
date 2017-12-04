@@ -1,4 +1,4 @@
-import {EventHandler} from "../EventHandler";
+import {EventHandler, sGisEvent} from "../EventHandler";
 import {Map} from "../Map";
 import {FeatureLayer} from "../FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
@@ -6,6 +6,43 @@ import {Contour, Coordinates} from "../baseTypes";
 import {PointFeature} from "../features/Point";
 import {CrossPointSymbol} from "../symbols/point/CrossPointSymbol";
 import {Symbol} from "../symbols/Symbol";
+import {Feature} from "../features/Feature";
+
+/**
+ * Drawing of a new feature is started. When this event is fired, the control will have a new feature as its .activeFeature property.
+ * @event DrawingBeginEvent
+ */
+export class DrawingBeginEvent extends sGisEvent {
+    static type: string = 'drawingBegin';
+
+    constructor() {
+        super(DrawingBeginEvent.type);
+    }
+}
+
+/**
+ * Drawing of the current feature is finished.
+ * @event DrawingFinishEvent
+ */
+export class DrawingFinishEvent extends sGisEvent {
+    static type: string = 'drawingFinish';
+
+    /**
+     * The feature that was created.
+     */
+    readonly feature: Feature;
+
+    /**
+     * Browser mouse event that triggered the event.
+     */
+    readonly browserEvent: MouseEvent;
+
+    constructor(feature: Feature, browserEvent: MouseEvent) {
+        super(DrawingFinishEvent.type);
+        this.feature = feature;
+        this.browserEvent = browserEvent;
+    }
+}
 
 export interface ControlConstructorParams {
     /** @see [[Control.useTempLayer]] */

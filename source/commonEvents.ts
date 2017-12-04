@@ -18,6 +18,22 @@ export class sGisMouseEvent extends sGisEvent {
     }
 }
 
+export class sGisClickEvent extends sGisMouseEvent {
+    static type: string = 'click';
+
+    constructor(params: sGisMouseEventParams) {
+        super(sGisClickEvent.type, params);
+    }
+}
+
+export class sGisMouseMoveEvent extends sGisMouseEvent {
+    static type: string = 'mousemove';
+
+    constructor(params: sGisMouseEventParams) {
+        super(sGisMouseMoveEvent.type, params);
+    }
+}
+
 export class DragStartEvent extends sGisMouseEvent {
     static type: string = 'dragStart';
 

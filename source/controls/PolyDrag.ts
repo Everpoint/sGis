@@ -1,11 +1,9 @@
-import {Control, ControlConstructorParams} from "./Control";
+import {Control, ControlConstructorParams, DrawingBeginEvent, DrawingFinishEvent} from "./Control";
 import {PolygonSymbol} from "../symbols/polygon/Simple";
 import {Polygon} from "../features/Polygon";
 import {Map} from "../Map";
 import {Symbol} from "../symbols/Symbol";
 import {Contour} from "../baseTypes";
-import {sGisEvent} from "../EventHandler";
-import {Feature} from "../features/Feature";
 import {Point} from "../Point";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 
@@ -14,41 +12,6 @@ export interface PolyDragConstructorParams extends ControlConstructorParams {
     symbol?: Symbol,
     /** @see [[Control.isActive]] */
     isActive?: boolean
-}
-
-/**
- * Drawing of a new feature is started. When this event is fired, the control will have a new feature as its .activeFeature.
- * @event DrawingBeginEvent
- */
-export class DrawingBeginEvent extends sGisEvent {
-    static type: string = 'drawingBegin';
-
-    constructor() {
-        super(DrawingBeginEvent.type);
-    }
-}
-
-/**
- * Drawing of the current feature is finished.
- */
-export class DrawingFinishEvent extends sGisEvent {
-    static type: string = 'drawingFinish';
-
-    /**
-     * The feature that was created.
-     */
-    readonly feature: Feature;
-
-    /**
-     * Browser mouse event that triggered the event.
-     */
-    readonly browserEvent: MouseEvent;
-
-    constructor(feature: Feature, browserEvent: MouseEvent) {
-        super(DrawingFinishEvent.type);
-        this.feature = feature;
-        this.browserEvent = browserEvent;
-    }
 }
 
 /**
