@@ -19,6 +19,8 @@ export interface PolyDragConstructorParams extends ControlConstructorParams {
  * a new temporary layer is created and added to the map. The feature is drawn on that temp layer. After drawing is
  * finished, if the .activeLayer property is set, the feature is moved to the active layer.
  * @alias sGis.controls.PolyDrag
+ * @fires [[DrawingBeginEvent]]
+ * @fires [[DrawingFinishEvent]]
  */
 export abstract class PolyDrag extends Control {
     /**
