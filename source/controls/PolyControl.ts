@@ -17,25 +17,16 @@ import {Polygon} from "../features/Polygon";
  *
  * @alias sGis.controls.Poly
  */
-export class PolyControl extends Control {
-    private symbol: Symbol;
-    private _getNewFeature: (rings, options) => any;
+export abstract class PolyControl extends Control {
     private _dblClickTime: number;
     private _activeFeature: Poly;
 
     /**
-     * @param {sGis.feature.Poly.constructor} FeatureClass - class of the feature to be created (Polyline or Polygon)
-     * @param {sGis.Symbol} symbol - symbol of the feature
-     * @param {sGis.Map} map - map the control will work with
-     * @param {Object} options - key-value set of properties to be set to the instance
+     * @param map - map the control will work with
+     * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(FeatureClass, symbol, map, {snappingProvider = null, activeLayer = null, isActive = false} = {}) {
+    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false} = {}) {
         super(map, {snappingProvider, activeLayer, useTempLayer: true});
-
-        if (!this.symbol) this.symbol = symbol;
-        this._getNewFeature = function(rings, options) {
-            return new FeatureClass(rings, options);
-        };
 
         this._handleClick = this._handleClick.bind(this);
         this._handleMousemove = this._handleMousemove.bind(this);
@@ -78,6 +69,8 @@ export class PolyControl extends Control {
         sGisEvent.stopPropagation();
     }
 
+    protected abstract _getNewFeature(position: Coordinates): Poly;
+
     /**
      * Starts a new feature with the first point at given position. If the control was not active, this method will set it active.
      * @param point
@@ -86,7 +79,7 @@ export class PolyControl extends Control {
         this.activate();
         this.cancelDrawing();
 
-        this._activeFeature = this._getNewFeature([point.position, point.position], { crs: this.map.crs, symbol: this.symbol });
+        this._activeFeature = this._getNewFeature(point.position);
         this._tempLayer.add(this._activeFeature);
     }
 
@@ -155,10 +148,9 @@ export class PolyControl extends Control {
 
     /**
      * The active drawing feature.
-     * @type {sGis.feature.Poly}
      */
     get activeFeature() { return this._activeFeature; }
-    set activeFeature(/** sGis.feature.Poly */ feature) {
+    set activeFeature(feature) {
         if (!this._isActive) return;
         this.cancelDrawing();
 

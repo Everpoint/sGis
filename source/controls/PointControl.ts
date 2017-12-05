@@ -1,13 +1,9 @@
-import {Control, ControlConstructorParams, DrawingFinishEvent} from "./Control";
+import {Control, ControlWithSymbolParams, DrawingFinishEvent} from "./Control";
 import {PointFeature} from "../features/Point";
 import {PointSymbol} from "../symbols/point/Point";
 import {sGisClickEvent, sGisMouseMoveEvent} from "../commonEvents";
 import {Map} from "../Map";
-
-export interface PointControlParams extends ControlConstructorParams {
-    /** @see [[Control.isActive]] */
-    isActive?: boolean
-}
+import {Symbol} from "../symbols/Symbol";
 
 /**
  * Control for creating point features. When active, any click on the map will create a new point feature and add it
@@ -17,18 +13,19 @@ export interface PointControlParams extends ControlConstructorParams {
  */
 export class PointControl extends Control {
     /** Symbol of the points that are created by the control. */
-    symbol = new PointSymbol();
+    symbol: Symbol;
 
     /**
      * @param map
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {activeLayer = null, snappingProvider = null, isActive = false}: PointControlParams = {}) {
+    constructor(map: Map, {activeLayer = null, snappingProvider = null, isActive = false, symbol = new PointSymbol()}: ControlWithSymbolParams = {}) {
         super(map, {activeLayer, snappingProvider, useTempLayer: true});
 
         this._handleClick = this._handleClick.bind(this);
         this._handleMouseMove = this._handleMouseMove.bind(this);
 
+        this.symbol = symbol;
         this.isActive = isActive;
     }
 

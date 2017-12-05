@@ -50,7 +50,13 @@ export interface ControlConstructorParams {
     /** @see [[Control.snappingProvider]] */
     snappingProvider?: ISnappingProvider,
     /** @see [[Control.activeLayer]] */
-    activeLayer?: FeatureLayer
+    activeLayer?: FeatureLayer,
+    /** @see [[Control.isActive]] */
+    isActive?: boolean
+}
+
+export interface ControlWithSymbolParams {
+    symbol?: Symbol
 }
 
 /**
@@ -74,29 +80,31 @@ export abstract class Control extends EventHandler {
      * If set to true, when activated the control will create a temporary feature layer and add in to the map. When
      * control is deactivated, the layer is removed.
      */
-    useTempLayer: boolean = false;
+    useTempLayer: boolean;
 
     /**
      * Snapping provider to be used by the control. If set to null, the snapping will not be used.
      * @see [[Control._snap]]
      */
-    snappingProvider: ISnappingProvider | null = null;
+    snappingProvider: ISnappingProvider | null;
 
     /**
      * Vector layer the control will work with. Some controls do not require active layer to be set.
      */
-    activeLayer: FeatureLayer | null = null;
+    activeLayer: FeatureLayer | null;
 
     /**
      * @param map - map the control will work with.
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {useTempLayer = false, snappingProvider = null, activeLayer = null}: ControlConstructorParams = {}) {
+    constructor(map: Map, {useTempLayer = false, snappingProvider = null, activeLayer = null, isActive = false}: ControlConstructorParams = {}) {
         super();
         this._map = map;
         this.useTempLayer = useTempLayer;
         this.snappingProvider = snappingProvider;
         this.activeLayer = activeLayer;
+
+        if (isActive) this.isActive = isActive;
     }
 
     /**

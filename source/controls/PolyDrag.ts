@@ -10,8 +10,6 @@ import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 export interface PolyDragConstructorParams extends ControlConstructorParams {
     /** @see [[PolyDrag.symbol]] */
     symbol?: Symbol,
-    /** @see [[Control.isActive]] */
-    isActive?: boolean
 }
 
 /**
