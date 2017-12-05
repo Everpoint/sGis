@@ -1,10 +1,9 @@
-import {Control, ControlConstructorParams} from "./Control";
-import {FeatureLayer} from "../FeatureLayer";
-import {Symbol} from "../symbols/Symbol";
+import {Control, ControlConstructorParams, DrawingBeginEvent, DrawingFinishEvent, PointAddEvent} from "./Control";
 import {Poly} from "../features/Poly";
 import {Coordinates} from "../baseTypes";
-import {sGisEvent} from "../EventHandler";
 import {Polygon} from "../features/Polygon";
+import {sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
+import {Point} from "../Point";
 
 /**
  * Base class for polyline and polygon controls. When active, click on the map will start a new feature, then
@@ -25,7 +24,7 @@ export abstract class PolyControl extends Control {
      * @param map - map the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false} = {}) {
+    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false}: ControlConstructorParams = {}) {
         super(map, {snappingProvider, activeLayer, useTempLayer: true});
 
         this._handleClick = this._handleClick.bind(this);
@@ -35,38 +34,38 @@ export abstract class PolyControl extends Control {
         this.isActive = isActive;
     }
 
-    _activate() {
-        this.map.on('click', this._handleClick);
-        this.map.on('mousemove', this._handleMousemove);
-        this.map.on('dblclick', this._handleDblclick);
+    protected _activate(): void {
+        this.map.on(sGisClickEvent.type, this._handleClick);
+        this.map.on(sGisMouseMoveEvent.type, this._handleMousemove);
+        this.map.on(sGisDoubleClickEvent.type, this._handleDblclick);
     }
 
-    _deactivate() {
+    protected _deactivate(): void {
         this.cancelDrawing();
-        this.map.off('click', this._handleClick);
-        this.map.off('mousemove', this._handleMousemove);
-        this.map.off('dblclick', this._handleDblclick);
+        this.map.off(sGisClickEvent.type, this._handleClick);
+        this.map.off(sGisMouseMoveEvent.type, this._handleMousemove);
+        this.map.off(sGisDoubleClickEvent.type, this._handleDblclick);
     }
 
-    _handleClick(sGisEvent) {
+    private _handleClick(event: sGisClickEvent): void {
         setTimeout(() => {
             if (Date.now() - this._dblClickTime < 30) return;
             if (this._activeFeature) {
-                if (sGisEvent.ctrlKey) {
+                if (event.browserEvent.ctrlKey) {
                     this.startNewRing();
                 } else {
-                    this._activeFeature.addPoint(this._snap(sGisEvent.point.position, sGisEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
+                    this._activeFeature.addPoint(this._snap(event.point.position, event.browserEvent.altKey), this._activeFeature.rings.length - 1);
                 }
             } else {
-                this.startNewFeature(sGisEvent.point);
-                this.fire('drawingBegin');
+                this.startNewFeature(event.point);
+                this.fire(new DrawingBeginEvent());
             }
-            this.fire('pointAdd');
+            this.fire(new PointAddEvent());
 
             this._tempLayer.redraw();
         }, 10);
 
-        sGisEvent.stopPropagation();
+        event.stopPropagation();
     }
 
     protected abstract _getNewFeature(position: Coordinates): Poly;
@@ -75,7 +74,7 @@ export abstract class PolyControl extends Control {
      * Starts a new feature with the first point at given position. If the control was not active, this method will set it active.
      * @param point
      */
-    startNewFeature(point) {
+    startNewFeature(point: Point): void {
         this.activate();
         this.cancelDrawing();
 
@@ -83,8 +82,8 @@ export abstract class PolyControl extends Control {
         this._tempLayer.add(this._activeFeature);
     }
 
-    _handleMousemove(sGisEvent) {
-        let position = this._snap(sGisEvent.point.position, sGisEvent.browserEvent.altKey);
+    private _handleMousemove(event: sGisMouseMoveEvent): void {
+        let position = this._snap(event.point.position, event.browserEvent.altKey);
         if (!this._activeFeature) return;
 
         let ringIndex = this._activeFeature.rings.length - 1;
@@ -92,27 +91,25 @@ export abstract class PolyControl extends Control {
 
         const isPolygon = this._activeFeature instanceof Polygon;
 
-        this._activeFeature.rings[ringIndex][pointIndex] = this._snap(position, sGisEvent.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, isPolygon);
+        this._activeFeature.rings[ringIndex][pointIndex] = this._snap(position, event.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, isPolygon);
         this._activeFeature.redraw();
         this._tempLayer.redraw();
-
-        this.fire('mousemove');
     }
 
-    _handleDblclick(sGisEvent) {
+    private _handleDblclick(event: sGisDoubleClickEvent): void {
         let feature = this._activeFeature;
         if (!feature) return;
 
         this.finishDrawing();
-        sGisEvent.stopPropagation();
+        event.stopPropagation();
         this._dblClickTime = Date.now();
-        this.fire('drawingFinish', { feature: feature, browserEvent: sGisEvent.browserEvent });
+        this.fire(new DrawingFinishEvent(feature, event.browserEvent));
     }
 
     /**
      * Cancels drawing of the current feature, removes the feature and the temp layer. No events are fired.
      */
-    cancelDrawing() {
+    cancelDrawing(): void {
         if (!this._activeFeature) return;
 
         if (this._tempLayer.has(this._activeFeature)) this._tempLayer.remove(this._activeFeature);
@@ -124,7 +121,7 @@ export abstract class PolyControl extends Control {
      * Finishes drawing of the current feature and moves it to the active layer (if set). If the current ring has less
      * then two points, the ring is removed. If the feature has no rings, the feature is not added to the active layer.
      */
-    finishDrawing() {
+    finishDrawing(): void {
         let feature = this._activeFeature;
         let ringIndex = feature.rings.length - 1;
 
@@ -139,7 +136,7 @@ export abstract class PolyControl extends Control {
     /**
      * Start drawing of a new ring of the feature.
      */
-    startNewRing() {
+    startNewRing(): void {
         let rings = this._activeFeature.rings;
         let ringIndex = rings.length;
         let point = rings[ringIndex-1][rings[ringIndex-1].length-1];
@@ -149,33 +146,11 @@ export abstract class PolyControl extends Control {
     /**
      * The active drawing feature.
      */
-    get activeFeature() { return this._activeFeature; }
-    set activeFeature(feature) {
+    get activeFeature(): Poly { return this._activeFeature; }
+    set activeFeature(feature: Poly) {
         if (!this._isActive) return;
         this.cancelDrawing();
 
         this._activeFeature = feature;
     }
 }
-
-/**
-* The drawing of a new feature is started by clicking on the map.
-* @event sGis.controls.Poly#drawingBegin
-* @type {Object}
-* @mixes sGisEvent
-*/
-
-/**
- * A new point is added to the feature by clicking on the map.
- * @event sGis.controls.Poly#pointAdd
- * @type {Object}
- * @mixes sGisEvent
- */
-
-/**
- * Drawing of the feature is finished by double click and the feature is moved to the active layer (if set).
- * @event sGis.controls.Poly#drawingFinish
- * @type {Object}
- * @mixes sGisEvent
- * @prop {sGis.feature.Poly} feature - feature that was created
- */

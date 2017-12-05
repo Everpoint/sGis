@@ -26,6 +26,14 @@ export class sGisClickEvent extends sGisMouseEvent {
     }
 }
 
+export class sGisDoubleClickEvent extends sGisMouseEvent {
+    static type: string = 'dblclick';
+
+    constructor(params: sGisMouseEventParams) {
+        super(sGisDoubleClickEvent.type, params);
+    }
+}
+
 export class sGisMouseMoveEvent extends sGisMouseEvent {
     static type: string = 'mousemove';
 

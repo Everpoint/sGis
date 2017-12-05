@@ -44,6 +44,17 @@ export class DrawingFinishEvent extends sGisEvent {
     }
 }
 
+/**
+ * @event PointAddEvent
+ */
+export class PointAddEvent extends sGisEvent {
+    static type: string = 'pointAdd';
+
+    constructor() {
+        super(PointAddEvent.type);
+    }
+}
+
 export interface ControlConstructorParams {
     /** @see [[Control.useTempLayer]] */
     useTempLayer?: boolean,
@@ -55,7 +66,7 @@ export interface ControlConstructorParams {
     isActive?: boolean
 }
 
-export interface ControlWithSymbolParams {
+export interface ControlWithSymbolParams extends ControlConstructorParams{
     symbol?: Symbol
 }
 
