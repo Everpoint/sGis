@@ -3,22 +3,20 @@ import {Polygon} from "../features/Polygon";
 import {PolygonSymbol} from "../symbols/polygon/Simple";
 import {Coordinates} from "../baseTypes";
 import {Poly} from "../features/Poly";
-import {Symbol} from "../symbols/Symbol";
+import {ControlWithSymbolParams} from "./Control";
+import {Map} from "../Map";
 
 /**
  * Control for drawing polygon features.
  * @alias sGis.control.Polyline
- * @extends sGis.controls.Poly
  */
 export class PolygonControl extends PolyControl {
-    symbol: Symbol;
-
     /**
-     * @param {sGis.Map} map - map the control will work with
-     * @param {Object} [properties] - key-value set of properties to be set to the instance
+     * @param map - map the control will work with
+     * @param properties - key-value set of properties to be set to the instance
      */
-    constructor(map, properties) {
-        super(map, properties);
+    constructor(map: Map, {symbol = new PolygonSymbol(), ...controlOptions}: ControlWithSymbolParams = {}) {
+        super(map, {symbol, ...controlOptions});
     }
 
     protected _getNewFeature(position: Coordinates): Poly {

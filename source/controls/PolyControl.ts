@@ -1,9 +1,13 @@
-import {Control, ControlConstructorParams, DrawingBeginEvent, DrawingFinishEvent, PointAddEvent} from "./Control";
+import {
+    Control, ControlConstructorParams, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent,
+    PointAddEvent
+} from "./Control";
 import {Poly} from "../features/Poly";
 import {Coordinates} from "../baseTypes";
 import {Polygon} from "../features/Polygon";
 import {sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
 import {Point} from "../Point";
+import {Symbol} from "../symbols/Symbol";
 
 /**
  * Base class for polyline and polygon controls. When active, click on the map will start a new feature, then
@@ -21,16 +25,22 @@ export abstract class PolyControl extends Control {
     private _activeFeature: Poly;
 
     /**
+     * Symbol with which new features will be created.
+     */
+    symbol: Symbol;
+
+    /**
      * @param map - map the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false}: ControlConstructorParams = {}) {
+    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false, symbol}: ControlWithSymbolParams = {}) {
         super(map, {snappingProvider, activeLayer, useTempLayer: true});
 
         this._handleClick = this._handleClick.bind(this);
         this._handleMousemove = this._handleMousemove.bind(this);
         this._handleDblclick = this._handleDblclick.bind(this);
 
+        this.symbol = symbol;
         this.isActive = isActive;
     }
 
