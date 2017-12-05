@@ -8,7 +8,7 @@ import {Map} from "../Map";
 
 /**
  * Control for drawing polygon features.
- * @alias sGis.control.Polyline
+ * @alias sGis.control.Polygon
  */
 export class PolygonControl extends PolyControl {
     /**
@@ -20,7 +20,7 @@ export class PolygonControl extends PolyControl {
     }
 
     protected _getNewFeature(position: Coordinates): Poly {
-        return new Polygon([[position]], {crs: this.map.crs, symbol: this.symbol});
+        return new Polygon([[position, position]], {crs: this.map.crs, symbol: this.symbol});
     }
 }
 

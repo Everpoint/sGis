@@ -104,6 +104,8 @@ export abstract class PolyControl extends Control {
         this._activeFeature.rings[ringIndex][pointIndex] = this._snap(position, event.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, isPolygon);
         this._activeFeature.redraw();
         this._tempLayer.redraw();
+
+        this.fire(event);
     }
 
     private _handleDblclick(event: sGisDoubleClickEvent): void {
