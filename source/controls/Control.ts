@@ -45,7 +45,8 @@ export class DrawingFinishEvent extends sGisEvent {
 }
 
 /**
- * Control's active feature has been changed.
+ * Control's active feature has been changed. This event is fired after change process is complete, e.g. drag is over or
+ * double click is processed.
  * @event EditEvent
  */
 export class EditEvent extends sGisEvent {
@@ -53,6 +54,31 @@ export class EditEvent extends sGisEvent {
 
     constructor() {
         super(EditEvent.type);
+    }
+}
+
+/**
+ * Control's active feature is being changed. This event is fired during the change, e.g. on every drag or click event.
+ * @event ChangeEvent
+ */
+export class ChangeEvent extends sGisEvent {
+    static type: string = 'change';
+
+    /**
+     * Index of the contour being changed (if applicable).
+     */
+    readonly ringIndex: number | null;
+
+    /**
+     * Index of the point in contour being changed (if applicable).
+     */
+    readonly pointIndex: number | null;
+
+    constructor(ringIndex: number | null = null, pointIndex: number | null = null) {
+        super(ChangeEvent.type);
+
+        this.ringIndex = ringIndex;
+        this.pointIndex = pointIndex;
     }
 }
 

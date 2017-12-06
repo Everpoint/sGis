@@ -357,7 +357,7 @@ export class DomPainter extends EventHandler {
     _onMapDrag(sGisEvent) {
         setTimeout(() => {
             if (sGisEvent.isCanceled) return;
-            this._map.move(sGisEvent.offset.x, sGisEvent.offset.y);
+            this._map.move(sGisEvent.offset[0], sGisEvent.offset[1]);
         }, 0);
     }
 

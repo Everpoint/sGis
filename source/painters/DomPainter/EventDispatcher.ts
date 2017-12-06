@@ -44,6 +44,14 @@ export class EventDispatcher {
                 }
 
                 if (targetObject) {
+                    if (Array.isArray(details.intersectionType)) {
+                        data.contourIndex = details.intersectionType[0];
+                        data.pointIndex = details.intersectionType[1];
+                    } else {
+                        data.contourIndex = null;
+                        data.pointIndex = null;
+                    }
+
                     data.intersectionType = details.intersectionType;
                     sGisEvent = targetObject.fire(name, data);
                     topObject = targetObject;
@@ -121,7 +129,7 @@ export class EventDispatcher {
             }
 
             this._dragPosition = mousePosition;
-            this._draggingObject.fire('drag', {map: map, mouseOffset: mousePosition, position: position, point: point, ctrlKey: event.ctrlKey, offset: {xPx: dxPx, yPx: dyPx, x: this._lastDrag.x, y: this._lastDrag.y}, browserEvent: event});
+            this._draggingObject.fire('drag', {map: map, mouseOffset: mousePosition, position: position, point: point, ctrlKey: event.ctrlKey, offset: [this._lastDrag.x, this._lastDrag.y], pxOffset: [dxPx, dyPx], browserEvent: event});
         }
     }
 
