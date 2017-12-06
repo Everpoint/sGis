@@ -1,4 +1,4 @@
-import {Control, ControlConstructorParams, DrawingBeginEvent, DrawingFinishEvent} from "./Control";
+import {Control, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent} from "./Control";
 import {PolygonSymbol} from "../symbols/polygon/Simple";
 import {Polygon} from "../features/Polygon";
 import {Map} from "../Map";
@@ -6,11 +6,6 @@ import {Symbol} from "../symbols/Symbol";
 import {Contour} from "../baseTypes";
 import {Point} from "../Point";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
-
-export interface PolyDragConstructorParams extends ControlConstructorParams {
-    /** @see [[PolyDrag.symbol]] */
-    symbol?: Symbol,
-}
 
 /**
  * Base class for controls that create polygon feature by dragging some area on the map. When the control is activated,
@@ -31,7 +26,7 @@ export abstract class PolyDrag extends Control {
      * @param map - map the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {symbol = new PolygonSymbol(), activeLayer = null, isActive = false}: PolyDragConstructorParams = {}) {
+    constructor(map: Map, {symbol = new PolygonSymbol(), activeLayer = null, isActive = false}: ControlWithSymbolParams = {}) {
         super(map, {activeLayer, useTempLayer: true});
 
         this.symbol = symbol;
