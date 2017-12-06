@@ -6,7 +6,7 @@ import {Symbol} from "../Symbol";
 import {Feature} from "../../features/Feature";
 import {IRender} from "../../interfaces/IRender";
 import {Crs} from "../../Crs";
-import {Polygon} from "../../features/Polygon";
+import {Poly} from "../../features/Poly";
 
 const ALPHA_NORMALIZER = 65025;
 
@@ -68,7 +68,7 @@ export class BrushFill extends Symbol {
     }
 
     renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
-        if (!(feature instanceof Polygon)) return [];
+        if (!(feature instanceof Poly)) return [];
 
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {

@@ -6,7 +6,6 @@ import {Feature} from "../features/Feature";
 import {IRender} from "../interfaces/IRender";
 import {Crs} from "../Crs";
 import {Poly} from "../features/Poly";
-import {Polyline} from "../features/Polyline";
 
 export interface PolylineSymbolConstructorParams {
     /** @see [[PolylineSymbol.strokeColor]] */
@@ -40,7 +39,7 @@ export class PolylineSymbol extends Symbol {
     }
 
     renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
-        if (!(feature instanceof Polyline)) return [];
+        if (!(feature instanceof Poly)) return [];
 
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {

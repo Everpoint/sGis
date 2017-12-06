@@ -5,7 +5,7 @@ import {PolylineSymbol} from "../PolylineSymbol";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {IRender} from "../../interfaces/IRender";
-import {Polygon} from "../../features/Polygon";
+import {Poly} from "../../features/Poly";
 
 export interface PolygonSymbolConstructorParams {
     /** @see [[PolygonSymbol.fillColor]] */
@@ -45,7 +45,7 @@ export class PolygonSymbol extends Symbol {
     }
 
     renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
-        if (!(feature instanceof Polygon)) return [];
+        if (!(feature instanceof Poly)) return [];
 
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {
