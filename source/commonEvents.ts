@@ -1,5 +1,5 @@
 import {Point} from "./Point";
-import {sGisEvent} from "./EventHandler";
+import {EventHandler, sGisEvent} from "./EventHandler";
 import {Offset} from "./baseTypes";
 
 export interface sGisMouseEventParams {
@@ -45,8 +45,11 @@ export class sGisMouseMoveEvent extends sGisMouseEvent {
 export class DragStartEvent extends sGisMouseEvent {
     static type: string = 'dragStart';
 
-    constructor(params: sGisMouseEventParams) {
+    draggingObject: EventHandler;
+
+    constructor(draggingObject: EventHandler, params: sGisMouseEventParams) {
         super(DragStartEvent.type, params);
+        this.draggingObject = draggingObject;
     }
 }
 

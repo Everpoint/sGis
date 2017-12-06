@@ -45,6 +45,19 @@ export class DrawingFinishEvent extends sGisEvent {
 }
 
 /**
+ * Control's active feature has been changed.
+ * @event EditEvent
+ */
+export class EditEvent extends sGisEvent {
+    static type: string = 'edit';
+
+    constructor() {
+        super(EditEvent.type);
+    }
+}
+
+/**
+ * A new point was added to the control's active feature.
  * @event PointAddEvent
  */
 export class PointAddEvent extends sGisEvent {
