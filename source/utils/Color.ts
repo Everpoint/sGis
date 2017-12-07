@@ -17,7 +17,7 @@ export class Color {
     private _channels: Channels;
 
     /**
-     * @param {String} string - any valid css color string
+     * @param string - any valid css color string
      */
     constructor(string: string) {
         this._original = string;
@@ -45,8 +45,7 @@ export class Color {
 
     /**
      * Returns the color as a string in the requested format
-     * @param {String} [format="rgba"] - target format. Available values: "hex" - #AARRGGBB, "rgb" - "rgb(r, g, b)", "rgba" - "rgba(r, g, b, a)"
-     * @returns {string}
+     * @param format - target format. Available values: "hex" - #AARRGGBB, "rgb" - "rgb(r, g, b)", "rgba" - "rgba(r, g, b, a)"
      */
     toString(format?: string): string {
         if (format === 'hex') {
@@ -122,7 +121,6 @@ export class Color {
     /**
      * Returns the format of the input color sting. Possible values: hex3, hex6, hex4, hex8, rgb, rgba, name.
      * (name is the named css color values like "white")
-     * @returns {String}
      */
     get format(): string {
         if (this._color.substr(0, 1) === '#' && this._color.search(/[^#0-9a-fA-F]/) === -1) {
@@ -148,28 +146,24 @@ export class Color {
 
     /**
      * Returns red channel value as integer from 0 to 255.
-     * @type {Number}
      */
     get r(): number { return this._channels.r; }
     set r(v: number) { this._channels.r = v; }
 
     /**
      * Returns green channel value as integer from 0 to 255.
-     * @type {Number}
      */
     get g(): number { return this._channels.g; }
     set g(v: number) { this._channels.g = v; }
 
     /**
      * Returns blue channel value as integer from 0 to 255.
-     * @type {Number}
      */
     get b(): number { return this._channels.b; }
     set b(v: number) { this._channels.b = v; }
 
     /**
      * Returns opacity channel value as integer from 0 to 255.
-     * @type {Number}
      */
     get a(): number { return this._channels.a; }
     set a(v: number) { this._channels.a = v; }
@@ -214,7 +208,6 @@ export class Color {
 
     /**
      * Returns values of the channels as integers from 0 to 255. Format is { r: r, g: g, b: b, a: a }.
-     * @type {Object}
      */
     get channels(): Channels { return Object.assign({}, this._channels); }
 
@@ -376,7 +369,7 @@ export class Color {
     };
 }
 
-function decToHex(dec) {
+function decToHex(dec: number): string {
     let hex = Math.floor(dec).toString(16);
     return hex.length === 1 ? '0' + hex : hex;
 }
