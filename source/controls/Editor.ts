@@ -1,4 +1,4 @@
-import {Control} from "./Control";
+import {ChangeEvent, Control, ControlConstructorParams, EditEvent} from "./Control";
 import {StateManager} from "../utils/StateManager";
 import {PointEditor} from "./PointEditor";
 import {PolyEditor} from "./PolyEditor";
@@ -8,6 +8,51 @@ import {listenDomEvent, removeDomEventListener} from "../utils/domEvent";
 import {EditorSymbol} from "../symbols/EditorSymbol";
 import {FeaturesAddEvent, FeaturesRemoveEvent} from "../FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
+import {sGisClickEvent} from "../commonEvents";
+import {Feature} from "../features/Feature";
+import {PointFeature} from "../features/Point";
+import {Poly} from "../features/Poly";
+import {sGisEvent} from "../EventHandler";
+import {Contour, Coordinates} from "../baseTypes";
+import {Map} from "../Map";
+
+export class FeatureSelectEvent extends sGisEvent {
+    static type: string = 'featureSelect';
+
+    readonly feature: Feature;
+
+    constructor(feature: Feature) {
+        super(FeatureSelectEvent.type);
+        this.feature = feature;
+    }
+}
+
+export class FeatureDeselectEvent extends sGisEvent {
+    static type: string = 'featureDeselect';
+
+    readonly feature: Feature;
+
+    constructor(feature: Feature) {
+        super(FeatureDeselectEvent.type);
+        this.feature = feature;
+    }
+}
+
+export class FeatureRemoveEvent extends sGisEvent {
+    static type: string = 'featureRemove';
+
+    readonly feature: Feature;
+
+    constructor(feature: Feature) {
+        super(FeatureRemoveEvent.type);
+        this.feature = feature;
+    }
+}
+
+type EditState = {
+    feature: Feature,
+    coordinates: Coordinates | Contour[] | null
+}
 
 const modes = ['vertex', 'rotate', 'scale', 'drag'];
 
@@ -16,17 +61,20 @@ const modes = ['vertex', 'rotate', 'scale', 'drag'];
  * @alias sGis.controls.Editor
  */
 export class Editor extends Control {
-    _ignoreEvents: any;
-    _scaling: boolean;
-    _rotation: boolean;
-    _dragging: boolean;
-    _activeFeature: any = null;
-    _polyTransform: PolyTransform;
-    _polyEditor: PolyEditor;
-    _pointEditor: PointEditor;
+    private _ignoreEvents: boolean;
+    private _scaling: boolean;
+    private _rotation: boolean;
+    private _dragging: boolean;
+    private _activeFeature: any = null;
+
+    private _polyTransform: PolyTransform;
+    private _polyEditor: PolyEditor;
+    private _pointEditor: PointEditor;
+
     private _states: StateManager;
     private _ns: string;
     private _deselectAllowed = true;
+    private _vertexEditing: boolean;
 
     /**
      * If set to true the feature will be deleted in one of two cases:<br>
@@ -34,13 +82,12 @@ export class Editor extends Control {
      *     2) User presses "del" button
      */
     allowDeletion = true;
-    private _vertexEditing: boolean;
 
     /**
      * @param map - map object the control will work with
-     * @param {Object} [options] - key-value set of properties to be set to the instance
+     * @param options - key-value set of properties to be set to the instance
      */
-    constructor(map, {snappingProvider = null, isActive = false, activeLayer = null} = {}) {
+    constructor(map: Map, {snappingProvider = null, isActive = false, activeLayer = null}: ControlConstructorParams = {}) {
         super(map, {snappingProvider, activeLayer});
 
         this._ns = '.' + getGuid();
@@ -62,13 +109,13 @@ export class Editor extends Control {
         this.isActive = isActive;
     }
 
-    _setEditors() {
+    private _setEditors(): void {
         this._pointEditor = new PointEditor(this.map, {snappingProvider: this.snappingProvider, activeLayer: this.activeLayer});
-        this._pointEditor.on('edit', this._onEdit);
+        this._pointEditor.on(EditEvent.type, this._onEdit);
 
         this._polyEditor = new PolyEditor(this.map, {snappingProvider: this.snappingProvider, onFeatureRemove: this._delete.bind(this), activeLayer: this.activeLayer});
-        this._polyEditor.on('edit', this._onEdit);
-        this._polyEditor.on('change', this._updateTransformControl.bind(this));
+        this._polyEditor.on(EditEvent.type, this._onEdit);
+        this._polyEditor.on(ChangeEvent.type, this._updateTransformControl.bind(this));
 
         this._polyTransform = new PolyTransform(this.map);
         this._polyTransform.on('rotationEnd scalingEnd', this._onEdit);
@@ -80,43 +127,43 @@ export class Editor extends Control {
         if (this._polyEditor) this._polyEditor.snappingProvider = provider;
     }
 
-    _onEdit() {
+    private _onEdit(): void {
         this.fire('edit');
         this._saveState();
     }
 
-    _activate() {
+    protected _activate(): void {
         if (!this.activeLayer) return;
         this.activeLayer.features.forEach(this._setListener, this);
-        this.activeLayer.on('featuresAdd', this._handleFeatureAdd);
-        this.activeLayer.on('featuresRemove', this._handleFeatureRemove);
+        this.activeLayer.on(FeaturesAddEvent.type, this._handleFeatureAdd);
+        this.activeLayer.on(FeaturesRemoveEvent.type, this._handleFeatureRemove);
         this.activeLayer.redraw();
-        this.map.on('click', this._onMapClick.bind(this));
+        this.map.on(sGisClickEvent.type, this._onMapClick.bind(this));
 
         listenDomEvent(document, 'keydown', this._handleKeyDown);
     }
 
-    _handleFeatureAdd(ev: FeaturesAddEvent) {
-        ev.features.forEach(f => this._setListener(f));
+    private _handleFeatureAdd(event: FeaturesAddEvent): void {
+        event.features.forEach(f => this._setListener(f));
     }
 
-    _handleFeatureRemove(ev: FeaturesRemoveEvent) {
-        ev.features.forEach(f => this._removeListener(f));
+    private _handleFeatureRemove(event: FeaturesRemoveEvent): void {
+        event.features.forEach(f => this._removeListener(f));
     }
 
-    _setListener(feature) {
-        feature.on('click' + this._ns, this._handleFeatureClick.bind(this, feature));
+    private _setListener(feature: Feature): void {
+        feature.on(sGisClickEvent.type + this._ns, this._handleFeatureClick.bind(this, feature));
     }
 
-    _removeListener(feature) {
-        feature.off('click' + this._ns);
+    private _removeListener(feature: Feature): void {
+        feature.off(sGisClickEvent.type + this._ns);
     }
 
-    _onMapClick() {
+    private _onMapClick(): void {
         if (!this.ignoreEvents) this._deselect();
     }
 
-    _deactivate() {
+    protected _deactivate(): void {
         this._deselect();
         this.activeLayer.features.forEach(this._removeListener, this);
         this.activeLayer.off('featureAdd', this._handleFeatureAdd);
@@ -128,32 +175,31 @@ export class Editor extends Control {
 
     /**
      * Selects a given feature if it is in the active layer.
-     * @param {sGis.Feature} feature
+     * @param feature
      */
-    select(feature) { this.activeFeature = feature; }
+    select(feature: Feature) { this.activeFeature = feature; }
 
     /**
      * Clears selection if any.
      */
-    deselect() { this.activeFeature = null; }
+    deselect(): void { this.activeFeature = null; }
 
     /**
      * Currently selected for editing feature.
-     * @type {sGis.Feature}
      */
-    get activeFeature() { return this._activeFeature; }
-    set activeFeature(/** sGis.Feature */ feature) {
+    get activeFeature(): Feature { return this._activeFeature; }
+    set activeFeature(feature: Feature) {
         if (feature) this.activate();
         this._select(feature);
     }
 
-    _handleFeatureClick(feature, sGisEvent) {
+    private _handleFeatureClick(feature: Feature, event: sGisClickEvent): void {
         if (this.ignoreEvents) return;
-        sGisEvent.stopPropagation();
+        event.stopPropagation();
         this._select(feature);
     }
 
-    _select(feature) {
+    private _select(feature: Feature): void {
         if (this._activeFeature === feature) return;
         this._deselect();
 
@@ -161,20 +207,20 @@ export class Editor extends Control {
         if (!feature) return;
 
         feature.setTempSymbol(new EditorSymbol({ baseSymbol: feature.symbol }));
-        if (feature.position) {
+        if (feature instanceof PointFeature) {
             this._pointEditor.activeLayer = this.activeLayer;
             this._pointEditor.activeFeature = feature;
-        } else if (feature.rings) {
+        } else if (feature instanceof Poly) {
             this._activatePolyControls(feature);
         }
         this.activeLayer.redraw();
 
         this._saveState();
 
-        this.fire('featureSelect', { feature: feature })
+        this.fire(new FeatureSelectEvent(feature));
     }
 
-    _activatePolyControls(feature) {
+    private _activatePolyControls(feature: Poly): void {
         this._polyEditor.featureDragAllowed = this._dragging;
         this._polyEditor.vertexChangeAllowed = this._vertexEditing;
         this._polyEditor.activeLayer = this.activeLayer;
@@ -186,7 +232,7 @@ export class Editor extends Control {
         this._polyTransform.activeFeature = feature
     }
 
-    _deselect() {
+    private _deselect(): void {
         if (!this._activeFeature || !this._deselectAllowed) return;
 
         this._pointEditor.deactivate();
@@ -199,10 +245,10 @@ export class Editor extends Control {
         this._activeFeature = null;
         this.activeLayer.redraw();
 
-        this.fire('featureDeselect', { feature: feature })
+        this.fire(new FeatureDeselectEvent(feature));
     }
 
-    _updateTransformControl() {
+    private _updateTransformControl(): void {
         if (this._polyTransform.isActive) this._polyTransform.update();
     }
 
@@ -213,9 +259,9 @@ export class Editor extends Control {
      *     * drag - dragging of whole features
      *     * scale - scaling of polygons and polylines
      *     * all - all modes are active
-     * @param {string[]|string} mode - can be coma separated list or array of mode names
+     * @param mode - can be coma separated list or array of mode names
      */
-    setMode(mode) {
+    setMode(mode: string | string[]): void {
         if (mode === 'all') mode = modes;
         if (!Array.isArray(mode)) mode = mode.split(',').map(x => x.trim());
 
@@ -234,27 +280,27 @@ export class Editor extends Control {
     /**
      * If deselecting was prohibited, this methods turns it on again.
      */
-    allowDeselect() { this._deselectAllowed = true; }
+    allowDeselect(): void { this._deselectAllowed = true; }
 
     /**
      * Prevents feature to be deselected by any user or code interaction. It will not have effect if the control is deactivated though.
      */
-    prohibitDeselect() { this._deselectAllowed = false; }
+    prohibitDeselect(): void { this._deselectAllowed = false; }
 
-    _delete() {
+    private _delete(): void {
         if (this._deselectAllowed && this.allowDeletion && this._activeFeature) {
             let feature = this._activeFeature;
-            this.prohibitEvent('featureDeselect');
+            this.prohibitEvent(FeatureDeselectEvent.type);
             this._deselect();
-            this.allowEvent('featureDeselect');
+            this.allowEvent(FeatureDeselectEvent.type);
             this.activeLayer.remove(feature);
 
             this._saveState();
-            this.fire('featureRemove', { feature: feature });
+            this.fire(new FeatureRemoveEvent(feature));
         }
     }
 
-    _handleKeyDown(event) {
+    private _handleKeyDown(event: KeyboardEvent): boolean {
         switch (event.which) {
             case 27: this._deselect(); return false; // esc
             case 46: this._delete(); return false; // del
@@ -263,36 +309,36 @@ export class Editor extends Control {
         }
     }
 
-    _saveState() {
+    private _saveState(): void {
         this._states.setState({ feature: this._activeFeature, coordinates: this._activeFeature && this._activeFeature.coordinates });
     }
 
     /**
      * Undo last change.
      */
-    undo() {
+    undo(): void {
         this._setState(this._states.undo());
     }
 
     /**
      * Redo a change that was undone.
      */
-    redo() {
+    redo(): void {
         this._setState(this._states.redo());
     }
 
-    _setState(state) {
+    private _setState(state: EditState) {
         if (!state) return this._deselect();
 
         if (!state.coordinates && this.activeLayer.features.indexOf(state.feature) >= 0) {
             this.activeFeature = null;
             this.activeLayer.remove(state.feature);
         } else if (state.coordinates && this.activeLayer.features.indexOf(state.feature) < 0) {
-            state.feature.coordinates = state.coordinates;
+            this._setCoordinates(state);
             this.activeLayer.add(state.feature);
             this.activeFeature = state.feature;
         } else if (state.coordinates) {
-            state.feature.coordinates = state.coordinates;
+            this._setCoordinates(state);
             this.activeFeature = state.feature;
         }
 
@@ -300,39 +346,23 @@ export class Editor extends Control {
         this.activeLayer.redraw();
     }
 
-    get ignoreEvents() { return this._ignoreEvents; }
-    set ignoreEvents(bool) {
+    private _setCoordinates(state: EditState): void {
+        if (state.feature instanceof PointFeature) {
+            state.feature.position = <Coordinates>state.coordinates;
+        } else if (state.feature instanceof Poly) {
+            state.feature.coordinates = <Contour[]>state.coordinates;
+        }
+    }
+
+    get ignoreEvents(): boolean { return this._ignoreEvents; }
+    set ignoreEvents(bool: boolean) {
         this._ignoreEvents = bool;
         this._pointEditor.ignoreEvents = bool;
         this._polyEditor.ignoreEvents = bool;
         this._polyTransform.ignoreEvents = bool;
     }
 
-    get pointEditor() { return this._pointEditor; }
-    get polyEditor() { return this._polyEditor; }
-    get polyTransform() { return this._polyTransform; }
+    get pointEditor(): PointEditor { return this._pointEditor; }
+    get polyEditor(): PolyEditor { return this._polyEditor; }
+    get polyTransform(): PolyTransform { return this._polyTransform; }
 }
-
-/**
- * Feature was selected by user.
- * @event sGis.controls.Editor#featureSelect
- * @type {Object}
- * @prop {sGis.Feature} feature - feature that was selected
- * @mixes sGisEvent
- */
-
-/**
- * Feature was deselected by user.
- * @event sGis.controls.Editor#featureDeselect
- * @type {Object}
- * @prop {sGis.Feature} feature - feature that was deselected
- * @mixes sGisEvent
- */
-
-/**
- * Feature was deleted by user.
- * @event sGis.controls.Editor#featureRemove
- * @type {Object}
- * @prop {sGis.Feature} feature - feature that was deselected
- * @mixes sGisEvent
- */
