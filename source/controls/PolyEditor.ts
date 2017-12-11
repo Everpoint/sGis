@@ -7,10 +7,7 @@ import {DragEndEvent, DragEvent, DragStartEvent, sGisDoubleClickEvent, sGisMouse
 import {Coordinates} from "../baseTypes";
 import {Crs} from "../Crs";
 import {PolySnappingProvider} from "./snapping/PolySnappingProvider";
-import {
-    axisSnapping, lineSnapping, midPointSnapping, orthogonalSnapping,
-    vertexSnapping
-} from "./snapping/SnappingMethods";
+import {lineSnapping, vertexSnapping} from "./snapping/SnappingMethods";
 
 export interface PolyEditorParams extends ControlConstructorParams {
     onFeatureRemove?: () => void,
