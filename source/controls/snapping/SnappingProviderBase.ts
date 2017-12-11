@@ -40,4 +40,5 @@ export abstract class SnappingProviderBase implements ISnappingProvider {
     }
 
     protected abstract _getSnappingData(point: Coordinates): SnappingData;
+    abstract clone(): ISnappingProvider;
 }

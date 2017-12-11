@@ -217,15 +217,18 @@ export abstract class Control extends EventHandler {
      * @param activeIndex - index of the active point in the contour. This is used for axis and orthogonal snapping methods.
      * @param isPolygon - specifies whether the contour should be treated as enclosed (meaning, that last and first
      *                    points should be connected.
+     * @param snappingProviderOverride - if specified, this provider will be used instead of the default one.
      */
-    protected _snap(point: Coordinates, isAltPressed: boolean, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean): Coordinates {
+    protected _snap(point: Coordinates, isAltPressed: boolean, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean, snappingProviderOverride?: ISnappingProvider): Coordinates {
         let snappingPoint = null;
-        if (!isAltPressed && this.snappingProvider) {
-            snappingPoint = this.snappingProvider.getSnappingPoint(point, activeContour, activeIndex, isPolygon);
+        const snappingProvider = snappingProviderOverride || this.snappingProvider;
+
+        if (!isAltPressed && snappingProvider) {
+            snappingPoint = snappingProvider.getSnappingPoint(point, activeContour, activeIndex, isPolygon);
         }
 
         if (this._tempLayer) {
-            const snappingFeature = this._getSnappingFeature(snappingPoint);
+            const snappingFeature = this._getSnappingFeature(snappingPoint || point);
             if (snappingPoint && !this._tempLayer.has(snappingFeature)) {
                 this._tempLayer.add(snappingFeature);
             } else if (!snappingPoint && this._tempLayer.has(snappingFeature)) {

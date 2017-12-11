@@ -9,6 +9,10 @@ export type SnappingData = {
 
 export type SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number, activeContour: Contour, activeIndex: number, isEnclosed?: boolean) => Coordinates | null;
 
+export const emptySnapping: SnappingMethod = (position: Coordinates): Coordinates => {
+    return position;
+};
+
 export const vertexSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number): Coordinates | null => {
     let minSqDist = snappingDistance * snappingDistance;
     let snappingPoint = null;

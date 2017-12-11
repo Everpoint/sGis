@@ -15,6 +15,9 @@ import {Poly} from "../features/Poly";
 import {sGisEvent} from "../EventHandler";
 import {Contour, Coordinates} from "../baseTypes";
 import {Map} from "../Map";
+import {SnappingProviderBase} from "./snapping/SnappingProviderBase";
+import {emptySnapping} from "./snapping/SnappingMethods";
+import {CombinedSnappingProvider} from "./snapping/CombinedSnappingProvider";
 
 export class FeatureSelectEvent extends sGisEvent {
     static type: string = 'featureSelect';
@@ -113,7 +116,8 @@ export class Editor extends Control {
         this._pointEditor = new PointEditor(this.map, {snappingProvider: this.snappingProvider, activeLayer: this.activeLayer});
         this._pointEditor.on(EditEvent.type, this._onEdit);
 
-        this._polyEditor = new PolyEditor(this.map, {snappingProvider: this.snappingProvider, onFeatureRemove: this._delete.bind(this), activeLayer: this.activeLayer});
+
+        this._polyEditor = new PolyEditor(this.map, {snappingProvider: this._getPolyEditorSnappingProvider(), onFeatureRemove: this._delete.bind(this), activeLayer: this.activeLayer});
         this._polyEditor.on(EditEvent.type, this._onEdit);
         this._polyEditor.on(ChangeEvent.type, this._updateTransformControl.bind(this));
 
@@ -124,7 +128,24 @@ export class Editor extends Control {
     setSnappingProvider(provider: ISnappingProvider) {
         this.snappingProvider = provider;
         if (this._pointEditor) this._pointEditor.snappingProvider = provider;
-        if (this._polyEditor) this._polyEditor.snappingProvider = provider;
+        if (this._polyEditor) this._polyEditor.snappingProvider = this._getPolyEditorSnappingProvider();
+    }
+
+    private _getPolyEditorSnappingProvider() {
+        if (!this.snappingProvider) return null;
+
+        const result = this.snappingProvider.clone();
+        if (result instanceof SnappingProviderBase) {
+            result.snappingMethods = result.snappingMethods.concat([emptySnapping]);
+        } else if (result instanceof CombinedSnappingProvider) {
+            result.providers.forEach(child => {
+                if (child instanceof SnappingProviderBase) {
+                    child.snappingMethods = child.snappingMethods.concat([emptySnapping]);
+                }
+            });
+        }
+
+        return result;
     }
 
     private _onEdit(): void {

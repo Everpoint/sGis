@@ -144,4 +144,14 @@ export class Bbox {
      * Coordinates of the bbox in the form [xMin, yMin, xMax, yMax].
      */
     get coordinates(): [number, number, number, number]{ return [this._p[0], this._p[1], this._p[2], this._p[3]]; }
+
+    /**
+     * Creates a bbox from a point and offset. The created bbox will be a square area around the point min and max
+     * coordinates of which are 'offset' away from the point. Bbox will have point's crs.
+     * @param point - center point of created bbox.
+     * @param offset - distance from center to the borders of bbox.
+     */
+    static fromPoint(point: Point, offset: number): Bbox {
+        return new Bbox([point.x - offset, point.y - offset], [point.x + offset, point.y + offset], point.crs);
+    }
 }

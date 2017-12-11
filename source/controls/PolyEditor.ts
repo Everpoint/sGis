@@ -1,4 +1,4 @@
-import {ChangeEvent, Control, EditEvent} from "./Control";
+import {ChangeEvent, Control, ControlConstructorParams, EditEvent} from "./Control";
 import {Poly} from "../features/Poly";
 import {move} from "../geotools";
 import {Point} from "../Point";
@@ -6,6 +6,16 @@ import {Polygon} from "../features/Polygon";
 import {DragEndEvent, DragEvent, DragStartEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
 import {Coordinates} from "../baseTypes";
 import {Crs} from "../Crs";
+import {PolySnappingProvider} from "./snapping/PolySnappingProvider";
+import {
+    axisSnapping, lineSnapping, midPointSnapping, orthogonalSnapping,
+    vertexSnapping
+} from "./snapping/SnappingMethods";
+
+export interface PolyEditorParams extends ControlConstructorParams {
+    onFeatureRemove?: () => void,
+    hoverSnappingProvider?: PolySnappingProvider;
+}
 
 /**
  * Control for editing polyline and polygon features. When activeFeature is set, the feature becomes draggable.
@@ -22,7 +32,7 @@ export class PolyEditor extends Control {
     vertexSize: number = 7;
 
     /** If user tries to remove the last point of the feature, the control will not remove it but will call this callback */
-    onFeatureRemove: () => void | null = null;
+    onFeatureRemove: () => void = null;
 
     /** If set to false it will be not possible to change the shape of the feature. */
     vertexChangeAllowed: boolean = true;
@@ -35,12 +45,14 @@ export class PolyEditor extends Control {
     private _activeRing: number | null;
     private _activeIndex: number | null;
 
+    hoverSnappingProvider: PolySnappingProvider | null;
+
     /**
      * @param map - map object the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map, {snappingProvider = null, activeLayer = null, isActive = false, onFeatureRemove = null} = {}) {
-        super(map, {snappingProvider, activeLayer, useTempLayer: true});
+    constructor(map, {isActive = false, onFeatureRemove = null, hoverSnappingProvider, ...controlParams}: PolyEditorParams = {}) {
+        super(map, {useTempLayer: true, ...controlParams});
 
         this.onFeatureRemove = onFeatureRemove;
 
@@ -49,6 +61,10 @@ export class PolyEditor extends Control {
         this._handleDrag = this._handleDrag.bind(this);
         this._handleDragEnd = this._handleDragEnd.bind(this);
         this._handleDblClick = this._handleDblClick.bind(this);
+
+        if (hoverSnappingProvider === undefined) {
+            this.hoverSnappingProvider = new PolySnappingProvider(map, {snappingMethods: [vertexSnapping, lineSnapping]});
+        }
 
         this.isActive = isActive;
     }
@@ -62,6 +78,8 @@ export class PolyEditor extends Control {
         this._activeFeature.on(DragEvent.type, this._handleDrag);
         this._activeFeature.on(DragEndEvent.type, this._handleDragEnd);
         this._activeFeature.on(sGisDoubleClickEvent.type, this._handleDblClick);
+
+        this.hoverSnappingProvider.feature = this._activeFeature;
     }
 
     _deactivate() {
@@ -91,7 +109,7 @@ export class PolyEditor extends Control {
             return;
         }
 
-        this._snap(event.point.position, event.browserEvent.altKey);
+        this._snap(event.point.position, event.browserEvent.altKey, undefined, undefined, undefined, this.hoverSnappingProvider);
     }
 
     private _getProjectedPoint(position: Coordinates, fromCrs: Crs): Coordinates {
@@ -184,6 +202,7 @@ export class PolyEditor extends Control {
         } else if (this.onFeatureRemove) {
             this.onFeatureRemove();
         }
+        this._unsnap();
 
         if (this.activeLayer) this.activeLayer.redraw();
         event.stopPropagation();

@@ -14,4 +14,9 @@ export class CombinedSnappingProvider implements ISnappingProvider{
             if (snappingPoint !== null) return snappingPoint;
         }
     }
+
+    clone(): ISnappingProvider {
+        let children = this.providers.map(x => x.clone());
+        return new CombinedSnappingProvider(children);
+    }
 }
