@@ -6,6 +6,7 @@ import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {IRender} from "../../interfaces/IRender";
 import {PointFeature} from "../../features/Point";
+import {warn} from "../../utils/utils";
 
 export interface SquareSymbolConstructorParams {
     /** @see [[SquareSymbol.size]] */
@@ -28,8 +29,20 @@ export class SquareSymbol extends Symbol {
     /** Size of the square. */
     size: number = 10;
 
-    /** Offset of the point from the feature position in {x: dx, y: dy} format. If set to {x:0, y:0}, center of the square will be at the position of the feature. */
-    offset: Offset = [0, 0];
+    private _offset: Offset = [0, 0];
+
+    /** Offset of the point from the feature position. If set to [0, 0], center of the circle will be at the position of the feature. */
+    get offset(): Offset { return this._offset; }
+    set offset(value: Offset) {
+        // TODO: remove deprecated part after 2018
+        let deprecated = <any>value;
+        if (deprecated.x !== undefined && deprecated.y !== undefined) {
+            warn('Using anchorPoint in {x, y} format is deprecated. Use [x, y] format instead.');
+            this._offset = [deprecated.x, deprecated.y];
+        } else {
+            this._offset = value;
+        }
+    }
 
     /** Color of the inner part of the square. Can be any valid css color string. */
     fillColor: string = 'black';
