@@ -1,5 +1,5 @@
 import {Color} from "../utils/Color";
-import {error} from "../utils/utils";
+import {copyObject, error} from "../utils/utils";
 import {Symbol, SymbolConstructor} from "../symbols/Symbol";
 
 type SymbolDescription = {
@@ -46,6 +46,9 @@ export const serialize = (symbol: Symbol, colorsFormat: string = null): Serializ
                     let color = new Color(value);
                     if (color.isValid) value = color.toString(colorsFormat);
                 }
+                if (value instanceof Object) {
+                    value = copyObject(value);
+                }
                 serialized[prop] = value;
             });
             return serialized;
@@ -69,6 +72,9 @@ export const deserialize = (desc: SerializedSymbol, colorsFormat: string = null)
         if (colorsFormat) {
             let color = new Color(val.toString());
             if (color.isValid && color.format === colorsFormat) val = color.toString('rgba');
+        }
+        if (val instanceof Object) {
+            val = copyObject(val);
         }
 
         symbol[prop] = val;
