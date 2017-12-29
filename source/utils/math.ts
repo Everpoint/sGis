@@ -26,7 +26,7 @@ export const tolerance = 0.000001;
  * @returns {boolean}
  */
 export const softEquals = function softEquals(a, b) {
-    return Math.abs(a - b) < tolerance * a;
+    return Math.abs(a - b) < tolerance * Math.abs(a);
 };
 
 /**

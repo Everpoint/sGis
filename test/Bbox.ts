@@ -4,9 +4,10 @@ import {geo} from "../source/Crs";
 
 describe('sGis.Bbox', function() {
 
-    let bbox;
+    let bbox, negBbox;
     beforeEach(function() {
         bbox = new Bbox([0, 0], [10, 10]);
+        negBbox = new Bbox([-10, -10], [10, 10]);
     });
 
     describe('constructor', function() {
@@ -26,6 +27,12 @@ describe('sGis.Bbox', function() {
 
         test('should return true if source bbox is inside target one', function() {
             expect(new Bbox([-2, -2], [12, 12]).intersects(bbox)).toBe(true);
+        });
+    });
+
+    describe('.equals()', () => {
+        test('should correctly understand negative coordinates', () => {
+            expect(negBbox.equals(new Bbox([-10, -10], [10, 10]))).toBe(true);
         });
     });
 
