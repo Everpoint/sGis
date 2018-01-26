@@ -1,6 +1,6 @@
 import {EventHandler, sGisEvent} from "../EventHandler";
 import {Map} from "../Map";
-import {FeatureLayer} from "../FeatureLayer";
+import {FeatureLayer} from "../layers/FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
 import {Contour, Coordinates} from "../baseTypes";
 import {PointFeature} from "../features/Point";

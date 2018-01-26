@@ -1,7 +1,7 @@
 /// Template: "full_screen_map.html"
 /// Title: "Point symbols"
 
-import {FeatureLayer} from "../../../source/FeatureLayer";
+import {FeatureLayer} from "../../../source/layers/FeatureLayer";
 import {PointFeature} from "../../../source/features/Point";
 import {init} from "../../../source/init";
 import {PointSymbol} from "../../../source/symbols/point/Point";
@@ -9,7 +9,7 @@ import {SquareSymbol} from "../../../source/symbols/point/Square";
 import {StaticImageSymbol} from "../../../source/symbols/point/StaticImageSymbol";
 import {MaskedImage} from "../../../source/symbols/point/MaskedImage";
 import {Coordinates} from "../../../source/baseTypes";
-import {TileLayer} from "../../../source/TileLayer";
+import {TileLayer} from "../../../source/layers/TileLayer";
 import {CrossPointSymbol} from "../../../source/symbols/point/CrossPointSymbol";
 import {DynamicImageSymbol} from "../../../source/symbols/point/DynamicImageSymbol";
 

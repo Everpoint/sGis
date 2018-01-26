@@ -1,7 +1,7 @@
-import {EventHandler, sGisEvent} from "./EventHandler";
-import {Bbox} from "./Bbox";
-import {ResolutionLimits} from "./baseTypes";
-import {Render} from "./renders/Render";
+import {EventHandler, sGisEvent} from "../EventHandler";
+import {Bbox} from "../Bbox";
+import {ResolutionLimits} from "../baseTypes";
+import {Render} from "../renders/Render";
 
 export interface LayerConstructorParams {
     delayedUpdate?: boolean,

@@ -1,9 +1,9 @@
-import {TileScheme} from "./TileScheme";
+import {TileScheme} from "../TileScheme";
 import {Layer, LayerConstructorParams} from "./Layer";
-import {webMercator, Crs} from "./Crs";
-import {Bbox} from "./Bbox";
-import {StaticHtmlImageRender} from "./renders/StaticHtmlImageRender";
-import {Render} from "./renders/Render";
+import {webMercator, Crs} from "../Crs";
+import {Bbox} from "../Bbox";
+import {StaticHtmlImageRender} from "../renders/StaticHtmlImageRender";
+import {Render} from "../renders/Render";
 
 export interface TileLayerConstructorParams extends LayerConstructorParams {
     /** @see [[TileLayer.tileScheme]] */

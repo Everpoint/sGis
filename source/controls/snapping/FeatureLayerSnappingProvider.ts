@@ -1,5 +1,5 @@
 import {SnappingProviderBase, SnappingProviderBaseConstructorParams} from "./SnappingProviderBase";
-import {FeatureLayer} from "../../FeatureLayer";
+import {FeatureLayer} from "../../layers/FeatureLayer";
 import {Map} from "../../Map";
 import {SnappingData} from "./SnappingMethods";
 import {Bbox} from "../../Bbox";

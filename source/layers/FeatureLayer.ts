@@ -1,10 +1,10 @@
 import {Layer, LayerConstructorParams} from "./Layer";
-import {error} from "./utils/utils";
-import {Feature} from "./features/Feature";
-import {Bbox} from "./Bbox";
-import {sGisEvent} from "./EventHandler";
-import {Render} from "./renders/Render";
-import {StaticImageRender} from "./renders/StaticImageRender";
+import {error} from "../utils/utils";
+import {Feature} from "../features/Feature";
+import {Bbox} from "../Bbox";
+import {sGisEvent} from "../EventHandler";
+import {Render} from "../renders/Render";
+import {StaticImageRender} from "../renders/StaticImageRender";
 
 export interface FeatureLayerConstructorParams extends LayerConstructorParams {
     features?: Feature[]

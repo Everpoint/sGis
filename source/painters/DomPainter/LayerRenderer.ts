@@ -1,7 +1,7 @@
 import {Canvas} from "./Canvas";
 import {Bbox} from "../../Bbox";
 import {Container} from "./Container";
-import {Layer} from "../../Layer";
+import {Layer} from "../../layers/Layer";
 import {MouseEventFlags} from "../../commonEvents";
 import {Coordinates} from "../../baseTypes";
 import {DynamicRender, IntersectionType, Render, StaticRender, VectorRender} from "../../renders/Render";

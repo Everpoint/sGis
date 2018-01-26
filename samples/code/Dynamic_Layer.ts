@@ -1,10 +1,10 @@
 /// Template: "full_screen_map.html"
 /// Title: "Point symbols"
 
-import {DynamicLayer} from "../../source/DynamicLayer";
+import {DynamicLayer} from "../../source/layers/DynamicLayer";
 import {Bbox} from "../../source/Bbox";
 import {init} from "../../source/init";
-import {TileLayer} from "../../source/TileLayer";
+import {TileLayer} from "../../source/layers/TileLayer";
 
 class ArcGisLayer extends DynamicLayer {
     readonly url: string;

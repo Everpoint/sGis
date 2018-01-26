@@ -1,10 +1,10 @@
 import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
-import {Crs} from "./Crs";
-import {Bbox} from "./Bbox";
-import {Feature} from "./features/Feature";
-import {Render} from "./renders/Render";
-import {StaticImageRender} from "./renders/StaticImageRender";
-import {StaticHtmlImageRender} from "./renders/StaticHtmlImageRender";
+import {Crs} from "../Crs";
+import {Bbox} from "../Bbox";
+import {Feature} from "../features/Feature";
+import {Render} from "../renders/Render";
+import {StaticImageRender} from "../renders/StaticImageRender";
+import {StaticHtmlImageRender} from "../renders/StaticHtmlImageRender";
 
 export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
 
@@ -19,7 +19,7 @@ export abstract class DynamicLayer extends Layer {
     private _currentRender: StaticHtmlImageRender;
     private _nextRender: StaticHtmlImageRender;
 
-    private _toLoad: {bbox: Bbox, resolution: number};
+    private _toLoad?: {bbox: Bbox, resolution: number};
 
     delayedUpdate = true;
 
@@ -70,8 +70,10 @@ export abstract class DynamicLayer extends Layer {
                 width,
                 opacity: this.opacity,
                 onLoad: () => {
-                    this._startNextLoad();
                     this.redraw();
+                },
+                onDisplayed: () => {
+                    this._startNextLoad();
                 }
             });
         } else {
@@ -80,7 +82,10 @@ export abstract class DynamicLayer extends Layer {
     }
 
     private _startNextLoad(): void {
-        if (this._toLoad) this._loadNextRender(this._toLoad.bbox, this._toLoad.resolution);
+        if (this._toLoad) {
+            this._loadNextRender(this._toLoad.bbox, this._toLoad.resolution);
+            this._toLoad = null;
+        }
     }
 
     /**
@@ -94,7 +99,6 @@ export abstract class DynamicLayer extends Layer {
     get opacity() { return this.getOpacity(); }
     set opacity(opacity) {
         this.setOpacity(opacity);
-        this._updateSymbol();
     }
 
     protected setOpacity(value: number): void {
@@ -103,16 +107,9 @@ export abstract class DynamicLayer extends Layer {
         super.setOpacity(value);
     }
 
-
     /**
      * Coordinate system of the layer
-     * @type {sGis.Crs}
-     * @default null
      */
-    get crs() { return this._crs; }
-    set crs(/** sGis.Crs */ crs) { this._crs = crs; }
-
-    _updateSymbol() {
-        //if (this._image) this._image.symbol = new ImageSymbol({ opacity: this.opacity });
-    }
+    get crs(): Crs { return this._crs; }
+    set crs(crs: Crs) { this._crs = crs; }
 }

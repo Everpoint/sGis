@@ -3,7 +3,7 @@ import {EventDispatcher} from "./EventDispatcher";
 import {LayerRenderer} from "./LayerRenderer";
 import {Container} from "./Container";
 import {Map as sGisMap} from "../../Map";
-import {Layer} from "../../Layer";
+import {Layer} from "../../layers/Layer";
 import {Bbox} from "../../Bbox";
 import {error, warn, requestAnimationFrame, assignDefined} from "../../utils/utils";
 import {softEquals} from "../../utils/math";

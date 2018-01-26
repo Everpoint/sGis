@@ -1,7 +1,7 @@
 import "jest";
 import {LayerGroup} from "../source/LayerGroup";
-import {DynamicLayer} from "../source/DynamicLayer";
-import {TileLayer} from "../source/TileLayer";
+import {DynamicLayer} from "../source/layers/DynamicLayer";
+import {TileLayer} from "../source/layers/TileLayer";
 
 describe('LayerGroup', function() {
     describe('constructor', function () {

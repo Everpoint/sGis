@@ -1,6 +1,6 @@
 import "jest";
 import {Map} from "../../source/Map";
-import {FeatureLayer} from "../../source/FeatureLayer";
+import {FeatureLayer} from "../../source/layers/FeatureLayer";
 import {PointFeature} from "../../source/features/Point";
 import {Editor} from "../../source/controls/Editor";
 

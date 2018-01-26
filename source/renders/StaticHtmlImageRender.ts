@@ -4,7 +4,9 @@ import {Coordinates} from "../baseTypes";
 import {Point} from "../Point";
 
 export interface HtmlImageRenderParams extends StaticImageRenderParams {
-    bbox: Bbox
+    bbox: Bbox,
+    onDisplayed?: () => void,
+    onRemoved?: () => void,
 }
 
 export class StaticHtmlImageRender extends StaticImageRender {
@@ -15,9 +17,11 @@ export class StaticHtmlImageRender extends StaticImageRender {
     onDisplayed?: () => void;
     onRemoved?: () => void;
 
-    constructor({src, bbox, width, height, opacity, onLoad}: HtmlImageRenderParams) {
+    constructor({src, bbox, width, height, opacity, onLoad, onDisplayed = undefined, onRemoved = undefined}: HtmlImageRenderParams) {
         super({src, width, height, opacity, onLoad});
         this.bbox = bbox;
+        this.onDisplayed = onDisplayed;
+        this.onRemoved = onRemoved;
     }
 
     contains(position: Coordinates): boolean {

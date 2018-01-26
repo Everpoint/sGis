@@ -1,6 +1,6 @@
 import {EventHandler, sGisEvent} from "./EventHandler";
 import {error} from "./utils/utils";
-import {Layer, VisibilityChangeEvent} from "./Layer";
+import {Layer, VisibilityChangeEvent} from "./layers/Layer";
 
 export type GroupItem = Layer | LayerGroup;
 
