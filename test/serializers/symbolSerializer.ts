@@ -2,7 +2,7 @@ import "jest";
 import {PointSymbol} from "../../source/symbols/point/Point";
 import * as symbolSerializer from "../../source/serializers/symbolSerializer";
 import {SquareSymbol} from "../../source/symbols/point/Square";
-import {PointImageSymbol} from "../../source/symbols/point/PointImageSymbol";
+import {StaticImageSymbol} from "../../source/symbols/point/StaticImageSymbol";
 import {MaskedImage} from "../../source/symbols/point/MaskedImage";
 import {PolylineSymbol} from "../../source/symbols/PolylineSymbol";
 import {PolygonSymbol} from "../../source/symbols/polygon/Simple";
@@ -76,7 +76,7 @@ describe('symbolSerializer', () => {
         });
 
         it('point.Image', () => {
-            let symbol1 = new PointImageSymbol();
+            let symbol1 = new StaticImageSymbol();
             let desc1 = symbolSerializer.serialize(symbol1);
 
             expect(desc1.width).toBeDefined();
@@ -86,17 +86,17 @@ describe('symbolSerializer', () => {
 
             let deserialized1 = symbolSerializer.deserialize(desc1);
 
-            expect(deserialized1 instanceof PointImageSymbol).toBe(true);
+            expect(deserialized1 instanceof StaticImageSymbol).toBe(true);
             expect(deserialized1.width).toEqual(symbol1.width);
             expect(deserialized1.height).toEqual(symbol1.height);
             expect(deserialized1.anchorPoint).toEqual(symbol1.anchorPoint);
             expect(deserialized1.source).toEqual(symbol1.source);
 
-            let symbol2 = new PointImageSymbol({width: 15, height: 15, source: 'url', anchorPoint: [10, -20]});
+            let symbol2 = new StaticImageSymbol({width: 15, height: 15, source: 'url', anchorPoint: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
             let deserialized2 = symbolSerializer.deserialize(desc2);
 
-            expect(deserialized2 instanceof PointImageSymbol).toBe(true);
+            expect(deserialized2 instanceof StaticImageSymbol).toBe(true);
             expect(deserialized2.width).toEqual(symbol2.width);
             expect(deserialized2.height).toEqual(symbol2.height);
             expect(deserialized2.anchorPoint).toEqual(symbol2.anchorPoint);

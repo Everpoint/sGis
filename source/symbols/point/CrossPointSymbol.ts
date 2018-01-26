@@ -2,7 +2,7 @@ import {Symbol} from "../Symbol";
 import {Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
-import {IRender} from "../../interfaces/IRender";
+import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 
@@ -39,7 +39,7 @@ export class CrossPointSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;

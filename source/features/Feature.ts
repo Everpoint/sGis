@@ -1,13 +1,13 @@
 import {Crs, geo} from "../Crs";
 import {EventHandler} from "../EventHandler";
 import {Symbol} from "../symbols/Symbol";
-import {IRender} from "../interfaces/IRender";
 import {Bbox} from "../Bbox";
+import {Render} from "../renders/Render";
 
 export type RenderCache = {
     resolution: number,
     crs: Crs,
-    renders: IRender[]
+    renders: Render[]
 };
 
 export interface IFeatureConstructorArgs {
@@ -56,7 +56,7 @@ export abstract class Feature extends EventHandler {
      * @param {sGis.Crs} crs
      * @returns {sGis.IRender[]}
      */
-    render(resolution: number, crs: Crs): IRender[] {
+    render(resolution: number, crs: Crs): Render[] {
         if (this._hidden || !this.symbol) return [];
         if (!this._needToRender(resolution, crs)) return this._rendered.renders;
 
@@ -74,7 +74,7 @@ export abstract class Feature extends EventHandler {
     }
 
     protected _needToRender(resolution: number, crs: Crs): boolean {
-        return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs;
+        return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs || this._rendered.renders.length === 0;
     }
 
     /**

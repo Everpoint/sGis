@@ -25,7 +25,8 @@ export class DomPainter extends EventHandler {
     private _eventDispatcher: EventDispatcher;
     private _redrawNeeded: boolean;
     private _wrapper: HTMLElement;
-    private _layerWrapper: HTMLElement;
+    private _staticRendersContainer: HTMLElement;
+    private _dynamicRendersContainer: HTMLElement;
     private _innerWrapper: HTMLElement;
 
     private _width: number;
@@ -70,7 +71,7 @@ export class DomPainter extends EventHandler {
         if (this._wrapper) this._clearDOM();
         if (node) {
             this._initDOM(node);
-            this._eventDispatcher = new EventDispatcher(this._layerWrapper, this);
+            this._eventDispatcher = new EventDispatcher(this._staticRendersContainer, this);
             this._needUpdate = true;
             this._redrawNeeded = true;
         }
@@ -157,10 +158,13 @@ export class DomPainter extends EventHandler {
 
             this._updateBbox();
 
+            let layers = this._map.getLayers(true, true);
+
+            let redrawNeeded = this._redrawNeeded;
             if (this._updateAllowed) {
-                this._map.getLayers(true, true).reverse().forEach(layer => {
+                layers.reverse().forEach(layer => {
                     let renderer = this._layerRenderers.get(layer);
-                    if (this._redrawNeeded || renderer.updateNeeded) {
+                    if (redrawNeeded || renderer.updateNeeded) {
                         try {
                             renderer.update();
                         } catch (e) {
@@ -172,13 +176,20 @@ export class DomPainter extends EventHandler {
 
                 this._redrawNeeded = false;
             }
+
+            if (redrawNeeded) {
+                layers.forEach(layer => {
+                    let renderer = this._layerRenderers.get(layer);
+                    renderer.updateDynamic();
+                });
+            }
         }
 
         requestAnimationFrame(this._repaintBound);
     }
 
     _setNewContainer() {
-        this._containers.push(new Container(this._layerWrapper, this.bbox, this._map.resolution, this._removeEmptyContainers.bind(this)));
+        this._containers.push(new Container(this._staticRendersContainer, this.bbox, this._map.resolution, this._removeEmptyContainers.bind(this)));
     }
 
     _removeEmptyContainers() {
@@ -202,8 +213,6 @@ export class DomPainter extends EventHandler {
 
     /**
      * Returns true is the map is currently displayed in the DOM>
-     * @type Boolean
-     * @readonly
      */
     get isDisplayed() { return this._width && this._height; }
 
@@ -238,8 +247,6 @@ export class DomPainter extends EventHandler {
 
     /**
      * Current bbox of the map drawn by this painter.
-     * @type sGis.Bbox
-     * @readonly
      */
     get bbox() {
         if (!this._bbox) this._updateBbox();
@@ -248,24 +255,20 @@ export class DomPainter extends EventHandler {
 
     /**
      * The map this painter draws.
-     * @type sGis.Map
-     * @readonly
      */
     get map() { return this._map; }
 
-    get currContainer() { return this._containers[this._containers.length - 1]}
+    get currContainer() { return this._containers[this._containers.length - 1]; }
+
+    get dynamicContainer() { return this._dynamicRendersContainer; }
 
     /**
      * Width of the map on the screen in pixels.
-     * @type Number
-     * @readonly
      */
     get width() { return this._width; }
 
     /**
      * Height of the map on the screen in pixels.
-     * @type Number
-     * @readonly
      */
     get height() { return this._height; }
 
@@ -275,19 +278,27 @@ export class DomPainter extends EventHandler {
 
         this._innerWrapper = document.createElement('div');
         this._innerWrapper.style.cssText = innerWrapperStyle;
+
+        this._staticRendersContainer = document.createElement('div');
+        this._staticRendersContainer.style.cssText = layerWrapperStyle;
+
+        this._dynamicRendersContainer = document.createElement('div');
+        this._dynamicRendersContainer.style.cssText = layerWrapperStyle;
+        this._dynamicRendersContainer.style.pointerEvents = 'none';
+
+        this._innerWrapper.appendChild(this._staticRendersContainer);
+        this._innerWrapper.appendChild(this._dynamicRendersContainer);
+
         wrapper.appendChild(this._innerWrapper);
-
-        this._layerWrapper = document.createElement('div');
-        this._layerWrapper.style.cssText = layerWrapperStyle;
-        this._innerWrapper.appendChild(this._layerWrapper);
-
         this._wrapper = wrapper;
     }
 
     _clearDOM() {
         if (this._innerWrapper.parentNode) this._innerWrapper.parentNode.removeChild(this._innerWrapper);
+
         this._innerWrapper = null;
-        this._layerWrapper = null;
+        this._staticRendersContainer = null;
+        this._dynamicRendersContainer = null;
         this._wrapper = null;
 
         this._eventDispatcher.remove();

@@ -18,9 +18,6 @@ import * as CrsModule from "./Crs";
 export {DynamicLayer} from "./DynamicLayer";
 export {EventHandler} from "./EventHandler";
 export {Feature} from "./features/Feature";
-import {ImageFeature} from "./features/ImageFeature";
-import {Label} from "./features/Label";
-import {Maptip} from "./features/Maptip";
 import {PointFeature} from "./features/Point";
 import {Polygon} from "./features/Polygon";
 export {FeatureLayer} from "./FeatureLayer";
@@ -34,14 +31,10 @@ import {LayerRenderer} from "./painters/DomPainter/LayerRenderer";
 import {Canvas} from "./painters/DomPainter/Canvas";
 export {Point} from "./Point";
 import {Arc} from "./renders/Arc";
-import {ImageRender} from "./renders/Image";
 import {Point as PointRender} from "./renders/Point";
 import {PolyRender} from "./renders/Poly";
 export {Symbol} from "./symbols/Symbol";
-import {ImageSymbol} from "./symbols/Image";
-import {LabelSymbol} from "./symbols/LabelSymbol";
-import {MaptipSymbol} from "./symbols/MaptipSymbol";
-import {PointImageSymbol} from "./symbols/point/PointImageSymbol";
+import {StaticImageSymbol} from "./symbols/point/StaticImageSymbol";
 import {MaskedImage} from "./symbols/point/MaskedImage";
 import {PointSymbol} from "./symbols/point/Point";
 import {SquareSymbol} from "./symbols/point/Square";
@@ -95,9 +88,6 @@ export const Crs = CrsModule.Crs;
 export const CRS = CrsModule;
 
 export const feature = {
-    Image: ImageFeature,
-    Label: Label,
-    Maptip: Maptip,
     MultiPoint: MultiPoint,
     Point: PointFeature,
     Poly: Poly,
@@ -119,17 +109,13 @@ export const painter = {
 export const render = {
     Arc: Arc,
     HtmlElement: HTMLElement,
-    ImageRender: ImageRender,
     Point: PointRender,
     Polygon: PolyRender
 };
 
 export const symbol = {
-    image: { Image: ImageSymbol },
-    label: { Label: LabelSymbol },
-    maptip: { Simple: MaptipSymbol },
     point: {
-        Image: PointImageSymbol,
+        Image: StaticImageSymbol,
         MaskedImage: MaskedImage,
         Point: PointSymbol,
         Square: SquareSymbol

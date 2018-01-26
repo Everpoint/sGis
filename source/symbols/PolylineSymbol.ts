@@ -3,7 +3,7 @@ import {registerSymbol} from "../serializers/symbolSerializer";
 import {simplifyCoordinates} from "../utils/math";
 import {FillStyle, PolyRender} from "../renders/Poly";
 import {Feature} from "../features/Feature";
-import {IRender} from "../interfaces/IRender";
+import {Render} from "../renders/Render";
 import {Crs} from "../Crs";
 import {Poly} from "../features/Poly";
 
@@ -38,7 +38,7 @@ export class PolylineSymbol extends Symbol {
         Object.assign(this, options);
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof Poly)) return [];
 
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);

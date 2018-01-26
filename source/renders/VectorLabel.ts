@@ -1,4 +1,4 @@
-import {VectorImage} from "./VectorImage";
+import {StaticImage} from "./StaticImage";
 import {Coordinates} from "../baseTypes";
 
 export enum HorizontalAlignment {
@@ -24,7 +24,7 @@ export interface VectorLabelConstructorParams {
  * Text label that is drawn as a vector element. This render prerenders itself to the offscreen canvas and then allows
  * layer renderer to draw it as a simple image.
  */
-export class VectorLabel extends VectorImage {
+export class VectorLabel extends StaticImage {
     /**
      * Font of the label. Set as a valid css font string.
      */

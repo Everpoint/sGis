@@ -1,5 +1,5 @@
 import {Coordinates} from "../baseTypes";
-import {IRender} from "../interfaces/IRender";
+import {VectorRender} from "./Render";
 
 export interface PointRenderConstructorParams {
     /** @see Point.color */
@@ -12,7 +12,7 @@ export interface PointRenderConstructorParams {
  * Point geometry rendered to the screen coordinates for drawing.
  * @alias sGis.render.Point
  */
-export class Point implements IRender {
+export class Point extends VectorRender {
     private _coord: Coordinates;
 
     /** The color of the point. Can be any valid css color string. */
@@ -26,6 +26,8 @@ export class Point implements IRender {
      * @param __namedParameters - properties to be set to the corresponding fields.
      */
     constructor(coordinates: Coordinates, {color = 'black', ignoreEvents = false}: PointRenderConstructorParams = {}) {
+        super();
+
         this._coord = coordinates;
         this.color = color;
         this.ignoreEvents = ignoreEvents;

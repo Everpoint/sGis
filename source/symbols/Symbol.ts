@@ -1,7 +1,7 @@
 import {deserialize, serialize} from "../serializers/symbolSerializer";
 import {Feature} from "../features/Feature";
 import {Crs} from "../Crs";
-import {IRender} from "../interfaces/IRender";
+import {Render} from "../renders/Render";
 
 /**
  * Symbol that renders a feature to the screen coordinate system. All symbols take as input a feature, target resolution
@@ -16,7 +16,7 @@ export abstract class Symbol {
      * @param resolution - resolution of the render.
      * @param crs - target coordinate system of the render.
      */
-    abstract renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[]
+    abstract renderFunction(feature: Feature, resolution: number, crs: Crs): Render[]
 
     /**
      * Returns a copy of the symbol. Only essential properties are copied.

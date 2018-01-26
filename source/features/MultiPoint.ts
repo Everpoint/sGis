@@ -3,8 +3,8 @@ import {Feature, IFeatureConstructorArgs} from "./Feature";
 import {Bbox} from "../Bbox";
 import {PointFeature} from "./Point";
 import {PointSymbol} from "../symbols/point/Point";
-import {IRender} from "../interfaces/IRender";
 import {Symbol} from "../symbols/Symbol";
+import {Render} from "../renders/Render";
 
 /**
  * Represents a set of points on a map that behave as one feature: have same symbol, can be added, transformed or removed as one.
@@ -77,7 +77,7 @@ export class MultiPoint extends Feature {
         this.redraw();
     }
 
-    render(resolution, crs): IRender[] {
+    render(resolution, crs): Render[] {
         if (this.hidden || !this.symbol) return [];
         if (!this._needToRender(resolution, crs)) return this._rendered.renders;
 

@@ -1,10 +1,14 @@
 import {Coordinates, HTMLRasterElement, Offset} from "../baseTypes";
-import {IRender} from "../interfaces/IRender";
+import {VectorRender} from "./Render";
+
+export type StaticCanvasImageParams = {
+
+}
 
 /**
  * Image render that is drawn to the vector container instead of DOM.
  */
-export class VectorImage implements IRender {
+export class StaticImage extends VectorRender {
     private _node: HTMLRasterElement;
     private _position: Coordinates;
 
@@ -14,6 +18,8 @@ export class VectorImage implements IRender {
     offset: Offset;
 
     constructor(imageNode: HTMLRasterElement, position: Coordinates, offset: Offset = [0, 0]) {
+        super();
+
         this._node = imageNode;
         this._position = position;
         this.offset = offset;

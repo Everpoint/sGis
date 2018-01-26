@@ -3,6 +3,8 @@ import {error} from "./utils/utils";
 import {Feature} from "./features/Feature";
 import {Bbox} from "./Bbox";
 import {sGisEvent} from "./EventHandler";
+import {Render} from "./renders/Render";
+import {StaticImageRender} from "./renders/StaticImageRender";
 
 export interface FeatureLayerConstructorParams extends LayerConstructorParams {
     features?: Feature[]
@@ -58,6 +60,26 @@ export class FeatureLayer extends Layer {
     constructor({delayedUpdate = true, features = [], ...layerParams}: FeatureLayerConstructorParams = {}, extensions?: Object) {
         super({delayedUpdate, ...layerParams}, extensions);
         this._features = features;
+    }
+
+    getRenders(bbox: Bbox, resolution: number): Render[] {
+        if (!this.checkVisibility(resolution)) return [];
+
+        let renders = [];
+        this._features.forEach(feature => {
+            if (!feature.crs.canProjectTo(bbox.crs) || !feature.bbox.intersects(bbox)) return;
+
+            renders = renders.concat(feature.render(resolution, bbox.crs));
+            renders.forEach(render => {
+                if (render instanceof StaticImageRender) {
+                    render.onLoad = () => {
+                        this.redraw();
+                    }
+                }
+            });
+        });
+
+        return renders;
     }
 
     getFeatures(bbox: Bbox, resolution: number): Feature[] {

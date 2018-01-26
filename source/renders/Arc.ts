@@ -1,5 +1,5 @@
 import {Coordinates} from "../baseTypes";
-import {IRender} from "../interfaces/IRender";
+import {VectorRender} from "./Render";
 
 export interface ArcRenderConstructorParams {
     /** @see Arc.radius */
@@ -26,7 +26,7 @@ export interface ArcRenderConstructorParams {
  * Rendered arc (circle) on a map.
  * @alias sGis.render.Arc
  */
-export class Arc implements IRender {
+export class Arc extends VectorRender {
     /** The center of the arc in [x, y] format. */
     center: Coordinates = [0, 0];
 
@@ -62,6 +62,7 @@ export class Arc implements IRender {
      * @param [options] - key-value options of any Arc parameters
      */
     constructor(center, options: ArcRenderConstructorParams = {}) {
+        super();
         Object.assign(this, options);
         this.center = center;
     }

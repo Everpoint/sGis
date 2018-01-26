@@ -1,12 +1,9 @@
 import {TileScheme} from "./TileScheme";
-import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
+import {Layer, LayerConstructorParams} from "./Layer";
 import {webMercator, Crs} from "./Crs";
-import {Feature} from "./features/Feature";
 import {Bbox} from "./Bbox";
-import {ImageFeature} from "./features/ImageFeature";
-import {Point} from "./Point";
-import {ImageSymbol} from "./symbols/Image";
-import {ImageRender} from "./renders/Image";
+import {StaticHtmlImageRender} from "./renders/StaticHtmlImageRender";
+import {Render} from "./renders/Render";
 
 export interface TileLayerConstructorParams extends LayerConstructorParams {
     /** @see [[TileLayer.tileScheme]] */
@@ -27,6 +24,14 @@ export interface TileLayerConstructorParams extends LayerConstructorParams {
     transitionTime?: number
 }
 
+
+type TileIndex = {
+    x: number;
+    y: number;
+    z: number;
+    level: number;
+}
+
 /**
  * A layer that is drawn as a set of tile images received from server. The layer calculates tile indexes (x, y, z)
  * according to the tile scheme and requested resolution, then inserts them into url mask and creates ImageFeatures
@@ -34,11 +39,13 @@ export interface TileLayerConstructorParams extends LayerConstructorParams {
  * @alias sGis.TileLayer
  */
 export class TileLayer extends Layer {
-    private _symbol: ImageSymbol;
-    private readonly _tileCache: {[key: string]: ImageFeature} = {};
+    private readonly _tileCache: {[key: string]: StaticHtmlImageRender} = {};
     private readonly _urlMask: string;
     private readonly _cacheSize: number;
     private _transitionTime: number;
+    private _cachedIndexes: string[] = [];
+
+    private _previousTiles: StaticHtmlImageRender[] = [];
 
     /** Layer's tile scheme. */
     readonly tileScheme: TileScheme;
@@ -63,7 +70,7 @@ export class TileLayer extends Layer {
         cycleX = true,
         cycleY = false,
         cacheSize = 256,
-        transitionTime = 200,
+        transitionTime = 500,
         ...LayerParams
     }: TileLayerConstructorParams = {}, extensions?: Object) {
         super(LayerParams, extensions);
@@ -76,7 +83,7 @@ export class TileLayer extends Layer {
         this._cacheSize = cacheSize;
         this._transitionTime = transitionTime;
 
-        this._updateSymbol();
+        this._tileFadeIn = this._tileFadeIn.bind(this);
     }
 
     /**
@@ -91,7 +98,97 @@ export class TileLayer extends Layer {
             .replace('{z}', level.toString());
     }
 
-    getFeatures(bbox: Bbox, resolution: number): Feature[] {
+    getRenders(bbox: Bbox, resolution: number): Render[] {
+        let indexes = this._getTileIndexes(bbox, resolution);
+        let renders: StaticHtmlImageRender[] = [];
+
+        let isSetComplete = true;
+        for (let index of indexes) {
+            let tile = this._getRender(index);
+            if (tile.isReady) renders.push(tile);
+            if (!tile.isComplete || !tile.isReady) isSetComplete = false;
+        }
+
+        if (isSetComplete) {
+            this._previousTiles = [];
+        } else {
+            this._previousTiles.forEach(tile => {
+                if (renders.indexOf(tile) < 0) renders.push(tile);
+            });
+        }
+
+        this._previousTiles = renders;
+
+        return renders;
+    }
+
+    private _getRender(index: TileIndex): StaticHtmlImageRender {
+        let tileId = TileLayer._getTileId(index.z, index.x, index.y);
+        if (this._tileCache[tileId]) return this._tileCache[tileId];
+
+        let adjX = this.cycleX ? this._getAdjustedIndex(index.x, index.level) : index.x;
+        let adjY = this.cycleY ? this._getAdjustedIndex(index.y, index.level) : index.y;
+
+        let bbox = this._getTileBbox(index);
+        let tile = new StaticHtmlImageRender({
+            src: this.getTileUrl(adjX, adjY, index.z),
+            width: this.tileWidth,
+            height: this.tileHeight,
+            bbox,
+            onLoad: () => this.redraw()
+        });
+
+        if (this._transitionTime > 0) {
+            tile.node.style.opacity = '0';
+            tile.node.style.transition = `opacity ${this.transitionTime / 1000}s`;
+            tile.isComplete = false;
+        }
+
+        tile.onDisplayed = () => {
+            if (this.transitionTime > 0) setTimeout(() => {
+                tile.node.style.opacity = this.opacity.toString();
+                setTimeout(() => {
+                    tile.isComplete = true;
+                    this.redraw();
+                }, this.transitionTime);
+            }, 0);
+        };
+
+        tile.onRemoved = () => {
+            if (this.transitionTime > 0) {
+                tile.node.style.opacity = '0';
+                tile.isComplete = false;
+            }
+        };
+
+        this._cacheTile(tileId, tile);
+        return tile;
+    }
+
+    private _getTileBbox(index: TileIndex): Bbox {
+        let resolution = this.tileScheme.levels[index.level].resolution;
+        let width = this.tileWidth * resolution;
+        let x = this.tileScheme.origin[0] + index.x * width;
+
+        let height = this.tileHeight * resolution;
+        if (!this.tileScheme.reversedY) height *= -1;
+        let yOffset = index.y * height;
+        let y = this.tileScheme.origin[1] + yOffset;
+
+        return new Bbox([x, y], [x + width, y + height], this.crs);
+    }
+
+    private _cacheTile(id: string, tile: StaticHtmlImageRender) {
+        if (this._tileCache[id]) return;
+        this._tileCache[id] = tile;
+        this._cachedIndexes.push(id);
+
+        if (this._cachedIndexes.length > this._cacheSize) {
+            delete this._tileCache[this._cachedIndexes.shift()];
+        }
+    }
+
+    private _getTileIndexes(bbox: Bbox, resolution: number): TileIndex[] {
         if (!this.crs.canProjectTo(bbox.crs)) return [];
         if (!this.checkVisibility(resolution)) return [];
 
@@ -116,39 +213,13 @@ export class TileLayer extends Layer {
             yEndIndex = Math.ceil((this.tileScheme.origin[1] - trimmedBbox.yMin) / this.tileHeight / layerResolution);
         }
 
-        let tiles = this._tileCache;
-        let features = [];
+        let indexes: TileIndex[] = [];
         for (let xIndex = xStartIndex; xIndex < xEndIndex; xIndex++) {
-            let xIndexAdj = this.cycleX ? this._getAdjustedIndex(xIndex, level) : xIndex;
-
             for (let yIndex = yStartIndex; yIndex < yEndIndex; yIndex++) {
-                let yIndexAdj = this.cycleY ? this._getAdjustedIndex(yIndex, level) : yIndex;
-                let tileId = TileLayer._getTileId(this.tileScheme.levels[level].zIndex, xIndex, yIndex);
-
-                if (!tiles[tileId]) {
-                    let imageBbox = this._getTileBbox(level, xIndex, yIndex);
-                    let tileUrl = this.getTileUrl(xIndexAdj, yIndexAdj, this.tileScheme.levels[level].zIndex);
-                    tiles[tileId] = new ImageFeature(imageBbox, { src: tileUrl, symbol: this._symbol, crs: this.crs });
-                }
-
-                features.push(tiles[tileId]);
+                indexes.push({x: xIndex, y: yIndex, z: this.tileScheme.levels[level].zIndex, level: level});
             }
         }
-
-        this._cutCache();
-        return features;
-    }
-
-    private _getTileBbox(level: number, xIndex: number, yIndex: number): Bbox {
-        let resolution = this.tileScheme.levels[level].resolution;
-
-        let minY = this.tileScheme.reversedY ? yIndex * this.tileHeight * resolution + this.tileScheme.origin[1] : -(yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1];
-        let startPoint = new Point([xIndex * this.tileWidth * resolution + this.tileScheme.origin[0], minY], this.crs);
-
-        let maxY = this.tileScheme.reversedY ? (yIndex + 1) * this.tileHeight * resolution + this.tileScheme.origin[1] : -yIndex * this.tileHeight * resolution + this.tileScheme.origin[1];
-        let endPoint = new Point([(xIndex + 1) * this.tileWidth * resolution + this.tileScheme.origin[0], maxY], this.crs);
-
-        return new Bbox(startPoint.position, endPoint.position, this.crs);
+        return indexes;
     }
 
     private static _getTileId(level: number, xIndex: number, yIndex: number): string {
@@ -160,16 +231,6 @@ export class TileLayer extends Layer {
         if (!desc.indexCount || desc.indexCount <= 0 || (index >= 0 && index < desc.indexCount)) return index;
         while (index < 0) index += desc.indexCount;
         return index % desc.indexCount;
-    }
-
-    _cutCache(): void {
-        let keys = Object.keys(this._tileCache);
-        if (keys.length > this._cacheSize) {
-            let forDeletion = keys.slice(0, keys.length - this._cacheSize);
-            forDeletion.forEach((key) => {
-                delete this._tileCache[key];
-            });
-        }
     }
 
     /**
@@ -184,17 +245,13 @@ export class TileLayer extends Layer {
 
     get opacity(): number { return this._opacity; }
     set opacity(opacity: number) {
-        opacity = opacity < 0 ? 0 : opacity > 1 ? 1 : opacity;
         this._opacity = opacity;
-        if (this._symbol) {
-            this._symbol.opacity = opacity;
-            this._updateFeatures();
-            this.fire(new PropertyChangeEvent('opacity'));
-        }
-    }
 
-    private _updateSymbol(): void {
-        this._symbol = new ImageSymbol({opacity: this.opacity, transitionTime: this.transitionTime})
+        for (let tileId of Object.keys(this._tileCache)) {
+            if (this._tileCache[tileId].isReady) this._tileCache[tileId].node.style.opacity = opacity.toString();
+        }
+
+        this.redraw();
     }
 
     /**
@@ -203,23 +260,6 @@ export class TileLayer extends Layer {
     get transitionTime(): number { return this._transitionTime; }
     set transitionTime(time: number) {
         this._transitionTime = time;
-
-        if (this._symbol) {
-            this._symbol.transitionTime = time;
-            this._updateFeatures();
-            this.fire('propertyChange', {property: 'transitionTime'});
-        }
-    }
-
-    private _updateFeatures(): void {
-        if (!this._tileCache) return;
-
-        Object.keys(this._tileCache).forEach(key => {
-            let cache = this._tileCache[key].getRenderCache();
-            if (!cache || !cache.renders || !cache.renders[0]) return;
-            let image = (<ImageRender>cache.renders[0]).getCache();
-            if (image) image.style.opacity = this._symbol.opacity.toString();
-        });
     }
 
     private _getTrimmedBbox(bbox: Bbox): Bbox {
@@ -235,5 +275,11 @@ export class TileLayer extends Layer {
         if (yMax < yMin) yMax = yMin;
 
         return new Bbox([xMin, yMin], [xMax, yMax], bbox.crs);
+    }
+
+    private _tileFadeIn(image: HTMLImageElement) {
+        if (this._transitionTime <= 0) return;
+        image.style.transition = 'opacity ' + this.transitionTime / 1000 + 's linear';
+        image.style.opacity = this.opacity.toString();
     }
 }

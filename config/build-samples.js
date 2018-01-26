@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const BASE_DIR = './temp/samples/code/';
-const TEMPL_DIR = './samples/templates/';
+const TEMPLATE_DIR = './samples/templates/';
 const COMPILED_DIR = './temp/samples/compiled/';
+const SOURCE_DIR = './temp/source/';
 
 processDirectory(BASE_DIR);
 
@@ -34,16 +35,20 @@ function processFile(f, rawFileName) {
         let titleMatch = jsCode.match(/\/\/\/ Title:\s*"(.+)"/i);
         let title = titleMatch && titleMatch[1] || rawFileName.replace('_', ' ').replace('.js', '');
 
-        fs.readFile(path.join(TEMPL_DIR, templateName), 'utf8', function(err, templateCode) {
-            let output = templateCode.replace('%TITLE%', title).replace('%FILENAME%', path.relative(BASE_DIR, f));
-            let outputFileName = path.join(COMPILED_DIR, path.basename(path.relative(BASE_DIR, f), '.js') + '.html');
+        fs.readFile(path.join(TEMPLATE_DIR, templateName), 'utf8', function(err, templateCode) {
+            let relativePath = path.relative(BASE_DIR, f);
+            let outputFileName = path.join(COMPILED_DIR, path.dirname(relativePath), path.basename(relativePath, '.js') + '.html');
+
+            let output = templateCode
+                .replace('%TITLE%', title)
+                .replace('%FILENAME%', path.relative(path.dirname(outputFileName), f).toString().replace(/\\/g, '\\\\'))
+                .replace('%SOURCE_PATH%', path.relative(path.dirname(outputFileName), SOURCE_DIR).toString().replace(/\\/g, '\\\\'));
 
             ensureDirectoryExistence(outputFileName);
             fs.writeFile(outputFileName, output, 'utf8', (err) => {
                 if (err) throw err;
             });
         });
-
     });
 }
 

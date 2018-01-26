@@ -1,9 +1,10 @@
-import {ImageSymbol} from "./symbols/Image";
 import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
-import {ImageFeature} from "./features/ImageFeature";
 import {Crs} from "./Crs";
 import {Bbox} from "./Bbox";
 import {Feature} from "./features/Feature";
+import {Render} from "./renders/Render";
+import {StaticImageRender} from "./renders/StaticImageRender";
+import {StaticHtmlImageRender} from "./renders/StaticHtmlImageRender";
 
 export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
 
@@ -13,10 +14,12 @@ export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
  */
 export abstract class DynamicLayer extends Layer {
     private _crs: Crs;
-    private _currHeight: number;
-    private _currWidth: number;
     private _forceUpdate: boolean = false;
-    private _image: ImageFeature;
+
+    private _currentRender: StaticHtmlImageRender;
+    private _nextRender: StaticHtmlImageRender;
+
+    private _toLoad: {bbox: Bbox, resolution: number};
 
     delayedUpdate = true;
 
@@ -30,7 +33,7 @@ export abstract class DynamicLayer extends Layer {
 
     abstract getUrl(bbox: Bbox, resolution: number);
 
-    getFeatures(bbox: Bbox, resolution: number): Feature[] {
+    getRenders(bbox: Bbox, resolution: number): Render[] {
         if (!this.checkVisibility(resolution)) return [];
 
         if (this.crs) {
@@ -41,42 +44,51 @@ export abstract class DynamicLayer extends Layer {
             }
         }
 
-        if (this._image && this._image.crs !== bbox.crs) this._image = null;
-
-        if (!this._image) this._createFeature(bbox);
-
-        let width  = bbox.width / resolution;
-        let height = bbox.height / resolution;
-
-        let needRedraw = this._forceUpdate || !this._image.bbox.equals(bbox) || this._currWidth !== width || this._currHeight !== height;
+        let needRedraw = this._forceUpdate || !this._currentRender || !bbox.equals(this._currentRender.bbox);
         if (needRedraw) {
-            let url = this.getUrl(bbox, resolution);
-            if (!url) return [];
-            if (this._forceUpdate) {
-                url += '&ts=' + Date.now();
-                this._forceUpdate = false;
-            }
+            this._loadNextRender(bbox, resolution);
 
-            this._image.src = url;
-            this._image.bbox = bbox;
-            this._currWidth = bbox.width / resolution;
-            this._currHeight = bbox.height / resolution;
+            if (this._nextRender.isReady) {
+                this._currentRender = this._nextRender;
+            }
         }
 
-        return [this._image];
+        return this._currentRender ? [this._currentRender] : [];
+    }
+
+    private _loadNextRender(bbox: Bbox, resolution: number): void {
+        if (this._currentRender === this._nextRender) {
+            let height = Math.round(bbox.height / resolution);
+            let width = Math.round(bbox.width / resolution);
+            let src = this.getUrl(bbox, resolution);
+            if (this._forceUpdate) src += `&ts=${Date.now()}`;
+
+            this._nextRender = new StaticHtmlImageRender({
+                src,
+                bbox,
+                height,
+                width,
+                opacity: this.opacity,
+                onLoad: () => {
+                    this._startNextLoad();
+                    this.redraw();
+                }
+            });
+        } else {
+            this._toLoad = {bbox, resolution};
+        }
+    }
+
+    private _startNextLoad(): void {
+        if (this._toLoad) this._loadNextRender(this._toLoad.bbox, this._toLoad.resolution);
     }
 
     /**
      * Ensures update of the layer image
      */
-    forceUpdate() {
+    forceUpdate(): void {
         this._forceUpdate = true;
         this.fire(new PropertyChangeEvent('source'));
-    }
-
-    _createFeature(bbox) {
-        this._image = new ImageFeature(bbox, { src: '', crs: this.crs || bbox.crs});
-        this._updateSymbol();
     }
 
     get opacity() { return this.getOpacity(); }
@@ -84,6 +96,13 @@ export abstract class DynamicLayer extends Layer {
         this.setOpacity(opacity);
         this._updateSymbol();
     }
+
+    protected setOpacity(value: number): void {
+        if (this._currentRender) this._currentRender.opacity = value;
+        if (this._nextRender) this._nextRender.opacity = value;
+        super.setOpacity(value);
+    }
+
 
     /**
      * Coordinate system of the layer
@@ -94,6 +113,6 @@ export abstract class DynamicLayer extends Layer {
     set crs(/** sGis.Crs */ crs) { this._crs = crs; }
 
     _updateSymbol() {
-        if (this._image) this._image.symbol = new ImageSymbol({ opacity: this.opacity });
+        //if (this._image) this._image.symbol = new ImageSymbol({ opacity: this.opacity });
     }
 }

@@ -13,10 +13,10 @@
         window.onload = function() {
             require.config({
                 paths: {
-                    "sgis/dist": "../../source"
+                    "sgis/dist": "%SOURCE_PATH%"
                 }
             });
-            require(["../code/%FILENAME%"], function() {});
+            require(["%FILENAME%"], function() {});
         }
     </script>
 </body>

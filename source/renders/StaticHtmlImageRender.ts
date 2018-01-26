@@ -1,0 +1,27 @@
+import {StaticImageRender, StaticImageRenderParams} from "./StaticImageRender";
+import {Bbox} from "../Bbox";
+import {Coordinates} from "../baseTypes";
+import {Point} from "../Point";
+
+export interface HtmlImageRenderParams extends StaticImageRenderParams {
+    bbox: Bbox
+}
+
+export class StaticHtmlImageRender extends StaticImageRender {
+    node: HTMLImageElement;
+    isComplete: boolean = true;
+    bbox: Bbox;
+
+    onDisplayed?: () => void;
+    onRemoved?: () => void;
+
+    constructor({src, bbox, width, height, opacity, onLoad}: HtmlImageRenderParams) {
+        super({src, width, height, opacity, onLoad});
+        this.bbox = bbox;
+    }
+
+    contains(position: Coordinates): boolean {
+        let resolution = this.bbox.width / this.width;
+        return this.bbox.contains(new Point([position[0] * resolution, position[1] * resolution], this.bbox.crs));
+    }
+}
