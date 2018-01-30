@@ -1,7 +1,11 @@
 import {deserialize, serialize} from "../serializers/symbolSerializer";
 import {Feature} from "../features/Feature";
 import {Crs} from "../Crs";
-import {Render} from "../renders/Render";
+import {DynamicRender, Render} from "../renders/Render";
+import {Bbox} from "../Bbox";
+import {IPoint} from "../Point";
+import {MouseEventFlags, mouseEvents} from "../EventHandler";
+import {listenDomEvent} from "../utils/domEvent";
 
 
 /**
@@ -29,3 +33,61 @@ export abstract class Symbol {
 }
 
 export type SymbolConstructor = new () => Symbol;
+
+export abstract class DynamicPointSymbol extends Symbol {
+    protected abstract _getFeatureNode(feature: Feature): HTMLElement;
+
+    renderFunction (feature: Feature, resolution: number, crs: Crs): Render[] {
+        let dynamicFeature = <DynamicSymbolFeature>feature;
+        if (dynamicFeature.__dynamicSymbolRender) return [dynamicFeature.__dynamicSymbolRender];
+
+        let node = this._getFeatureNode(feature);
+
+        dynamicFeature.__dynamicSymbolRender = new DynamicRender({
+            node: node,
+            update: (bbox: Bbox, resolution: number) => {
+                if (!dynamicFeature.crs.canProjectTo(bbox.crs)) return;
+
+                let point = dynamicFeature.projectTo(bbox.crs);
+                let dx = Math.round((point.x - bbox.xMin) / resolution);
+                let dy = Math.round((bbox.yMax - point.y) / resolution);
+
+                node.style.left = `${dx.toString()}px`;
+                node.style.top = `${dy.toString()}px`;
+            }
+        });
+
+        this._setEventListeners(dynamicFeature);
+
+        return [dynamicFeature.__dynamicSymbolRender];
+    }
+
+    getNode(feature: Feature): HTMLElement {
+        let [render] = this.renderFunction(feature, 1, null);
+        return (<DynamicRender>render).node;
+    }
+
+    private _setEventListeners(dynamicFeature: DynamicSymbolFeature): void {
+        if (dynamicFeature.eventFlags === MouseEventFlags.None) return;
+
+        Object.keys(mouseEvents).forEach(eventName => {
+            if (dynamicFeature.eventFlags & mouseEvents[eventName].flag) {
+                listenDomEvent(dynamicFeature.__dynamicSymbolRender.node, mouseEvents[eventName].type, (event) => {
+                    dynamicFeature.fire(mouseEvents[eventName].type, {
+                        node: dynamicFeature.__dynamicSymbolRender.node,
+                        browserEvent: event
+                    });
+                });
+            }
+        });
+    }
+}
+
+abstract class DynamicSymbolFeature extends Feature implements IPoint {
+    abstract position: [number, number];
+    abstract x: number;
+    abstract y: number;
+    abstract projectTo(newCrs: Crs): IPoint;
+
+    __dynamicSymbolRender: DynamicRender = null;
+}

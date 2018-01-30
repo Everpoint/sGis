@@ -1,4 +1,4 @@
-import {Symbol} from "../Symbol";
+import {DynamicPointSymbol, Symbol} from "../Symbol";
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {PIN_IMAGE} from "../../resourses/images";
 import {Coordinates, Offset} from "../../baseTypes";
@@ -26,7 +26,7 @@ export interface DynamicImageSymbolParams {
  * Symbol of point drawn as circle with outline.
  * @alias sGis.symbol.point.Image
  */
-export class DynamicImageSymbol extends Symbol {
+export class DynamicImageSymbol extends DynamicPointSymbol {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width: number = 32;
 
@@ -56,40 +56,22 @@ export class DynamicImageSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        let dynamicFeature = <DynamicPointFeature>feature;
-
-        if (!dynamicFeature.__dynamicSymbolRender) this._setRender(dynamicFeature);
-        return [dynamicFeature.__dynamicSymbolRender];
-    }
-
-    private _setRender(feature: DynamicPointFeature): void {
+    protected _getFeatureNode(feature: Feature): HTMLElement {
         let node = new Image();
         node.src = this.source;
 
         node.style.position = 'absolute';
+        node.style.transformOrigin = `${this.anchorPoint[0]}px ${this.anchorPoint[1]}px`;
+        node.style.transform = `translate(-${this.anchorPoint[0]}px,-${this.anchorPoint[1]}px) rotate(${this.angle}rad)`;
 
         if (this.width > 0) node.width = this.width;
         if (this.height > 0) node.height = this.height;
 
-        feature.__dynamicSymbolRender = new DynamicRender({
-            node: node,
-            update: (bbox: Bbox, resolution: number) => {
-                if (!feature.crs.canProjectTo(bbox.crs)) return;
+        if (this.angle !== 0) {
+        }
 
-                let point = feature.point.projectTo(bbox.crs);
-                let dx = Math.round((point.x - bbox.xMin) / resolution - this.anchorPoint[0]);
-                let dy = Math.round((bbox.yMax - point.y) / resolution - this.anchorPoint[1]);
-
-                node.style.left = `${dx.toString()}px`;
-                node.style.top = `${dy.toString()}px`;
-            }
-        });
+        return node;
     }
 }
 
 registerSymbol(DynamicImageSymbol, 'point.Image', ['width', 'height', 'anchorPoint', 'source', 'angle']);
-
-class DynamicPointFeature extends PointFeature {
-    __dynamicSymbolRender: DynamicRender = null;
-}

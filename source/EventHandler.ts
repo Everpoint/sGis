@@ -89,7 +89,8 @@ type HandlerDescription = {
 export abstract class EventHandler {
     private _prohibitedEvents: string[];
     private _eventHandlers: { [eventType: string]: HandlerDescription[] };
-    protected _eventFlags: MouseEventFlags = MouseEventFlags.None;
+
+    eventFlags: MouseEventFlags = MouseEventFlags.None;
 
     constructor() {
         // This initialization makes the properties not enumerable and guaranties a valid value is there at all times
@@ -153,7 +154,7 @@ export abstract class EventHandler {
         for (let i = 0; i < types.length; i++) {
             if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];
             this._eventHandlers[types[i]].push({ handler: handler, namespaces: namespaces, oneTime });
-            if (eventTypeFlags[types[i]]) this._eventFlags = this._eventFlags | eventTypeFlags[types[i]];
+            if (eventTypeFlags[types[i]]) this.eventFlags = this.eventFlags | eventTypeFlags[types[i]];
         }
     }
 
@@ -186,7 +187,7 @@ export abstract class EventHandler {
                     }
                 }
                 if (this._eventHandlers[types[i]].length === 0 && eventTypeFlags[types[i]]) {
-                    this._eventFlags = this._eventFlags & ~eventTypeFlags[types[i]];
+                    this.eventFlags = this.eventFlags & ~eventTypeFlags[types[i]];
                 }
             }
         }

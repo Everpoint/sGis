@@ -1,5 +1,5 @@
 /// Template: "full_screen_map.html"
-/// Title: "Point symbols"
+/// Title: "Using DynamicLayer to Show Arcgis MapService"
 
 import {DynamicLayer} from "../../source/layers/DynamicLayer";
 import {Bbox} from "../../source/Bbox";

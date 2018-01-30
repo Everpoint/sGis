@@ -38,19 +38,20 @@ let symbols = [
         maskColor: 'blue',
         angle: Math.PI / 2
     }),
-    new DynamicImageSymbol()
+    new DynamicImageSymbol(),
+    new DynamicImageSymbol({source: '../../resources/Car_red.png', height: 48, width: 48, anchorPoint: [24, 32], angle: Math.PI / 6})
 ];
 
 let step = 100 * map.resolution;
-let position: Coordinates = [map.position[0] - step * 3, map.position[1]];
+let position: Coordinates = [map.position[0] - step * 4, map.position[1]];
 let features = [];
 symbols.forEach((symbol, index) => {
     features.push(new PointFeature(position, {symbol: crossSymbol, crs: map.crs}));
     let point = new PointFeature(position, {symbol, crs: map.crs});
     features.push(point);
     position = [position[0] + step, position[1]];
-    point.on('click', () => {
-        console.log(index);
+    point.on('click mousemove mouseover', (ev) => {
+        console.log(ev.type, index);
     });
 
 });

@@ -71,7 +71,7 @@ export class DomPainter extends EventHandler {
         if (this._wrapper) this._clearDOM();
         if (node) {
             this._initDOM(node);
-            this._eventDispatcher = new EventDispatcher(this._staticRendersContainer, this);
+            this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
             this._needUpdate = true;
             this._redrawNeeded = true;
         }
@@ -284,7 +284,6 @@ export class DomPainter extends EventHandler {
 
         this._dynamicRendersContainer = document.createElement('div');
         this._dynamicRendersContainer.style.cssText = layerWrapperStyle;
-        this._dynamicRendersContainer.style.pointerEvents = 'none';
 
         this._innerWrapper.appendChild(this._staticRendersContainer);
         this._innerWrapper.appendChild(this._dynamicRendersContainer);

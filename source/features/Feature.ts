@@ -70,8 +70,8 @@ export abstract class Feature extends EventHandler {
             renders: this.symbol.renderFunction(this, resolution, crs)
         };
 
-        if (this._eventFlags !== MouseEventFlags.None) this._rendered.renders.forEach(render => {
-            render.listenFor(this._eventFlags, (event) => {
+        if (this.eventFlags !== MouseEventFlags.None) this._rendered.renders.forEach(render => {
+            render.listenFor(this.eventFlags, (event) => {
                 this.fire(event);
             });
         });
