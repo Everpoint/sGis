@@ -1,5 +1,37 @@
 import {copyArray, arrayIntersect, error} from "./utils/utils";
 
+export enum MouseEventFlags {
+    None = 0,
+    MouseDown = 1 << 1,
+    MouseUp = 1 << 2,
+    MouseClick = 1 << 3,
+    MouseMove = 1 << 4,
+    MouseOver = 1 << 5,
+    MouseOut = 1 << 6,
+    DoubleClick = 1 << 7,
+    DragStart = 1 << 8,
+    Drag = 1 << 9,
+    DragEnd = 1 << 10,
+}
+
+export const mouseEvents = {
+    click: {type: 'click', flag: MouseEventFlags.MouseClick},
+    doubleClick: {type: 'dblclick', flag: MouseEventFlags.DoubleClick},
+    mouseDown: {type: 'mousedown', flag: MouseEventFlags.MouseDown},
+    mouseUp: {type: 'mouseup', flag: MouseEventFlags.MouseUp},
+    mouseOver: {type: 'mouseover', flag: MouseEventFlags.MouseOver},
+    mouseOut: {type: 'mouseout', flag: MouseEventFlags.MouseOut},
+    mouseMove: {type: 'mousemove', flag: MouseEventFlags.MouseMove},
+    dragStart: {type: 'dragStart', flag: MouseEventFlags.DragStart},
+    drag: {type: 'drag', flag: MouseEventFlags.Drag},
+    dragEnd: {type: 'dragEnd', flag: MouseEventFlags.DragEnd}
+};
+
+const eventTypeFlags: {[key: string]: MouseEventFlags} = {};
+Object.keys(mouseEvents).forEach(eventName => {
+    eventTypeFlags[mouseEvents[eventName].type] = mouseEvents[eventName].flag;
+});
+
 /**
  * Base of all sGis library events
  */
@@ -57,6 +89,7 @@ type HandlerDescription = {
 export abstract class EventHandler {
     private _prohibitedEvents: string[];
     private _eventHandlers: { [eventType: string]: HandlerDescription[] };
+    protected _eventFlags: MouseEventFlags = MouseEventFlags.None;
 
     constructor() {
         // This initialization makes the properties not enumerable and guaranties a valid value is there at all times
@@ -89,7 +122,6 @@ export abstract class EventHandler {
     /**
      * Triggers the event of the given type. Each handler will be triggered one by one in the order they were added. Returns
      * the event object, or null in case the event was not triggered (if it is prohibited).
-     * TODO: Remove string overload
      * @param event - event object or exact name of the event to be triggered.
      * @param parameters - [JS ONLY] parameters to be transferred to the event object. Applied only if the first argument is string.
      */
@@ -121,6 +153,7 @@ export abstract class EventHandler {
         for (let i = 0; i < types.length; i++) {
             if (!this._eventHandlers[types[i]]) this._eventHandlers[types[i]] = [];
             this._eventHandlers[types[i]].push({ handler: handler, namespaces: namespaces, oneTime });
+            if (eventTypeFlags[types[i]]) this._eventFlags = this._eventFlags | eventTypeFlags[types[i]];
         }
     }
 
@@ -151,6 +184,9 @@ export abstract class EventHandler {
                         (!handler || this._eventHandlers[types[i]][j].handler === handler)) {
                         this._eventHandlers[types[i]].splice(j, 1);
                     }
+                }
+                if (this._eventHandlers[types[i]].length === 0 && eventTypeFlags[types[i]]) {
+                    this._eventFlags = this._eventFlags & ~eventTypeFlags[types[i]];
                 }
             }
         }

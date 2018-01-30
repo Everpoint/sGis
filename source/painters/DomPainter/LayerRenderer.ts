@@ -2,12 +2,12 @@ import {Canvas} from "./Canvas";
 import {Bbox} from "../../Bbox";
 import {Container} from "./Container";
 import {Layer} from "../../layers/Layer";
-import {MouseEventFlags} from "../../commonEvents";
 import {Coordinates} from "../../baseTypes";
 import {DynamicRender, IntersectionType, Render, StaticRender, VectorRender} from "../../renders/Render";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {StaticImageRender} from "../../renders/StaticImageRender";
 import {StaticHtmlImageRender} from "../../renders/StaticHtmlImageRender";
+import {MouseEventFlags} from "../../EventHandler";
 
 export type RenderForCanvas = VectorRender | StaticVectorImageRender;
 
@@ -32,7 +32,7 @@ export class LayerRenderer {
     private _layer: Layer;
     private _renders: Render[] = [];
     private _master: any;
-    private _eventCatchers: any;
+    private _eventCatchers: {[key: string]: Map<Render, Render>};
     private _index: number;
     private _zIndex: number;
 
@@ -44,7 +44,6 @@ export class LayerRenderer {
 
     /**
      * @constructor
-     * @alias sGis.renderers.domRenderer.LayerRenderer.constructor
      * @param master
      * @param layer
      * @param index
@@ -56,7 +55,7 @@ export class LayerRenderer {
         this._useCanvas = useCanvas;
         this._canvas = new Canvas();
 
-        this._setEventCatcherMaps();
+        this._resetEventCatcherMaps();
 
         this._setListeners();
         this.setIndex(index);
@@ -64,28 +63,28 @@ export class LayerRenderer {
         this._forceUpdate();
     }
 
-    get layer() {
+    get layer(): Layer {
         return this._layer;
     }
 
-    _setListeners() {
+    private _setListeners(): void {
         this._layer.on('propertyChange', () => {
             this._forceUpdate();
         });
     }
 
-    _setEventCatcherMaps() {
+    private _resetEventCatcherMaps(): void {
         this._eventCatchers = {};
         this.listensFor.forEach(eventName => {
-            this._eventCatchers[eventName] = [];
+            this._eventCatchers[eventName] = new Map<Render, Render>();
         });
     }
 
-    _forceUpdate() {
+    private _forceUpdate(): void {
         this.updateNeeded = true;
     }
 
-    setIndex(index) {
+    setIndex(index: number): void {
         if (index === this._index) return;
 
         let zIndex = index * 2 + 1;
@@ -102,18 +101,19 @@ export class LayerRenderer {
         this._zIndex = zIndex;
     }
 
-    clear() {
+    clear(): void {
         for (let render of this._renders) {
             this._removeRender(render);
         }
 
         this._renders = [];
+        this._resetEventCatcherMaps();
 
         if (this._canvasContainer) this._canvasContainer.removeNode(this._canvas.node);
         if (this._updateTimer) clearTimeout(this._updateTimer);
     }
 
-    update() {
+    update(): void {
         if (this._layer.delayedUpdate) {
             if (this._updateTimer) clearTimeout(this._updateTimer);
 
@@ -137,7 +137,7 @@ export class LayerRenderer {
         });
     }
 
-    private _removeOutdatedRenders(newRenders: Render[]) {
+    private _removeOutdatedRenders(newRenders: Render[]): void {
         for (let i = this._renders.length - 1; i >= 0; i--) {
             if (newRenders.indexOf(this._renders[i]) < 0) {
                 this._removeRender(this._renders[i]);
@@ -159,7 +159,7 @@ export class LayerRenderer {
         this._canvas.reset(bbox, this._master.map.resolution, this._master.width, this._master.height);
     }
 
-    private _rerender() {
+    private _rerender(): void {
         if (this._layer.updateProhibited) return;
 
         this.currentContainer = this._master.currContainer;
@@ -181,7 +181,7 @@ export class LayerRenderer {
         this._renders = renders;
     }
 
-    private _redrawCanvasRenders() {
+    private _redrawCanvasRenders(): void {
         for (let render of this._renders) {
             if (render instanceof StaticVectorImageRender || render instanceof VectorRender) {
                 this._drawVectorRender(render);
@@ -189,7 +189,7 @@ export class LayerRenderer {
         }
     }
 
-    private _draw(renders: Render[]) {
+    private _draw(renders: Render[]): void {
         for (let render of renders) {
             if (this._renders.indexOf(render) < 0) {
                 this._drawRender(render);
@@ -197,7 +197,7 @@ export class LayerRenderer {
         }
     }
 
-    private _drawRender(render: Render) {
+    private _drawRender(render: Render): void {
         if (render instanceof StaticRender) {
             this._drawStaticRender(render);
         } else if (render instanceof DynamicRender) {
@@ -207,10 +207,16 @@ export class LayerRenderer {
         this._setRenderListeners(render);
     }
 
-    private _setRenderListeners(render: Render) {
+    private _setRenderListeners(render: Render): void {
         this.listensFor.forEach(eventFlag => {
-            if (render.listensFor & eventFlag) this._eventCatchers[eventFlag].push(render);
-        })
+            if (render.listensFor & eventFlag) this._eventCatchers[eventFlag].set(render, render);
+        });
+    }
+
+    private _removeRenderListeners(render: Render): void {
+        this.listensFor.forEach(eventFlag => {
+            if (render.listensFor & eventFlag) this._eventCatchers[eventFlag].delete(render);
+        });
     }
 
     private _drawStaticRender(render: StaticRender) {
@@ -254,6 +260,8 @@ export class LayerRenderer {
             render.node.parentNode.removeChild(render.node);
             if (render instanceof StaticHtmlImageRender && render.onRemoved) render.onRemoved();
         }
+
+        this._removeRenderListeners(render);
     }
 
     moveToLastContainer(): void {
@@ -280,7 +288,7 @@ export class LayerRenderer {
     getEventCatcher(eventFlag: MouseEventFlags, position: Coordinates): [Render, IntersectionType] {
         if (!this._eventCatchers[eventFlag]) return [null, null];
 
-        for (let render of this._eventCatchers[eventFlag]) {
+        for (let render of this._eventCatchers[eventFlag].keys()) {
             let intersectionType = render.contains && render.contains(position);
             if (intersectionType) {
                 return [render, intersectionType];

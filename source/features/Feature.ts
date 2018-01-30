@@ -1,5 +1,5 @@
 import {Crs, geo} from "../Crs";
-import {EventHandler} from "../EventHandler";
+import {EventHandler, MouseEventFlags} from "../EventHandler";
 import {Symbol} from "../symbols/Symbol";
 import {Bbox} from "../Bbox";
 import {Render} from "../renders/Render";
@@ -69,6 +69,12 @@ export abstract class Feature extends EventHandler {
             crs: crs,
             renders: this.symbol.renderFunction(this, resolution, crs)
         };
+
+        if (this._eventFlags !== MouseEventFlags.None) this._rendered.renders.forEach(render => {
+            render.listenFor(this._eventFlags, (event) => {
+                this.fire(event);
+            });
+        });
 
         return this._rendered.renders;
     }

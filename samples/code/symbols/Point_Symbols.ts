@@ -44,10 +44,15 @@ let symbols = [
 let step = 100 * map.resolution;
 let position: Coordinates = [map.position[0] - step * 3, map.position[1]];
 let features = [];
-symbols.forEach(symbol => {
+symbols.forEach((symbol, index) => {
     features.push(new PointFeature(position, {symbol: crossSymbol, crs: map.crs}));
-    features.push(new PointFeature(position, {symbol, crs: map.crs}));
+    let point = new PointFeature(position, {symbol, crs: map.crs});
+    features.push(point);
     position = [position[0] + step, position[1]];
+    point.on('click', () => {
+        console.log(index);
+    });
+
 });
 
 let layer = new FeatureLayer({features});

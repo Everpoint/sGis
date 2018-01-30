@@ -1,20 +1,6 @@
 import {Point} from "./Point";
-import {EventHandler, sGisEvent} from "./EventHandler";
+import {EventHandler, MouseEventFlags, mouseEvents, sGisEvent} from "./EventHandler";
 import {Offset} from "./baseTypes";
-
-export enum MouseEventFlags {
-    None = 0,
-    MouseDown = 1 << 1,
-    MouseUp = 1 << 2,
-    MouseClick = 1 << 3,
-    MouseMove = 1 << 4,
-    MouseOver = 1 << 5,
-    MouseOut = 1 << 6,
-    DoubleClick = 1 << 7,
-    DragStart = 1 << 8,
-    Drag = 1 << 9,
-    DragEnd = 1 << 10,
-}
 
 export interface sGisMouseEventParams {
     point: Point,
@@ -24,81 +10,76 @@ export interface sGisMouseEventParams {
 }
 
 export abstract class sGisMouseEvent extends sGisEvent {
-    abstract readonly eventFlag: MouseEventFlags;
+    readonly eventFlag: MouseEventFlags;
 
     readonly point: Point;
     readonly browserEvent: MouseEvent;
     contourIndex: number | null;
     pointIndex: number | null;
 
-    constructor(eventType: string, {point, browserEvent, contourIndex = null, pointIndex = null}: sGisMouseEventParams) {
-        super(eventType);
+    constructor({type, flag}: {type: string, flag: MouseEventFlags}, {point, browserEvent, contourIndex = null, pointIndex = null}: sGisMouseEventParams) {
+        super(type);
         this.point = point;
         this.browserEvent = browserEvent;
         this.contourIndex = contourIndex;
         this.pointIndex = pointIndex;
+        this.eventFlag = flag;
     }
 }
 
 export class sGisClickEvent extends sGisMouseEvent {
-    static type: string = 'click';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.MouseClick;
+    static type: string = mouseEvents.click.type;
+    static eventFlag: MouseEventFlags = mouseEvents.click.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(sGisClickEvent.type, params);
+        super(mouseEvents.click, params);
     }
 }
 
 export class sGisDoubleClickEvent extends sGisMouseEvent {
-    static type: string = 'dblclick';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.DoubleClick;
+    static type: string = mouseEvents.doubleClick.type;
+    static eventFlag: MouseEventFlags = mouseEvents.doubleClick.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(sGisDoubleClickEvent.type, params);
+        super(mouseEvents.doubleClick, params);
     }
 }
 
 export class sGisMouseMoveEvent extends sGisMouseEvent {
-    static type: string = 'mousemove';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.MouseMove;
+    static type: string = mouseEvents.mouseMove.type;
+    static eventFlag: MouseEventFlags = mouseEvents.mouseMove.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(sGisMouseMoveEvent.type, params);
+        super(mouseEvents.mouseMove, params);
     }
 }
 
 export class sGisMouseOutEvent extends sGisMouseEvent {
-    static type: string = 'mouseout';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.MouseOut;
+    static type: string = mouseEvents.mouseOut.type;
+    static eventFlag: MouseEventFlags = mouseEvents.mouseOut.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(sGisMouseOutEvent.type, params);
+        super(mouseEvents.mouseOut, params);
     }
 }
 
 export class sGisMouseOverEvent extends sGisMouseEvent {
-    static type: string = 'mouseover';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.MouseOver;
+    static type: string = mouseEvents.mouseOver.type;
+    static eventFlag: MouseEventFlags = mouseEvents.mouseOver.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(sGisMouseOverEvent.type, params);
+        super(mouseEvents.mouseOver, params);
     }
 }
 
 export class DragStartEvent extends sGisMouseEvent {
-    static type: string = 'dragStart';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.DragStart;
+    static type: string = mouseEvents.dragStart.type;
+    static eventFlag: MouseEventFlags = mouseEvents.dragStart.flag;
 
     draggingObject: EventHandler;
 
     constructor(draggingObject: EventHandler, params: sGisMouseEventParams) {
-        super(DragStartEvent.type, params);
+        super(mouseEvents.dragStart, params);
         this.draggingObject = draggingObject;
     }
 }
@@ -109,25 +90,24 @@ export interface DragEventParams extends sGisMouseEventParams {
 }
 
 export class DragEvent extends sGisMouseEvent {
-    static type: string = 'drag';
+    static type: string = mouseEvents.drag.type;
+    static eventFlag: MouseEventFlags = mouseEvents.drag.flag;
 
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.Drag;
     readonly offset: Offset;
     readonly pxOffset: Offset;
 
     constructor({point, browserEvent, offset, pxOffset}: DragEventParams) {
-        super(DragEvent.type, {point, browserEvent});
+        super(mouseEvents.drag, {point, browserEvent});
         this.offset = offset;
         this.pxOffset = pxOffset;
     }
 }
 
 export class DragEndEvent extends sGisMouseEvent {
-    static type: string = 'dragEnd';
-
-    readonly eventFlag: MouseEventFlags = MouseEventFlags.DragEnd;
+    static type: string = mouseEvents.dragEnd.type;
+    static eventFlag: MouseEventFlags = mouseEvents.dragEnd.flag;
 
     constructor(params: sGisMouseEventParams) {
-        super(DragEndEvent.type, params);
+        super(mouseEvents.dragEnd, params);
     }
 }

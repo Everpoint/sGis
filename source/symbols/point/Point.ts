@@ -67,8 +67,12 @@ export class PointSymbol extends Symbol {
         let position = feature.projectTo(crs).position;
         let pxPosition = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 
-        let point = new Arc(pxPosition, { fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2 });
-        return [point];
+        return [new Arc(pxPosition, {
+            fillColor: this.fillColor,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            radius: this.size / 2
+        })];
     }
 }
 

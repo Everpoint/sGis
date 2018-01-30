@@ -3,6 +3,7 @@ import {Feature} from "../features/Feature";
 import {Crs} from "../Crs";
 import {Render} from "../renders/Render";
 
+
 /**
  * Symbol that renders a feature to the screen coordinate system. All symbols take as input a feature, target resolution
  * and target crs, and must return a set of renders (rendered primitives) that then can be used to draw the feature.

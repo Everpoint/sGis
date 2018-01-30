@@ -26,6 +26,6 @@ export class StaticHtmlImageRender extends StaticImageRender {
 
     contains(position: Coordinates): boolean {
         let resolution = this.bbox.width / this.width;
-        return this.bbox.contains(new Point([position[0] * resolution, position[1] * resolution], this.bbox.crs));
+        return this.bbox.contains(new Point([position[0] * resolution, -position[1] * resolution], this.bbox.crs));
     }
 }

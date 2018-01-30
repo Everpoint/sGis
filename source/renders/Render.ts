@@ -1,7 +1,7 @@
 import {Coordinates} from "../baseTypes";
-import {MouseEventFlags, sGisMouseEvent} from "../commonEvents";
-import {Point} from "../Point";
+import {sGisMouseEvent} from "../commonEvents";
 import {Bbox} from "../Bbox";
+import {MouseEventFlags} from "../EventHandler";
 
 export type IntersectionType = boolean | [number, number];
 

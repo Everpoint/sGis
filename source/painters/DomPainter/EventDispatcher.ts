@@ -41,7 +41,7 @@ export class EventDispatcher {
         let map = this._master.map;
 
         let layerRenderers = this._master.layerRenderers;
-        let position: Coordinates = [event.point.x / map.resolution, event.point.y / map.resolution];
+        let position: Coordinates = [event.point.x / map.resolution, -event.point.y / map.resolution];
 
         if (event instanceof sGisMouseOutEvent) {
             if (this._hoverRender) this._hoverRender.triggerEvent(event);
