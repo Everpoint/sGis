@@ -1,6 +1,6 @@
 import {Poly} from "./Poly";
 import {PolylineSymbol} from "../symbols/PolylineSymbol";
-import {IFeatureConstructorArgs} from "./Feature";
+import {FeatureParams} from "./Feature";
 import {Symbol} from "../symbols/Symbol";
 
 /**
@@ -11,7 +11,7 @@ import {Symbol} from "../symbols/Symbol";
 export class Polyline extends Poly {
     _symbol: Symbol;
 
-    constructor(rings, {symbol = new PolylineSymbol(), crs}: IFeatureConstructorArgs = {}, extension?: Object) {
+    constructor(rings, {symbol = new PolylineSymbol(), crs}: FeatureParams = {}, extension?: Object) {
         super(rings, {symbol, crs}, extension);
     }
 

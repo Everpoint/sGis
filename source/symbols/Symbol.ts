@@ -42,6 +42,7 @@ export abstract class DynamicPointSymbol extends Symbol {
         if (dynamicFeature.__dynamicSymbolRender) return [dynamicFeature.__dynamicSymbolRender];
 
         let node = this._getFeatureNode(feature);
+        node.style.position = 'absolute';
 
         dynamicFeature.__dynamicSymbolRender = new DynamicRender({
             node: node,

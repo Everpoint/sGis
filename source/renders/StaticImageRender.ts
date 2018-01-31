@@ -1,4 +1,4 @@
-import {Offset} from "../baseTypes";
+import {HTMLRasterElement, Offset} from "../baseTypes";
 import {StaticRender} from "./Render";
 
 export interface StaticImageRenderParams {
@@ -12,38 +12,53 @@ export interface StaticImageRenderParams {
 
 export abstract class StaticImageRender extends StaticRender {
     private _isReady: boolean = false;
+    private _node: HTMLImageElement;
+    private _opacity: number;
+    private _width: number;
+    private _height: number;
+    private _src: string;
 
-    node: HTMLImageElement;
     offset: Offset;
     onLoad?: () => void;
+
     constructor({src, width = 0, height = 0, onLoad = null, opacity = 1, offset = [0, 0]}: StaticImageRenderParams) {
         super();
 
         this.offset = offset;
         this.onLoad = onLoad;
 
-        this.node = new Image();
-        this.node.onload = () => {
+        this._opacity = opacity;
+        this._width = width;
+        this._height = height;
+        this._src = src;
+    }
+
+    get node(): HTMLRasterElement {
+        if (this._node) return this._node;
+
+        this._node = new Image();
+        this._node.onload = () => {
             this._isReady = true;
             if (this.onLoad) this.onLoad();
         };
 
-        this.node.onerror = this.node.onload;
+        this._node.onerror = this._node.onload;
 
-        this.opacity = opacity;
 
-        if (width > 0) this.node.width = width;
-        if (height > 0) this.node.height = height;
+        if (this._width > 0) this._node.width = this._width;
+        if (this._height > 0) this._node.height = this._height;
 
-        this.node.src = src;
+        this._node.src = this._src;
+
+        return this._node;
     }
 
     get width(): number {
-        return this.node.width;
+        return this._width;
     }
 
     get height(): number {
-        return this.node.height;
+        return this._height;
     }
 
     get isReady(): boolean {
@@ -52,6 +67,7 @@ export abstract class StaticImageRender extends StaticRender {
 
     get opacity(): number { return parseFloat(this.node.style.opacity); }
     set opacity(value: number) {
-        this.node.style.opacity = value.toString();
+        this._opacity = value;
+        if (this.node) this.node.style.opacity = value.toString();
     }
 }

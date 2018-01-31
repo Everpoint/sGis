@@ -18,8 +18,6 @@ let {map} = init({
     layers: [new TileLayer('http://b.tile.openstreetmap.org/{z}/{x}/{y}.png')]
 });
 
-let crossSymbol = new CrossPointSymbol();
-
 let symbols = [
     new PointSymbol(), //default symbol
     new PointSymbol({size: 30, strokeColor: 'green', strokeWidth: 2, fillColor: 'rgba(0,255,0,0.5)'}),
@@ -45,15 +43,13 @@ let symbols = [
 let step = 100 * map.resolution;
 let position: Coordinates = [map.position[0] - step * 4, map.position[1]];
 let features = [];
-symbols.forEach((symbol, index) => {
-    features.push(new PointFeature(position, {symbol: crossSymbol, crs: map.crs}));
-    let point = new PointFeature(position, {symbol, crs: map.crs});
-    features.push(point);
-    position = [position[0] + step, position[1]];
-    point.on('click mousemove mouseover', (ev) => {
-        console.log(ev.type, index);
-    });
 
+let crossSymbol = new CrossPointSymbol();
+
+symbols.forEach(symbol => {
+    features.push(new PointFeature(position, {symbol: crossSymbol, crs: map.crs}));
+    features.push(new PointFeature(position, {symbol, crs: map.crs}));
+    position = [position[0] + step, position[1]];
 });
 
 let layer = new FeatureLayer({features});

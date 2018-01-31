@@ -10,7 +10,7 @@ export type RenderCache = {
     renders: Render[]
 };
 
-export interface IFeatureConstructorArgs {
+export interface FeatureParams {
     crs?: Crs,
     symbol?: Symbol
 }
@@ -41,7 +41,7 @@ export abstract class Feature extends EventHandler {
         Feature.prototype._crs = crs;
     }
 
-    constructor({ crs = geo, symbol }: IFeatureConstructorArgs = {}, extension?: Object) {
+    constructor({ crs = geo, symbol }: FeatureParams = {}, extension?: Object) {
         super();
 
         if (extension) Object.assign(this, extension);
