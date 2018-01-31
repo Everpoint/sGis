@@ -90,12 +90,13 @@ export abstract class EventHandler {
     private _prohibitedEvents: string[];
     private _eventHandlers: { [eventType: string]: HandlerDescription[] };
 
-    eventFlags: MouseEventFlags = MouseEventFlags.None;
+    eventFlags: MouseEventFlags;
 
     constructor() {
         // This initialization makes the properties not enumerable and guaranties a valid value is there at all times
         Object.defineProperty(this, '_eventHandlers', { value: {} });
         Object.defineProperty(this, '_prohibitedEvents', { value: [] });
+        Object.defineProperty(this, 'eventFlags', { value: MouseEventFlags.None, writable: true });
     }
 
     /**
