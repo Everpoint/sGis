@@ -11,7 +11,7 @@ import {StaticLabelSymbol} from "../../../source/symbols/label/StaticLabelSymbol
 import {HorizontalAlignment, VerticalAlignment} from "../../../source/renders/VectorLabel";
 import {LabelFeature} from "../../../source/features/Label";
 import {DynamicLabelSymbol} from "../../../source/symbols/label/DynamicLabelSymbol";
-import {setCssClasses} from "../../../source/utils/utils";
+import {setCssClasses, setStyleNode} from "../../../source/utils/utils";
 
 let {map} = init({
     wrapper: document.body,
@@ -21,17 +21,32 @@ let {map} = init({
 let symbols = [
     new StaticLabelSymbol(),
     new StaticLabelSymbol({
-        fontSize: 48,
+        fontSize: 20,
         fontFamily: 'Times New Roman, sans-serif',
-        fontStyle: 'bold italic',
-        verticalAlignment: VerticalAlignment.Top,
-        horizontalAlignment: HorizontalAlignment.Right,
-        offset: [7, -3],
-        isFilled: false
+        fontStyle: 'bold',
+        verticalAlignment: VerticalAlignment.Bottom,
+        horizontalAlignment: HorizontalAlignment.Center,
+        offset: [0, 5],
+        fillColor: 'rgba(0,0,255,0.5)',
+        strokeColor: 'blue',
+        strokeWidth: 0.5
     }),
     new DynamicLabelSymbol(),
-    new DynamicLabelSymbol({cssClassName: 'customLabel'})
+    new DynamicLabelSymbol({cssClassName: 'sGis-dynamicLabel customLabel', offset: [0, -3]})
 ];
+
+setStyleNode(`
+    .customLabel {
+        font-size: 20px;
+        color: red;
+        cursor: pointer;
+        transform: translate(-50%, -100%);
+    }
+    
+    .customLabel:hover {
+        color: green;
+    }
+`);
 
 setCssClasses({customLabel: `
     
@@ -41,7 +56,7 @@ let step = 100 * map.resolution;
 let position: Coordinates = [map.position[0] - step * 2, map.position[1]];
 let features = [];
 
-let crossSymbol = new CrossPointSymbol();
+let crossSymbol = new CrossPointSymbol({strokeColor: 'red'});
 
 symbols.forEach((symbol, index) => {
     features.push(new PointFeature(position, {symbol: crossSymbol, crs: map.crs}));

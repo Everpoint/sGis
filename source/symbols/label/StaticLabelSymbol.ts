@@ -12,20 +12,38 @@ export interface StaticLabelSymbolParams {
     fontStyle?: string;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
-    isFilled?: boolean;
     offset?: Offset;
+
+    strokeColor?: string;
+    strokeWidth?: number;
+    fillColor?: string;
 }
 
 export class StaticLabelSymbol extends Symbol {
     fontSize?: number;
     fontFamily?: string;
     fontStyle?: string;
+
+    strokeColor?: string;
+    strokeWidth?: number;
+    fillColor?: string;
+
     horizontalAlignment: HorizontalAlignment;
     verticalAlignment: VerticalAlignment;
     isFilled: boolean;
     offset: Offset;
 
-    constructor({fontSize, fontFamily, fontStyle, horizontalAlignment = HorizontalAlignment.Center, verticalAlignment = VerticalAlignment.Bottom, isFilled = true, offset = [0, 3]}: StaticLabelSymbolParams = {}) {
+    constructor({
+        fontSize,
+        fontFamily,
+        fontStyle,
+        horizontalAlignment,
+        verticalAlignment,
+        offset = [5, 0],
+        strokeColor,
+        strokeWidth,
+        fillColor
+    }: StaticLabelSymbolParams = {}) {
         super();
 
         this.fontSize = fontSize;
@@ -33,8 +51,10 @@ export class StaticLabelSymbol extends Symbol {
         this.fontStyle = fontStyle;
         this.horizontalAlignment = horizontalAlignment;
         this.verticalAlignment = verticalAlignment;
-        this.isFilled = isFilled;
         this.offset = offset;
+        this.strokeColor = strokeColor;
+        this.strokeWidth = strokeWidth;
+        this.fillColor = fillColor;
     }
 
     renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
@@ -51,7 +71,9 @@ export class StaticLabelSymbol extends Symbol {
             fontStyle: this.fontStyle,
             verticalAlignment: this.verticalAlignment,
             horizontalAlignment: this.horizontalAlignment,
-            isFilled: this.isFilled
+            fillColor: this.fillColor,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth
         })];
     }
 }

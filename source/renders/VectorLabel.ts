@@ -12,18 +12,19 @@ export enum VerticalAlignment {
 export interface VectorLabelRenderParams {
     text: string;
     position: Coordinates;
-    offset?: Offset;
 
     fontSize?: number;
     fontFamily?: string;
     fontStyle?: string;
 
+    strokeColor?: string;
+    strokeWidth?: number;
+    fillColor?: string;
+
     /** @see [[VectorLabel.horizontalAlignment]] */
     horizontalAlignment?: HorizontalAlignment;
     /** @see [[VectorLabel.verticalAlignment]] */
     verticalAlignment?: VerticalAlignment;
-    /** @see [[VectorLabel.isFilled]] */
-    isFilled?: boolean;
 }
 
 /**
@@ -33,16 +34,17 @@ export interface VectorLabelRenderParams {
 export class VectorLabel extends StaticVectorImageRender {
     fontSize: number;
     fontFamily: string;
-    fontStyle: string;
+    fontStyle?: string;
+
+    strokeColor: string;
+    strokeWidth: number;
+    fillColor: string;
 
     /** Horizontal alignment of the label relative to the position. */
-    horizontalAlignment: HorizontalAlignment = HorizontalAlignment.Center;
+    horizontalAlignment: HorizontalAlignment;
 
     /** Vertical alignment of the label relative to the position. */
-    verticalAlignment: VerticalAlignment = VerticalAlignment.Middle;
-
-    /** Whether the font should be drawn as outline or if the letters should be filled inside. */
-    isFilled: boolean = true;
+    verticalAlignment: VerticalAlignment;
 
     private _text: string;
     private _canvas: HTMLCanvasElement;
@@ -50,22 +52,27 @@ export class VectorLabel extends StaticVectorImageRender {
     constructor({
         position,
         text,
-        horizontalAlignment = HorizontalAlignment.Center,
-        verticalAlignment = VerticalAlignment.Bottom,
-        offset = [0, 5],
-        isFilled = true,
+        horizontalAlignment = HorizontalAlignment.Right,
+        verticalAlignment = VerticalAlignment.Middle,
         fontSize = 14,
         fontFamily = 'arial',
-        fontStyle = null
+        fontStyle = null,
+        strokeColor = 'white',
+        strokeWidth = 2,
+        fillColor = 'black'
     }: VectorLabelRenderParams) {
-        super({src: '', position: position, offset});
+        super({src: '', position: position});
         this._text = text;
         this.horizontalAlignment = horizontalAlignment;
         this.verticalAlignment = verticalAlignment;
-        this.isFilled = isFilled;
+
         this.fontSize = fontSize;
         this.fontFamily = fontFamily;
         this.fontStyle = fontStyle;
+
+        this.strokeColor = strokeColor;
+        this.strokeWidth = strokeWidth;
+        this.fillColor = fillColor;
     }
 
     get node(): HTMLRasterElement {
@@ -107,11 +114,15 @@ export class VectorLabel extends StaticVectorImageRender {
         }
 
         ctx.font = this.font;
-        if (this.isFilled) {
-            ctx.fillText(this._text, 0, dy);
-        } else {
+
+        if (this.strokeWidth > 0) {
+            ctx.strokeStyle = this.strokeColor;
+            ctx.lineWidth = this.strokeWidth;
             ctx.strokeText(this._text, 0, dy);
         }
+
+        ctx.fillStyle = this.fillColor;
+        ctx.fillText(this._text, 0, dy);
 
         this._setOffset();
     }
@@ -132,6 +143,6 @@ export class VectorLabel extends StaticVectorImageRender {
             dy = -this._canvas.height / 2;
         }
 
-        this.offset = [dx, dy];
+        this.offset = [Math.round(dx), Math.round(dy)];
     }
 }

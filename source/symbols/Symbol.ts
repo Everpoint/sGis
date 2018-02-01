@@ -6,6 +6,7 @@ import {Bbox} from "../Bbox";
 import {IPoint} from "../Point";
 import {MouseEventFlags, mouseEvents} from "../EventHandler";
 import {listenDomEvent} from "../utils/domEvent";
+import {Offset} from "../baseTypes";
 
 
 /**
@@ -34,8 +35,19 @@ export abstract class Symbol {
 
 export type SymbolConstructor = new () => Symbol;
 
+export interface DynamicPointSymbolParams {
+    offset?: Offset;
+}
+
 export abstract class DynamicPointSymbol extends Symbol {
     protected abstract _getFeatureNode(feature: Feature): HTMLElement;
+
+    readonly offset: Offset;
+
+    constructor({offset = [5, 0]}: DynamicPointSymbolParams = {}) {
+        super();
+        this.offset = offset;
+    }
 
     renderFunction (feature: Feature, resolution: number, crs: Crs): Render[] {
         let dynamicFeature = <DynamicSymbolFeature>feature;
@@ -50,8 +62,8 @@ export abstract class DynamicPointSymbol extends Symbol {
                 if (!dynamicFeature.crs.canProjectTo(bbox.crs)) return;
 
                 let point = dynamicFeature.projectTo(bbox.crs);
-                let dx = Math.round((point.x - bbox.xMin) / resolution);
-                let dy = Math.round((bbox.yMax - point.y) / resolution);
+                let dx = Math.round((point.x - bbox.xMin) / resolution + this.offset[0]);
+                let dy = Math.round((bbox.yMax - point.y) / resolution + this.offset[1]);
 
                 node.style.left = `${dx.toString()}px`;
                 node.style.top = `${dy.toString()}px`;
