@@ -37,16 +37,19 @@ export type SymbolConstructor = new () => Symbol;
 
 export interface DynamicPointSymbolParams {
     offset?: Offset;
+    onRender?: () => void;
 }
 
 export abstract class DynamicPointSymbol extends Symbol {
     protected abstract _getFeatureNode(feature: Feature): HTMLElement;
 
     readonly offset: Offset;
+    readonly onRender?: () => void;
 
-    constructor({offset = [5, 0]}: DynamicPointSymbolParams = {}) {
+    constructor({offset = [5, 0], onRender}: DynamicPointSymbolParams = {}) {
         super();
         this.offset = offset;
+        this.onRender = onRender;
     }
 
     renderFunction (feature: Feature, resolution: number, crs: Crs): Render[] {
@@ -58,6 +61,7 @@ export abstract class DynamicPointSymbol extends Symbol {
 
         dynamicFeature.__dynamicSymbolRender = new DynamicRender({
             node: node,
+            onRender: this.onRender,
             update: (bbox: Bbox, resolution: number) => {
                 if (!dynamicFeature.crs.canProjectTo(bbox.crs)) return;
 

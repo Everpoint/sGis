@@ -10,6 +10,10 @@ import {Render} from "../../renders/Render";
 
 const MIN_WHEEL_DELAY = 50;
 
+export interface MapHtmlElement extends HTMLElement {
+    doNotBubbleToMap: boolean;
+}
+
 /**
  * @alias sGis.painter.domPainter.EventDispatcher
  */
@@ -82,17 +86,33 @@ export class EventDispatcher {
         if (!event.isCanceled) map.fire(event);
     }
 
-    private _setListeners(baseNode: HTMLElement): void {
-        listenDomEvent(baseNode, 'mousedown', this._onmousedown.bind(this));
-        listenDomEvent(baseNode, 'wheel', this._onwheel.bind(this));
-        listenDomEvent(baseNode, 'click', this._onclick.bind(this));
-        listenDomEvent(baseNode, 'dblclick', this._ondblclick.bind(this));
-        listenDomEvent(baseNode, 'mousemove', this._onmousemove.bind(this));
-        listenDomEvent(baseNode, 'mouseleave', this._onmouseleave.bind(this));
+    private _listenFor(node: HTMLElement, eventType: string, handler) {
+        listenDomEvent(node, eventType, (event) => {
+            let target = (event && event.target);
+            let cancelEvent = false;
+            while (target && target !== node) {
+                if ((<MapHtmlElement>target).doNotBubbleToMap) {
+                    cancelEvent = true;
+                    break;
+                }
+                target = target.parentNode;
+            }
+            if (!cancelEvent) handler(event);
+        });
+    }
 
-        listenDomEvent(baseNode, 'touchstart', this._ontouchstart.bind(this));
-        listenDomEvent(baseNode, 'touchmove', this._ontouchmove.bind(this));
-        listenDomEvent(baseNode, 'touchend', this._ontouchend.bind(this));
+    private _setListeners(baseNode: HTMLElement): void {
+        this._listenFor(baseNode, 'mousedown', this._onmousedown.bind(this));
+        this._listenFor(baseNode, 'mousedown', this._onmousedown.bind(this));
+        this._listenFor(baseNode, 'wheel', this._onwheel.bind(this));
+        this._listenFor(baseNode, 'click', this._onclick.bind(this));
+        this._listenFor(baseNode, 'dblclick', this._ondblclick.bind(this));
+        this._listenFor(baseNode, 'mousemove', this._onmousemove.bind(this));
+        this._listenFor(baseNode, 'mouseleave', this._onmouseleave.bind(this));
+
+        this._listenFor(baseNode, 'touchstart', this._ontouchstart.bind(this));
+        this._listenFor(baseNode, 'touchmove', this._ontouchmove.bind(this));
+        this._listenFor(baseNode, 'touchend', this._ontouchend.bind(this));
     }
 
     private _onmousedown(event: MouseEvent): void {

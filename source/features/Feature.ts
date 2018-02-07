@@ -11,8 +11,9 @@ export type RenderCache = {
 };
 
 export interface FeatureParams {
-    crs?: Crs,
-    symbol?: Symbol
+    crs?: Crs;
+    symbol?: Symbol;
+    persistOnMap?: boolean;
 }
 
 /**
@@ -28,11 +29,13 @@ export abstract class Feature extends EventHandler {
     protected _symbol: Symbol;
     protected _rendered: RenderCache;
 
+    persistOnMap: boolean;
+
     /**
      * Sets default coordinate system for all features.<br><br>
      *     <strong>
      *     NOTE: This method affects all already created features that do not have explicitly specified crs.
-     *     You should use this function only when initializing library.
+     *     You should use this function only when initializing the library.
      *     </strong>
      * @param {sGis.Crs} crs
      * @static
@@ -41,13 +44,14 @@ export abstract class Feature extends EventHandler {
         Feature.prototype._crs = crs;
     }
 
-    constructor({ crs = geo, symbol }: FeatureParams = {}, extension?: Object) {
+    constructor({ crs = geo, symbol, persistOnMap = false }: FeatureParams = {}, extension?: Object) {
         super();
 
         if (extension) Object.assign(this, extension);
 
         this._symbol = symbol;
         this._crs = crs;
+        this.persistOnMap = persistOnMap;
     }
 
     /**
@@ -81,14 +85,6 @@ export abstract class Feature extends EventHandler {
 
     protected _needToRender(resolution: number, crs: Crs): boolean {
         return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs || this._rendered.renders.length === 0;
-    }
-
-    /**
-     * Returns the cached render of the feature.
-     * @returns {{resolution: Number, crs: sGis.Crs, renders: sGis.IRender[]}}
-     */
-    getRenderCache(): RenderCache {
-        return this._rendered;
     }
 
     /**

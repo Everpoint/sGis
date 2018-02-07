@@ -63,12 +63,8 @@ export class FeatureLayer extends Layer {
     }
 
     getRenders(bbox: Bbox, resolution: number): Render[] {
-        if (!this.checkVisibility(resolution)) return [];
-
         let renders = [];
-        this._features.forEach(feature => {
-            if (!feature.crs.canProjectTo(bbox.crs) || !feature.bbox.intersects(bbox)) return;
-
+        this.getFeatures(bbox, resolution).forEach(feature => {
             renders = renders.concat(feature.render(resolution, bbox.crs));
             renders.forEach(render => {
                 if (render instanceof StaticImageRender) {
@@ -85,12 +81,8 @@ export class FeatureLayer extends Layer {
     getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
 
-        let obj = [];
-        this._features.forEach(feature => {
-            if (feature.crs.canProjectTo(bbox.crs) && feature.bbox.intersects(bbox)) obj.push(feature);
-        });
-
-        return obj;
+        return this._features.filter(feature => feature.crs.canProjectTo(bbox.crs) &&
+            (feature.persistOnMap || feature.bbox.intersects(bbox)))
     }
 
     /**

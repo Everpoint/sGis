@@ -38,8 +38,9 @@ export abstract class VectorRender extends StaticRender {
 export type UpdateMethod = (bbox: Bbox, resolution: number) => void;
 
 export interface DynamicRenderParams {
-    node: HTMLElement,
-    update: UpdateMethod
+    node: HTMLElement;
+    update: UpdateMethod;
+    onRender?: () => void;
 }
 
 export class DynamicRender extends Render {
@@ -49,12 +50,14 @@ export class DynamicRender extends Render {
 
     readonly node: HTMLElement;
     readonly update: UpdateMethod;
+    readonly onRender?: () => void;
 
-    constructor({node, update}: DynamicRenderParams) {
+    constructor({node, update, onRender}: DynamicRenderParams) {
         super();
 
         this.node = node;
         this.update = update;
+        this.onRender = onRender;
     }
 }
 

@@ -48,10 +48,6 @@ setStyleNode(`
     }
 `);
 
-setCssClasses({customLabel: `
-    
-`});
-
 let step = 100 * map.resolution;
 let position: Coordinates = [map.position[0] - step * 2, map.position[1]];
 let features = [];

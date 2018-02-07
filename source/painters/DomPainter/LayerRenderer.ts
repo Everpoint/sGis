@@ -241,6 +241,8 @@ export class LayerRenderer {
         render.update(this._master.bbox, this._master.map.resolution);
         this._master.dynamicContainer.appendChild(render.node);
         this._renders.push(render);
+
+        if (render.onRender) render.onRender();
     }
 
     get currentContainer() {

@@ -1,4 +1,4 @@
-import {Coordinates} from "./baseTypes";
+import {Coordinates, Offset} from "./baseTypes";
 import {Crs, geo} from "./Crs";
 import {IPoint, Point} from "./Point";
 import {softEquals} from "./utils/math";
@@ -153,5 +153,9 @@ export class Bbox {
      */
     static fromPoint(point: Point, offset: number): Bbox {
         return new Bbox([point.x - offset, point.y - offset], [point.x + offset, point.y + offset], point.crs);
+    }
+
+    offset(offset: Offset): Bbox {
+        return new Bbox([this.xMin - offset[0], this.yMin - offset[1]], [this.xMax + offset[0], this.yMax + offset[1]], this.crs);
     }
 }

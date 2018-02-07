@@ -1,4 +1,4 @@
-import {Coordinates, HTMLRasterElement, Offset} from "../baseTypes";
+import {Coordinates, HTMLRasterElement} from "../baseTypes";
 import {StaticVectorImageRender} from "./StaticVectorImageRender";
 
 export enum HorizontalAlignment {
