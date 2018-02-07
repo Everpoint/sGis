@@ -247,7 +247,7 @@ export class EventDispatcher {
             if (this._touchHandler.lastDrag.x === 0 && this._touchHandler.lastDrag.y === 0) {
                 let dragStartEvent = new DragStartEvent(map, {point, browserEvent: fakeMouseEvent});
                 this._dispatchEvent(dragStartEvent);
-                this._draggingObject = dragStartEvent;
+                this._draggingObject = dragStartEvent.draggingObject;
             }
 
             this._touchHandler.lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};

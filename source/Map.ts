@@ -203,8 +203,12 @@ export class Map extends LayerGroup {
         clearInterval(this.animationTimer);
     }
 
+    easing(t: number): number {
+        return t < 0.5 ? 2 * t * t : (4 - 2 * t) * t - 1;
+    }
+
     _easeFunction (t, b, c, d) {
-        return b + c * t / d;
+        return b + c * this.easing(t / d);
     }
 
     /**
