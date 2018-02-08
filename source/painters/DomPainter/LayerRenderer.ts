@@ -161,15 +161,14 @@ export class LayerRenderer {
     }
 
     private _rerender(): void {
+        let bbox = this._master.bbox;
+        let renders = this._layer.getRenders(bbox, this._master.map.resolution);
         if (this._layer.updateProhibited) return;
 
         this.currentContainer = this._master.currContainer;
-        let bbox = this._master.bbox;
         this._resetCanvas(bbox);
 
         this._removeCanvas();
-
-        let renders = this._layer.getRenders(bbox, this._master.map.resolution);
 
         this._removeOutdatedRenders(renders);
 
