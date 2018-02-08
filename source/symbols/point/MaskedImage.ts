@@ -1,16 +1,16 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
-import {HtmlElement} from "../../renders/HtmlElement";
 import {Color} from "../../utils/Color";
-import {Offset} from "../../baseTypes";
+import {Coordinates, Offset} from "../../baseTypes";
 import {warn} from "../../utils/utils";
 import {PIN_BACKGROUND, PIN_FOREGROUND} from "../../resourses/images";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
-import {IRender} from "../../interfaces/IRender";
+import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
+import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 
-export interface MaskedImageSymbolConstructorParams {
+export interface MaskedImageSymbolParams {
     /** @see [[MaskedImage.width]] */
     width?: number,
     /** @see [[MaskedImage.height]] */
@@ -24,7 +24,9 @@ export interface MaskedImageSymbolConstructorParams {
     /** @see [[MaskedImage.maskSource]] */
     maskSource?: string,
     /** @see [[MaskedImage.maskColor]] */
-    maskColor?: string
+    maskColor?: string,
+
+    onUpdate?: () => void
 }
 
 /**
@@ -37,6 +39,8 @@ export class MaskedImage extends Symbol {
 
     /** Height of the image. If not set, image will be automatically resized according to width. If both width and height are not set, original image size will be used. */
     height: number = 32;
+
+    onUpdate: () => void;
 
     private _anchorPoint: Offset = [16, 32];
 
@@ -75,7 +79,7 @@ export class MaskedImage extends Symbol {
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(options: MaskedImageSymbolConstructorParams = {}) {
+    constructor(options: MaskedImageSymbolParams = {}) {
         super();
 
         Object.assign(this, options);
@@ -85,21 +89,20 @@ export class MaskedImage extends Symbol {
         this._updateMasked();
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
-        if (!(feature instanceof PointFeature)) return [];
-
-        if (!this._isLoaded()) return [];
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
+        if (!this._maskedSrc || !(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution, - position[1] / resolution];
-        let renderPosition = [pxPosition[0], pxPosition[1]];
+        let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];
 
-        let widthProp = this.width > 0 ? `width="${this.width}"` : '';
-        let heightProp = this.height > 0 ? `height="${this.height}"` : '';
-        let translateProp = this.angle !== 0 ? `style="transform-origin: 50% 50%; transform: rotate(${this.angle}rad)"` : '';
-
-        let html = `<img src="${this._maskedSrc}" ${widthProp} ${heightProp} ${translateProp}>`;
-        return [new HtmlElement(html, renderPosition, null, [-this.anchorPoint[0], -this.anchorPoint[1]])];
+        return [new StaticVectorImageRender({
+            src: this._maskedSrc,
+            position: pxPosition,
+            angle: this.angle,
+            width: this.width,
+            height: this.height,
+            offset: [-this.anchorPoint[0], -this.anchorPoint[1]]
+        })];
     }
 
     /**
@@ -110,8 +113,13 @@ export class MaskedImage extends Symbol {
         this._imageSource = source;
 
         this._image = new Image();
-        this._image.onload = this._updateMasked.bind(this);
         this._image.src = source;
+
+        if (this._image.complete) {
+            this._updateMasked();
+        } else {
+            this._image.onload = this._updateMasked.bind(this);
+        }
     }
 
     /**
@@ -122,8 +130,13 @@ export class MaskedImage extends Symbol {
         this._maskSource = source;
 
         this._mask  = new Image();
-        this._mask.onload = this._updateMasked.bind(this);
         this._mask.src = source;
+
+        if (this._mask.complete) {
+            this._updateMasked();
+        } else {
+            this._mask.onload = this._updateMasked.bind(this);
+        }
     }
 
     /**
@@ -160,6 +173,8 @@ export class MaskedImage extends Symbol {
         resultCtx.drawImage(canvas, 0, 0);
 
         this._maskedSrc = resultCanvas.toDataURL();
+
+        if (this.onUpdate) this.onUpdate();
     }
 
     _recolorMask(imageData: ImageData): void {

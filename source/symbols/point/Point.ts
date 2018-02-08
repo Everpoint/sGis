@@ -4,7 +4,7 @@ import {PointFeature} from "../../features/Point";
 import {Arc} from "../../renders/Arc";
 import {Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
-import {IRender} from "../../interfaces/IRender";
+import {Render} from "../../renders/Render";
 import {Crs} from "../../Crs";
 import {warn} from "../../utils/utils";
 
@@ -61,14 +61,18 @@ export class PointSymbol extends Symbol {
         Object.assign(this, options);
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;
         let pxPosition = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 
-        let point = new Arc(pxPosition, { fillColor: this.fillColor, strokeColor: this.strokeColor, strokeWidth: this.strokeWidth, radius: this.size / 2 });
-        return [point];
+        return [new Arc(pxPosition, {
+            fillColor: this.fillColor,
+            strokeColor: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+            radius: this.size / 2
+        })];
     }
 }
 

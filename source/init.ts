@@ -13,7 +13,7 @@ import {warn} from "./utils/utils";
  * @param pluginDefinitions
  * @example init_Setting_position_and_resolution
  */
-export const init = function({ position = undefined, centerPoint = undefined, resolution, crs = undefined, layers, wrapper, pluginDefinitions = []}: any) {
+export const init = function({ position = undefined, centerPoint = undefined, resolution = undefined, crs = undefined, layers = undefined, wrapper = undefined, pluginDefinitions = []}: any) {
     let map = new Map({crs, position, centerPoint, resolution, layers});
     let painter = new DomPainter(map, {wrapper});
 

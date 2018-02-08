@@ -1,24 +1,24 @@
 import {Symbol} from "../Symbol";
-import {HtmlElement} from "../../renders/HtmlElement";
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {PIN_IMAGE} from "../../resourses/images";
-import {Offset} from "../../baseTypes";
+import {Coordinates, Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
-import {IRender} from "../../interfaces/IRender";
+import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
 import {warn} from "../../utils/utils";
+import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 
 export interface PointImageSymbolConstructorParams {
-    /** @see [[PointImageSymbol.width]] */
+    /** @see [[StaticImageSymbol.width]] */
     width?: number,
-    /** @see [[PointImageSymbol.height]] */
+    /** @see [[StaticImageSymbol.height]] */
     height?: number,
-    /** @see [[PointImageSymbol.source]] */
+    /** @see [[StaticImageSymbol.source]] */
     source?: string,
-    /** @see [[PointImageSymbol.angle]] */
+    /** @see [[StaticImageSymbol.angle]] */
     angle?: number,
-    /** @see [[PointImageSymbol.anchorPoint]] */
+    /** @see [[StaticImageSymbol.anchorPoint]] */
     anchorPoint?: Offset
 }
 
@@ -26,7 +26,7 @@ export interface PointImageSymbolConstructorParams {
  * Symbol of point drawn as circle with outline.
  * @alias sGis.symbol.point.Image
  */
-export class PointImageSymbol extends Symbol {
+export class StaticImageSymbol extends Symbol {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width: number = 32;
 
@@ -70,19 +70,21 @@ export class PointImageSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution, - position[1] / resolution];
-        let renderPosition = [pxPosition[0], pxPosition[1]];
+        let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];
 
-        let widthProp = this.width > 0 ? `width="${this.width}"` : '';
-        let heightProp = this.height > 0 ? `height="${this.height}"` : '';
-        let translateProp = this.angle !== 0 ? `style="transform-origin: 50% 50%; transform: rotate(${this.angle}rad)"` : '';
-        let html = `<img src="${this.source}" ${widthProp} ${heightProp} ${translateProp}>`;
-        return [new HtmlElement(html, renderPosition, null, [-this.anchorPoint[0], -this.anchorPoint[0]])];
+        return [new StaticVectorImageRender({
+            src: this.source,
+            position: pxPosition,
+            angle: this.angle,
+            width: this.width,
+            height: this.height,
+            offset: [-this.anchorPoint[0], -this.anchorPoint[1]]
+        })];
     }
 }
 
-registerSymbol(PointImageSymbol, 'point.Image', ['width', 'height', 'anchorPoint', 'source', 'angle']);
+registerSymbol(StaticImageSymbol, 'point.Image', ['width', 'height', 'anchorPoint', 'source', 'angle']);

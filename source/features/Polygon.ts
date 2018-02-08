@@ -1,6 +1,6 @@
 import {Poly} from "./Poly";
 import {PolygonSymbol} from "../symbols/polygon/Simple";
-import {IFeatureConstructorArgs} from "./Feature";
+import {FeatureParams} from "./Feature";
 import {Symbol} from "../symbols/Symbol";
 
 /**
@@ -13,7 +13,7 @@ export class Polygon extends Poly {
     _symbol: Symbol;
     isEnclosed = true;
 
-    constructor(rings, {symbol = new PolygonSymbol(), crs}: IFeatureConstructorArgs = {}, extension?: Object) {
+    constructor(rings, {symbol = new PolygonSymbol(), crs}: FeatureParams = {}, extension?: Object) {
         super(rings, {symbol, crs}, extension);
     }
 

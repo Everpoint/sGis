@@ -1,8 +1,10 @@
 import {Layer, LayerConstructorParams} from "./Layer";
-import {error} from "./utils/utils";
-import {Feature} from "./features/Feature";
-import {Bbox} from "./Bbox";
-import {sGisEvent} from "./EventHandler";
+import {error} from "../utils/utils";
+import {Feature} from "../features/Feature";
+import {Bbox} from "../Bbox";
+import {sGisEvent} from "../EventHandler";
+import {Render} from "../renders/Render";
+import {StaticImageRender} from "../renders/StaticImageRender";
 
 export interface FeatureLayerConstructorParams extends LayerConstructorParams {
     features?: Feature[]
@@ -60,15 +62,27 @@ export class FeatureLayer extends Layer {
         this._features = features;
     }
 
+    getRenders(bbox: Bbox, resolution: number): Render[] {
+        let renders = [];
+        this.getFeatures(bbox, resolution).forEach(feature => {
+            renders = renders.concat(feature.render(resolution, bbox.crs));
+            renders.forEach(render => {
+                if (render instanceof StaticImageRender) {
+                    render.onLoad = () => {
+                        this.redraw();
+                    }
+                }
+            });
+        });
+
+        return renders;
+    }
+
     getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
 
-        let obj = [];
-        this._features.forEach(feature => {
-            if (feature.crs.canProjectTo(bbox.crs) && feature.bbox.intersects(bbox)) obj.push(feature);
-        });
-
-        return obj;
+        return this._features.filter(feature => feature.crs.canProjectTo(bbox.crs) &&
+            (feature.persistOnMap || feature.bbox.intersects(bbox)))
     }
 
     /**

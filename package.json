@@ -14,8 +14,8 @@
     "test": "jest --no-cache",
     "build-doc": "typedoc --out doc/ source/ --excludePrivate --theme doc-theme",
     "build-ts": "tsc",
-    "build-samples": "tsc -p ./config/tsconfig-samples.json && node ./config/build-samples.js",
-    "copy-samples": "ncp ./temp/samples ./doc/samples && ncp ./temp/source ./doc/source",
+    "build-samples": "tsc -p ./config/tsconfig-samples.json && node ./config/build-samples.js && npm run copy-samples",
+    "copy-samples": "ncp ./temp/samples ./doc/samples && ncp ./temp/source ./doc/source && ncp ./samples/resources ./doc/samples/resources",
     "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js"
   },
   "repository": {
@@ -26,14 +26,14 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^21.1.2",
+    "@types/jest": "^21.1.10",
     "canvas-prebuilt": "^1.6.0",
     "jest": "^21.2.1",
     "ncp": "^2.0.0",
     "rollup": "^0.50.0",
-    "ts-jest": "^21.0.1",
-    "typedoc": "https://github.com/Maximkaaa/typedoc#dev",
-    "typescript": "^2.5.2"
+    "ts-jest": "^21.2.4",
+    "typedoc": "git+https://github.com/Maximkaaa/typedoc.git#dev",
+    "typescript": "^2.7.1"
   },
   "jest": {
     "transform": {

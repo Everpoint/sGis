@@ -1,8 +1,10 @@
 import {Arc} from "../../renders/Arc";
-import {VectorImage} from "../../renders/VectorImage";
 import {Point} from "../../renders/Point";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 import {error} from "../../utils/utils";
+import {RenderForCanvas} from "./LayerRenderer";
+import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
+import {Bbox} from "../../Bbox";
 
 /**
  * @alias sGis.painter.domPainter.Canvas
@@ -12,6 +14,8 @@ export class Canvas {
     private _canvasNode: HTMLCanvasElement;
     private _ctx: CanvasRenderingContext2D;
     private _isEmpty: boolean;
+
+    bbox: Bbox;
 
     constructor() {
         this._setNode();
@@ -31,19 +35,20 @@ export class Canvas {
         this._isEmpty = true;
 
         this._ctx.translate(Math.round(-bbox.xMin / resolution), Math.round(bbox.yMax / resolution));
+        this.bbox = bbox;
     }
 
     get width() { return this._canvasNode.width; }
     get height() { return this._canvasNode.height; }
 
-    draw(render) {
+    draw(render: RenderForCanvas) {
         if (render instanceof Arc) {
             this._drawArc(render);
         } else if (render instanceof Point) {
             this._drawPoint(render);
         } else if (render instanceof PolyRender) {
             this._drawPoly(render);
-        } else if (render instanceof VectorImage) {
+        } else if (render instanceof StaticVectorImageRender) {
             this._drawImage(render);
         } else {
             error('Unknown vector geometry type.');
@@ -80,9 +85,17 @@ export class Canvas {
         this._ctx.fillRect(render.coordinates[0], render.coordinates[1], 1, 1);
     }
 
-    _drawImage(render) {
-        let [x, y] = render.origin;
-        this._ctx.drawImage(render.node, Math.round(x), Math.round(y));
+    _drawImage(render: StaticVectorImageRender) {
+        let [x, y] = render.position;
+
+        x = Math.round(x);
+        y = Math.round(y);
+
+        this._ctx.translate(x, y);
+        this._ctx.rotate(render.angle);
+        this._ctx.drawImage(render.node, render.offset[0], render.offset[1], render.width, render.height);
+        this._ctx.rotate(-render.angle);
+        this._ctx.translate(-x, -y);
     }
 
     _drawPoly(render: PolyRender) {

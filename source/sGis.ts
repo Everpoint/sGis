@@ -15,16 +15,13 @@ import {PolygonControl} from "./controls/PolygonControl";
 import {PolyTransform} from "./controls/PolyTransform";
 import {Rectangle} from "./controls/Rectangle";
 import * as CrsModule from "./Crs";
-export {DynamicLayer} from "./DynamicLayer";
+export {DynamicLayer} from "./layers/DynamicLayer";
 export {EventHandler} from "./EventHandler";
 export {Feature} from "./features/Feature";
-import {ImageFeature} from "./features/ImageFeature";
-import {Label} from "./features/Label";
-import {Maptip} from "./features/Maptip";
 import {PointFeature} from "./features/Point";
 import {Polygon} from "./features/Polygon";
-export {FeatureLayer} from "./FeatureLayer";
-export {Layer} from "./Layer";
+export {FeatureLayer} from "./layers/FeatureLayer";
+export {Layer} from "./layers/Layer";
 export {LayerGroup} from "./LayerGroup";
 import {DomPainter} from "./painters/DomPainter/DomPainter";
 import {Container} from "./painters/DomPainter/Container";
@@ -34,14 +31,10 @@ import {LayerRenderer} from "./painters/DomPainter/LayerRenderer";
 import {Canvas} from "./painters/DomPainter/Canvas";
 export {Point} from "./Point";
 import {Arc} from "./renders/Arc";
-import {ImageRender} from "./renders/Image";
 import {Point as PointRender} from "./renders/Point";
 import {PolyRender} from "./renders/Poly";
 export {Symbol} from "./symbols/Symbol";
-import {ImageSymbol} from "./symbols/Image";
-import {LabelSymbol} from "./symbols/LabelSymbol";
-import {MaptipSymbol} from "./symbols/MaptipSymbol";
-import {PointImageSymbol} from "./symbols/point/PointImageSymbol";
+import {StaticImageSymbol} from "./symbols/point/StaticImageSymbol";
 import {MaskedImage} from "./symbols/point/MaskedImage";
 import {PointSymbol} from "./symbols/point/Point";
 import {SquareSymbol} from "./symbols/point/Square";
@@ -49,7 +42,7 @@ import {BrushFill} from "./symbols/polygon/BrushFill";
 import {ImageFill} from "./symbols/polygon/ImageFill";
 import {PolygonSymbol} from "./symbols/polygon/Simple";
 import {PolylineSymbol} from "./symbols/PolylineSymbol";
-export {TileLayer} from "./TileLayer";
+export {TileLayer} from "./layers/TileLayer";
 export {TileScheme} from "./TileScheme";
 import * as utilsModule from "./utils/utils";
 import {Color} from "./utils/Color";
@@ -59,6 +52,12 @@ import * as symbolSerializer from "./serializers/symbolSerializer";
 import * as eventModule from "./utils/domEvent";
 import {EditorSymbol} from "./symbols/EditorSymbol";
 import {CombinedSnappingProvider} from "./controls/snapping/CombinedSnappingProvider";
+import {LabelFeature} from "./features/Label";
+import {Balloon} from "./features/Balloon";
+import {DynamicLabelSymbol} from "./symbols/label/DynamicLabelSymbol";
+import {StaticLabelSymbol} from "./symbols/label/StaticLabelSymbol";
+import {BalloonSymbol} from "./symbols/BalloonSymbol";
+import {BalloonControl} from "./controls/BalloonControl";
 
 export const math = mathModule;
 export const geotools = geotoolsModule;
@@ -88,21 +87,21 @@ export const controls = {
     Rectangle: Rectangle,
     snapping: {
         CombinedSnappingProvider: CombinedSnappingProvider
-    }
+    },
+    BalloonControl: BalloonControl
 };
 
 export const Crs = CrsModule.Crs;
 export const CRS = CrsModule;
 
 export const feature = {
-    Image: ImageFeature,
-    Label: Label,
-    Maptip: Maptip,
     MultiPoint: MultiPoint,
     Point: PointFeature,
     Poly: Poly,
     Polygon: Polygon,
-    Polyline: Polyline
+    Polyline: Polyline,
+    Label: LabelFeature,
+    Balloon: Balloon
 };
 
 export const painter = {
@@ -119,17 +118,13 @@ export const painter = {
 export const render = {
     Arc: Arc,
     HtmlElement: HTMLElement,
-    ImageRender: ImageRender,
     Point: PointRender,
     Polygon: PolyRender
 };
 
 export const symbol = {
-    image: { Image: ImageSymbol },
-    label: { Label: LabelSymbol },
-    maptip: { Simple: MaptipSymbol },
     point: {
-        Image: PointImageSymbol,
+        Image: StaticImageSymbol,
         MaskedImage: MaskedImage,
         Point: PointSymbol,
         Square: SquareSymbol
@@ -140,7 +135,12 @@ export const symbol = {
         Simple: PolygonSymbol
     },
     polyline: { Simple: PolylineSymbol },
-    Editor: EditorSymbol
+    Editor: EditorSymbol,
+    label: {
+        DynamicLabelSymbol: DynamicLabelSymbol,
+        StaticLabelSymbol: StaticLabelSymbol
+    },
+    Balloon: BalloonSymbol
 };
 
 export const utils = utilsModulesExt;

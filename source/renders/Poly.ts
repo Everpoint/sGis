@@ -1,4 +1,4 @@
-import {IRender} from "../interfaces/IRender";
+import {VectorRender} from "./Render";
 import {contains} from "../geotools";
 import {Coordinates} from "../baseTypes";
 
@@ -33,7 +33,7 @@ export interface PolyRenderConstructorParams {
  * Rendered polygon
  * @alias sGis.render.Poly
  */
-export class PolyRender implements IRender {
+export class PolyRender extends VectorRender {
     coordinates: Coordinates[][];
 
     /** Whether the first and the last points should be connected. */
@@ -68,6 +68,8 @@ export class PolyRender implements IRender {
      * @param options - properties to be assigned to the instance
      */
     constructor(coordinates, options: PolyRenderConstructorParams = {}) {
+        super();
+
         Object.assign(this, options);
         this.coordinates = coordinates;
     }

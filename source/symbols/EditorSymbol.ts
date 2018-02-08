@@ -1,11 +1,11 @@
 import {PointSymbol} from "./point/Point";
 import {FillStyle, PolyRender} from "../renders/Poly";
 import {Arc} from "../renders/Arc";
-import {PointImageSymbol} from "./point/PointImageSymbol";
+import {StaticImageSymbol} from "./point/StaticImageSymbol";
 import {MaskedImage} from "./point/MaskedImage";
 import {Symbol} from "./Symbol";
 import {Feature} from "../features/Feature";
-import {IRender} from "../interfaces/IRender";
+import {Render} from "../renders/Render";
 import {Crs} from "../Crs";
 
 export interface EditorSymbolConstructorParams {
@@ -40,7 +40,7 @@ export class EditorSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         let baseRender = <any>this.baseSymbol.renderFunction(feature, resolution, crs);
         let halo;
         for (let i = 0; i < baseRender.length; i++) {
@@ -60,7 +60,7 @@ export class EditorSymbol extends Symbol {
                     strokeWidth: parseFloat(baseRender[i].strokeWidth) + 2 * this.haloSize
                 });
                 break;
-            } else if (this.baseSymbol instanceof PointImageSymbol || this.baseSymbol instanceof MaskedImage) {
+            } else if (this.baseSymbol instanceof StaticImageSymbol || this.baseSymbol instanceof MaskedImage) {
                 halo = new Arc(
                     [
                         baseRender[i].position[0] - (+this.baseSymbol.anchorPoint[0]) + this.baseSymbol.width / 2,

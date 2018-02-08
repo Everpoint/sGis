@@ -162,7 +162,7 @@ export const getWheelDirection = function (e) {
  * @returns {{x: Number, y: Number}}
  */
 export const getMouseOffset = function (target, e) {
-    var docPos = getPosition(target);
+    let docPos = target === document || target === window ? {x: 0, y: 0} : getPosition(target);
     return {x: e.pageX - docPos.x, y: e.pageY - docPos.y};
 };
 

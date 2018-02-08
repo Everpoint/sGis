@@ -4,7 +4,7 @@ import {PolylineSymbol} from "../PolylineSymbol";
 import {Symbol} from "../Symbol";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
-import {IRender} from "../../interfaces/IRender";
+import {Render} from "../../renders/Render";
 import {Poly} from "../../features/Poly";
 
 export interface ImageFillConstructorParams {
@@ -46,7 +46,7 @@ export class ImageFill extends Symbol {
         if (!this._image) this.src = this._src;
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): IRender[] {
+    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof Poly)) return [];
 
         if (!this._image.complete) {

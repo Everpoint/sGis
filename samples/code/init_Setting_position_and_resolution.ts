@@ -2,7 +2,7 @@
 /// Title: "Setting position and resolution with init function"
 
 import {init} from "sgis/dist/init";
-import {TileLayer} from "sgis/dist/TileLayer";
+import {TileLayer} from "sgis/dist/layers/TileLayer";
 import {Point} from "sgis/dist/Point";
 import {webMercator} from "sgis/dist/Crs";
 

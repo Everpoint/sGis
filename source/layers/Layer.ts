@@ -1,7 +1,7 @@
-import {EventHandler, sGisEvent} from "./EventHandler";
-import {Bbox} from "./Bbox";
-import {Feature} from "./features/Feature";
-import {ResolutionLimits} from "./baseTypes";
+import {EventHandler, sGisEvent} from "../EventHandler";
+import {Bbox} from "../Bbox";
+import {ResolutionLimits} from "../baseTypes";
+import {Render} from "../renders/Render";
 
 export interface LayerConstructorParams {
     delayedUpdate?: boolean,
@@ -76,11 +76,11 @@ export abstract class Layer extends EventHandler {
     }
 
     /**
-     * Returns the array of features to be drawn for given parameters.
+     * Returns the array of renders to be drawn for given parameters.
      * @param bbox - bounding box of the area to get features from
      * @param resolution - current resolution
      */
-    abstract getFeatures(bbox: Bbox, resolution: number): Feature[]
+    abstract getRenders(bbox: Bbox, resolution: number): Render[]
 
     /**
      * Whether the layer is drawn to map

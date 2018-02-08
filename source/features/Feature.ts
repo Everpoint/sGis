@@ -1,18 +1,19 @@
 import {Crs, geo} from "../Crs";
-import {EventHandler} from "../EventHandler";
+import {EventHandler, MouseEventFlags} from "../EventHandler";
 import {Symbol} from "../symbols/Symbol";
-import {IRender} from "../interfaces/IRender";
 import {Bbox} from "../Bbox";
+import {Render} from "../renders/Render";
 
 export type RenderCache = {
     resolution: number,
     crs: Crs,
-    renders: IRender[]
+    renders: Render[]
 };
 
-export interface IFeatureConstructorArgs {
-    crs?: Crs,
-    symbol?: Symbol
+export interface FeatureParams {
+    crs?: Crs;
+    symbol?: Symbol;
+    persistOnMap?: boolean;
 }
 
 /**
@@ -28,11 +29,13 @@ export abstract class Feature extends EventHandler {
     protected _symbol: Symbol;
     protected _rendered: RenderCache;
 
+    persistOnMap: boolean;
+
     /**
      * Sets default coordinate system for all features.<br><br>
      *     <strong>
      *     NOTE: This method affects all already created features that do not have explicitly specified crs.
-     *     You should use this function only when initializing library.
+     *     You should use this function only when initializing the library.
      *     </strong>
      * @param {sGis.Crs} crs
      * @static
@@ -41,13 +44,14 @@ export abstract class Feature extends EventHandler {
         Feature.prototype._crs = crs;
     }
 
-    constructor({ crs = geo, symbol }: IFeatureConstructorArgs = {}, extension?: Object) {
+    constructor({ crs = geo, symbol, persistOnMap = false }: FeatureParams = {}, extension?: Object) {
         super();
 
         if (extension) Object.assign(this, extension);
 
         this._symbol = symbol;
         this._crs = crs;
+        this.persistOnMap = persistOnMap;
     }
 
     /**
@@ -56,7 +60,7 @@ export abstract class Feature extends EventHandler {
      * @param {sGis.Crs} crs
      * @returns {sGis.IRender[]}
      */
-    render(resolution: number, crs: Crs): IRender[] {
+    render(resolution: number, crs: Crs): Render[] {
         if (this._hidden || !this.symbol) return [];
         if (!this._needToRender(resolution, crs)) return this._rendered.renders;
 
@@ -70,19 +74,17 @@ export abstract class Feature extends EventHandler {
             renders: this.symbol.renderFunction(this, resolution, crs)
         };
 
+        if (this.eventFlags !== MouseEventFlags.None) this._rendered.renders.forEach(render => {
+            render.listenFor(this.eventFlags, (event) => {
+                this.fire(event);
+            });
+        });
+
         return this._rendered.renders;
     }
 
     protected _needToRender(resolution: number, crs: Crs): boolean {
-        return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs;
-    }
-
-    /**
-     * Returns the cached render of the feature.
-     * @returns {{resolution: Number, crs: sGis.Crs, renders: sGis.IRender[]}}
-     */
-    getRenderCache(): RenderCache {
-        return this._rendered;
+        return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs || this._rendered.renders.length === 0;
     }
 
     /**

@@ -1,5 +1,5 @@
 import {Control} from "./Control";
-import {FeatureLayer} from "../FeatureLayer";
+import {FeatureLayer} from "../layers/FeatureLayer";
 import {MultiPoint} from "../features/MultiPoint";
 import {PointSymbol} from "../symbols/point/Point";
 import {Symbol} from "../symbols/Symbol";

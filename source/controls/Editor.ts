@@ -6,7 +6,7 @@ import {PolyTransform} from "./PolyTransform";
 import {getGuid} from "../utils/utils";
 import {listenDomEvent, removeDomEventListener} from "../utils/domEvent";
 import {EditorSymbol} from "../symbols/EditorSymbol";
-import {FeaturesAddEvent, FeaturesRemoveEvent} from "../FeatureLayer";
+import {FeaturesAddEvent, FeaturesRemoveEvent} from "../layers/FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
 import {sGisClickEvent} from "../commonEvents";
 import {Feature} from "../features/Feature";

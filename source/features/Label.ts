@@ -1,70 +1,45 @@
-import {Feature, IFeatureConstructorArgs} from "./Feature";
-import {Point} from "../Point";
-import {LabelSymbol} from "../symbols/LabelSymbol";
-import {Coordinates} from "../baseTypes";
+import {Feature, FeatureParams} from "./Feature";
+import {IPoint, Point} from "../Point";
 import {Bbox} from "../Bbox";
+import {Crs} from "../Crs";
+import {Coordinates} from "../baseTypes";
 
-export interface ILabelConstructorArgs extends IFeatureConstructorArgs {
-    symbol?: LabelSymbol,
+export interface LabelFeatureParams extends FeatureParams{
     content?: string
 }
 
-/**
- * Text label on the map.
- * @alias sGis.feature.Label
- * @extends sGis.Feature
- */
-export class Label extends Feature {
-    private _content: string;
+export class LabelFeature extends Feature implements IPoint {
     private _position: Coordinates;
+    private _content: string;
 
-    protected _symbol: LabelSymbol;
+    constructor(position: Coordinates, {crs, content = '', symbol}: LabelFeatureParams) {
+        super({crs, symbol});
 
-    /**
-     * @constructor
-     * @param {Number[]|sGis.Point} position - anchor point of the label. Array is in [x,y] format.
-     * @param {Object} [properties] - key-value list of the properties to be assigned to the instance
-     */
-    constructor(position, { symbol = new LabelSymbol(), content = '', crs }: ILabelConstructorArgs = {}, extension?: Object) {
-        super({ symbol, crs }, extension);
-        this.content = content;
-        this.coordinates = position;
-    }
-
-    get position() { return this._position; }
-    set position(position) {
         this._position = position;
-        this.redraw();
-    }
-
-    /**
-     * Position of the label
-     * @type {sGis.Point}
-     */
-    get point() { return new Point(this.position, this.crs); }
-    set point(/** sGis.Point */ point) {
-        this.position = point.projectTo(this.crs).position;
-    }
-
-    /**
-     * Position of the label
-     */
-    get coordinates() { return this._position.slice(); }
-    set coordinates(point) {
-        this.position = [point[0], point[1]];
-    }
-
-    /**
-     * Text of the label. Can be any html string.
-     * @type String
-     */
-    get content() { return this._content; }
-    set content(/** String */ content) {
         this._content = content;
+    }
+
+    get content(): string { return this._content; }
+    set content(value: string) {
+        this._content = value;
         this.redraw();
     }
 
-    get bbox() {
-        return new Bbox(this.position, this.position, this.crs);
+    get bbox(): Bbox {
+        return new Bbox(this._position, this._position, this.crs);
+    }
+
+    get position(): Coordinates { return this._position; }
+    set position(value: Coordinates) {
+        this._position = value;
+        this.redraw();
+    }
+
+    get x(): number { return this._position[0]; }
+    get y(): number { return this._position[1]; }
+
+    projectTo(newCrs: Crs): LabelFeature {
+        let projected = <Point>Point.prototype.projectTo.call(this, newCrs);
+        return new LabelFeature(projected.position, {crs: newCrs, symbol: this.symbol, content: this.content});
     }
 }
