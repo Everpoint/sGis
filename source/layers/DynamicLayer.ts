@@ -1,9 +1,7 @@
 import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
 import {Crs} from "../Crs";
 import {Bbox} from "../Bbox";
-import {Feature} from "../features/Feature";
 import {Render} from "../renders/Render";
-import {StaticImageRender} from "../renders/StaticImageRender";
 import {StaticHtmlImageRender} from "../renders/StaticHtmlImageRender";
 
 export type GetUrlDelegate = (bbox: Bbox, resolution: number) => string;
@@ -76,6 +74,7 @@ export abstract class DynamicLayer extends Layer {
                     this._startNextLoad();
                 }
             });
+            this._toLoad = null;
         } else {
             this._toLoad = {bbox, resolution};
         }

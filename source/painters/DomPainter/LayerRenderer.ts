@@ -24,7 +24,8 @@ export class LayerRenderer {
         MouseEventFlags.MouseMove,
         MouseEventFlags.MouseOut,
         MouseEventFlags.MouseOver,
-        MouseEventFlags.MouseUp
+        MouseEventFlags.MouseUp,
+        MouseEventFlags.DragStart
     ];
 
     private _canvas: Canvas;
@@ -171,7 +172,7 @@ export class LayerRenderer {
         let renders = this._layer.getRenders(bbox, this._master.map.resolution);
 
         this._removeOutdatedRenders(renders);
-        this._redrawCanvasRenders();
+
         this._draw(renders);
 
         if (!this._canvas.isEmpty) {
@@ -181,17 +182,9 @@ export class LayerRenderer {
         this._renders = renders;
     }
 
-    private _redrawCanvasRenders(): void {
-        for (let render of this._renders) {
-            if (render instanceof StaticVectorImageRender || render instanceof VectorRender) {
-                this._drawVectorRender(render);
-            }
-        }
-    }
-
     private _draw(renders: Render[]): void {
         for (let render of renders) {
-            if (this._renders.indexOf(render) < 0) {
+            if (render instanceof StaticVectorImageRender || render instanceof VectorRender || this._renders.indexOf(render) < 0) {
                 this._drawRender(render);
             }
         }

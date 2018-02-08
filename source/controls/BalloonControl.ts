@@ -12,6 +12,9 @@ import {Bbox} from "../Bbox";
 
 const OFFSET = 10;
 
+/**
+ * @example controls/Balloon_Control
+ */
 export class BalloonControl extends Control {
     painter: DomPainter;
 
