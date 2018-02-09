@@ -51,6 +51,7 @@ export abstract class DynamicLayer extends Layer {
             }
         }
 
+        this._forceUpdate = false;
         return this._currentRender ? [this._currentRender] : [];
     }
 
