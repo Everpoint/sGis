@@ -3,16 +3,19 @@ import {IPoint, Point} from "../Point";
 import {Bbox} from "../Bbox";
 import {Crs} from "../Crs";
 import {Coordinates} from "../baseTypes";
+import {StaticLabelSymbol} from "../symbols/label/StaticLabelSymbol";
 
 export interface LabelFeatureParams extends FeatureParams{
     content?: string
 }
 
+const DEFAULT_LABEL_SYMBOL = new StaticLabelSymbol();
+
 export class LabelFeature extends Feature implements IPoint {
     private _position: Coordinates;
     private _content: string;
 
-    constructor(position: Coordinates, {crs, content = '', symbol}: LabelFeatureParams) {
+    constructor(position: Coordinates, {crs, content = '', symbol = DEFAULT_LABEL_SYMBOL}: LabelFeatureParams) {
         super({crs, symbol});
 
         this._position = position;

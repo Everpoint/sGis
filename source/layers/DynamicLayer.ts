@@ -45,10 +45,10 @@ export abstract class DynamicLayer extends Layer {
         let needRedraw = this._forceUpdate || !this._currentRender || !bbox.equals(this._currentRender.bbox);
         if (needRedraw) {
             this._loadNextRender(bbox, resolution);
+        }
 
-            if (this._nextRender.isReady) {
-                this._currentRender = this._nextRender;
-            }
+        if (this._nextRender !== this._currentRender && this._nextRender.isReady) {
+            this._currentRender = this._nextRender;
         }
 
         this._forceUpdate = false;
