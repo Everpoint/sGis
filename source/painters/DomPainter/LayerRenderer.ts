@@ -220,6 +220,7 @@ export class LayerRenderer {
     }
 
     private _drawImageRender(render: StaticHtmlImageRender) {
+        if (render.error) return;
         render.node.style.zIndex = this._zIndex.toString();
         this._currentContainer.addNode(render.node, render.width, render.height, render.bbox);
         if (render.onDisplayed) render.onDisplayed();

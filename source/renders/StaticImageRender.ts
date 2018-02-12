@@ -17,6 +17,7 @@ export abstract class StaticImageRender extends StaticRender {
     private _width: number;
     private _height: number;
     private _src: string;
+    private _error: ErrorEvent;
 
     offset: Offset;
     onLoad?: () => void;
@@ -42,7 +43,10 @@ export abstract class StaticImageRender extends StaticRender {
             if (this.onLoad) this.onLoad();
         };
 
-        this._node.onerror = this._node.onload;
+        this._node.onerror = (err) => {
+            this._error = err;
+            this._node.onload(err);
+        };
 
 
         if (this._width > 0) this._node.width = this._width;
@@ -50,6 +54,8 @@ export abstract class StaticImageRender extends StaticRender {
 
         this._node.src = this._src;
     }
+
+    get error() { return this._error; }
 
     get node(): HTMLRasterElement {
         if (this._node) return this._node;
