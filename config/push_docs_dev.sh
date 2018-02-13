@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [[ $TRAVIS_BRANCH == 'dev' ]]
+echo $PWD
+if [[ $TRAVIS_BRANCH != 'dev' ]]
 then
     git config --global user.email "maxim@gritsenko.biz"
     git config --global user.name "Maxim Gritsenko"
