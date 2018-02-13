@@ -10,13 +10,13 @@ then
     cd everpoint.github.io
     rm -vrf ./docs/dev/sgis
     mkdir -vp ./docs/dev/sgis
-    cp -vr ../doc/* ./docs/dev/sgis
+    cp -vr ../../doc/* ./docs/dev/sgis
 
     git add -A
     git commit --message "Travis build: $TRAVIS_BUILD_NUMBER"
 
     git remote add origin-pages https://${GH_TOKEN}@github.com/MVSE-outreach/resources.git > /dev/null 2>&1
-    git push --quiet
+    git push --quiet --set-upstream origin-pages master
 
     cd ../
     rm -rf ./everpoint.github.io
