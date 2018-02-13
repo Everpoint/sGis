@@ -2,8 +2,8 @@
 
 if [[ $TRAVIS_BRANCH == 'dev' ]]
 then
-    git config --global user.email "travis@travis-ci.org"
-    git config --global user.name "Travis CI"
+    git config --global user.email "maxim@gritsenko.biz"
+    git config --global user.name "Maxim Gritsenko"
 
     git clone https://github.com/Everpoint/everpoint.github.io.git
 
