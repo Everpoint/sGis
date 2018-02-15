@@ -8,6 +8,7 @@ import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {StaticImageRender} from "../../renders/StaticImageRender";
 import {StaticHtmlImageRender} from "../../renders/StaticHtmlImageRender";
 import {MouseEventFlags} from "../../EventHandler";
+import {listenDomEvent} from "../../utils/domEvent";
 
 export type RenderForCanvas = VectorRender | StaticVectorImageRender;
 
@@ -214,8 +215,10 @@ export class LayerRenderer {
     private _drawStaticRender(render: StaticRender) {
         if (render instanceof StaticHtmlImageRender) {
             this._drawImageRender(render);
-        } else if (render instanceof VectorRender || render instanceof StaticVectorImageRender) {
+        } else if (render instanceof VectorRender) {
             this._drawVectorRender(render);
+        } else if (render instanceof StaticVectorImageRender) {
+            this._drawAfterLoad(render);
         }
     }
 
@@ -224,6 +227,18 @@ export class LayerRenderer {
         render.node.style.zIndex = this._zIndex.toString();
         this._currentContainer.addNode(render.node, render.width, render.height, render.bbox);
         if (render.onDisplayed) render.onDisplayed();
+    }
+
+    private _drawAfterLoad(render: StaticVectorImageRender) {
+        let image = <HTMLImageElement>render.node;
+        if (image.complete) return this._drawVectorRender(render);
+
+        listenDomEvent(image, 'load', () => {
+            if (this._renders.indexOf(render) >= 0) {
+                this._drawVectorRender(render);
+                if (!this._canvas.node.parentNode) this._addCanvasToDom(this._master.bbox);
+            }
+        });
     }
 
     private _drawVectorRender(render: RenderForCanvas) {
