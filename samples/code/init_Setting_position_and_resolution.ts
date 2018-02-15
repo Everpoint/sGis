@@ -1,10 +1,11 @@
 /// Template: "4_maps.html"
 /// Title: "Setting position and resolution with init function"
 
-import {init} from "sgis/dist/init";
-import {TileLayer} from "sgis/dist/layers/TileLayer";
-import {Point} from "sgis/dist/Point";
-import {webMercator} from "sgis/dist/Crs";
+
+import {init} from "../../source/init";
+import {TileLayer} from "../../source/layers/TileLayer";
+import {Point} from "../../source/Point";
+import {webMercator} from "../../source/Crs";
 
 let gis1 = init({
     wrapper: 'map1',
