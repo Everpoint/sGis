@@ -1,4 +1,4 @@
-import {SnappingProviderBase, SnappingProviderBaseConstructorParams} from "./SnappingProviderBase";
+import {SnappingProviderBase, SnappingProviderBaseParams} from "./SnappingProviderBase";
 import {FeatureLayer} from "../../layers/FeatureLayer";
 import {Map} from "../../Map";
 import {SnappingData} from "./SnappingMethods";
@@ -10,11 +10,19 @@ import {Poly} from "../../features/Poly";
 import {Polygon} from "../../features/Polygon";
 import {ISnappingProvider} from "./ISnappingProvider";
 
+/**
+ * Provides snapping to points, lines and polygons in a [[FeatureLayer]].
+ */
 export class FeatureLayerSnappingProvider extends SnappingProviderBase {
     private readonly _layer: FeatureLayer;
 
-    constructor(map: Map, layer: FeatureLayer, options: SnappingProviderBaseConstructorParams = {}) {
-        super(map, options);
+    /**
+     * @param map - working map of the control that uses snapping.
+     * @param layer - the layer that contains the features to be snapped to.
+     * @param params - snapping parameters.
+     */
+    constructor(map: Map, layer: FeatureLayer, params: SnappingProviderBaseParams = {}) {
+        super(map, params);
 
         this._layer = layer;
     }
@@ -35,6 +43,11 @@ export class FeatureLayerSnappingProvider extends SnappingProviderBase {
         return snappingData
     }
 
+    /**
+     * For the given snapping data object, it adds the snapping lines
+     * @param poly - line or polygon to be snapped to
+     * @param data - snapping data to modify
+     */
     static setPolyData(poly: Poly, data: SnappingData) {
         const isPolygon = poly instanceof Polygon;
         poly.rings.forEach(ring => {

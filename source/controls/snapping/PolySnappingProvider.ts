@@ -1,4 +1,4 @@
-import {SnappingProviderBase, SnappingProviderBaseConstructorParams} from "./SnappingProviderBase";
+import {SnappingProviderBase, SnappingProviderBaseParams} from "./SnappingProviderBase";
 import {Map} from "../../Map";
 import {SnappingData} from "./SnappingMethods";
 import {Coordinates} from "../../baseTypes";
@@ -6,11 +6,27 @@ import {Poly} from "../../features/Poly";
 import {FeatureLayerSnappingProvider} from "./FeatureLayerSnappingProvider";
 import {ISnappingProvider} from "./ISnappingProvider";
 
+export interface PolySnappingProviderParams extends SnappingProviderBaseParams {
+    /** @see [[PolySnappingProvider.feature]] */
+    feature?: Poly;
+}
+
+/**
+ * This provider allows to find snapping points on a single polygon or polyline.
+ */
 export class PolySnappingProvider extends SnappingProviderBase {
+    /**
+     * Feature to find snapping point at. If set to null, the snapping is skipped (always returns null).
+     */
     feature: Poly | null;
 
-    constructor(map: Map, options: SnappingProviderBaseConstructorParams = {}) {
-        super(map, options);
+    /**
+     * @param map - working map of the control that uses snapping.
+     * @param options - snapping parameters.
+     */
+    constructor(map: Map, {feature = null, ...params}: PolySnappingProviderParams = {}) {
+        super(map, params);
+        this.feature = feature;
     }
 
     protected _getSnappingData(point: Coordinates): SnappingData {
