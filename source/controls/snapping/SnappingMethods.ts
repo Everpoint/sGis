@@ -7,13 +7,37 @@ export type SnappingData = {
     lines: Contour[]
 }
 
-export type SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number, activeContour: Contour, activeIndex: number, isEnclosed?: boolean) => Coordinates | null;
+export interface SnappingMethodParams {
+    /** Base point for snapping. */
+    position: Coordinates;
+    /** The set of relevant point and contours in the vicinity. */
+    data: SnappingData;
+    /** Maximum distance the snapping point can be from the base point in the coordinates of the base point. */
+    snappingDistance: number;
+    /** Contour that is being currently edited (if applicable). */
+    activeContour: Contour;
+    /** Index of the point in the active contour that is being currently edited (if applicable). */
+    activeIndex: number;
+    /** Where the active contour is enclosed (if it is a polygon contour). */
+    isEnclosed?: boolean;
+}
 
-export const emptySnapping: SnappingMethod = (position: Coordinates): Coordinates => {
+/**
+ * Snapping method is an implementation of a certain algorithm to find a snapping point provided necessary data.
+ */
+export type SnappingMethod = (params: SnappingMethodParams) => Coordinates | null;
+
+/**
+ * Snaps to the given base point.
+ */
+export const emptySnapping: SnappingMethod = ({position}): Coordinates | null => {
     return position;
 };
 
-export const vertexSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number): Coordinates | null => {
+/**
+ * Snaps to the closest point among given relevant points and contour vertexes.
+ */
+export const vertexSnapping: SnappingMethod = ({position, data, snappingDistance}): Coordinates | null => {
     let minSqDist = snappingDistance * snappingDistance;
     let snappingPoint = null;
     data.points.forEach(point => {
@@ -27,7 +51,10 @@ export const vertexSnapping: SnappingMethod = (position: Coordinates, data: Snap
     return snappingPoint;
 };
 
-export const lineSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number): Coordinates | null => {
+/**
+ * Snaps to the closest point on any edge given in data.lines parameter.
+ */
+export const lineSnapping: SnappingMethod = ({position, data, snappingDistance}): Coordinates | null => {
     let snappingPoint = null;
     let currDistanceSq = snappingDistance * snappingDistance;
     data.lines.forEach(contour => {
@@ -49,7 +76,10 @@ export const lineSnapping: SnappingMethod = (position: Coordinates, data: Snappi
     return snappingPoint;
 };
 
-export const midPointSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number): Coordinates | null => {
+/**
+ * Snaps to a closest middle point on the lines given in data.lines parameter.
+ */
+export const midPointSnapping: SnappingMethod = ({position, data, snappingDistance}): Coordinates | null => {
     let snappingPoint = null;
     let currDistanceSq = snappingDistance * snappingDistance;
     data.lines.forEach(contour => {
@@ -68,7 +98,12 @@ export const midPointSnapping: SnappingMethod = (position: Coordinates, data: Sn
     return snappingPoint;
 };
 
-export const axisSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number, activeContour: Contour, activeIndex: number = -1, isEnclosed = false): Coordinates | null => {
+/**
+ * In case a contour is being edited, this method takes two edges in the active contour adjusted to the active point
+ * (that is point being edited), and then tries to find such a snapping point so that one of the edges (or both of them)
+ * are either vertical or horizontal.
+ */
+export const axisSnapping: SnappingMethod = ({position, data, snappingDistance, activeContour, activeIndex = -1, isEnclosed = false}): Coordinates | null => {
     if (!activeContour || activeIndex < 0 || activeContour.length < 2) return null;
 
     const lines = [];
@@ -105,7 +140,12 @@ export const axisSnapping: SnappingMethod = (position: Coordinates, data: Snappi
     return null;
 };
 
-export const orthogonalSnapping: SnappingMethod = (position: Coordinates, data: SnappingData, snappingDistance: number, activeContour: Contour, activeIndex: number = -1, isEnclosed = false): Coordinates | null => {
+/**
+ * In case a contour is being edited, this method takes two edges in the active contour adjusted to the active point
+ * (that is point being edited), and then tries to find such a snapping point so that one of the edges (or both of them)
+ * is orthogonal to its neighbours or each other.
+ */
+export const orthogonalSnapping: SnappingMethod = ({position, data, snappingDistance, activeContour, activeIndex = -1, isEnclosed = false}): Coordinates | null => {
     if (!activeContour || activeIndex < 0 || activeContour.length < 3) return null;
 
     const lines = [];
