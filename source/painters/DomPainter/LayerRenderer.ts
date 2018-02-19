@@ -230,15 +230,20 @@ export class LayerRenderer {
     }
 
     private _drawAfterLoad(render: StaticVectorImageRender) {
-        let image = <HTMLImageElement>render.node;
-        if (image.complete) return this._drawVectorRender(render);
+        let image = render.node;
 
-        listenDomEvent(image, 'load', () => {
-            if (this._renders.indexOf(render) >= 0) {
-                this._drawVectorRender(render);
-                if (!this._canvas.node.parentNode) this._addCanvasToDom(this._master.bbox);
-            }
-        });
+        if (image instanceof HTMLImageElement) {
+            if (image.complete) return this._drawVectorRender(render);
+
+            listenDomEvent(image, 'load', () => {
+                if (this._renders.indexOf(render) >= 0) {
+                    this._drawVectorRender(render);
+                    if (!this._canvas.node.parentNode) this._addCanvasToDom(this._master.bbox);
+                }
+            });
+        } else {
+            this._drawVectorRender(render);
+        }
     }
 
     private _drawVectorRender(render: RenderForCanvas) {

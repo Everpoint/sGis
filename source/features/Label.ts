@@ -11,6 +11,9 @@ export interface LabelFeatureParams extends FeatureParams{
 
 const DEFAULT_LABEL_SYMBOL = new StaticLabelSymbol();
 
+/**
+ * @example symbols/Label_Symbols
+ */
 export class LabelFeature extends Feature implements IPoint {
     private _position: Coordinates;
     private _content: string;

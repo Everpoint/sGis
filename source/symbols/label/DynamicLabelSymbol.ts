@@ -19,6 +19,9 @@ export interface DynamicLabelSymbolParams {
     offset?: Offset;
 }
 
+/**
+ * @example symbols/Label_Symbols
+ */
 export class DynamicLabelSymbol extends DynamicPointSymbol {
     cssClassName: string;
 
