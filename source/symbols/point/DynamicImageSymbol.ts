@@ -45,10 +45,13 @@ export class DynamicImageSymbol extends DynamicPointSymbol {
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(options: DynamicImageSymbolParams = {}) {
-        super();
-        Object.assign(this, options);
-
+    constructor({width = 32, height = 32, anchorPoint = [16, 32], source = PIN_IMAGE, angle = 0}: DynamicImageSymbolParams = {}) {
+        super({offset: [0, 0]});
+        this.width = width;
+        this.height = height;
+        this.anchorPoint = anchorPoint;
+        this.angle = angle;
+        this.source = source;
     }
 
     protected _getFeatureNode(feature: Feature): HTMLElement {

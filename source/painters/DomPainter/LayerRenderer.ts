@@ -270,8 +270,7 @@ export class LayerRenderer {
     }
 
     private _removeRender(render: Render) {
-        if (render instanceof StaticImageRender || render instanceof DynamicRender) {
-            if (!render.node.parentNode) return;
+        if ((render instanceof StaticImageRender || render instanceof DynamicRender) && render.node.parentNode) {
             render.node.parentNode.removeChild(render.node);
             if (render instanceof StaticHtmlImageRender && render.onRemoved) render.onRemoved();
         }

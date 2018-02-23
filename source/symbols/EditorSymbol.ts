@@ -64,7 +64,7 @@ export class EditorSymbol extends Symbol<Feature> {
                 halo = new Arc(
                     [
                         baseRender[i].position[0] - (+this.baseSymbol.anchorPoint[0]) + this.baseSymbol.width / 2,
-                        baseRender[i].position[1] - (+this.baseSymbol.anchorPoint[0]) + this.baseSymbol.width / 2,
+                        baseRender[i].position[1] - (+this.baseSymbol.anchorPoint[1]) + this.baseSymbol.height / 2,
                     ],
                     {
                         fillColor: this.color,
