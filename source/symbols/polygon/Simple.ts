@@ -2,10 +2,9 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {Poly} from "../../features/Poly";
+import {Polygon} from "../../features/Polygon";
 
 export interface PolygonSymbolConstructorParams {
     /** @see [[PolygonSymbol.fillColor]] */
@@ -22,7 +21,7 @@ export interface PolygonSymbolConstructorParams {
  * Symbol of polygon with one color filling.
  * @alias sGis.symbol.polygon.Simple
  */
-export class PolygonSymbol extends Symbol {
+export class PolygonSymbol extends Symbol<Polygon> {
     /** Fill color of the polygon. Can be any valid css color string. */
     fillColor: string = 'transparent';
 
@@ -44,9 +43,7 @@ export class PolygonSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof Poly)) return [];
-
+    renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {
             enclosed: true,

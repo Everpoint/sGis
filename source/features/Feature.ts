@@ -3,6 +3,7 @@ import {EventHandler, MouseEventFlags} from "../EventHandler";
 import {Symbol} from "../symbols/Symbol";
 import {Bbox} from "../Bbox";
 import {Render} from "../renders/Render";
+import {Coordinates} from "../baseTypes";
 
 export type RenderCache = {
     resolution: number,
@@ -12,21 +13,20 @@ export type RenderCache = {
 
 export interface FeatureParams {
     crs?: Crs;
-    symbol?: Symbol;
+    symbol?: Symbol<Feature>;
     persistOnMap?: boolean;
 }
 
 /**
  * Abstract feature object without any geometry. All other features inherit from this class. It can be used to store attributes in the way compatible with other features.
  * @alias sGis.Feature
- * @extends sGis.EventHandler
  */
 export abstract class Feature extends EventHandler {
     private _crs: Crs;
     private _hidden: boolean = false;
-    private _tempSymbol: Symbol;
+    private _tempSymbol: Symbol<Feature>;
 
-    protected _symbol: Symbol;
+    protected _symbol: Symbol<Feature>;
     protected _rendered: RenderCache;
 
     persistOnMap: boolean;
@@ -38,16 +38,13 @@ export abstract class Feature extends EventHandler {
      *     You should use this function only when initializing the library.
      *     </strong>
      * @param {sGis.Crs} crs
-     * @static
      */
     static setDefaultCrs(crs: Crs): void {
         Feature.prototype._crs = crs;
     }
 
-    constructor({ crs = geo, symbol, persistOnMap = false }: FeatureParams = {}, extension?: Object) {
+    constructor({ crs = geo, symbol, persistOnMap = false }: FeatureParams = {}) {
         super();
-
-        if (extension) Object.assign(this, extension);
 
         this._symbol = symbol;
         this._crs = crs;
@@ -108,7 +105,7 @@ export abstract class Feature extends EventHandler {
      * Sets a temporary symbol for the feature. This symbol is used instead of the original symbol until cleared.
      * @param {sGis.Symbol} symbol
      */
-    setTempSymbol(symbol: Symbol): void {
+    setTempSymbol(symbol: Symbol<Feature>): void {
         this._tempSymbol = symbol;
         this.redraw();
     }
@@ -131,7 +128,7 @@ export abstract class Feature extends EventHandler {
      * Returns the original symbol of the feature. If temporary symbol is not set, the returned value will be same as value of the .symbol property.
      * @returns {sGis.Symbol}
      */
-    get originalSymbol(): Symbol { return this._symbol; }
+    get originalSymbol(): Symbol<Feature> { return this._symbol; }
 
     /**
      * Coordinate system of the feature.
@@ -146,8 +143,8 @@ export abstract class Feature extends EventHandler {
      * @type {sGis.Symbol}
      * @default null
      */
-    get symbol(): Symbol { return this._tempSymbol || this._symbol; }
-    set symbol(symbol: Symbol) {
+    get symbol(): Symbol<Feature> { return this._tempSymbol || this._symbol; }
+    set symbol(symbol: Symbol<Feature>) {
         this._symbol = symbol;
         this.redraw();
     }
@@ -165,6 +162,8 @@ export abstract class Feature extends EventHandler {
      * @readonly
      */
     abstract get bbox(): Bbox;
+    abstract projectTo(crs: Crs): Feature;
+    abstract get centroid(): Coordinates;
 }
 
 /**

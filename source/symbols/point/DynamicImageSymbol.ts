@@ -1,13 +1,8 @@
-import {DynamicPointSymbol, Symbol} from "../Symbol";
+import {DynamicPointSymbol} from "../Symbol";
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {PIN_IMAGE} from "../../resourses/images";
-import {Coordinates, Offset} from "../../baseTypes";
+import {Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
-import {Crs} from "../../Crs";
-import {PointFeature} from "../../features/Point";
-import {DynamicRender, Render} from "../../renders/Render";
-import {Point} from "../../Point";
-import {Bbox} from "../../Bbox";
 
 export interface DynamicImageSymbolParams {
     /** @see [[DynamicImageSymbol.width]] */

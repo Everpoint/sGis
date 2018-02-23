@@ -3,10 +3,9 @@ import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Color} from "../../utils/Color";
 import {Symbol} from "../Symbol";
-import {Feature} from "../../features/Feature";
 import {Render} from "../../renders/Render";
 import {Crs} from "../../Crs";
-import {Poly} from "../../features/Poly";
+import {Polygon} from "../../features/Polygon";
 
 const ALPHA_NORMALIZER = 65025;
 
@@ -29,7 +28,7 @@ export interface BrushFillConstructorParams {
  * Symbol of polygon with brush filling.
  * @alias sGis.symbol.polygon.BrushFill
  */
-export class BrushFill extends Symbol {
+export class BrushFill extends Symbol<Polygon> {
     _brush: HTMLImageElement;
     _fillBackground = 'transparent';
     _fillForeground = 'black';
@@ -67,9 +66,7 @@ export class BrushFill extends Symbol {
         this._updateBrush();
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof Poly)) return [];
-
+    renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {
             enclosed: true,

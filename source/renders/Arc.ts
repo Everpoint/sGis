@@ -61,7 +61,7 @@ export class Arc extends VectorRender {
      * @param center - the center of the arc, in the [x, y] format.
      * @param [options] - key-value options of any Arc parameters
      */
-    constructor(center, options: ArcRenderConstructorParams = {}) {
+    constructor(center: Coordinates, options: ArcRenderConstructorParams = {}) {
         super();
         Object.assign(this, options);
         this.center = center;

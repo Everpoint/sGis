@@ -4,7 +4,6 @@ import {Coordinates} from "../baseTypes";
 import {Bbox} from "../Bbox";
 import {Crs} from "../Crs";
 import {PointSymbol} from "../symbols/point/Point";
-import {Symbol} from "../symbols/Symbol";
 
 /**
  * Simple geographical point.
@@ -12,14 +11,13 @@ import {Symbol} from "../symbols/Symbol";
  */
 export class PointFeature extends Feature implements IPoint {
     private _position: Coordinates;
-    protected _symbol: Symbol;
 
     /**
      * @param {Position} position - coordinates of the point
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: FeatureParams = {}, extension?: Object) {
-        super({ symbol, crs }, extension);
+    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: FeatureParams = {}) {
+        super({ symbol, crs });
         this._position = position;
     }
 
@@ -60,4 +58,6 @@ export class PointFeature extends Feature implements IPoint {
 
     get coordinates(): Coordinates { return [this.position[0], this.position[1]]; }
     set coordinates(position: Coordinates) { this.position = [position[0], position[1]]; }
+
+    get centroid(): Coordinates { return this.coordinates; }
 }

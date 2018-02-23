@@ -3,6 +3,7 @@ import {FeatureLayer} from "../layers/FeatureLayer";
 import {MultiPoint} from "../features/MultiPoint";
 import {PointSymbol} from "../symbols/point/Point";
 import {Symbol} from "../symbols/Symbol";
+import {PointFeature} from "../features/Point";
 
 /**
  * Control for creating multipoints. When active, every click on the map will add a new point to the current multipoint.
@@ -23,7 +24,7 @@ export class MultiPointControl extends Control {
     private _activeFeature: MultiPoint;
 
     dblClickTimeout: number = 30;
-    symbol: Symbol = new PointSymbol();
+    symbol: Symbol<PointFeature> = new PointSymbol();
 
     /**
      * @param {sGis.Map} map - map the control will work with

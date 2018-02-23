@@ -4,7 +4,6 @@ import {Color} from "../../utils/Color";
 import {Coordinates, Offset} from "../../baseTypes";
 import {warn} from "../../utils/utils";
 import {PIN_BACKGROUND, PIN_FOREGROUND} from "../../resourses/images";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
@@ -33,7 +32,7 @@ export interface MaskedImageSymbolParams {
  * Symbol of point drawn as masked image.
  * @alias sGis.symbol.point.MaskedImage
  */
-export class MaskedImage extends Symbol {
+export class MaskedImage extends Symbol<PointFeature> {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width: number = 32;
 
@@ -89,8 +88,8 @@ export class MaskedImage extends Symbol {
         this._updateMasked();
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!this._maskedSrc || !(feature instanceof PointFeature)) return [];
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
+        if (!this._maskedSrc) return [];
 
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];

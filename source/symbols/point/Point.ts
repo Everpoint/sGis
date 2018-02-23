@@ -2,8 +2,7 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {PointFeature} from "../../features/Point";
 import {Arc} from "../../renders/Arc";
-import {Offset} from "../../baseTypes";
-import {Feature} from "../../features/Feature";
+import {Coordinates, Offset} from "../../baseTypes";
 import {Render} from "../../renders/Render";
 import {Crs} from "../../Crs";
 import {warn} from "../../utils/utils";
@@ -25,7 +24,7 @@ export interface PointSymbolConstructorParams {
  * Symbol of point drawn as circle with outline.
  * @alias sGis.symbol.point.Point
  */
-export class PointSymbol extends Symbol {
+export class PointSymbol extends Symbol<PointFeature> {
     /** Diameter of the circle. */
     size: number = 10;
 
@@ -61,11 +60,9 @@ export class PointSymbol extends Symbol {
         Object.assign(this, options);
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof PointFeature)) return [];
-
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
+        let pxPosition: Coordinates = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 
         return [new Arc(pxPosition, {
             fillColor: this.fillColor,

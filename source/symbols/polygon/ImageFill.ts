@@ -2,10 +2,9 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Symbol} from "../Symbol";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {Poly} from "../../features/Poly";
+import {Polygon} from "../../features/Polygon";
 
 export interface ImageFillConstructorParams {
     /** @see [[ImageFill.strokeColor]] */
@@ -22,7 +21,7 @@ export interface ImageFillConstructorParams {
  * Symbol of polygon with image filling.
  * @alias sGis.symbol.polygon.ImageFill
  */
-export class ImageFill extends Symbol {
+export class ImageFill extends Symbol<Polygon> {
     private _image: HTMLImageElement;
 
     //noinspection SpellCheckingInspection
@@ -46,9 +45,7 @@ export class ImageFill extends Symbol {
         if (!this._image) this.src = this._src;
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof Poly)) return [];
-
+    renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {
         if (!this._image.complete) {
             this._image.onload = feature.redraw.bind(feature);
             return [];

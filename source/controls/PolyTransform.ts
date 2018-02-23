@@ -65,10 +65,10 @@ export class ScalingEndEvent extends sGisEvent {
  */
 export class PolyTransform extends Control {
     /** Symbol of the rotation handle. */
-    rotationHandleSymbol: Symbol = new PointSymbol({offset: [0, -30]});
+    rotationHandleSymbol: Symbol<PointFeature> = new PointSymbol({offset: [0, -30]});
 
     /** Symbol of the scaling handles. */
-    scaleHandleSymbol: Symbol = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
+    scaleHandleSymbol: Symbol<PointFeature> = new SquareSymbol({ fillColor: 'transparent', strokeColor: 'black', strokeWidth: 2, size: 7 });
 
     /** Distance in pixels between scaling handles and feature bbox. */
     scaleHandleOffset: number = 12;
@@ -166,7 +166,7 @@ export class PolyTransform extends Control {
     private _handleRotationStart(event: DragStartEvent): void {
         if (this.ignoreEvents) return;
 
-        this._rotationBase = this._activeFeature.bbox.center.projectTo(this.map.crs).position;
+        this._rotationBase = this._activeFeature.bbox.projectTo(this.map.crs).center;
         event.draggingObject = this._rotationHandle;
         event.stopPropagation();
 

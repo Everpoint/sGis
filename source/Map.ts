@@ -1,8 +1,9 @@
-import {Point} from "./Point";
+import {IPoint, Point} from "./Point";
 import {TileScheme} from "./TileScheme";
 import {webMercator, Crs} from "./Crs";
 import {LayerGroup} from "./LayerGroup";
 import {assignDefined, error} from "./utils/utils";
+import {Coordinates} from "./baseTypes";
 
 /**
  * Map object with set of layers, specified position, resolution, coordinate system.
@@ -154,17 +155,19 @@ export class Map extends LayerGroup {
 
     /**
      * Changes position and resolution of the map with animation
-     * @param {sGis.IPoint} point - target center point of the map
+     * @param point - target center point of the map
      * @param {Number} resolution - target resolution;
      */
-    animateTo (point, resolution) {
+    animateTo (point: Coordinates | IPoint, resolution) {
+        if (!Array.isArray(point)) point = (<IPoint>point).projectTo(this.crs).position;
+
         this.stopAnimation();
 
         this.fire('animationStart');
         let originalPosition = this.centerPoint;
         let originalResolution = this.resolution;
-        let dx = point.x - originalPosition.x;
-        let dy = point.y - originalPosition.y;
+        let dx = point[0] - originalPosition.x;
+        let dy = point[1] - originalPosition.y;
         let dr = resolution - originalResolution;
         let startTime = Date.now();
         this._animationStopped = false;
@@ -213,12 +216,14 @@ export class Map extends LayerGroup {
 
     /**
      * Sets new position and resolution to the map
-     * @param {sGis.Point} point - new center point of the map
+     * @param point - new center point of the map
      * @param {Number} resolution - new resolution of the map
      */
-    setPosition (point, resolution) {
+    setPosition (point: Coordinates | IPoint, resolution) {
+        if (!Array.isArray(point)) point = (<IPoint>point).projectTo(this.crs).position;
+
         this.prohibitEvent('bboxChange');
-        this.centerPoint = point;
+        this.position = point;
         if (resolution) this.resolution = resolution;
         this.allowEvent('bboxChange');
         this.fire('bboxChange');

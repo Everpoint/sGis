@@ -17,7 +17,7 @@ export interface CrossPointSymbolConstructorParams {
     strokeWidth?: number
 }
 
-export class CrossPointSymbol extends Symbol {
+export class CrossPointSymbol extends Symbol<PointFeature> {
     /** Size of the square. */
     size: number = 11;
 
@@ -39,7 +39,7 @@ export class CrossPointSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
 
         let position = feature.projectTo(crs).position;

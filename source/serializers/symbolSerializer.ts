@@ -1,6 +1,7 @@
 import {Color} from "../utils/Color";
 import {copyObject, error} from "../utils/utils";
 import {Symbol, SymbolConstructor} from "../symbols/Symbol";
+import {Feature} from "../features/Feature";
 
 type SymbolDescription = {
     Constructor: SymbolConstructor,
@@ -33,7 +34,7 @@ export const registerSymbol = (constructor: SymbolConstructor, name: string, pro
  * @param colorsFormat - color format to be used during serialization. If not set, the value from the symbol property
  *                       will be used without change.
  */
-export const serialize = (symbol: Symbol, colorsFormat: string = null): SerializedSymbol => {
+export const serialize = (symbol: Symbol<Feature>, colorsFormat: string = null): SerializedSymbol => {
     let keys = Object.keys(symbolDescriptions);
     for (let i = 0; i < keys.length; i++) {
         let desc = symbolDescriptions[keys[i]];

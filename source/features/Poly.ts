@@ -10,7 +10,6 @@ import {projectRings} from "../geotools";
 /**
  * Base class for polylines and polygons.
  * @alias sGis.feature.Poly
- * @extends sGis.Feature
  */
 export class Poly extends Feature {
     private _rings: Coordinates[][];
@@ -19,8 +18,8 @@ export class Poly extends Feature {
      * @param {Position[][]} rings - coordinates of the feature
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(rings: Coordinates[][] | Coordinates[], properties?: FeatureParams, extension?: Object) {
-        super(properties, extension);
+    constructor(rings: Coordinates[][] | Coordinates[], properties?: FeatureParams) {
+        super(properties);
         if (rings && rings.length > 0) {
             if (!isArray(rings[0][0])) rings = [<Coordinates[]>rings];
             this.rings = copyArray(rings);

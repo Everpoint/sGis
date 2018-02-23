@@ -13,7 +13,7 @@ import {Symbol} from "../symbols/Symbol";
  */
 export class PointControl extends Control {
     /** Symbol of the points that are created by the control. */
-    symbol: Symbol;
+    symbol: Symbol<PointFeature>;
 
     /**
      * @param map

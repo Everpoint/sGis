@@ -6,6 +6,7 @@ import {Symbol} from "../symbols/Symbol";
 import {Contour} from "../baseTypes";
 import {Point} from "../Point";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
+import {Poly} from "../features/Poly";
 
 /**
  * Base class for controls that create polygon feature by dragging some area on the map. When the control is activated,
@@ -19,7 +20,7 @@ export abstract class PolyDrag extends Control {
     /**
      * Symbol that will be used for features created by this control.
      */
-    symbol: Symbol;
+    symbol: Symbol<Poly>;
     protected _activeFeature: Polygon | null;
 
     /**

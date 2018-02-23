@@ -1,5 +1,4 @@
 import {Symbol} from "../Symbol";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {HorizontalAlignment, VectorLabel, VerticalAlignment} from "../../renders/VectorLabel";
@@ -22,7 +21,7 @@ export interface StaticLabelSymbolParams {
 /**
  * @example symbols/Label_Symbols
  */
-export class StaticLabelSymbol extends Symbol {
+export class StaticLabelSymbol extends Symbol<LabelFeature> {
     fontSize?: number;
     fontFamily?: string;
     fontStyle?: string;
@@ -60,16 +59,15 @@ export class StaticLabelSymbol extends Symbol {
         this.fillColor = fillColor;
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
+    renderFunction(feature: LabelFeature, resolution: number, crs: Crs): Render[] {
         if (!feature.crs.canProjectTo(crs)) return [];
-        let label = <LabelFeature>feature;
 
-        let position = label.projectTo(crs).position;
+        let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 
         return [new VectorLabel({
             position: pxPosition,
-            text: label.content,
+            text: feature.content,
             fontSize: this.fontSize,
             fontFamily: this.fontFamily,
             fontStyle: this.fontStyle,

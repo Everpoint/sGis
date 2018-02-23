@@ -27,7 +27,7 @@ export abstract class PolyControl extends Control {
     /**
      * Symbol with which new features will be created.
      */
-    symbol: Symbol;
+    symbol: Symbol<Poly>;
 
     /**
      * @param map - map the control will work with

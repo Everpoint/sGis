@@ -106,7 +106,7 @@ export interface ControlConstructorParams {
 }
 
 export interface ControlWithSymbolParams extends ControlConstructorParams{
-    symbol?: Symbol
+    symbol?: Symbol<Feature>
 }
 
 /**
@@ -116,7 +116,7 @@ export interface ControlWithSymbolParams extends ControlConstructorParams{
 export abstract class Control extends EventHandler {
     private _map: Map;
     private _snappingFeature: PointFeature;
-    private _snappingSymbol: Symbol = new CrossPointSymbol();
+    private _snappingSymbol: Symbol<PointFeature> = new CrossPointSymbol();
 
     protected _isActive: boolean = false;
 

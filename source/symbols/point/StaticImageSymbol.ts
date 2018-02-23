@@ -2,7 +2,6 @@ import {Symbol} from "../Symbol";
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {PIN_IMAGE} from "../../resourses/images";
 import {Coordinates, Offset} from "../../baseTypes";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
@@ -26,7 +25,7 @@ export interface PointImageSymbolConstructorParams {
  * Symbol of point drawn as circle with outline.
  * @alias sGis.symbol.point.Image
  */
-export class StaticImageSymbol extends Symbol {
+export class StaticImageSymbol extends Symbol<PointFeature> {
     /** Width of the image. If not set, image will be automatically resized according to height. If both width and height are not set, original image size will be used. */
     width: number = 32;
 
@@ -70,9 +69,7 @@ export class StaticImageSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof PointFeature)) return [];
-
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];
 

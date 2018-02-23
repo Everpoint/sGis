@@ -10,7 +10,7 @@ import {Crs} from "../Crs";
 
 export interface EditorSymbolConstructorParams {
     /** @see [[EditorSymbol.baseSymbol]] */
-    baseSymbol?: Symbol,
+    baseSymbol?: Symbol<Feature>,
     /** @see [[EditorSymbol.color]] */
     color?: string,
     /** @see [[EditorSymbol.haloSize]] */
@@ -21,9 +21,9 @@ export interface EditorSymbolConstructorParams {
  * Symbol of a highlighted feature for editor.
  * @alias sGis.symbol.Editor
  */
-export class EditorSymbol extends Symbol {
+export class EditorSymbol extends Symbol<Feature> {
     /** Base symbol of the feature. Used to render original feature with the highlight. */
-    baseSymbol: Symbol = new PointSymbol();
+    baseSymbol: Symbol<Feature> = new PointSymbol();
 
     /** Color of the halo (highlight). Can be any valid css color string. */
     color: string = 'rgba(97,239,255,0.5)';

@@ -1,23 +1,18 @@
-import {Feature, FeatureParams} from "./Feature";
-import {IPoint, Point} from "../Point";
-import {Bbox} from "../Bbox";
-import {Crs} from "../Crs";
+import {FeatureParams} from "./Feature";
 import {Coordinates} from "../baseTypes";
 import {BalloonSymbol} from "../symbols/BalloonSymbol";
+import {PointFeature} from "./Point";
 
 export interface BalloonParams extends FeatureParams {
     position: Coordinates;
     content: HTMLElement | string;
 }
 
-export class Balloon extends Feature implements IPoint {
-    private _position: Coordinates;
+export class Balloon extends PointFeature {
     private _content: HTMLElement;
 
     constructor({position, content, crs, symbol = new BalloonSymbol(), persistOnMap = true}: BalloonParams) {
-        super({crs, symbol, persistOnMap});
-
-        this._position = position;
+        super(position, {crs, symbol, persistOnMap});
 
         if (content instanceof HTMLElement) {
             this._content = content;
@@ -37,22 +32,4 @@ export class Balloon extends Feature implements IPoint {
     }
 
     get content() { return this._content; }
-
-    get position(): Coordinates { return this._position; }
-    set position(value: Coordinates) {
-        this._position = value;
-        this.redraw();
-    }
-
-    get x(): number { return this._position[0]; }
-    get y(): number { return this._position[1]; }
-
-    projectTo(newCrs: Crs): IPoint {
-        let projected = <Point>Point.prototype.projectTo.call(this, newCrs);
-        return new Balloon({position: projected.position, content: this._content, crs: newCrs, symbol: this.symbol});
-    }
-
-    get bbox(): Bbox {
-        return new Bbox(this._position, this._position, this.crs);
-    }
 }

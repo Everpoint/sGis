@@ -2,7 +2,6 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 import {Symbol} from "../Symbol";
 import {Offset} from "../../baseTypes";
-import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/Point";
@@ -25,7 +24,7 @@ export interface SquareSymbolConstructorParams {
  * Symbol of point drawn as a square.
  * @alias sGis.symbol.point.Square
  */
-export class SquareSymbol extends Symbol {
+export class SquareSymbol extends Symbol<PointFeature> {
     /** Size of the square. */
     size: number = 10;
 
@@ -62,9 +61,7 @@ export class SquareSymbol extends Symbol {
 
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof PointFeature)) return [];
-
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         let position = feature.projectTo(crs).position;
         let pxPosition = [position[0] / resolution, - position[1] / resolution];
         let halfSize = this.size / 2;

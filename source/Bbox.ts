@@ -39,7 +39,7 @@ export class Bbox {
     /**
      * Center point of the bounding box
      */
-    get center(): Point { return new Point([(this.xMax + this.xMin)/2, (this.yMax + this.yMin)/2], this.crs); }
+    get center(): Coordinates { return [(this.xMax + this.xMin)/2, (this.yMax + this.yMin)/2]; }
 
     /**
      * Returns a copy of the bbox

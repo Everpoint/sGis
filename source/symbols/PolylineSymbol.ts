@@ -2,10 +2,10 @@ import {Symbol} from "./Symbol";
 import {registerSymbol} from "../serializers/symbolSerializer";
 import {simplifyCoordinates} from "../utils/math";
 import {FillStyle, PolyRender} from "../renders/Poly";
-import {Feature} from "../features/Feature";
 import {Render} from "../renders/Render";
 import {Crs} from "../Crs";
 import {Poly} from "../features/Poly";
+import {Polyline} from "../features/Polyline";
 
 export interface PolylineSymbolConstructorParams {
     /** @see [[PolylineSymbol.strokeColor]] */
@@ -20,7 +20,7 @@ export interface PolylineSymbolConstructorParams {
  * Symbol of polyline drawn as simple line.
  * @alias sGis.symbol.polyline.Simple
  */
-export class PolylineSymbol extends Symbol {
+export class PolylineSymbol extends Symbol<Polyline> {
     /** Stroke color of the outline. Can be any valid css color string. */
     strokeColor: string = 'black';
 
@@ -38,9 +38,7 @@ export class PolylineSymbol extends Symbol {
         Object.assign(this, options);
     }
 
-    renderFunction(feature: Feature, resolution: number, crs: Crs): Render[] {
-        if (!(feature instanceof Poly)) return [];
-
+    renderFunction(feature: Polyline, resolution: number, crs: Crs): Render[] {
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {
             fillStyle: FillStyle.None,

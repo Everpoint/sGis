@@ -3,26 +3,23 @@ import {Feature, FeatureParams} from "./Feature";
 import {Bbox} from "../Bbox";
 import {PointFeature} from "./Point";
 import {PointSymbol} from "../symbols/point/Point";
-import {Symbol} from "../symbols/Symbol";
 import {Render} from "../renders/Render";
+import {Coordinates} from "../baseTypes";
 
 /**
  * Represents a set of points on a map that behave as one feature: have same symbol, can be added, transformed or removed as one.
  * @alias sGis.feature.MultiPoint
- * @extends sGis.Feature
  */
 export class MultiPoint extends Feature {
     private _points: any[];
     private _bbox: Bbox;
 
-    _symbol: Symbol;
-
     /**
      * @param {Position[]} points - set of the points' coordinates
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(points = [], { symbol = new PointSymbol(), crs }: FeatureParams  = {}, extension?: Object) {
-        super({ symbol, crs }, extension);
+    constructor(points = [], { symbol = new PointSymbol(), crs }: FeatureParams  = {}) {
+        super({ symbol, crs });
         this._points = points;
     }
 
@@ -119,4 +116,8 @@ export class MultiPoint extends Feature {
      */
     get coordinates() { return this._points.slice(); }
     set coordinates(points) { this.points = points; }
+
+    get centroid(): Coordinates {
+        return this.bbox.center;
+    }
 }
