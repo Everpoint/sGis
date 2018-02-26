@@ -1,17 +1,15 @@
-import {error, isNumber} from "./utils";
-
 /**
  * Utility class to save and restore sets of states. Used for undo/redo functions.
  */
-export class StateManager {
-    private _maxStates: number;
+export class StateManager<T> {
+    private readonly _maxStates: number;
     private _activeState: number;
-    private _states: any[];
+    private _states: T[];
+
     /**
-     * @param {Number} [maxStates=256] - max number of stored states
+     * @param maxStates - max number of stored states
      */
     constructor(maxStates = 256) {
-        if (!isNumber(maxStates) || maxStates < 0) error("Incorrect value for number of states: " + maxStates);
         this._maxStates = maxStates;
         this.clear();
     }
@@ -19,16 +17,16 @@ export class StateManager {
     /**
      * Clears all stored states.
      */
-    clear() {
+    clear(): void {
         this._states = [];
         this._activeState = -1;
     }
 
     /**
      * Saves the given state and makes it active.
-     * @param {*} state
+     * @param state
      */
-    setState(state) {
+    setState(state: T): void {
         let index = this._activeState + 1;
 
         this._states[index] = state;
@@ -40,31 +38,28 @@ export class StateManager {
 
     /**
      * Returns current state.
-     * @returns {*}
      */
-    getCurrentState() {
-        return this._states[this._activeState];
+    getCurrentState(): T | null{
+        return this._states[this._activeState] === undefined ? null : this._states[this._activeState];
     }
 
     /**
      * Returns previous state and makes it active. If there is no previous state, returns null.
-     * @returns {*}
      */
-    undo() {
+    undo(): T | null {
         if (this._activeState <= 0) return null;
         return this._states[--this._activeState];
     }
 
     /**
      * Returns next state and makes it active. If there is no next state, returns null.
-     * @returns {*}
      */
-    redo() {
+    redo(): T | null {
         if (this._activeState === this._states.length - 1) return null;
         return this._states[++this._activeState];
     }
 
-    _trimStates() {
+    private _trimStates(): void {
         while (this._states.length > this._maxStates) {
             this._states.shift();
         }

@@ -74,7 +74,7 @@ export class Editor extends Control {
     private _polyEditor: PolyEditor;
     private _pointEditor: PointEditor;
 
-    private _states: StateManager;
+    private _states: StateManager<EditState>;
     private _ns: string;
     private _deselectAllowed = true;
     private _vertexEditing: boolean;
