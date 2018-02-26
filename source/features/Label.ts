@@ -37,7 +37,7 @@ export class LabelFeature extends PointFeature {
     }
 
     projectTo(crs: Crs): LabelFeature {
-        let projected = Point.prototype.projectTo.call(this, crs);
+        let projected = Point.prototype.projectTo.call(this, crs).position;
         return new LabelFeature(projected, {crs, symbol: this.symbol, content: this.content, persistOnMap: this.persistOnMap});
     }
 }
