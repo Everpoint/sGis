@@ -5,12 +5,6 @@ import {Bbox} from "../Bbox";
 import {Render} from "../renders/Render";
 import {Coordinates} from "../baseTypes";
 
-export type RenderCache = {
-    resolution: number,
-    crs: Crs,
-    renders: Render[]
-};
-
 export interface FeatureParams {
     crs?: Crs;
     symbol?: Symbol<Feature>;
@@ -18,7 +12,7 @@ export interface FeatureParams {
 }
 
 /**
- * Abstract feature object without any geometry. All other features inherit from this class. It can be used to store attributes in the way compatible with other features.
+ * Feature is an abstract representation of a geographical object.
  * @alias sGis.Feature
  */
 export abstract class Feature extends EventHandler {
@@ -26,6 +20,10 @@ export abstract class Feature extends EventHandler {
     private _hidden: boolean = false;
     private readonly _symbolContainer: FeatureSymbolContainer;
 
+    /**
+     * If this property is set to true, the feature will be rendered indefinitely whether it's bbox is inside the map
+     * bbox or not.
+     */
     persistOnMap: boolean;
 
     /**
@@ -48,6 +46,12 @@ export abstract class Feature extends EventHandler {
         this.persistOnMap = persistOnMap;
     }
 
+    /**
+     * Calls the render method of the feature's symbol (or temp symbol if it is set) to render the feature. The render result
+     * is cached inside the feature class.
+     * @param resolution
+     * @param crs
+     */
     render(resolution: number, crs: Crs): Render[] { return this._symbolContainer.render(resolution, crs); }
 
     /**
@@ -115,6 +119,14 @@ export abstract class Feature extends EventHandler {
     abstract projectTo(crs: Crs): Feature;
     abstract get centroid(): Coordinates;
 }
+
+
+
+type RenderCache = {
+    resolution: number,
+    crs: Crs,
+    renders: Render[]
+};
 
 class FeatureSymbolContainer {
     private readonly _feature: Feature;
