@@ -1,6 +1,5 @@
 import "jest";
 import {TileScheme} from "../source/TileScheme";
-import {tolerance} from "../source/utils/math";
 
 describe('TileScheme', () => {
 
@@ -51,8 +50,8 @@ describe('TileScheme', () => {
         });
 
         it('should consider resolutions equal if difference is less then math.tolerance', () => {
-            expect(scheme.getLevel(10 + tolerance)).toBe(0);
-            expect(scheme.getLevel(10 + tolerance / 2)).toBe(0);
+            expect(scheme.getLevel(10 + 0.000001)).toBe(0);
+            expect(scheme.getLevel(10 + 0.000001 / 2)).toBe(0);
         });
     });
 
