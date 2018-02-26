@@ -3,6 +3,7 @@ import {Coordinates} from "../baseTypes";
 import {copyArray, isArray} from "../utils/utils";
 import {IPoint} from "../Point";
 import {Bbox} from "../Bbox";
+import {Crs} from "../Crs";
 
 /**
  * Base class for polylines and polygons.
@@ -140,4 +141,7 @@ export abstract class Poly extends Feature {
      */
     get coordinates() { return copyArray(this._rings); }
     set coordinates(rings) { this.rings = copyArray(rings); }
+
+    abstract projectTo(newCrs: Crs): Poly;
+    abstract clone(): Poly;
 }

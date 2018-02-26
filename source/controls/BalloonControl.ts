@@ -32,7 +32,7 @@ export class BalloonControl extends Control {
     }
 
     attach(feature: Feature, html: HTMLElement | string): void {
-        let balloon = new Balloon({position: [0, 0], crs: feature.crs, content: html, symbol: this._symbol});
+        let balloon = new Balloon([0, 0], {crs: feature.crs, content: html, symbol: this._symbol});
         feature.on(sGisClickEvent.type + this._ns, this._showBalloon.bind(this, feature, balloon));
     }
 

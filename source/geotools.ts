@@ -388,12 +388,12 @@ function transformFeature(feature: Feature, matrix: TransformationMatrix, center
     } else if ((<MultiPoint>feature).points) {
         let points = (<MultiPoint>feature).points;
         if (targetCrs !== feature.crs) {
-            points = projectRings(points, feature.crs, targetCrs);
+            points = projectRings([points], feature.crs, targetCrs)[0];
         }
         points = transformRing(points, matrix, base);
 
         if (targetCrs !== feature.crs) {
-            points = projectRings(points, targetCrs, feature.crs);
+            points = projectRings([points], targetCrs, feature.crs)[0];
         }
         (<MultiPoint>feature).points = points;
     } else if ((<PointFeature>feature).position) {
