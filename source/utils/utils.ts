@@ -61,20 +61,12 @@ export const requestAnimationFrame = function(callback, element?: HTMLElement) {
  * @return {Function}
  */
 export const debounce = function(func, ms) {
-
-    var state = null;
-
-    var COOLDOWN = 1;
-
+    let timer: number | null = null;
     return function () {
-        if (state) return;
-
-        func.apply(this, arguments);
-
-        state = COOLDOWN;
-
-        setTimeout(function () {
-            state = null
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(function () {
+            timer = null;
+            func.apply(this, arguments);
         }, ms);
     }
 };
