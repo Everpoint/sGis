@@ -1,79 +1,65 @@
-import {Point} from "../Point";
+import {IPoint} from "../Point";
 import {Feature, FeatureParams} from "./Feature";
 import {Bbox} from "../Bbox";
 import {PointSymbol} from "../symbols/point/Point";
 import {Coordinates} from "../baseTypes";
 import {MultiPointSymbol} from "../symbols/MultiPointSymbol";
+import {Crs} from "../Crs";
+import {projectPoints} from "../geotools";
 
 /**
  * Represents a set of points on a map that behave as one feature: have same symbol, can be added, transformed or removed as one.
  * @alias sGis.feature.MultiPoint
  */
 export class MultiPoint extends Feature {
-    private _points: any[];
+    private _points: Coordinates[];
     private _bbox: Bbox;
 
-    /**
-     * @param {Position[]} points - set of the points' coordinates
-     * @param {Object} properties - key-value set of properties to be set to the instance
-     */
-    constructor(points = [], { symbol = new MultiPointSymbol(new PointSymbol()), crs }: FeatureParams  = {}) {
-        super({ symbol, crs });
+    constructor(points = [], {symbol = new MultiPointSymbol(new PointSymbol()), ...params}: FeatureParams  = {}) {
+        super({symbol, ...params});
         this._points = points;
     }
 
     /**
-     * Set of points' coordinates
-     * @type {Position[]}
-     * @default []
+     * Set of points' coordinates.
      */
-    get points() { return this._points; }
-    set points(/** Position[] */ points) {
+    get points(): Coordinates[] { return this._points; }
+    set points(points: Coordinates[]) {
         this._points = points.slice();
         this._update();
     }
 
-    /**
-     * Returns a copy of the feature, projected into the given coordinate system. Only generic properties are copied to the projected feature.
-     * @param {sGis.Crs} crs - target coordinate system.
-     * @returns {sGis.feature.MultiPoint}
-     */
-    projectTo(crs) {
-        let projected = [];
-        this._points.forEach(point => {
-            projected.push(new Point(point, this.crs).projectTo(crs).coordinates);
-        });
-
-        return new MultiPoint(projected, {symbol: this.symbol, crs: crs});
+    projectTo(crs: Crs): MultiPoint {
+        let projected = projectPoints(this.points, this.crs, crs);
+        return new MultiPoint(projected, {symbol: this.symbol, crs: crs, persistOnMap: this.persistOnMap});
     }
 
     /**
      * Returns a copy of the feature. Only generic properties are copied.
-     * @returns {sGis.feature.MultiPoint}
      */
-    clone() {
+    clone(): MultiPoint {
         return this.projectTo(this.crs);
     }
 
     /**
-     * Adds a point to the end of the coordinates' list
-     * @param {sGis.IPoint|Position} point - if sGis.IPoint instance is given, it will be automatically projected to the multipoint coordinate system.
+     * Adds a point to the end of the coordinates' list.
+     * @param point - if sGis.IPoint instance is given, it will be automatically projected to the multipoint coordinate system.
      */
-    addPoint(point) {
-        if (point.position && point.crs) {
-            this._points.push(point.projectTo(this.crs).position);
+    addPoint(point: IPoint | Coordinates): void {
+        if ((<IPoint>point).position && (<IPoint>point).crs) {
+            this._points.push((<IPoint>point).projectTo(this.crs).position);
         } else {
             this._points.push([point[0], point[1]]);
         }
         this._update();
     }
 
-    _update() {
+    _update(): void {
         this._bbox = null;
         this.redraw();
     }
 
-    get bbox() {
+    get bbox(): Bbox {
         if (this._bbox) return this._bbox;
         let xMin = Number.MAX_VALUE;
         let yMin = Number.MAX_VALUE;
