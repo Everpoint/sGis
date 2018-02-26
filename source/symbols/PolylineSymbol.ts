@@ -6,6 +6,7 @@ import {Render} from "../renders/Render";
 import {Crs} from "../Crs";
 import {Poly} from "../features/Poly";
 import {Polyline} from "../features/Polyline";
+import {Coordinates} from "../baseTypes";
 
 export interface PolylineSymbolConstructorParams {
     /** @see [[PolylineSymbol.strokeColor]] */
@@ -60,7 +61,7 @@ export class PolylineSymbol extends Symbol<Polyline> {
 
         return simplifyCoordinates(projected.map(ring => {
             return ring.map(point => {
-                return [point[0] / resolution, point[1] / -resolution];
+                return <Coordinates>[point[0] / resolution, point[1] / -resolution];
             });
         }), 1);
     }

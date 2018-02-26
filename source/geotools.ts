@@ -401,7 +401,7 @@ function transformFeature(feature: Feature, matrix: TransformationMatrix, center
         if (targetCrs !== feature.crs) {
             points = projectRings([points], feature.crs, targetCrs)[0];
         }
-        points = transformRing(points, matrix, base);
+        points = <Coordinates[]>transformRing(points, matrix, base);
 
         if (targetCrs !== feature.crs) {
             points = projectRings([points], targetCrs, feature.crs)[0];
@@ -418,7 +418,7 @@ function transformRings(rings: Coordinates[][], matrix: TransformationMatrix, ba
 
 function transformRing(ring: Coordinates[], matrix: TransformationMatrix, base: Coordinates) {
     extendCoordinates(ring, base);
-    let transformed = multiplyMatrix(ring, matrix);
+    let transformed = <Coordinates[]>multiplyMatrix(ring, matrix);
     collapseCoordinates(transformed, base);
     return transformed;
 }
