@@ -5,7 +5,7 @@ import {Contour, Coordinates} from "./baseTypes";
 import {Poly} from "./features/Poly";
 import {Feature} from "./features/Feature";
 import {MultiPoint} from "./features/MultiPoint";
-import {PointFeature} from "./features/Point";
+import {PointFeature} from "./features/PointFeature";
 import {isArray} from "./utils/utils";
 
 export type Line = [Coordinates, Coordinates];

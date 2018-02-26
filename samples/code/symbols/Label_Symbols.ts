@@ -2,7 +2,7 @@
 /// Title: "Label symbols"
 
 import {FeatureLayer} from "../../../source/layers/FeatureLayer";
-import {PointFeature} from "../../../source/features/Point";
+import {PointFeature} from "../../../source/features/PointFeature";
 import {init} from "../../../source/init";
 import {Coordinates} from "../../../source/baseTypes";
 import {TileLayer} from "../../../source/layers/TileLayer";

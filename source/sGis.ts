@@ -18,7 +18,7 @@ import * as CrsModule from "./Crs";
 export {DynamicLayer} from "./layers/DynamicLayer";
 export {EventHandler} from "./EventHandler";
 export {Feature} from "./features/Feature";
-import {PointFeature} from "./features/Point";
+import {PointFeature} from "./features/PointFeature";
 import {Polygon} from "./features/Polygon";
 export {FeatureLayer} from "./layers/FeatureLayer";
 export {Layer} from "./layers/Layer";

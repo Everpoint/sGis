@@ -1,6 +1,6 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {Arc} from "../../renders/Arc";
 import {Coordinates, Offset} from "../../baseTypes";
 import {Render} from "../../renders/Render";

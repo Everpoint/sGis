@@ -2,7 +2,7 @@
 /// Title: "Point symbols"
 
 import {FeatureLayer} from "../../../source/layers/FeatureLayer";
-import {PointFeature} from "../../../source/features/Point";
+import {PointFeature} from "../../../source/features/PointFeature";
 import {init} from "../../../source/init";
 import {PointSymbol} from "../../../source/symbols/point/Point";
 import {SquareSymbol} from "../../../source/symbols/point/Square";

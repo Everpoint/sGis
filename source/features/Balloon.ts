@@ -1,7 +1,7 @@
 import {FeatureParams} from "./Feature";
 import {Coordinates} from "../baseTypes";
 import {BalloonSymbol} from "../symbols/BalloonSymbol";
-import {PointFeature} from "./Point";
+import {PointFeature} from "./PointFeature";
 
 export interface BalloonParams extends FeatureParams {
     position: Coordinates;

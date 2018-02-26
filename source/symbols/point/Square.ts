@@ -4,7 +4,7 @@ import {Symbol} from "../Symbol";
 import {Offset} from "../../baseTypes";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {warn} from "../../utils/utils";
 
 export interface SquareSymbolConstructorParams {

@@ -5,7 +5,7 @@ import {SnappingData} from "./SnappingMethods";
 import {Bbox} from "../../Bbox";
 import {Point} from "../../Point";
 import {Coordinates} from "../../baseTypes";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {Poly} from "../../features/Poly";
 import {Polygon} from "../../features/Polygon";
 import {ISnappingProvider} from "./ISnappingProvider";

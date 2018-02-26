@@ -10,7 +10,7 @@ import {FeaturesAddEvent, FeaturesRemoveEvent} from "../layers/FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
 import {sGisClickEvent} from "../commonEvents";
 import {Feature} from "../features/Feature";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {Poly} from "../features/Poly";
 import {sGisEvent} from "../EventHandler";
 import {Contour, Coordinates} from "../baseTypes";

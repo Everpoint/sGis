@@ -6,7 +6,7 @@ import {Bbox} from "../Bbox";
 import {MouseEventFlags, mouseEvents} from "../EventHandler";
 import {listenDomEvent} from "../utils/domEvent";
 import {Offset} from "../baseTypes";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {DynamicSymbolFeature} from "./DynamicSymbolFeature";
 
 

@@ -1,7 +1,7 @@
 import "jest";
 import {Map} from "../../source/Map";
 import {FeatureLayer} from "../../source/layers/FeatureLayer";
-import {PointFeature} from "../../source/features/Point";
+import {PointFeature} from "../../source/features/PointFeature";
 import {Editor} from "../../source/controls/Editor";
 
 describe('Editor Control', () => {

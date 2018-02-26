@@ -3,7 +3,7 @@ import {Offset} from "../../baseTypes";
 import {Feature} from "../../features/Feature";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {FillStyle, PolyRender} from "../../renders/Poly";
 
 export interface CrossPointSymbolConstructorParams {

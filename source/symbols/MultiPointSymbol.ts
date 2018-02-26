@@ -1,5 +1,5 @@
 import {MultiPoint} from "../features/MultiPoint";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {Symbol} from "./Symbol";
 import {Crs} from "../Crs";
 import {Render} from "../renders/Render";

@@ -4,7 +4,7 @@ import {PIN_IMAGE} from "../../resourses/images";
 import {Coordinates, Offset} from "../../baseTypes";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {warn} from "../../utils/utils";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 

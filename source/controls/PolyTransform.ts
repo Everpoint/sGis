@@ -2,7 +2,7 @@ import {Control} from "./Control";
 import {PointSymbol} from "../symbols/point/Point";
 import {SquareSymbol} from "../symbols/point/Square";
 import {Poly} from "../features/Poly";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {rotate, scale} from "../geotools";
 import {Coordinates} from "../baseTypes";
 import {Symbol} from "../symbols/Symbol";

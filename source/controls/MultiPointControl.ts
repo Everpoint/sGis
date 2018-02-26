@@ -3,7 +3,7 @@ import {FeatureLayer} from "../layers/FeatureLayer";
 import {MultiPoint} from "../features/MultiPoint";
 import {PointSymbol} from "../symbols/point/Point";
 import {Symbol} from "../symbols/Symbol";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 
 /**
  * Control for creating multipoints. When active, every click on the map will add a new point to the current multipoint.

@@ -1,4 +1,4 @@
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {IPoint} from "../Point";
 import {DynamicRender} from "../renders/Render";
 

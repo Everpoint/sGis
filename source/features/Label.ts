@@ -1,7 +1,7 @@
 import {FeatureParams} from "./Feature";
 import {Coordinates} from "../baseTypes";
 import {StaticLabelSymbol} from "../symbols/label/StaticLabelSymbol";
-import {PointFeature} from "./Point";
+import {PointFeature} from "./PointFeature";
 
 export interface LabelFeatureParams extends FeatureParams{
     content?: string

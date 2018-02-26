@@ -1,5 +1,5 @@
 import {Control, ControlConstructorParams, EditEvent} from "./Control";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 
 /**

@@ -1,5 +1,5 @@
 import {Control, ControlWithSymbolParams, DrawingFinishEvent} from "./Control";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {PointSymbol} from "../symbols/point/Point";
 import {sGisClickEvent, sGisMouseMoveEvent} from "../commonEvents";
 import {Map} from "../Map";

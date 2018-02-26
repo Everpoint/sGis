@@ -3,7 +3,7 @@ import {Map} from "../Map";
 import {FeatureLayer} from "../layers/FeatureLayer";
 import {ISnappingProvider} from "./snapping/ISnappingProvider";
 import {Contour, Coordinates} from "../baseTypes";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {CrossPointSymbol} from "../symbols/point/CrossPointSymbol";
 import {Symbol} from "../symbols/Symbol";
 import {Feature} from "../features/Feature";

@@ -6,7 +6,7 @@ import {warn} from "../../utils/utils";
 import {PIN_BACKGROUND, PIN_FOREGROUND} from "../../resourses/images";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
-import {PointFeature} from "../../features/Point";
+import {PointFeature} from "../../features/PointFeature";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 
 export interface MaskedImageSymbolParams {

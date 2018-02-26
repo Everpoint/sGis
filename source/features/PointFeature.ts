@@ -12,12 +12,8 @@ import {PointSymbol} from "../symbols/point/Point";
 export class PointFeature extends Feature implements IPoint {
     private _position: Coordinates;
 
-    /**
-     * @param {Position} position - coordinates of the point
-     * @param {Object} properties - key-value set of properties to be set to the instance
-     */
-    constructor(position: Coordinates, { symbol = new PointSymbol(), crs }: FeatureParams = {}) {
-        super({ symbol, crs });
+    constructor(position: Coordinates, { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
+        super({symbol, ...params});
         this._position = position;
     }
 
@@ -27,7 +23,7 @@ export class PointFeature extends Feature implements IPoint {
     }
 
     /**
-     * Returns a copy of the point. The copy will include all sGis.Point properties, but will not copy of user defined properties or event listeners.
+     * Returns a copy of the feature.
      */
     clone(): PointFeature {
         return this.projectTo(this.crs);
@@ -35,12 +31,20 @@ export class PointFeature extends Feature implements IPoint {
 
     get bbox(): Bbox { return new Bbox(this._position, this._position, this.crs); }
 
+    /**
+     * Geographical coordinates of the point, given in the feature crs.
+     */
     get position(): Coordinates { return [this._position[0], this._position[1]]; }
     set position(position: Coordinates) {
         this._position = position;
         this.redraw();
     }
 
+    /**
+     * Point object corresponding to the feature position. This is the same as position property, but also
+     * includes the information about coordinate system. If set, the point will first be projected to the feature
+     * crs, and then the projected coordinates will be set to the feature.
+     */
     get point(): Point { return new Point(this.position, this.crs); }
     set point(point: Point) { this.position = point.projectTo(this.crs).position; }
 
@@ -56,8 +60,11 @@ export class PointFeature extends Feature implements IPoint {
         this.redraw();
     }
 
+    /**
+     * @deprecated
+     */
     get coordinates(): Coordinates { return [this.position[0], this.position[1]]; }
     set coordinates(position: Coordinates) { this.position = [position[0], position[1]]; }
 
-    get centroid(): Coordinates { return this.coordinates; }
+    get centroid(): Coordinates { return this.position; }
 }

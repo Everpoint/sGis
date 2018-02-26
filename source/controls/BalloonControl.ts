@@ -5,7 +5,7 @@ import {Feature} from "../features/Feature";
 import {sGisClickEvent} from "../commonEvents";
 import {Balloon} from "../features/Balloon";
 import {Poly} from "../features/Poly";
-import {PointFeature} from "../features/Point";
+import {PointFeature} from "../features/PointFeature";
 import {getGuid} from "../utils/utils";
 import {BalloonSymbol} from "../symbols/BalloonSymbol";
 import {Bbox} from "../Bbox";

@@ -116,7 +116,15 @@ export abstract class Feature extends EventHandler {
      * Bounding box of the feature.
      */
     abstract get bbox(): Bbox;
-    abstract projectTo(crs: Crs): Feature;
+
+    /**
+     * Projects the geometry of the feature to the new crs, returning a new projected feature as a result.
+     */
+    abstract projectTo(newCrs: Crs): Feature;
+
+    /**
+     * Center point of the feature.
+     */
     abstract get centroid(): Coordinates;
 }
 
