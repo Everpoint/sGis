@@ -8,6 +8,7 @@ import {PointSymbol} from "../symbols/point/Point";
 /**
  * Simple geographical point.
  * @alias sGis.feature.Point
+ * @example symbols/Point_Symbols
  */
 export class PointFeature extends Feature implements IPoint {
     private _position: Coordinates;
