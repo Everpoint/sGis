@@ -24,10 +24,7 @@ export interface FeatureParams {
 export abstract class Feature extends EventHandler {
     private _crs: Crs;
     private _hidden: boolean = false;
-    private _tempSymbol: Symbol<Feature>;
-
-    protected _symbol: Symbol<Feature>;
-    protected _rendered: RenderCache;
+    private readonly _symbolContainer: FeatureSymbolContainer;
 
     persistOnMap: boolean;
 
@@ -37,7 +34,7 @@ export abstract class Feature extends EventHandler {
      *     NOTE: This method affects all already created features that do not have explicitly specified crs.
      *     You should use this function only when initializing the library.
      *     </strong>
-     * @param {sGis.Crs} crs
+     * @param crs
      */
     static setDefaultCrs(crs: Crs): void {
         Feature.prototype._crs = crs;
@@ -46,49 +43,18 @@ export abstract class Feature extends EventHandler {
     constructor({ crs = geo, symbol, persistOnMap = false }: FeatureParams = {}) {
         super();
 
-        this._symbol = symbol;
+        this._symbolContainer = new FeatureSymbolContainer(this, symbol);
         this._crs = crs;
         this.persistOnMap = persistOnMap;
     }
 
-    /**
-     * Renders the feature with the given parameters.
-     * @param {Number} resolution
-     * @param {sGis.Crs} crs
-     * @returns {sGis.IRender[]}
-     */
-    render(resolution: number, crs: Crs): Render[] {
-        if (this._hidden || !this.symbol) return [];
-        if (!this._needToRender(resolution, crs)) return this._rendered.renders;
-
-        /**
-         * @type {{resolution: Number, crs: sGis.Crs, renders: sGis.IRender[]}}
-         * @private
-         */
-        this._rendered = {
-            resolution: resolution,
-            crs: crs,
-            renders: this.symbol.renderFunction(this, resolution, crs)
-        };
-
-        if (this.eventFlags !== MouseEventFlags.None) this._rendered.renders.forEach(render => {
-            render.listenFor(this.eventFlags, (event) => {
-                this.fire(event);
-            });
-        });
-
-        return this._rendered.renders;
-    }
-
-    protected _needToRender(resolution: number, crs: Crs): boolean {
-        return !this._rendered || this._rendered.resolution !== resolution || this._rendered.crs !== crs || this._rendered.renders.length === 0;
-    }
+    render(resolution: number, crs: Crs): Render[] { return this._symbolContainer.render(resolution, crs); }
 
     /**
      * Resets the rendered cache of the feature, making it to redraw in the next redraw cycle.
      */
     redraw(): void {
-        delete this._rendered;
+        this._symbolContainer.reset();
     }
 
     /**
@@ -103,71 +69,112 @@ export abstract class Feature extends EventHandler {
 
     /**
      * Sets a temporary symbol for the feature. This symbol is used instead of the original symbol until cleared.
-     * @param {sGis.Symbol} symbol
+     * @param symbol
      */
     setTempSymbol(symbol: Symbol<Feature>): void {
-        this._tempSymbol = symbol;
-        this.redraw();
+        this._symbolContainer.setTempSymbol(symbol);
     }
 
     /**
      * Clears the previously set temporary symbol, restoring the original symbol.
      */
     clearTempSymbol() {
-        this._tempSymbol = null;
-        this.redraw();
+        this._symbolContainer.clearTempSymbol();
     }
 
     /**
      * Returns true, if a temporary symbol is currently set for this feature.
-     * @returns {Boolean}
      */
-    get isTempSymbolSet(): boolean { return !!this._tempSymbol; }
+    get isTempSymbolSet(): boolean { return this._symbolContainer.isTempSymbolSet; }
 
     /**
      * Returns the original symbol of the feature. If temporary symbol is not set, the returned value will be same as value of the .symbol property.
-     * @returns {sGis.Symbol}
      */
-    get originalSymbol(): Symbol<Feature> { return this._symbol; }
+    get originalSymbol(): Symbol<Feature> { return this._symbolContainer.originalSymbol; }
 
     /**
      * Coordinate system of the feature.
-     * @readonly
-     * @type {sGis.Crs}
-     * @default sGis.CRS.geo
      */
     get crs(): Crs { return this._crs; }
 
     /**
      * Current symbol of the feature. If temporary symbol is set, the value will be the temporary symbol.
-     * @type {sGis.Symbol}
-     * @default null
      */
-    get symbol(): Symbol<Feature> { return this._tempSymbol || this._symbol; }
-    set symbol(symbol: Symbol<Feature>) {
-        this._symbol = symbol;
-        this.redraw();
-    }
+    get symbol(): Symbol<Feature> { return this._symbolContainer.symbol; }
+    set symbol(symbol: Symbol<Feature>) { this._symbolContainer.symbol = symbol; }
 
     /**
      * Specifies weather the feature is hidden by .hide() method.
-     * @type Boolean
-     * @readonly
      */
     get hidden(): boolean { return this._hidden; }
 
     /**
      * Bounding box of the feature.
-     * @type {sGis.Bbox}
-     * @readonly
      */
     abstract get bbox(): Bbox;
     abstract projectTo(crs: Crs): Feature;
     abstract get centroid(): Coordinates;
 }
 
-/**
- * @typedef {function(Object)} sGis.Feature.constructor
- * @returns sGis.Feature
- */
+class FeatureSymbolContainer {
+    private readonly _feature: Feature;
+    private _symbol: Symbol<Feature> | null;
+    private _tempSymbol: Symbol<Feature> | null = null;
+    private _cached: RenderCache | null = null;
 
+    constructor(feature: Feature, symbol: Symbol<Feature> = null) {
+        this._feature = feature;
+        this._symbol = symbol;
+    }
+
+    get symbol() { return this._tempSymbol || this._symbol; }
+    set symbol(symbol: Symbol<Feature>) {
+        this._symbol = symbol;
+        this.reset();
+    }
+
+    /**
+     * Renders the feature with the given parameters.
+     * @param resolution
+     * @param crs
+     */
+    render(resolution: number, crs: Crs): Render[] {
+        if (this._feature.hidden || !this.symbol) return [];
+        if (!this._needToRender(resolution, crs)) return this._cached.renders;
+
+        this._cached = {
+            resolution: resolution,
+            crs: crs,
+            renders: this.symbol.renderFunction(this._feature, resolution, crs)
+        };
+
+        if (this._feature.eventFlags !== MouseEventFlags.None) this._cached.renders.forEach(render => {
+            render.listenFor(this._feature.eventFlags, (event) => {
+                this._feature.fire(event);
+            });
+        });
+
+        return this._cached.renders;
+    }
+
+    private _needToRender(resolution: number, crs: Crs): boolean {
+        return !this._cached || this._cached.resolution !== resolution || this._cached.crs !== crs || this._cached.renders.length === 0;
+    }
+
+    reset() {
+        this._cached = null;
+    }
+
+    setTempSymbol(symbol: Symbol<Feature>): void {
+        this._tempSymbol = symbol;
+        this.reset();
+    }
+
+    clearTempSymbol() {
+        this._tempSymbol = null;
+        this.reset();
+    }
+
+    get isTempSymbolSet(): boolean { return !!this._tempSymbol; }
+    get originalSymbol(): Symbol<Feature> { return this._symbol; }
+}

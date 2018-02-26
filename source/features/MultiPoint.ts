@@ -1,10 +1,9 @@
 import {Point} from "../Point";
 import {Feature, FeatureParams} from "./Feature";
 import {Bbox} from "../Bbox";
-import {PointFeature} from "./Point";
 import {PointSymbol} from "../symbols/point/Point";
-import {Render} from "../renders/Render";
 import {Coordinates} from "../baseTypes";
+import {MultiPointSymbol} from "../symbols/MultiPointSymbol";
 
 /**
  * Represents a set of points on a map that behave as one feature: have same symbol, can be added, transformed or removed as one.
@@ -18,7 +17,7 @@ export class MultiPoint extends Feature {
      * @param {Position[]} points - set of the points' coordinates
      * @param {Object} properties - key-value set of properties to be set to the instance
      */
-    constructor(points = [], { symbol = new PointSymbol(), crs }: FeatureParams  = {}) {
+    constructor(points = [], { symbol = new MultiPointSymbol(new PointSymbol()), crs }: FeatureParams  = {}) {
         super({ symbol, crs });
         this._points = points;
     }
@@ -72,25 +71,6 @@ export class MultiPoint extends Feature {
     _update() {
         this._bbox = null;
         this.redraw();
-    }
-
-    render(resolution, crs): Render[] {
-        if (this.hidden || !this.symbol) return [];
-        if (!this._needToRender(resolution, crs)) return this._rendered.renders;
-
-        let renders = [];
-        this._points.forEach(point => {
-            let f = new PointFeature(point, {crs: this.crs, symbol: this.symbol});
-            renders = renders.concat(f.render(resolution, crs));
-        });
-
-        this._rendered = {
-            resolution: resolution,
-            crs: crs,
-            renders: renders
-        };
-
-        return this._rendered.renders;
     }
 
     get bbox() {
