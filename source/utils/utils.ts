@@ -206,3 +206,12 @@ export const isIE: boolean = browser.search('IE') !== -1;
  * Contains 'true' if the current browser is run on a touch device.
  */
 export const isTouch: boolean = 'ontouchstart' in document.documentElement;
+
+
+/* Simple polyfil for tests */
+if (typeof window.requestAnimationFrame === 'undefined') {
+    window.requestAnimationFrame = (callback): number => {
+        setTimeout(callback, 1000/30);
+        return 0;
+    }
+}
