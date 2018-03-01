@@ -1,17 +1,23 @@
-import {Point} from "../../Point";
+import {IPoint, Point} from "../../Point";
 import {EventDispatcher} from "./EventDispatcher";
 import {LayerRenderer} from "./LayerRenderer";
 import {Container} from "./Container";
-import {Map as sGisMap} from "../../Map";
+import {AnimationEndEvent, AnimationStartEvent, Map as sGisMap} from "../../Map";
 import {Layer} from "../../layers/Layer";
 import {Bbox} from "../../Bbox";
-import {error, warn, requestAnimationFrame, assignDefined} from "../../utils/utils";
+import {error, warn, requestAnimationFrame} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
 import {EventHandler} from "../../EventHandler";
+import {ContentsChangeEvent} from "../../LayerGroup";
+import {DragEvent, sGisDoubleClickEvent} from "../../commonEvents";
 
 let innerWrapperStyle = 'position: relative; overflow: hidden; width: 100%; height: 100%;';
 let layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index: 0;';
+
+export interface DomPainterParams {
+    wrapper?: HTMLElement | string;
+}
 
 export class DomPainter extends EventHandler {
     private _map: sGisMap;
@@ -36,15 +42,14 @@ export class DomPainter extends EventHandler {
     private _bbox: Bbox;
 
     /**
-     * @constructor
-     * @param {sGis.Map} map - the map to be drawn.
-     * @param {Object} options - key-value list of properties to be assigned to the instance.
+     * @param map - the map to be drawn.
+     * @param options - key-value list of properties to be assigned to the instance.
      */
-    constructor(map, options = null) {
+    constructor(map: sGisMap, {wrapper = null}: DomPainterParams) {
         super();
 
         this._map = map;
-        assignDefined(this, options);
+        this.wrapper = wrapper;
 
         this._layerRenderers = new Map();
         this._containers = [];
@@ -64,13 +69,12 @@ export class DomPainter extends EventHandler {
 
     /**
      * DOM element, inside of which the map will be drawn. If null is given, the map will not be drawn. If string is given, an element with given id will be searched.
-     * @type HTMLElement|String
      */
     get wrapper() { return this._wrapper; }
-    set wrapper(/** HTMLElement|String */ node) {
+    set wrapper(wrapper: HTMLElement | string) {
         if (this._wrapper) this._clearDOM();
-        if (node) {
-            this._initDOM(node);
+        if (wrapper) {
+            this._initDOM(wrapper);
             this._eventDispatcher = new EventDispatcher(this._innerWrapper, this);
             this._needUpdate = true;
             this._redrawNeeded = true;
@@ -79,14 +83,15 @@ export class DomPainter extends EventHandler {
         this.fire('wrapperChange');
     }
 
-    get layerRenderers() { return Array.from(this._layerRenderers.values()); }
+    get layerRenderers(): LayerRenderer[] { return Array.from(this._layerRenderers.values()); }
 
     /**
      * Sets position and resolution of the map to show the full bounding box in the center of the map
-     * @param {sGis.Bbox} bbox
-     * @param {Boolean} [animate=true] - if set to true, the position will be changed gradually with animation.
+     * @param bbox
+     * @param animate - if set to true, the position will be changed gradually with animation.
+     * @returns the actual bbox of the map after the change.
      */
-    show(bbox, animate = true) {
+    show(bbox: Bbox, animate: boolean = true): Bbox {
         let projected = bbox.projectTo(this.map.crs);
         let xResolution = projected.width / this.width;
         let yResolution = projected.height / this.height;
@@ -96,11 +101,11 @@ export class DomPainter extends EventHandler {
         let center = projected.center;
         this.map[method](center, this.map.getAdjustedResolution(Math.max(xResolution, yResolution)));
 
-        return new Bbox([center.x - this.width * xResolution, center.y - this.height * yResolution],
-                        [center.x + this.width * xResolution, center.y + this.height * yResolution], this.map.crs);
+        return new Bbox([center[0] - this.width * xResolution, center[1] - this.height * yResolution],
+                        [center[0] + this.width * xResolution, center[1] + this.height * yResolution], this.map.crs);
     }
 
-    _updateLayerList() {
+    private _updateLayerList(): void {
         let mapLayers = this._map.getLayers(true, true);
         for (let layer of this._layerRenderers.keys()) {
             if (mapLayers.indexOf(layer) < 0) this._removeLayer(layer);
@@ -116,38 +121,38 @@ export class DomPainter extends EventHandler {
         });
     }
 
-    _addLayer(layer, index) {
+    private _addLayer(layer: Layer, index: number): void {
         this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));
     }
 
-    _removeLayer(layer) {
+    private _removeLayer(layer: Layer): void {
         this._layerRenderers.get(layer).clear();
         this._layerRenderers.delete(layer);
     }
 
-    _setEventListeners() {
-        this._map.on('contentsChange', this._updateLayerList.bind(this));
-        this._map.on('drag', this._onMapDrag.bind(this));
-        this._map.on('dblclick', this._onMapDblClick.bind(this));
-        this._map.on('animationStart', this.forbidUpdate.bind(this));
-        this._map.on('animationEnd', this.allowUpdate.bind(this));
+    private _setEventListeners(): void {
+        this._map.on(ContentsChangeEvent.type, this._updateLayerList.bind(this));
+        this._map.on(DragEvent.type, this._onMapDrag.bind(this));
+        this._map.on(sGisDoubleClickEvent.type, this._onMapDblClick.bind(this));
+        this._map.on(AnimationStartEvent.type, this.forbidUpdate.bind(this));
+        this._map.on(AnimationEndEvent.type, this.allowUpdate.bind(this));
     }
 
     /**
      * Prevents the map to be redrawn.
      */
-    forbidUpdate() {
+    forbidUpdate(): void {
         this._updateAllowed = false;
     }
 
     /**
      * Allows redrawing of the map again after .forbidUpdate() has been called.
      */
-    allowUpdate() {
+    allowUpdate(): void {
         this._updateAllowed = true;
     }
 
-    _repaint() {
+    private _repaint(): void {
         this._updateSize();
 
         if (this.isDisplayed) {
@@ -188,11 +193,11 @@ export class DomPainter extends EventHandler {
         requestAnimationFrame(this._repaintBound);
     }
 
-    _setNewContainer() {
+    private _setNewContainer(): void {
         this._containers.push(new Container(this._staticRendersContainer, this.bbox, this._map.resolution, this._removeEmptyContainers.bind(this)));
     }
 
-    _removeEmptyContainers() {
+    private _removeEmptyContainers(): void {
         // Check all containers except the last one, for we never remove it
         for (let i = this._containers.length - 2; i >= 0; i--) {
             if (this._containers[i].isEmpty) {
@@ -201,12 +206,12 @@ export class DomPainter extends EventHandler {
         }
     }
 
-    _removeContainer(i) {
+    private _removeContainer(i: number): void {
         this._containers[i].remove();
         this._containers.splice(i, 1);
     }
 
-    _updateSize() {
+    private _updateSize(): void {
         this._width = this._wrapper ? this._wrapper.clientWidth || this._wrapper.offsetWidth : 0;
         this._height = this._wrapper ? this._wrapper.clientHeight || this._wrapper.offsetHeight : 0;
     }
@@ -214,9 +219,9 @@ export class DomPainter extends EventHandler {
     /**
      * Returns true is the map is currently displayed in the DOM>
      */
-    get isDisplayed() { return this._width && this._height; }
+    get isDisplayed(): boolean { return this._width > 0 && this._height > 0; }
 
-    _updateBbox() {
+    private _updateBbox(): void {
         let mapPosition = this._map.position;
         if (this._position[0] !== mapPosition[0] || this._position[1] !== mapPosition[1] || !softEquals(this._map.resolution, this._resolution) || this._bboxWidth !== this._width || this._bboxHeight !== this._height) {
             this._position = [mapPosition[0], mapPosition[1]];
@@ -248,7 +253,7 @@ export class DomPainter extends EventHandler {
     /**
      * Current bbox of the map drawn by this painter.
      */
-    get bbox() {
+    get bbox(): Bbox {
         if (!this._bbox) this._updateBbox();
         return this._bbox;
     }
@@ -256,23 +261,23 @@ export class DomPainter extends EventHandler {
     /**
      * The map this painter draws.
      */
-    get map() { return this._map; }
+    get map(): sGisMap { return this._map; }
 
-    get currContainer() { return this._containers[this._containers.length - 1]; }
+    get currContainer(): Container { return this._containers[this._containers.length - 1]; }
 
-    get dynamicContainer() { return this._dynamicRendersContainer; }
+    get dynamicContainer(): HTMLElement { return this._dynamicRendersContainer; }
 
     /**
      * Width of the map on the screen in pixels.
      */
-    get width() { return this._width; }
+    get width(): number { return this._width; }
 
     /**
      * Height of the map on the screen in pixels.
      */
-    get height() { return this._height; }
+    get height(): number { return this._height; }
 
-    _initDOM(node) {
+    private _initDOM(node: HTMLElement | string): void {
         let wrapper = node instanceof HTMLElement ? node : document.getElementById(node);
         if (!wrapper) error('The element with ID "' + node + '" is not found.');
 
@@ -292,7 +297,7 @@ export class DomPainter extends EventHandler {
         this._wrapper = wrapper;
     }
 
-    _clearDOM() {
+    private _clearDOM(): void {
         if (this._innerWrapper.parentNode) this._innerWrapper.parentNode.removeChild(this._innerWrapper);
 
         this._innerWrapper = null;
@@ -306,7 +311,7 @@ export class DomPainter extends EventHandler {
         this._clearContainers();
     }
 
-    _clearContainers() {
+    private _clearContainers(): void {
         this._containers.forEach((container, i) => {
             this._removeContainer(i);
         });
@@ -316,9 +321,9 @@ export class DomPainter extends EventHandler {
         });
     }
 
-    get innerWrapper() { return this._innerWrapper; }
+    get innerWrapper(): HTMLElement { return this._innerWrapper; }
 
-    resolveLayerOverlay() {
+    resolveLayerOverlay(): void {
         let prevContainerIndex = 0;
         this._map.getLayers(true, true).forEach(layer => {
             let renderer = this._layerRenderers.get(layer);
@@ -338,11 +343,10 @@ export class DomPainter extends EventHandler {
 
     /**
      * Returns the point in map coordinates, that is located at the given offset from the left top corner of the map.
-     * @param {Number} x
-     * @param {Number} y
-     * @returns {sGis.Point}
+     * @param x
+     * @param y
      */
-    getPointFromPxPosition(x, y) {
+    getPointFromPxPosition(x: number, y: number): IPoint {
         let resolution = this._map.resolution;
         let bbox = this.bbox;
         return new Point([
@@ -354,27 +358,26 @@ export class DomPainter extends EventHandler {
 
     /**
      * For the given point, returns the px offset on the screen from the left top corner of the map.
-     * @param {Number[]} position - point in the map coordinates [x, y]
-     * @returns {{x: number, y: number}}
+     * @param position - point in the map coordinates
      */
-    getPxPosition(position) {
-        return {
-            x: (position[0] - this.bbox.xMin) / this._map.resolution,
-            y: (this.bbox.yMax - position[1]) / this._map.resolution
-        };
+    getPxPosition(position: Coordinates): Coordinates {
+        return [
+            (position[0] - this.bbox.xMin) / this._map.resolution,
+            (this.bbox.yMax - position[1]) / this._map.resolution
+        ];
     }
 
-    _onMapDrag(sGisEvent) {
+    private _onMapDrag(event: DragEvent): void {
         setTimeout(() => {
-            if (sGisEvent.isCanceled) return;
-            this._map.move(sGisEvent.offset[0], sGisEvent.offset[1]);
+            if (event.isCanceled) return;
+            this._map.move(event.offset[0], event.offset[1]);
         }, 0);
     }
 
-    _onMapDblClick(sGisEvent) {
+    private _onMapDblClick(event: sGisDoubleClickEvent): void {
         setTimeout(() => {
-            if (sGisEvent.isCanceled) return;
-            this._map.animateSetResolution(this._map.resolution/2, sGisEvent.point);
+            if (event.isCanceled) return;
+            this._map.animateSetResolution(this._map.resolution/2, event.point);
         }, 0);
     }
 }

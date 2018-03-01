@@ -51,11 +51,9 @@ export class sGisEvent {
 
     /**
      * @param type - name of the event
-     * @param parameters - [JS ONLY]  dictionary of parameters to be added to the event object
      */
-    constructor(type: string, parameters?: Object) {
+    constructor(type: string) {
         this.type = type;
-        if (parameters) Object.assign(this, parameters);
     }
 
     /**
@@ -129,7 +127,8 @@ export abstract class EventHandler {
      */
     fire(event: sGisEvent|string, parameters?: Object): sGisEvent {
         if (typeof event === 'string') {
-            event = new sGisEvent(event, parameters);
+            event = new sGisEvent(event);
+            if (parameters) Object.assign(event, parameters);
             event.sourceObject = this;
         }
 
