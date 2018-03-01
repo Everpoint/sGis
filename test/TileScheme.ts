@@ -20,7 +20,7 @@ describe('TileScheme', () => {
     });
 
     describe('.getLevel()', () => {
-        let scheme;
+        let scheme: TileScheme;
         beforeEach(() => {
             let levels = [
                 {resolution: 20, zIndex: 0, indexCount: 4},
@@ -56,7 +56,7 @@ describe('TileScheme', () => {
     });
 
     describe('resolution limits', () => {
-        let scheme;
+        let scheme: TileScheme;
         beforeEach(() => {
             let levels = [
                 {resolution: 20, zIndex: 0, indexCount: 4},

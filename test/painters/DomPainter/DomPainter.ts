@@ -1,10 +1,14 @@
 import "jest";
 import {init as sGisInit} from "../../../source/init";
+import {Map} from "../../../source/Map";
+import {DomPainter} from "../../../source/painters/DomPainter/DomPainter";
 
 describe('painters.DomPainter', () => {
     'use strict';
 
-    let map, painter, container;
+    let map: Map;
+    let painter: DomPainter;
+    let container: HTMLElement;
 
     function getContainer() {
         const containerCss = 'width: 200px; height: 200px;';
@@ -22,7 +26,6 @@ describe('painters.DomPainter', () => {
 
     afterEach(() => {
         document.body.innerHTML = '';
-        container = null;
     });
 
     describe('.wrapper', () => {
@@ -51,8 +54,8 @@ describe('painters.DomPainter', () => {
             let newContainer = getContainer();
             document.body.appendChild(newContainer);
             painter.wrapper = newContainer;
-            expect(painter._needUpdate).toBe(true);
-            expect(painter._redrawNeeded).toBe(true);
+            expect((<any>painter)._needUpdate).toBe(true);
+            expect((<any>painter)._redrawNeeded).toBe(true);
         });
     });
 

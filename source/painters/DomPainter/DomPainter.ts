@@ -71,7 +71,7 @@ export class DomPainter extends EventHandler {
      * DOM element, inside of which the map will be drawn. If null is given, the map will not be drawn. If string is given, an element with given id will be searched.
      */
     get wrapper() { return this._wrapper; }
-    set wrapper(wrapper: HTMLElement | string) {
+    set wrapper(wrapper: HTMLElement | string | null) {
         if (this._wrapper) this._clearDOM();
         if (wrapper) {
             this._initDOM(wrapper);

@@ -3,10 +3,14 @@ import {Map} from "../../source/Map";
 import {FeatureLayer} from "../../source/layers/FeatureLayer";
 import {PointFeature} from "../../source/features/PointFeature";
 import {Editor} from "../../source/controls/Editor";
+import {Feature} from "../../source/features/Feature";
 
 describe('Editor Control', () => {
 
-    let map, layer, features, control;
+    let map: Map;
+    let layer: FeatureLayer;
+    let features: Feature[];
+    let control: Editor;
 
     beforeEach(() => {
         map = new Map();

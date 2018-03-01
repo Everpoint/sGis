@@ -14,7 +14,7 @@ export enum MouseEventFlags {
     DragEnd = 1 << 10,
 }
 
-export const mouseEvents = {
+export const mouseEvents: {[key: string]: {type: string, flag: MouseEventFlags}} = {
     click: {type: 'click', flag: MouseEventFlags.MouseClick},
     doubleClick: {type: 'dblclick', flag: MouseEventFlags.DoubleClick},
     mouseDown: {type: 'mousedown', flag: MouseEventFlags.MouseDown},
@@ -47,7 +47,7 @@ export class sGisEvent {
      * Original object that triggered the event. If the event is forwarded to another object, the original source object
      * will be set in this parameter.
      */
-    sourceObject: EventHandler;
+    sourceObject?: EventHandler;
 
     /**
      * @param type - name of the event
@@ -72,7 +72,7 @@ export class sGisEvent {
 /**
  * Callback method for event.
  */
-export type Handler = (sGisEvent) => void;
+export type Handler = (event: sGisEvent) => void;
 
 type HandlerDescription = {
     handler: Handler;
@@ -125,7 +125,7 @@ export abstract class EventHandler {
      * @param event - event object or exact name of the event to be triggered.
      * @param parameters - [JS ONLY] parameters to be transferred to the event object. Applied only if the first argument is string.
      */
-    fire(event: sGisEvent|string, parameters?: Object): sGisEvent {
+    fire(event: sGisEvent|string, parameters?: Object): sGisEvent | null {
         if (typeof event === 'string') {
             event = new sGisEvent(event);
             if (parameters) Object.assign(event, parameters);
@@ -270,10 +270,10 @@ export abstract class EventHandler {
     off(description: string, handler?: Handler) { this.removeListener.apply(this, arguments); }
 }
 
-function getTypes(string) {
+function getTypes(string: string): string[] {
     return string.replace(/\.[A-Za-z0-9_-]+/g, '').match(/[A-Za-z0-9_-]+/g) || [];
 }
 
-function getNamespaces(/** String */ string) {
+function getNamespaces(string: string): string[] {
     return string.match(/\.[A-Za-z0-9_-]+/g) || [];
 }

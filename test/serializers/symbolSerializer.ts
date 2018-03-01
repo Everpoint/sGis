@@ -23,7 +23,7 @@ describe('symbolSerializer', () => {
             expect(desc1.strokeWidth).toBeDefined();
             expect(desc1.offset).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <PointSymbol>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof PointSymbol).toBe(true);
             expect(deserialized1.size).toEqual(symbol1.size);
@@ -32,9 +32,9 @@ describe('symbolSerializer', () => {
             expect(deserialized1.strokeWidth).toEqual(symbol1.strokeWidth);
             expect(deserialized1.offset).toEqual(symbol1.offset);
 
-            let symbol2 = new PointSymbol({size: 155, fillColor: 'red', strokeColor: 'blue', strokeWidth: 15, offset: {x: 10, y: -20}});
+            let symbol2 = new PointSymbol({size: 155, fillColor: 'red', strokeColor: 'blue', strokeWidth: 15, offset: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <PointSymbol>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2 instanceof PointSymbol).toBe(true);
             expect(deserialized2.size).toEqual(symbol2.size);
@@ -54,7 +54,7 @@ describe('symbolSerializer', () => {
             expect(desc1.strokeWidth).toBeDefined();
             expect(desc1.offset).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <SquareSymbol>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof SquareSymbol).toBe(true);
             expect(deserialized1.size).toEqual(symbol1.size);
@@ -63,9 +63,9 @@ describe('symbolSerializer', () => {
             expect(deserialized1.strokeWidth).toEqual(symbol1.strokeWidth);
             expect(deserialized1.offset).toEqual(symbol1.offset);
 
-            let symbol2 = new SquareSymbol({size: 155, fillColor: 'red', strokeColor: 'blue', strokeWidth: 15, offset: {x: 10, y: -20}});
+            let symbol2 = new SquareSymbol({size: 155, fillColor: 'red', strokeColor: 'blue', strokeWidth: 15, offset: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <SquareSymbol>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2 instanceof SquareSymbol).toBe(true);
             expect(deserialized2.size).toEqual(symbol2.size);
@@ -84,7 +84,7 @@ describe('symbolSerializer', () => {
             expect(desc1.anchorPoint).toBeDefined();
             expect(desc1.source).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <StaticImageSymbol>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof StaticImageSymbol).toBe(true);
             expect(deserialized1.width).toEqual(symbol1.width);
@@ -94,7 +94,7 @@ describe('symbolSerializer', () => {
 
             let symbol2 = new StaticImageSymbol({width: 15, height: 15, source: 'url', anchorPoint: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <StaticImageSymbol>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2 instanceof StaticImageSymbol).toBe(true);
             expect(deserialized2.width).toEqual(symbol2.width);
@@ -114,7 +114,7 @@ describe('symbolSerializer', () => {
             expect(desc1.maskSource).toBeDefined();
             expect(desc1.maskColor).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <MaskedImage>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof MaskedImage).toBe(true);
             expect(deserialized1.width).toEqual(symbol1.width);
@@ -124,9 +124,9 @@ describe('symbolSerializer', () => {
             expect(deserialized1.maskSource).toEqual(symbol1.maskSource);
             expect(deserialized1.maskColor).toEqual(symbol1.maskColor);
 
-            let symbol2 = new MaskedImage({width: 15, height: 15, imageSource: 'url', maskSource: 'maskUrl', maskColor: 'black', anchorPoint: {x: 10, y: -20}});
+            let symbol2 = new MaskedImage({width: 15, height: 15, imageSource: 'url', maskSource: 'maskUrl', maskColor: 'black', anchorPoint: [10, -20]});
             let desc2 = symbolSerializer.serialize(symbol2);
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <MaskedImage>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2 instanceof MaskedImage).toBe(true);
             expect(deserialized2.width).toEqual(symbol2.width);
@@ -144,7 +144,7 @@ describe('symbolSerializer', () => {
             expect(desc1.strokeColor).toBeDefined();
             expect(desc1.strokeWidth).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <PolylineSymbol>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof PolylineSymbol).toBe(true);
             expect(deserialized1.strokeColor).toEqual(symbol1.strokeColor);
@@ -153,7 +153,7 @@ describe('symbolSerializer', () => {
             let symbol2 = new PolylineSymbol({strokeWidth: 99, strokeColor: 'green'});
             let desc2 = symbolSerializer.serialize(symbol2);
 
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <PolylineSymbol>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2.strokeColor).toEqual(symbol2.strokeColor);
             expect(deserialized2.strokeWidth).toEqual(symbol2.strokeWidth);
@@ -167,7 +167,7 @@ describe('symbolSerializer', () => {
             expect(desc1.strokeWidth).toBeDefined();
             expect(desc1.fillColor).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <PolygonSymbol>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof PolygonSymbol).toBe(true);
             expect(deserialized1.strokeColor).toEqual(symbol1.strokeColor);
@@ -177,7 +177,7 @@ describe('symbolSerializer', () => {
             let symbol2 = new PolygonSymbol({strokeWidth: 99, strokeColor: 'green', fillColor: 'purple'});
             let desc2 = symbolSerializer.serialize(symbol2);
 
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <PolygonSymbol>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2.strokeColor).toEqual(symbol2.strokeColor);
             expect(deserialized2.strokeWidth).toEqual(symbol2.strokeWidth);
@@ -194,7 +194,7 @@ describe('symbolSerializer', () => {
             expect(desc1.fillBackground).toBeDefined();
             expect(desc1.fillForeground).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <BrushFill>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof BrushFill).toBe(true);
             expect(deserialized1.strokeColor).toEqual(symbol1.strokeColor);
@@ -203,10 +203,10 @@ describe('symbolSerializer', () => {
             expect(deserialized1.fillBackground).toEqual(symbol1.fillBackground);
             expect(deserialized1.fillForeground).toEqual(symbol1.fillForeground);
 
-            let symbol2 = new BrushFill({strokeWidth: 99, strokeColor: 'green', fillBrush: [255], fillForeground: 'blue', fillBackground: 'green'});
+            let symbol2 = new BrushFill({strokeWidth: 99, strokeColor: 'green', fillBrush: [[255]], fillForeground: 'blue', fillBackground: 'green'});
             let desc2 = symbolSerializer.serialize(symbol2);
 
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <BrushFill>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2.strokeColor).toEqual(symbol2.strokeColor);
             expect(deserialized2.strokeWidth).toEqual(symbol2.strokeWidth);
@@ -223,7 +223,7 @@ describe('symbolSerializer', () => {
             expect(desc1.strokeWidth).toBeDefined();
             expect(desc1.src).toBeDefined();
 
-            let deserialized1 = symbolSerializer.deserialize(desc1);
+            let deserialized1 = <ImageFill>symbolSerializer.deserialize(desc1);
 
             expect(deserialized1 instanceof ImageFill).toBe(true);
             expect(deserialized1.strokeColor).toEqual(symbol1.strokeColor);
@@ -233,7 +233,7 @@ describe('symbolSerializer', () => {
             let symbol2 = new ImageFill({strokeWidth: 99, strokeColor: 'green', src: 'url'});
             let desc2 = symbolSerializer.serialize(symbol2);
 
-            let deserialized2 = symbolSerializer.deserialize(desc2);
+            let deserialized2 = <ImageFill>symbolSerializer.deserialize(desc2);
 
             expect(deserialized2.strokeColor).toEqual(symbol2.strokeColor);
             expect(deserialized2.strokeWidth).toEqual(symbol2.strokeWidth);

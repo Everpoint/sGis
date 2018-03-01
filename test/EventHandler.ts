@@ -1,9 +1,10 @@
 import "jest";
-import {EventHandler} from "../source/EventHandler";
+import {EventHandler, sGisEvent} from "../source/EventHandler";
 
 describe('EventHandler', function () {
-    var object;
-    var f = function() {};
+    let object: EventHandler;
+    let f = function() {};
+
     beforeEach(function () {
         class c extends EventHandler {}
         object = new c();
@@ -26,7 +27,7 @@ describe('EventHandler', function () {
                 expect(object.hasListeners('event1')).toBe(true);
                 expect(object.hasListeners('namespace1')).toBe(false);
 
-                var keys = Object.keys(object._eventHandlers);
+                let keys = Object.keys((<any>object)._eventHandlers);
                 expect(keys.length).toBe(2);
             });
 
@@ -46,24 +47,6 @@ describe('EventHandler', function () {
                 expect(object.hasListeners('ns')).toBe(false);
                 expect(object.hasListeners('ns2')).toBe(false);
             });
-
-            it('should throw an exception if event name is not a valid string', function() {
-                expect(function() { object.addListener(undefined, f); }).toThrow();
-                expect(function() { object.addListener(null, f); }).toThrow();
-                expect(function() { object.addListener(1, f); }).toThrow();
-                expect(function() { object.addListener(['a'], f); }).toThrow();
-                expect(function() { object.addListener({a:'a'}, f); }).toThrow();
-                expect(function() { object.addListener('', f); }).toThrow();
-                expect(function() { object.addListener('.ns', f); }).toThrow();
-            });
-
-            it('should throw an exception if the handler is not a function', function() {
-                expect(function() { object.addListner('a'); }).toThrow();
-                expect(function() { object.addListner('a', 1); }).toThrow();
-                expect(function() { object.addListner('a', 'Function'); }).toThrow();
-                expect(function() { object.addListner('a', {}); }).toThrow();
-                expect(function() { object.addListner('a', []); }).toThrow();
-            });
         });
 
         describe('.on()', function() {
@@ -81,8 +64,8 @@ describe('EventHandler', function () {
 
         describe('.once()', function() {
             it('should set one time listener for the event', function() {
-                var fired = false;
-                var handler = function() { fired = true; };
+                let fired = false;
+                let handler = function() { fired = true; };
 
                 object.once('event', handler);
                 expect(object.hasListener('event', handler)).toBe(true);
@@ -93,9 +76,9 @@ describe('EventHandler', function () {
             });
 
             it('should not remove other listeners', function() {
-                var f1 = function() {};
-                var f2 = function() {};
-                var f3 = function() {};
+                let f1 = function() {};
+                let f2 = function() {};
+                let f3 = function() {};
 
                 object.once('event', f);
                 object.on('event', f1);
@@ -114,19 +97,6 @@ describe('EventHandler', function () {
                 expect(object.hasListeners('.ns')).toBe(true);
                 expect(object.hasListeners('.ns1')).toBe(true);
             });
-
-            it('should throw an error if no event type is specified', function() {
-                expect(function() { object.once(undefined, f); }).toThrow();
-                expect(function() { object.once(1, f); }).toThrow();
-                expect(function() { object.once('', f); }).toThrow();
-                expect(function() { object.once([], f); }).toThrow();
-                expect(function() { object.once({}, f); }).toThrow();
-                expect(function() { object.once('.ns', f); }).toThrow();
-            });
-
-            it('should throw an error if no handler is specified', function() {
-                expect(function() { object.once('event'); }).toThrow();
-            });
         });
 
         describe('.removeListener()', function() {
@@ -137,7 +107,7 @@ describe('EventHandler', function () {
             });
 
             it('should not remove the other listeners', function() {
-                var handler = function() {};
+                let handler = function() {};
                 object.on('event', f);
                 object.on('event', handler);
                 object.removeListener('event', f);
@@ -164,7 +134,7 @@ describe('EventHandler', function () {
             });
 
             it('should remove all the handlers of the specified type in the namespace if the handler is not specified', function() {
-                var f1 = function() {};
+                let f1 = function() {};
                 object.on('event.ns', f);
                 object.on('event.ns', f1);
                 object.removeListener('event.ns');
@@ -172,9 +142,9 @@ describe('EventHandler', function () {
             });
 
             it('should remove all the handlers of all the specified namespaces if the handler is not specified', function() {
-                var f1 = function() {};
-                var f2 = function() {};
-                var f3 = function() {};
+                let f1 = function() {};
+                let f2 = function() {};
+                let f3 = function() {};
 
                 object.on('event.ns', f);
                 object.on('event.ns', f1);
@@ -185,22 +155,10 @@ describe('EventHandler', function () {
                 expect(object.hasListeners('event')).toBe(false);
             });
 
-            it('should throw an exception if event type and namespace are not specified', function() {
-                expect(function() { object.removeListner(f); }).toThrow();
-                expect(function() { object.removeListner(1, f); }).toThrow();
-                expect(function() { object.removeListner([], f); }).toThrow();
-                expect(function() { object.removeListner({}, f); }).toThrow();
-                expect(function() { object.removeListner('', f); }).toThrow();
-            });
-
-            it('should throw an exception if no namespace and handler are specified', function() {
-                expect(function() { object.removeListner('event'); }).toThrow();
-            });
-
             it('should remove all listeners from the given namespace if no type and handler are specified', function() {
-                var f1 = function() {};
-                var f2 = function() {};
-                var f3 = function() {};
+                let f1 = function() {};
+                let f2 = function() {};
+                let f3 = function() {};
 
                 object.on('event.ns', f);
                 object.on('event.ns', f1);
@@ -231,7 +189,7 @@ describe('EventHandler', function () {
                 object.on('event', f);
                 expect(object.hasListener('event', f)).toBe(true);
 
-                var handler = function() {};
+                let handler = function() {};
                 object.on('event1', handler);
                 expect(object.hasListener('event', f)).toBe(true);
                 expect(object.hasListener('event1', handler)).toBe(true);
@@ -242,10 +200,6 @@ describe('EventHandler', function () {
                 object.on('event', f);
                 expect(object.hasListener('event1', f)).toBe(false);
                 expect(object.hasListener('event', function() {})).toBe(false);
-            });
-
-            it('should throw an exception if the handler is not given', function() {
-                expect(function() { object.hasListner('event'); }).toThrow();
             });
         });
 
@@ -304,7 +258,11 @@ describe('EventHandler', function () {
         });
 
         describe('.fire()', function() {
-            var fired1, fired2, f1, f2;
+            let fired1: boolean;
+            let fired2: boolean;
+            let f1: () => void;
+            let f2: () => void;
+
             beforeEach(function() {
                 fired1 = false;
                 fired2 = false;
@@ -339,8 +297,8 @@ describe('EventHandler', function () {
             });
 
             it('should call handlers in the order they were added', function() {
-                var rightOrder = false;
-                var f3 = function() {
+                let rightOrder = false;
+                let f3 = function() {
                     if (fired1 && !fired2) rightOrder = true;
                 };
 
@@ -353,8 +311,8 @@ describe('EventHandler', function () {
             });
 
             it('should call the same handler for each time it was added', function() {
-                var counter = 0;
-                var f3 = function() { counter++; };
+                let counter = 0;
+                let f3 = function() { counter++; };
 
                 object.on('event', f3);
                 object.on('event', f1);
@@ -366,8 +324,8 @@ describe('EventHandler', function () {
             });
 
             it('should call the handle in the source object context', function() {
-                var correct = false;
-                var f3 = function() {
+                let correct = false;
+                let f3 = function(this: Object) {
                     correct = this === object;
                 };
                 object.on('event', f3);
@@ -379,15 +337,16 @@ describe('EventHandler', function () {
 
         describe('.prohibitEvent() and .allowEvent()', function() {
             it('should prohibit and allow triggering an event', function() {
-                var fired = false;
-                var handler = function() { fired = true; };
+                let fired = false;
+                let handler = function() { fired = true; };
 
                 object.on('event', handler);
                 object.prohibitEvent('event');
                 object.fire('event');
                 expect(fired).toBe(false);
 
-                object.forwardEvent('event', {});
+                let event = new sGisEvent('type');
+                object.forwardEvent(event);
                 expect(fired).toBe(false);
 
                 object.allowEvent('event');
@@ -396,8 +355,8 @@ describe('EventHandler', function () {
             });
 
             it('should not affect any other events', function() {
-                var fired = false;
-                var handler = function() { fired = true; };
+                let fired = false;
+                let handler = function() { fired = true; };
 
                 object.on('event', handler);
                 object.on('event1', f);
@@ -408,16 +367,16 @@ describe('EventHandler', function () {
             });
 
             it('should stack the prohibitions and unstack when allowing', function() {
-                var fired = false;
-                var handler = function() { fired = true; };
+                let fired = false;
+                let handler = function() { fired = true; };
 
                 object.on('event', handler);
                 object.prohibitEvent('event');
                 object.prohibitEvent('event');
-                object.fire('event');
                 expect(fired).toBe(false);
 
-                object.forwardEvent('event', {});
+                let event = new sGisEvent('type');
+                object.forwardEvent(event);
                 expect(fired).toBe(false);
 
                 object.allowEvent('event');
@@ -445,8 +404,8 @@ describe('EventHandler', function () {
     it('should not crate any enumerable properties if connected properly', function() {
         object.on('event', f);
 
-        var counter = 0;
-        for (var i in object) {
+        let counter = 0;
+        for (let i in object) {
             counter++;
         }
 

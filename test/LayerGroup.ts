@@ -1,14 +1,14 @@
 import "jest";
 import {LayerGroup} from "../source/LayerGroup";
-import {DynamicLayer} from "../source/layers/DynamicLayer";
 import {TileLayer} from "../source/layers/TileLayer";
+import {FeatureLayer} from "../source/layers/FeatureLayer";
 
 describe('LayerGroup', function() {
     describe('constructor', function () {
         it('should correctly create simple LayerGroup instance', function () {
             const emptyGroup = new LayerGroup();
 
-            const dynamicLayer = new DynamicLayer(() => {});
+            const dynamicLayer = new FeatureLayer();
             const tileLayer = new TileLayer('url');
 
             const nonEmptyGroup = new LayerGroup([dynamicLayer, tileLayer]);
@@ -22,8 +22,8 @@ describe('LayerGroup', function() {
 
         it('should correctly create nested LayerGroup instance', function () {
             const nestedGroup = new LayerGroup([
-                new LayerGroup([ new DynamicLayer(() => {}), new DynamicLayer(() => {}) ]),
-                new DynamicLayer(() => {})
+                new LayerGroup([ new FeatureLayer(), new FeatureLayer() ]),
+                new FeatureLayer()
             ]);
 
             expect(nestedGroup).toEqual(jasmine.any(LayerGroup));

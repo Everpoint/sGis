@@ -24,22 +24,22 @@ export class Crs {
     /**
      * Numeric code of the projection. Usually it is EPSG, OCG or ESRI code.
      */
-    public readonly wkid: number;
+    public readonly wkid?: number;
 
     /**
      * Authority that registered this crs. Combined with wkid it makes full id of the crs. E.g. EPSG:4326
      */
-    public readonly authority: string;
+    public readonly authority?: string;
 
     /**
      * Well known text representation of the crs.
      */
-    public readonly wkt: string;
+    public readonly wkt?: string;
 
     /**
      * Any addition descriptions for the crs.
      */
-    public readonly details: string;
+    public readonly details?: string;
 
     private _projections: Map<Crs, Projection> = new Map();
     private _discoveryMode: boolean = false;
@@ -65,7 +65,7 @@ export class Crs {
         if (this.wkid) return this.wkid.toString();
         if (this.wkt) return this.wkt;
 
-        return this.details;
+        return this.details || 'Unknown crs';
     }
 
     /**

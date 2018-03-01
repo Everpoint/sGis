@@ -4,7 +4,9 @@ import {geo} from "../source/Crs";
 
 describe('sGis.Bbox', function() {
 
-    let bbox, negBbox;
+    let bbox: Bbox;
+    let negBbox: Bbox;
+
     beforeEach(function() {
         bbox = new Bbox([0, 0], [10, 10]);
         negBbox = new Bbox([-10, -10], [10, 10]);

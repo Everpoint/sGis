@@ -14,7 +14,7 @@ export interface ImageFillConstructorParams {
     /** @see [[ImageFill.lineDash]] */
     lineDash?: number[],
     /** @see [[ImageFill.src]] */
-    src?: 'string'
+    src?: string
 }
 
 /**
@@ -22,27 +22,35 @@ export interface ImageFillConstructorParams {
  * @alias sGis.symbol.polygon.ImageFill
  */
 export class ImageFill extends Symbol<Polygon> {
-    private _image: HTMLImageElement;
-
-    //noinspection SpellCheckingInspection
-    private _src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+    private _image: HTMLImageElement = new Image();
+    private _src: string;
 
     /** Stroke color of the outline. Can be any valid css color string. */
-    strokeColor = 'black';
+    strokeColor: string;
 
     /** Stroke width of the outline. */
-    strokeWidth = 1;
+    strokeWidth: number;
 
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification. */
-    lineDash = [];
+    lineDash: number[];
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(options: ImageFillConstructorParams = {}) {
+    constructor({
+        src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+        strokeWidth = 1,
+        strokeColor = 'block',
+        lineDash = []
+    }: ImageFillConstructorParams = {}) {
         super();
-        Object.assign(this, options);
-        if (!this._image) this.src = this._src;
+
+        this.strokeWidth = strokeWidth;
+        this.strokeColor = strokeColor;
+        this.lineDash = lineDash;
+        this._src = src;
+
+        this._updateImage();
     }
 
     renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {
@@ -67,8 +75,12 @@ export class ImageFill extends Symbol<Polygon> {
     get src(): string { return this._src; }
     set src(src: string) {
         this._src = src;
+        this._updateImage();
+    }
+
+    private _updateImage(): void {
         this._image = new Image();
-        this._image.src = src;
+        this._image.src = this._src;
     }
 }
 
