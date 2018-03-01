@@ -11,7 +11,7 @@ import {StaticLabelSymbol} from "../../../source/symbols/label/StaticLabelSymbol
 import {HorizontalAlignment, VerticalAlignment} from "../../../source/renders/VectorLabel";
 import {LabelFeature} from "../../../source/features/Label";
 import {DynamicLabelSymbol} from "../../../source/symbols/label/DynamicLabelSymbol";
-import {setCssClasses, setStyleNode} from "../../../source/utils/utils";
+import {setStyleNode} from "../../../source/utils/utils";
 
 let {map} = init({
     wrapper: document.body,

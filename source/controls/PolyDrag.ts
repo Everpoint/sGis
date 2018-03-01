@@ -4,7 +4,7 @@ import {Polygon} from "../features/Polygon";
 import {Map} from "../Map";
 import {Symbol} from "../symbols/Symbol";
 import {Contour} from "../baseTypes";
-import {Point} from "../Point";
+import {IPoint} from "../Point";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 import {Poly} from "../features/Poly";
 
@@ -87,13 +87,13 @@ export abstract class PolyDrag extends Control {
      * This method is called when a new feature is started. Returns coordinates set for the new feature based on where the drawing has started.
      * @param point - position of the new feature.
      */
-    protected abstract _getNewCoordinates(point: Point): Contour[];
+    protected abstract _getNewCoordinates(point: IPoint): Contour[];
 
     /**
      * This method is called when the coordinates of the active feature must be updated. Returns new coordinates of the feature.
      * @param point
      */
-    protected abstract _getUpdatedCoordinates(point: Point): Contour[];
+    protected abstract _getUpdatedCoordinates(point: IPoint): Contour[];
 
     /**
      * The feature being drawn.

@@ -1,9 +1,9 @@
-import {Point} from "./Point";
+import {IPoint} from "./Point";
 import {EventHandler, MouseEventFlags, mouseEvents, sGisEvent} from "./EventHandler";
 import {Offset} from "./baseTypes";
 
 export interface sGisMouseEventParams {
-    point: Point,
+    point: IPoint,
     browserEvent: MouseEvent,
     contourIndex?: number | null,
     pointIndex?: number | null
@@ -12,7 +12,7 @@ export interface sGisMouseEventParams {
 export abstract class sGisMouseEvent extends sGisEvent {
     readonly eventFlag: MouseEventFlags;
 
-    readonly point: Point;
+    readonly point: IPoint;
     readonly browserEvent: MouseEvent;
     contourIndex: number | null;
     pointIndex: number | null;

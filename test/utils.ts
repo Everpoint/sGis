@@ -1,20 +1,20 @@
-import {copyArray, copyObject, isArray, isString} from "../source/utils/utils";
+import {copyArray, copyObject, isString} from "../source/utils/utils";
 
 describe('utils', function() {
     describe('isArray', function () {
         it('should correctly distinguish array from not array', function () {
-            expect(isArray([])).toBeTruthy();
-            expect(isArray([1, 2])).toBeTruthy();
-            expect(isArray(['a', 'b'])).toBeTruthy();
-            expect(isArray([{hello: 'hello'}])).toBeTruthy();
-            expect(isArray([[[]]])).toBeTruthy();
-            expect(isArray([[], []])).toBeTruthy();
-            expect(isArray(1)).toBeFalsy();
-            expect(isArray('abc')).toBeFalsy();
-            expect(isArray({})).toBeFalsy();
-            expect(isArray(null)).toBeFalsy();
-            expect(isArray(undefined)).toBeFalsy();
-            expect(isArray(NaN)).toBeFalsy();
+            expect(Array.isArray([])).toBeTruthy();
+            expect(Array.isArray([1, 2])).toBeTruthy();
+            expect(Array.isArray(['a', 'b'])).toBeTruthy();
+            expect(Array.isArray([{hello: 'hello'}])).toBeTruthy();
+            expect(Array.isArray([[[]]])).toBeTruthy();
+            expect(Array.isArray([[], []])).toBeTruthy();
+            expect(Array.isArray(1)).toBeFalsy();
+            expect(Array.isArray('abc')).toBeFalsy();
+            expect(Array.isArray({})).toBeFalsy();
+            expect(Array.isArray(null)).toBeFalsy();
+            expect(Array.isArray(undefined)).toBeFalsy();
+            expect(Array.isArray(NaN)).toBeFalsy();
         });
     });
 

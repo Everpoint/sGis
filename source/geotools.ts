@@ -6,7 +6,6 @@ import {Poly} from "./features/Poly";
 import {Feature} from "./features/Feature";
 import {MultiPoint} from "./features/MultiPoint";
 import {PointFeature} from "./features/PointFeature";
-import {isArray} from "./utils/utils";
 
 export type Line = [Coordinates, Coordinates];
 
@@ -156,7 +155,7 @@ export const pointToLineProjection = function(point: Coordinates, line: Line): C
  */
 export const contains = function(polygon: Coordinates[][] | Coordinates[], point: Coordinates, tolerance: number = 0): boolean | [number, number] {
     let intersectionCount = 0;
-    let adjusted = isArray(polygon[0][0]) ? <Coordinates[][]>polygon : [<Coordinates[]>polygon];
+    let adjusted = Array.isArray(polygon[0][0]) ? <Coordinates[][]>polygon : [<Coordinates[]>polygon];
 
     for (let ring = 0, l = adjusted.length; ring < l; ring++) {
         let points = adjusted[ring].concat([adjusted[ring][0]]);

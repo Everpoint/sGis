@@ -1,12 +1,12 @@
 import {
-    Control, ControlConstructorParams, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent,
+    Control, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent,
     PointAddEvent
 } from "./Control";
 import {Poly} from "../features/Poly";
 import {Coordinates} from "../baseTypes";
 import {Polygon} from "../features/Polygon";
 import {sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
-import {Point} from "../Point";
+import {IPoint} from "../Point";
 import {Symbol} from "../symbols/Symbol";
 
 /**
@@ -84,7 +84,7 @@ export abstract class PolyControl extends Control {
      * Starts a new feature with the first point at given position. If the control was not active, this method will set it active.
      * @param point
      */
-    startNewFeature(point: Point): void {
+    startNewFeature(point: IPoint): void {
         this.activate();
         this.cancelDrawing();
 

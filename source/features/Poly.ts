@@ -1,6 +1,6 @@
 import {Feature, FeatureParams} from "./Feature";
 import {Coordinates} from "../baseTypes";
-import {copyArray, isArray} from "../utils/utils";
+import {copyArray} from "../utils/utils";
 import {IPoint} from "../Point";
 import {Bbox} from "../Bbox";
 import {Crs} from "../Crs";
@@ -18,8 +18,8 @@ export abstract class Poly extends Feature {
     constructor(rings: Coordinates[][] | Coordinates[], properties?: FeatureParams) {
         super(properties);
         if (rings && rings.length > 0) {
-            if (!isArray(rings[0][0])) rings = [<Coordinates[]>rings];
-            this.rings = copyArray(rings);
+            if (!Array.isArray(rings[0][0])) rings = [<Coordinates[]>rings];
+            this.rings = copyArray(<Coordinates[][]>rings);
         } else {
             this._rings = [[]];
         }

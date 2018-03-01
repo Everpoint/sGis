@@ -5,7 +5,7 @@ import {Container} from "./Container";
 import {AnimationEndEvent, AnimationStartEvent, Map as sGisMap} from "../../Map";
 import {Layer} from "../../layers/Layer";
 import {Bbox} from "../../Bbox";
-import {error, warn, requestAnimationFrame} from "../../utils/utils";
+import {error, warn} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
 import {EventHandler} from "../../EventHandler";
@@ -45,7 +45,7 @@ export class DomPainter extends EventHandler {
      * @param map - the map to be drawn.
      * @param options - key-value list of properties to be assigned to the instance.
      */
-    constructor(map: sGisMap, {wrapper = null}: DomPainterParams) {
+    constructor(map: sGisMap, {wrapper = null}: DomPainterParams = {}) {
         super();
 
         this._map = map;
@@ -190,7 +190,7 @@ export class DomPainter extends EventHandler {
             }
         }
 
-        requestAnimationFrame(this._repaintBound);
+        window.requestAnimationFrame(this._repaintBound);
     }
 
     private _setNewContainer(): void {

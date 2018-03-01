@@ -1,10 +1,8 @@
-import { listenDomEvent } from './domEvent';
-
 /**
  * Throws an exception with given message. If you need to handle all errors in one place, redefined this method to your needed handler.
  * @param error
  */
-export const error = function (error: string | Error) {
+export const error = function(error: string | Error): never {
     if (isString(error)) {
         throw new Error(error as string);
     } else {
@@ -12,79 +10,38 @@ export const error = function (error: string | Error) {
     }
 };
 
-export const warn = function(exeption) {
+export const warn = function(error: string): void {
     // eslint-disable-next-line no-console
-    if (typeof console === 'object') console.warn(exeption);
+    console.warn(error);
 };
 
 /**
- * Sets the values of the properties in 'options' to the 'object' ignoring any undefined properties.
- * @param {Object} object
- * @param {Object} options
+ * Calls the 'func' callback in 'interval' ms after a series of subsequent function calls.
+ * @param func - callback function
+ * @param interval - interval in ms
  */
-export const assignDefined = function(object, options) {
-    if (!options) return;
-
-    let keys = Object.keys(options);
-    keys.forEach(function(key) {
-        if (options[key] !== undefined) {
-            try {
-                object[key] = options[key];
-            } catch (e) {
-                if (!(e instanceof TypeError)) error(e);
-            }
-        }
-    });
-};
-
-/**
- * Calls window.requestAnimationFrame or its friends if available or uses timeout to simulate their behavior
- * @param {Function} callback - callback function
- * @param {HTMLElement} [element] - the target of rendering
- */
-export const requestAnimationFrame = function(callback, element?: HTMLElement) {
-    var requestAnimationFrame = window.requestAnimationFrame || (<any>window).mozRequestAnimationFrame || window.webkitRequestAnimationFrame || (<any>window).msRequestAnimationFrame;
-
-    if (requestAnimationFrame) {
-        requestAnimationFrame(callback, element);
-    } else {
-        setTimeout(function() {
-            callback();
-        }, 1000/30);
-    }
-};
-
-/**
- * Debounce function calls
- * @param {Function} func - callback function
- * @param {number} ms - interval
- * @return {Function}
- */
-export const debounce = function(func, ms) {
+export const debounce = function(func: Function, interval: number): () => void{
     let timer: number | null = null;
     return function () {
         if (timer) clearTimeout(timer);
-        timer = setTimeout(function () {
+        timer = window.setTimeout(function () {
             timer = null;
             func.apply(this, arguments);
-        }, ms);
+        }, interval);
     }
 };
 
 /**
  * Throttle function calls
- * @param {Function} func - callback function
- * @param {number} ms - interval
- * @return {Function}
+ * @param func - callback function
+ * @param interval - interval
  */
-export const throttle = function(func, ms) {
+export const throttle = function(func: Function, interval: number): () => void {
+    let isThrottled = false;
+    let savedArgs;
+    let savedThis;
 
-    var isThrottled = false,
-        savedArgs,
-        savedThis;
-
-    function wrapper () {
-
+    function wrapper() {
         if (isThrottled) {
             savedArgs = arguments;
             savedThis = this;
@@ -95,179 +52,61 @@ export const throttle = function(func, ms) {
 
         isThrottled = true;
 
-        setTimeout(function () {
+        setTimeout(function() {
             isThrottled = false;
             if (savedArgs) {
                 wrapper.apply(savedThis, savedArgs);
                 savedArgs = savedThis = null;
             }
-        }, ms);
+        }, interval);
     }
 
     return wrapper;
 };
 
 /**
- * Copies the own properties of source to target, ignoring the properties already existing in target. Only one-level copy.
- * @param {Object} target
- * @param {Object} source
- * @param {Boolean} [ignoreUndefined=false] - if set to true, properties in the source that have the value of undefined will be ignored
- */
-export const extend = function(target, source, ignoreUndefined = false) {
-    let keys = Object.keys(source);
-    keys.forEach(function(key) {
-        if (ignoreUndefined && source[key] === undefined) return;
-        target[key] = source[key];
-    });
-    return target;
-};
-
-export const mixin = function(target, source) {
-    Object.getOwnPropertyNames(source).forEach(key => {
-        if (key === 'constructor') return;
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-    });
-};
-
-/**
- * Returns true is obj is Array, otherwise false
- * @param {Any} obj
- * @returns {boolean}
- */
-export const isArray = function(obj) {
-    return Array.isArray(obj);
-};
-
-/**
  * Returns true if n is a finite number, otherwise false
- * @param {Any} n
- * @returns {boolean}
+ * @param n
  */
-export const isNumber = function(n) {
+export const isNumber = function(n: any): boolean {
     return typeof n === 'number' && isFinite(n);
 };
 
 /**
  * Returns true if n is an integer number, otherwise false
- * @param {Any} n
- * @returns {boolean}
+ * @param n
  */
-export const isInteger = function(n) {
+export const isInteger = function(n: any): boolean {
     return isNumber(n) && Math.round(n) === n;
 };
 
 /**
  * Returns true if s is a string, otherwise false
- * @param {Any} s
- * @returns {boolean}
+ * @param s
  */
-export const isString = function(s) {
+export const isString = function(s: any): boolean {
     return typeof s === 'string';
 };
 
 /**
- * Returns true if f is a function, otherwise false
- * @param {Any} f
- * @returns {boolean}
- */
-export const isFunction = function(f) {
-    return typeof f === 'function';
-};
-
-/**
- * Returns true if o is a HTML node
- * @param {Any} o
- * @returns {boolean}
- */
-export const isNode = function(o) {
-    return !!o.nodeType;
-};
-
-/**
- * Returns true if o is a HTML img element
- * @param {Any} o
- * @returns {boolean}
- */
-export const isImage = function(o) {
-    return browser.indexOf('Opera') !== 0 && o instanceof Image || o instanceof HTMLImageElement
-};
-
-/**
- * Throws an exception if s is not a string
- * @param {Any} s
- */
-export const validateString = function(s) {
-    if (!isString(s)) error('String is expected but got ' + s + ' instead');
-};
-
-/**
- * Throws an exception if v is not one of the allowed values
- * @param {Any} v
- * @param {Array} allowed
- */
-export const validateValue = function(v, allowed) {
-    if (allowed.indexOf(v) === -1) error('Invalid value of the argument: ' + v);
-};
-
-/**
- * Throws an exception if n is not a number
- * @param {Any} n
- */
-export const validateNumber = function(n) {
-    if (!isNumber(n)) error('Number is expected but got ' + n + ' instead');
-};
-
-/**
- * Throws an exception if n is not a positive number
- * @param n
- */
-export const validatePositiveNumber = function(n) {
-    if (!isNumber(n) || n <= 0) error('Positive number is expected but got ' + n + ' instead');
-};
-
-/**
- * Throws an exception if b is not a boolean value
- * @param b
- */
-export const validateBool = function(b) {
-    if (b !== true && b !== false) error('Boolean is expected but got ' + b + ' instead');
-};
-
-/**
  * Returns a random GUID
- * @returns {string}
  */
-export const getGuid = function() {
+export const getGuid = function(): string {
     //noinspection SpellCheckingInspection
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);});
-};
-
-/**
- * Sets the innerHTML property to element. It will escape the issue with table inserting as innerHTML.
- * @param {HTMLElement} element
- * @param {String} html
- */
-export const html = function(element, html) {
-    try {
-        element.innerHTML = html;
-    } catch(e) {
-        var tempElement = document.createElement('div');
-        tempElement.innerHTML = html;
-        for (var i = tempElement.childNodes.length - 1; i >=0; i--) {
-            element.insertBefore(tempElement.childNodes[i], tempElement.childNodes[i+1]);
-        }
-    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        let r = Math.random() * 16 | 0;
+        let v = c == 'x' ? r : r & 0x3 | 0x8;
+        return v.toString(16);
+    });
 };
 
 /**
  * Returns true if at least one element of arr1 also exists in arr2
- * @param {Array} arr1
- * @param {Array} arr2
- * @returns {boolean}
- * TODO: check if it should work backwards also
+ * @param arr1
+ * @param arr2
  */
-export const arrayIntersect = function(arr1, arr2) {
-    for (var i = 0; i < arr1.length; i++) {
+export const arrayIntersect = function(arr1: any[], arr2: any[]): boolean {
+    for (let i = 0; i < arr1.length; i++) {
         if (arr2.indexOf(arr1[i]) !== -1) {
             return true;
         }
@@ -277,14 +116,13 @@ export const arrayIntersect = function(arr1, arr2) {
 
 /**
  * Makes a deep copy af the array
- * @param {Array} arr
- * @returns {Array}
+ * @param arr
  */
-export const copyArray = function(arr) {
-    var copy = [];
-    for (var i = 0, l = arr.length; i < l; i++) {
-        if (isArray(arr[i])) {
-            copy[i] = copyArray(arr[i]);
+export const copyArray = function<T>(arr: T[]): T[] {
+    let copy: T[] = [];
+    for (let i = 0, l = arr.length; i < l; i++) {
+        if (Array.isArray(arr[i])) {
+            copy[i] = <any>copyArray(<any>arr[i]);
         } else {
             copy[i] = arr[i];
         }
@@ -294,15 +132,14 @@ export const copyArray = function(arr) {
 
 /**
  * Makes a deep copy of an object
- * @param {Object} obj
- * @returns {*}
+ * @param obj
  * TODO: this will not copy the inner arrays properly
  */
-export const copyObject = function(obj) {
+export const copyObject = function(obj: any): any {
     if (!(obj instanceof Function) && obj instanceof Object) {
-        var copy = isArray(obj) ? [] : {};
-        var keys = Object.keys(obj);
-        for (var i = 0; i < keys.length; i++) {
+        let copy = Array.isArray(obj) ? [] : {};
+        let keys = Object.keys(obj);
+        for (let i = 0; i < keys.length; i++) {
             copy[keys[i]] = copyObject(obj[keys[i]]);
         }
         return copy;
@@ -311,16 +148,24 @@ export const copyObject = function(obj) {
     }
 };
 
-export const setCssClasses = function(desc) {
-    var classes = Object.keys(desc).map(key => {return getCssText(key, desc[key]);});
+/**
+ * Creates a new <style> node and adds it to the document head section.
+ * @param desc
+ */
+export const setCssClasses = function(desc: {[key: string]: string}): void {
+    let classes = Object.keys(desc).map(key => {return getCssText(key, desc[key]);});
     setStyleNode(classes.join('\n'));
 };
 
-const getCssText = function(className, styles) {
+const getCssText = function(className: string, styles: string): string {
     return '.' + className + '{' + styles + '}';
 };
 
-export const setStyleNode = function(text) {
+/**
+ * Creates a new <style> node with the given code and adds it to the document head.
+ * @param text
+ */
+export const setStyleNode = function(text: string): void {
     let node = document.createElement('style');
     node.type = 'text/css';
     if ((<any>node).styleSheet) {
@@ -332,7 +177,10 @@ export const setStyleNode = function(text) {
     document.head.appendChild(node);
 };
 
-export const browser = (function() {
+/**
+ * Contains the name of the current browser.
+ */
+export const browser: string = (function() {
     let ua= navigator.userAgent,
         tem,
         M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
@@ -349,61 +197,12 @@ export const browser = (function() {
     return M.join(' ');
 })();
 
-export const createNode = function(nodeName, cssClass, properties = {}, children = []) {
-    let node = document.createElement(nodeName);
-    node.className = cssClass;
-    extend(node, properties);
-    children.forEach(child => node.appendChild(child));
-    return node;
-};
-
-export const isIE = browser.search('IE') !== -1;
-export const isTouch = 'ontouchstart' in document.documentElement;
+/**
+ * Contains 'true' if the current browser is Internet Explorer of any version.
+ */
+export const isIE: boolean = browser.search('IE') !== -1;
 
 /**
- * Contains prefixed css properties for transition, transform and transformOrigin
- * @type {{transition: {func: string, rule: string}, transform: {func: string, rule: string}, transformOrigin: {func: string, rule: string}}}
+ * Contains 'true' if the current browser is run on a touch device.
  */
-export const css : any = {};
-
-if (document.body) {
-    setCssRules();
-} else {
-    listenDomEvent(document, 'DOMContentLoaded', setCssRules);
-}
-function setCssRules() {
-    css.transition = document.body.style.transition !== undefined ? {func: 'transition', rule: 'transition'} :
-        document.body.style.webkitTransition !== undefined ? {
-                func: 'webkitTransition',
-                rule: '-webkit-transition'
-            } :
-            (<any>document.body.style).msTransition !== undefined ? {func: 'msTransition', rule: '-ms-transition'} :
-                (<any>document.body.style).OTransition !== undefined ? {
-                        func: 'OTransition',
-                        rule: '-o-transition'
-                    } :
-                    null;
-    css.transform = document.body.style.transform !== undefined ? {func: 'transform', rule: 'transform'} :
-        document.body.style.webkitTransform !== undefined ? {func: 'webkitTransform', rule: '-webkit-transform'} :
-            (<any>document.body.style).OTransform !== undefined ? {func: 'OTransform', rule: '-o-transform'} :
-                (<any>document.body.style).msTransform !== undefined ? {
-                    func: 'msTransform',
-                    rule: '-ms-transform'
-                } : null;
-    css.transformOrigin = document.body.style.transformOrigin !== undefined ? {
-            func: 'transformOrigin',
-            rule: 'transform-origin'
-        } :
-        document.body.style.webkitTransformOrigin !== undefined ? {
-                func: 'webkitTransformOrigin',
-                rule: '-webkit-transform-origin'
-            } :
-            (<any>document.body.style).OTransformOrigin !== undefined ? {
-                    func: 'OTransformOrigin',
-                    rule: '-o-transform-origin'
-                } :
-                (<any>document.body.style).msTransformOrigin !== undefined ? {
-                    func: 'msTransformOrigin',
-                    rule: '-ms-transform-origin'
-                } : null;
-}
+export const isTouch: boolean = 'ontouchstart' in document.documentElement;
