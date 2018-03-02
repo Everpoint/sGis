@@ -115,7 +115,7 @@ export interface ControlWithSymbolParams extends ControlConstructorParams{
  */
 export abstract class Control extends EventHandler {
     private _map: Map;
-    private _snappingFeature: PointFeature;
+    private _snappingFeature?: PointFeature;
     private _snappingSymbol: Symbol<PointFeature> = new CrossPointSymbol();
 
     protected _isActive: boolean = false;
@@ -136,12 +136,12 @@ export abstract class Control extends EventHandler {
      * Snapping provider to be used by the control. If set to null, the snapping will not be used.
      * @see [[Control._snap]]
      */
-    snappingProvider: ISnappingProvider | null;
+    snappingProvider?: ISnappingProvider;
 
     /**
      * Vector layer the control will work with. Some controls do not require active layer to be set.
      */
-    activeLayer: FeatureLayer | null;
+    activeLayer?: FeatureLayer;
 
     /**
      * @param map - map the control will work with.
@@ -199,7 +199,7 @@ export abstract class Control extends EventHandler {
             this._activate();
         } else {
             this._deactivate();
-            if (this._map.contains(this._tempLayer)) {
+            if (this._tempLayer && this._map.contains(this._tempLayer)) {
                 this._map.removeLayer(this._tempLayer);
             }
             this._tempLayer = null;

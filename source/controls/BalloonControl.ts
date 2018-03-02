@@ -12,17 +12,21 @@ import {Bbox} from "../Bbox";
 
 const OFFSET = 10;
 
+export interface BalloonControlParams {
+    painter?: DomPainter;
+}
+
 /**
  * @example controls/Balloon_Control
  */
 export class BalloonControl extends Control {
-    painter: DomPainter;
+    painter?: DomPainter;
 
     private _activeBalloon?: Balloon;
     private _ns: string;
     private _symbol: BalloonSymbol;
 
-    constructor(map: Map, {painter = null} = {}) {
+    constructor(map: Map, {painter}: BalloonControlParams = {}) {
         super(map, {useTempLayer: true});
 
         this.painter = painter;
@@ -49,18 +53,18 @@ export class BalloonControl extends Control {
             balloon.position = feature.position;
         }
 
-        if (this._activeBalloon) {
+        if (this._activeBalloon && this._tempLayer) {
             this._tempLayer.remove(this._activeBalloon);
         }
 
         if (!this._isActive) this.activate();
 
-        this._tempLayer.add(balloon);
+        if (this._tempLayer) this._tempLayer.add(balloon);
         this._activeBalloon = balloon;
     }
 
     private _onRender() {
-        if (!this.painter) return;
+        if (!this.painter || !this._activeBalloon) return;
 
         let node = this._symbol.getNode(this._activeBalloon);
         if (!node) return;
@@ -103,7 +107,7 @@ export class BalloonControl extends Control {
 
     protected _deactivate(): void {
         this.map.off('click', this._onMapClick);
-        this._activeBalloon = null;
+        this._activeBalloon = undefined;
     }
 
     private _onMapClick() {

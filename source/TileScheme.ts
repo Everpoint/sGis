@@ -92,7 +92,7 @@ export class TileScheme {
     /** @see [[TileSchemeConstructorParams.limits]] */
     readonly limits: RectCoordinates;
 
-    constructor({origin, levels, limits, reversedY = false, tileWidth = 256, tileHeight = 256}: TileSchemeConstructorParams) {
+    constructor({origin, levels, limits = [-Infinity, -Infinity, Infinity, Infinity], reversedY = false, tileWidth = 256, tileHeight = 256}: TileSchemeConstructorParams) {
         this._levels = levels.sort((a, b) => a.resolution - b.resolution);
         this._origin = origin;
 

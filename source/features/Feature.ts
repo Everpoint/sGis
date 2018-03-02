@@ -138,11 +138,11 @@ type RenderCache = {
 
 class FeatureSymbolContainer {
     private readonly _feature: Feature;
-    private _symbol: Symbol<Feature> | null;
-    private _tempSymbol: Symbol<Feature> | null = null;
-    private _cached: RenderCache | null = null;
+    private _symbol: Symbol<Feature>;
+    private _tempSymbol?: Symbol<Feature>;
+    private _cached?: RenderCache;
 
-    constructor(feature: Feature, symbol: Symbol<Feature> = null) {
+    constructor(feature: Feature, symbol: Symbol<Feature>) {
         this._feature = feature;
         this._symbol = symbol;
     }
@@ -160,7 +160,7 @@ class FeatureSymbolContainer {
      */
     render(resolution: number, crs: Crs): Render[] {
         if (this._feature.hidden || !this.symbol) return [];
-        if (!this._needToRender(resolution, crs)) return this._cached.renders;
+        if (this._cached && !this._needToRender(resolution, crs)) return this._cached.renders;
 
         this._cached = {
             resolution: resolution,
@@ -182,7 +182,7 @@ class FeatureSymbolContainer {
     }
 
     reset() {
-        this._cached = null;
+        this._cached = undefined;
     }
 
     setTempSymbol(symbol: Symbol<Feature>): void {
@@ -191,7 +191,7 @@ class FeatureSymbolContainer {
     }
 
     clearTempSymbol() {
-        this._tempSymbol = null;
+        this._tempSymbol = undefined;
         this.reset();
     }
 

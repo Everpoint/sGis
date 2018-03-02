@@ -56,27 +56,27 @@ export class AnimationEndEvent extends sGisEvent {
  * @alias sGis.Map
  */
 export class Map extends LayerGroup {
-    private _crs;
-    private _position;
-    private _resolution;
+    private _crs: Crs;
+    private _position: Coordinates;
+    private _resolution: number;
 
     /**
      * Tile scheme of the map.
      */
-    tileScheme;
+    tileScheme: TileScheme;
 
     /**
      * Length of the map animations in milliseconds. Set higher values for slower animations.
      */
-    readonly animationTime;
+    readonly animationTime: number;
 
     /**
      * Delay value before bboxChangeEnd event is fired.
      */
-    readonly changeEndDelay;
+    readonly changeEndDelay: number;
 
-    private _animationStopped: boolean;
-    private _animationTarget: [any, any];
+    private _animationStopped: boolean = true;
+    private _animationTarget: [any, any] | null = null;
     private _animationTimer: any;
 
     private _minResolution: number;
@@ -198,9 +198,9 @@ export class Map extends LayerGroup {
      * @param resolution
      * @param basePoint - Base point of zooming
      */
-    animateSetResolution(resolution: number, basePoint: IPoint | Coordinates = null): void {
+    animateSetResolution(resolution: number, basePoint?: IPoint | Coordinates): void {
         let adjustedResolution = this.getAdjustedResolution(resolution);
-        let newPosition = this._getScaledPosition(adjustedResolution, this._getBase(basePoint));
+        let newPosition = this._getScaledPosition(adjustedResolution, basePoint && this._getBase(basePoint));
         this.animateTo(newPosition, adjustedResolution);
     }
 
@@ -240,7 +240,7 @@ export class Map extends LayerGroup {
         }, 1000 / 60);
     }
 
-    private _getBase(basePoint: Coordinates | IPoint | null): Coordinates | null {
+    private _getBase(basePoint: Coordinates | IPoint): Coordinates | null {
         return (<IPoint>basePoint).projectTo ? (<IPoint>basePoint).projectTo(this.crs).position : <Coordinates>basePoint;
     }
 
@@ -292,7 +292,7 @@ export class Map extends LayerGroup {
      * @param doNotAdjust - do not adjust resolution to the round ones
      */
     setResolution(resolution: number, basePoint: Coordinates | IPoint | null = null, doNotAdjust: boolean = false): void {
-        this.setPosition(this._getScaledPosition(resolution, this._getBase(basePoint)), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
+        this.setPosition(this._getScaledPosition(resolution, basePoint && this._getBase(basePoint)), doNotAdjust ? resolution : this.getAdjustedResolution(resolution));
     }
 
     /**

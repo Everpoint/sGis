@@ -53,7 +53,7 @@ export class FeatureRemoveEvent extends sGisEvent {
 }
 
 type EditState = {
-    feature: Feature,
+    feature: Feature | null,
     coordinates: Coordinates | Contour[] | null
 }
 
@@ -64,20 +64,21 @@ const modes = ['vertex', 'rotate', 'scale', 'drag'];
  * @alias sGis.controls.Editor
  */
 export class Editor extends Control {
-    private _ignoreEvents: boolean;
-    private _scaling: boolean;
-    private _rotation: boolean;
-    private _dragging: boolean;
-    private _activeFeature: any = null;
+    private _ignoreEvents: boolean = false;
+    private _scaling: boolean = true;
+    private _rotation: boolean = true;
+    private _dragging: boolean = true;
+    private _vertexEditing: boolean = true;
 
-    private _polyTransform: PolyTransform;
-    private _polyEditor: PolyEditor;
-    private _pointEditor: PointEditor;
+    private _activeFeature: Feature | null = null;
+
+    private _polyTransform!: PolyTransform;
+    private _polyEditor!: PolyEditor;
+    private _pointEditor!: PointEditor;
 
     private _states: StateManager<EditState>;
-    private _ns: string;
+    private readonly _ns: string;
     private _deselectAllowed = true;
-    private _vertexEditing: boolean;
 
     /**
      * If set to true the feature will be deleted in one of two cases:<br>
@@ -90,7 +91,7 @@ export class Editor extends Control {
      * @param map - map object the control will work with
      * @param options - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {snappingProvider = null, isActive = false, activeLayer = null}: ControlConstructorParams = {}) {
+    constructor(map: Map, {snappingProvider, activeLayer, isActive = false}: ControlConstructorParams = {}) {
         super(map, {snappingProvider, activeLayer});
 
         this._ns = '.' + getGuid();
@@ -125,14 +126,14 @@ export class Editor extends Control {
         this._polyTransform.on('rotationEnd scalingEnd', this._onEdit);
     }
 
-    setSnappingProvider(provider: ISnappingProvider) {
+    setSnappingProvider(provider: ISnappingProvider): void {
         this.snappingProvider = provider;
         if (this._pointEditor) this._pointEditor.snappingProvider = provider;
         if (this._polyEditor) this._polyEditor.snappingProvider = this._getPolyEditorSnappingProvider();
     }
 
-    private _getPolyEditorSnappingProvider() {
-        if (!this.snappingProvider) return null;
+    private _getPolyEditorSnappingProvider(): ISnappingProvider | undefined{
+        if (!this.snappingProvider) return undefined;
 
         const result = this.snappingProvider.clone();
         if (result instanceof SnappingProviderBase) {
@@ -164,12 +165,14 @@ export class Editor extends Control {
         listenDomEvent(document, 'keydown', this._handleKeyDown);
     }
 
-    private _handleFeatureAdd(event: FeaturesAddEvent): void {
-        event.features.forEach(f => this._setListener(f));
+    private _handleFeatureAdd(event: sGisEvent): void {
+        let featuresAddEvent = event as FeaturesAddEvent;
+        featuresAddEvent.features.forEach(f => this._setListener(f));
     }
 
-    private _handleFeatureRemove(event: FeaturesRemoveEvent): void {
-        event.features.forEach(f => this._removeListener(f));
+    private _handleFeatureRemove(event: sGisEvent): void {
+        let featuresRemoveEvent = event as FeaturesRemoveEvent;
+        featuresRemoveEvent.features.forEach(f => this._removeListener(f));
     }
 
     private _setListener(feature: Feature): void {
@@ -186,6 +189,8 @@ export class Editor extends Control {
 
     protected _deactivate(): void {
         this._deselect();
+        if (!this.activeLayer) return;
+
         this.activeLayer.features.forEach(this._removeListener, this);
         this.activeLayer.off('featureAdd', this._handleFeatureAdd);
         this.activeLayer.off('featureRemove', this._handleFeatureRemove);
@@ -208,8 +213,8 @@ export class Editor extends Control {
     /**
      * Currently selected for editing feature.
      */
-    get activeFeature(): Feature { return this._activeFeature; }
-    set activeFeature(feature: Feature) {
+    get activeFeature(): Feature | null { return this._activeFeature; }
+    set activeFeature(feature: Feature | null) {
         if (feature) this.activate();
         this._select(feature);
     }
@@ -220,7 +225,7 @@ export class Editor extends Control {
         this._select(feature);
     }
 
-    private _select(feature: Feature): void {
+    private _select(feature: Feature | null): void {
         if (this._activeFeature === feature) return;
         this._deselect();
 
@@ -234,7 +239,8 @@ export class Editor extends Control {
         } else if (feature instanceof Poly) {
             this._activatePolyControls(feature);
         }
-        this.activeLayer.redraw();
+
+        if (this.activeLayer) this.activeLayer.redraw();
 
         this._saveState();
 
@@ -264,7 +270,7 @@ export class Editor extends Control {
 
         this._activeFeature.clearTempSymbol();
         this._activeFeature = null;
-        this.activeLayer.redraw();
+        if (this.activeLayer) this.activeLayer.redraw();
 
         this.fire(new FeatureDeselectEvent(feature));
     }
@@ -291,7 +297,7 @@ export class Editor extends Control {
         this._dragging = mode.indexOf('drag') >= 0;
         this._scaling = mode.indexOf('scale') >= 0;
 
-        if (this._activeFeature && this._activeFeature.rings) {
+        if (this._activeFeature instanceof Poly) {
             this._polyEditor.deactivate();
             this._polyTransform.deactivate();
             this._activatePolyControls(this._activeFeature);
@@ -314,14 +320,14 @@ export class Editor extends Control {
             this.prohibitEvent(FeatureDeselectEvent.type);
             this._deselect();
             this.allowEvent(FeatureDeselectEvent.type);
-            this.activeLayer.remove(feature);
+            if (this.activeLayer) this.activeLayer.remove(feature);
 
             this._saveState();
             this.fire(new FeatureRemoveEvent(feature));
         }
     }
 
-    private _handleKeyDown(event: KeyboardEvent): boolean {
+    private _handleKeyDown(event: KeyboardEvent): boolean | undefined{
         switch (event.which) {
             case 27: this._deselect(); return false; // esc
             case 46: this._delete(); return false; // del
@@ -331,7 +337,9 @@ export class Editor extends Control {
     }
 
     private _saveState(): void {
-        this._states.setState({ feature: this._activeFeature, coordinates: this._activeFeature && this._activeFeature.coordinates });
+        let coordinates = this.activeFeature === null ? null
+            : this.activeFeature instanceof Poly ? this.activeFeature.rings : (this.activeFeature as PointFeature).position;
+        this._states.setState({ feature: this._activeFeature, coordinates: coordinates });
     }
 
     /**
@@ -348,13 +356,13 @@ export class Editor extends Control {
         this._setState(this._states.redo());
     }
 
-    private _setState(state: EditState) {
-        if (!state) return this._deselect();
+    private _setState(state: EditState | null) {
+        if (!state || !this.activeLayer) return this._deselect();
 
-        if (!state.coordinates && this.activeLayer.features.indexOf(state.feature) >= 0) {
+        if (!state.coordinates && state.feature && this.activeLayer.features.indexOf(state.feature) >= 0) {
             this.activeFeature = null;
             this.activeLayer.remove(state.feature);
-        } else if (state.coordinates && this.activeLayer.features.indexOf(state.feature) < 0) {
+        } else if (state.coordinates && state.feature && this.activeLayer.features.indexOf(state.feature) < 0) {
             this._setCoordinates(state);
             this.activeLayer.add(state.feature);
             this.activeFeature = state.feature;

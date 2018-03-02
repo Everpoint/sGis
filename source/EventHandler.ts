@@ -85,10 +85,10 @@ type HandlerDescription = {
  * @alias sGis.EventHandler
  */
 export abstract class EventHandler {
-    private _prohibitedEvents: string[];
-    private _eventHandlers: { [eventType: string]: HandlerDescription[] };
+    private _prohibitedEvents!: string[];
+    private _eventHandlers!: { [eventType: string]: HandlerDescription[] };
 
-    eventFlags: MouseEventFlags;
+    eventFlags!: MouseEventFlags;
 
     constructor() {
         // This initialization makes the properties not enumerable and guaranties a valid value is there at all times

@@ -9,7 +9,7 @@ import {Contour, Coordinates} from "../baseTypes";
 export class Circle extends PolyDrag {
     /** The number of segments of the circle. The higher this number is the smoother the circle will be. */
     segmentNo: number = 36;
-    private _centerPoint: Coordinates;
+    private _centerPoint?: Coordinates;
 
     protected _getNewCoordinates(point: Point): Contour[] {
         this._centerPoint = point.position;
@@ -17,6 +17,8 @@ export class Circle extends PolyDrag {
     }
 
     protected _getUpdatedCoordinates(point: Point): Contour[] {
+        if (!this._centerPoint) return [];
+
         let radius = Math.sqrt(Math.pow(this._centerPoint[0] - point.position[0], 2) + Math.pow(this._centerPoint[1] - point.position[1], 2));
         let angleStep = 2 * Math.PI / this.segmentNo;
 
