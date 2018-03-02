@@ -62,6 +62,7 @@ export class SquareSymbol extends Symbol<PointFeature> {
     }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
+        if (!(feature instanceof PointFeature)) return [];
         let position = feature.projectTo(crs).position;
         let pxPosition = [position[0] / resolution, - position[1] / resolution];
         let halfSize = this.size / 2;

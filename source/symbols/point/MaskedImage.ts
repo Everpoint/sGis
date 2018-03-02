@@ -89,7 +89,7 @@ export class MaskedImage extends Symbol<PointFeature> {
     }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
-        if (!this._maskedSrc) return [];
+        if (!(feature instanceof PointFeature) || !this._maskedSrc) return [];
 
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];

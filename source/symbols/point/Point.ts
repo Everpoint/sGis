@@ -61,6 +61,7 @@ export class PointSymbol extends Symbol<PointFeature> {
     }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
+        if (!(feature instanceof PointFeature)) return [];
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
 

@@ -40,6 +40,7 @@ export class PolylineSymbol extends Symbol<Polyline> {
     }
 
     renderFunction(feature: Polyline, resolution: number, crs: Crs): Render[] {
+        if (!(feature instanceof Poly)) return [];
         let coordinates = PolylineSymbol.getRenderedCoordinates(feature, resolution, crs);
         return [new PolyRender(coordinates, {
             fillStyle: FillStyle.None,

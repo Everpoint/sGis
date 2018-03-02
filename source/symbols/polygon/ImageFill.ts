@@ -5,6 +5,7 @@ import {Symbol} from "../Symbol";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {Polygon} from "../../features/Polygon";
+import {Poly} from "../../features/Poly";
 
 export interface ImageFillConstructorParams {
     /** @see [[ImageFill.strokeColor]] */
@@ -54,6 +55,7 @@ export class ImageFill extends Symbol<Polygon> {
     }
 
     renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {
+        if (!(feature instanceof Poly)) return [];
         if (!this._image.complete) {
             this._image.onload = feature.redraw.bind(feature);
             return [];

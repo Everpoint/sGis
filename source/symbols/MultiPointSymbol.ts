@@ -13,6 +13,7 @@ export class MultiPointSymbol extends Symbol<MultiPoint> {
     }
 
     renderFunction(feature: MultiPoint, resolution: number, crs: Crs): Render[] {
+        if (!(feature instanceof MultiPoint)) return [];
         let renders: Render[] = [];
         feature.points.forEach(point => {
             let f = new PointFeature(point, {crs: feature.crs, symbol: this.baseSymbol});

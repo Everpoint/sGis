@@ -60,7 +60,7 @@ export class StaticLabelSymbol extends Symbol<LabelFeature> {
     }
 
     renderFunction(feature: LabelFeature, resolution: number, crs: Crs): Render[] {
-        if (!feature.crs.canProjectTo(crs)) return [];
+        if (!(feature instanceof LabelFeature) || !feature.crs.canProjectTo(crs)) return [];
 
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution + (this.offset[0] || 0), - position[1] / resolution + (this.offset[1] || 0)];
