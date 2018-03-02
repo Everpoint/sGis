@@ -1,4 +1,4 @@
-import {Control, ControlConstructorParams, EditEvent} from "./Control";
+import {Control, ControlParams, EditEvent} from "./Control";
 import {PointFeature} from "../features/PointFeature";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 
@@ -15,7 +15,7 @@ export class PointEditor extends Control {
      * @param map - map object the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map, {snappingProvider = null, isActive = false, activeLayer = null}: ControlConstructorParams = {}) {
+    constructor(map, {snappingProvider = null, isActive = false, activeLayer = null}: ControlParams = {}) {
         super(map, {useTempLayer: true, snappingProvider, activeLayer});
 
         this._handleDragStart = this._handleDragStart.bind(this);

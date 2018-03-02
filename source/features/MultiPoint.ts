@@ -2,7 +2,7 @@ import {IPoint} from "../Point";
 import {Feature, FeatureParams} from "./Feature";
 import {Bbox} from "../Bbox";
 import {PointSymbol} from "../symbols/point/Point";
-import {Coordinates} from "../baseTypes";
+import {Contour, Coordinates} from "../baseTypes";
 import {MultiPointSymbol} from "../symbols/MultiPointSymbol";
 import {Crs} from "../Crs";
 import {projectPoints} from "../geotools";
@@ -12,10 +12,10 @@ import {projectPoints} from "../geotools";
  * @alias sGis.feature.MultiPoint
  */
 export class MultiPoint extends Feature {
-    private _points: Coordinates[];
+    private _points: Contour;
     private _bbox: Bbox;
 
-    constructor(points = [], {symbol = new MultiPointSymbol(new PointSymbol()), ...params}: FeatureParams  = {}) {
+    constructor(points: Contour = [], {symbol = new MultiPointSymbol(new PointSymbol()), ...params}: FeatureParams  = {}) {
         super({symbol, ...params});
         this._points = points;
     }

@@ -1,4 +1,4 @@
-import {ChangeEvent, Control, ControlConstructorParams, EditEvent} from "./Control";
+import {ChangeEvent, Control, ControlParams, EditEvent} from "./Control";
 import {Poly} from "../features/Poly";
 import {move} from "../geotools";
 import {Point} from "../Point";
@@ -9,7 +9,7 @@ import {Crs} from "../Crs";
 import {PolySnappingProvider} from "./snapping/PolySnappingProvider";
 import {lineSnapping, vertexSnapping} from "./snapping/SnappingMethods";
 
-export interface PolyEditorParams extends ControlConstructorParams {
+export interface PolyEditorParams extends ControlParams {
     onFeatureRemove?: () => void,
     hoverSnappingProvider?: PolySnappingProvider;
 }

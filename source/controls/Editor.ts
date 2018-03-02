@@ -1,4 +1,4 @@
-import {ChangeEvent, Control, ControlConstructorParams, EditEvent} from "./Control";
+import {ChangeEvent, Control, ControlParams, EditEvent} from "./Control";
 import {StateManager} from "../utils/StateManager";
 import {PointEditor} from "./PointEditor";
 import {PolyEditor} from "./PolyEditor";
@@ -91,7 +91,7 @@ export class Editor extends Control {
      * @param map - map object the control will work with
      * @param options - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {snappingProvider, activeLayer, isActive = false}: ControlConstructorParams = {}) {
+    constructor(map: Map, {snappingProvider, activeLayer, isActive = false}: ControlParams = {}) {
         super(map, {snappingProvider, activeLayer});
 
         this._ns = '.' + getGuid();

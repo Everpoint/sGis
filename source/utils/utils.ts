@@ -22,9 +22,9 @@ export const warn = function(error: string): void {
  */
 export const debounce = function(func: Function, interval: number): () => void{
     let timer: number | null = null;
-    return function () {
+    return function() {
         if (timer) clearTimeout(timer);
-        timer = window.setTimeout(function () {
+        timer = window.setTimeout(function (this: any) {
             timer = null;
             func.apply(this, arguments);
         }, interval);
@@ -38,10 +38,10 @@ export const debounce = function(func: Function, interval: number): () => void{
  */
 export const throttle = function(func: Function, interval: number): () => void {
     let isThrottled = false;
-    let savedArgs;
-    let savedThis;
+    let savedArgs: IArguments | null;
+    let savedThis: any;
 
-    function wrapper() {
+    function wrapper(this: any) {
         if (isThrottled) {
             savedArgs = arguments;
             savedThis = this;
@@ -137,7 +137,7 @@ export const copyArray = function<T>(arr: T[]): T[] {
  */
 export const copyObject = function(obj: any): any {
     if (!(obj instanceof Function) && obj instanceof Object) {
-        let copy = Array.isArray(obj) ? [] : {};
+        let copy = Array.isArray(obj) ? [] : {} as any;
         let keys = Object.keys(obj);
         for (let i = 0; i < keys.length; i++) {
             copy[keys[i]] = copyObject(obj[keys[i]]);

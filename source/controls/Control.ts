@@ -94,7 +94,7 @@ export class PointAddEvent extends sGisEvent {
     }
 }
 
-export interface ControlConstructorParams {
+export interface ControlParams {
     /** @see [[Control.useTempLayer]] */
     useTempLayer?: boolean,
     /** @see [[Control.snappingProvider]] */
@@ -105,7 +105,7 @@ export interface ControlConstructorParams {
     isActive?: boolean
 }
 
-export interface ControlWithSymbolParams extends ControlConstructorParams{
+export interface ControlWithSymbolParams extends ControlParams{
     symbol?: Symbol<Feature>
 }
 
@@ -147,7 +147,7 @@ export abstract class Control extends EventHandler {
      * @param map - map the control will work with.
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {useTempLayer = false, snappingProvider = null, activeLayer = null, isActive = false}: ControlConstructorParams = {}) {
+    protected constructor(map: Map, {useTempLayer = false, snappingProvider, activeLayer, isActive = false}: ControlParams = {}) {
         super();
         this._map = map;
         this.useTempLayer = useTempLayer;
