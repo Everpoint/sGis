@@ -6,7 +6,11 @@
     "sourceMap": true,
     "outDir": "./dist",
     //"strict": true,
-    "declaration": true
+    "declaration": true,
+    "lib": [
+      "dom",
+      "es2016"
+    ]
   },
   "include": [
     "./source/**/*.ts"

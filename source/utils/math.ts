@@ -55,7 +55,7 @@ export const simplifyCoordinates = function(rings: Contour[], tolerance: number)
     for (let ring = 0, l = rings.length; ring < l; ring++) {
         let simplified: Contour = [rings[ring][0]];
         for (let i = 1, len = rings[ring].length - 1; i < len; i++) {
-            if (!softEquals(rings[ring][i][0], simplified[simplified.length - 1][0], tolerance) || softEquals(rings[ring][i][1], simplified[simplified.length - 1][1], tolerance)) {
+            if (!softEquals(rings[ring][i][0], simplified[simplified.length - 1][0], tolerance) || !softEquals(rings[ring][i][1], simplified[simplified.length - 1][1], tolerance)) {
                 simplified.push(rings[ring][i]);
             }
         }
