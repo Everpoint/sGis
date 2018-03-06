@@ -25,7 +25,7 @@ export interface TileLayerConstructorParams extends LayerConstructorParams {
 }
 
 
-type TileIndex = {
+export type TileIndex = {
     x: number;
     y: number;
     z: number;
@@ -206,8 +206,8 @@ export class TileLayer extends Layer {
 
         let yStartIndex, yEndIndex;
         if (this.tileScheme.reversedY) {
-            yStartIndex = Math.floor((trimmedBbox.yMin - this.tileScheme.origin[0]) / this.tileHeight / layerResolution);
-            yEndIndex = Math.ceil((trimmedBbox.yMax - this.tileScheme.origin[0]) / this.tileHeight / layerResolution);
+            yStartIndex = Math.floor((trimmedBbox.yMin - this.tileScheme.origin[1]) / this.tileHeight / layerResolution);
+            yEndIndex = Math.ceil((trimmedBbox.yMax - this.tileScheme.origin[1])/ this.tileHeight / layerResolution);
         } else {
             yStartIndex = Math.floor((this.tileScheme.origin[1] - trimmedBbox.yMax) / this.tileHeight / layerResolution);
             yEndIndex = Math.ceil((this.tileScheme.origin[1] - trimmedBbox.yMin) / this.tileHeight / layerResolution);
