@@ -166,7 +166,7 @@ export class LayerRenderer {
         let renders = this._layer.getRenders(bbox, this._master.map.resolution);
         if (this._layer.updateProhibited) return;
 
-        this.currentContainer = this._master.currContainer;
+        if (this.currentContainer !== this._master.currContainer) this.moveToLastContainer();
         this._resetCanvas(bbox);
 
         this._removeCanvas();
@@ -223,7 +223,6 @@ export class LayerRenderer {
     }
 
     private _drawImageRender(render: StaticHtmlImageRender) {
-        if (render.error) return;
         render.node.style.zIndex = this._zIndex.toString();
         this._currentContainer.addNode(render.node, render.width, render.height, render.bbox);
         if (render.onDisplayed) render.onDisplayed();
@@ -287,7 +286,7 @@ export class LayerRenderer {
             this._canvasContainer = this._master.currContainer;
         }
 
-        this._currentContainer = this._master.currContainer;
+        this.currentContainer = this._master.currContainer;
     }
 
     private _moveRendersToLastContainer(): void {

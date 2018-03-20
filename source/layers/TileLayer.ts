@@ -5,6 +5,10 @@ import {Bbox} from "../Bbox";
 import {StaticHtmlImageRender} from "../renders/StaticHtmlImageRender";
 import {Render} from "../renders/Render";
 
+class TileRender extends StaticHtmlImageRender {
+    isComplete: boolean = true;
+}
+
 export interface TileLayerConstructorParams extends LayerConstructorParams {
     /** @see [[TileLayer.tileScheme]] */
     tileScheme?: TileScheme,
@@ -39,13 +43,13 @@ export type TileIndex = {
  * @alias sGis.TileLayer
  */
 export class TileLayer extends Layer {
-    private readonly _tileCache: {[key: string]: StaticHtmlImageRender} = {};
+    private _tileCache: {[key: string]: TileRender} = {};
     private readonly _urlMask: string;
     private readonly _cacheSize: number;
     private _transitionTime: number;
     private _cachedIndexes: string[] = [];
 
-    private _previousTiles: StaticHtmlImageRender[] = [];
+    private _previousTiles: TileRender[] = [];
 
     /** Layer's tile scheme. */
     readonly tileScheme: TileScheme;
@@ -100,13 +104,13 @@ export class TileLayer extends Layer {
 
     getRenders(bbox: Bbox, resolution: number): Render[] {
         let indexes = this._getTileIndexes(bbox, resolution);
-        let renders: StaticHtmlImageRender[] = [];
+        let renders: TileRender[] = [];
 
         let isSetComplete = true;
         for (let index of indexes) {
             let tile = this._getRender(index);
-            if (tile.isReady) renders.push(tile);
-            if (!tile.isComplete || !tile.isReady) isSetComplete = false;
+            if (tile.isReady && !tile.error) renders.push(tile);
+            if (!tile.error && (!tile.isComplete || !tile.isReady)) isSetComplete = false;
         }
 
         if (isSetComplete) {
@@ -122,7 +126,7 @@ export class TileLayer extends Layer {
         return renders;
     }
 
-    private _getRender(index: TileIndex): StaticHtmlImageRender {
+    private _getRender(index: TileIndex): TileRender {
         let tileId = TileLayer._getTileId(index.z, index.x, index.y);
         if (this._tileCache[tileId]) return this._tileCache[tileId];
 
@@ -130,7 +134,7 @@ export class TileLayer extends Layer {
         let adjY = this.cycleY ? this._getAdjustedIndex(index.y, index.level) : index.y;
 
         let bbox = this._getTileBbox(index);
-        let tile = new StaticHtmlImageRender({
+        let tile = new TileRender({
             src: this.getTileUrl(adjX, adjY, index.z),
             width: this.tileWidth,
             height: this.tileHeight,
@@ -138,14 +142,16 @@ export class TileLayer extends Layer {
             onLoad: () => this.redraw()
         });
 
-        if (this._transitionTime > 0) {
-            tile.node.style.opacity = '0';
-            tile.node.style.transition = `opacity ${this.transitionTime / 1000}s`;
-            tile.isComplete = false;
-        }
+        this._cacheTile(tileId, tile);
+
+        if (this.transitionTime <= 0) return tile;
+
+        tile.node.style.opacity = '0';
+        tile.node.style.transition = `opacity ${this.transitionTime / 1000}s`;
+        tile.isComplete = false;
 
         tile.onDisplayed = () => {
-            if (this.transitionTime > 0) setTimeout(() => {
+            setTimeout(() => {
                 tile.node.style.opacity = this.opacity.toString();
                 setTimeout(() => {
                     tile.isComplete = true;
@@ -155,13 +161,10 @@ export class TileLayer extends Layer {
         };
 
         tile.onRemoved = () => {
-            if (this.transitionTime > 0) {
-                tile.node.style.opacity = '0';
-                tile.isComplete = false;
-            }
+            tile.node.style.opacity = '0';
+            tile.isComplete = false;
         };
 
-        this._cacheTile(tileId, tile);
         return tile;
     }
 
@@ -178,7 +181,7 @@ export class TileLayer extends Layer {
         return new Bbox([x, y], [x + width, y + height], this.crs);
     }
 
-    private _cacheTile(id: string, tile: StaticHtmlImageRender) {
+    private _cacheTile(id: string, tile: TileRender) {
         if (this._tileCache[id]) return;
         this._tileCache[id] = tile;
         this._cachedIndexes.push(id);
@@ -252,6 +255,12 @@ export class TileLayer extends Layer {
         }
 
         this.redraw();
+    }
+
+    clearCache(): void {
+        this._tileCache = {};
+        this._cachedIndexes = [];
+        this._previousTiles = []
     }
 
     /**

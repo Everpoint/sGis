@@ -11,13 +11,11 @@ export interface StaticImageRenderParams {
 }
 
 export abstract class StaticImageRender extends StaticRender {
-    private _isReady: boolean = false;
     private _node: HTMLImageElement;
     private _opacity: number;
     private _width: number;
     private _height: number;
     private _src: string;
-    private _error: ErrorEvent;
 
     offset: Offset;
     onLoad?: () => void;
@@ -39,12 +37,10 @@ export abstract class StaticImageRender extends StaticRender {
     private _createNode(): void {
         this._node = new Image();
         this._node.onload = () => {
-            this._isReady = true;
             if (this.onLoad) this.onLoad();
         };
 
         this._node.onerror = (err) => {
-            this._error = err;
             this._node.onload(err);
         };
 
@@ -54,8 +50,6 @@ export abstract class StaticImageRender extends StaticRender {
 
         this._node.src = this._src;
     }
-
-    get error() { return this._error; }
 
     get node(): HTMLRasterElement {
         if (this._node) return this._node;
@@ -73,6 +67,10 @@ export abstract class StaticImageRender extends StaticRender {
 
     get isReady(): boolean {
         return this._node && this._node.complete;
+    }
+
+    get error(): boolean {
+        return this._node && this._node.complete && this._node.naturalWidth === 0;
     }
 
     get opacity(): number { return parseFloat(this.node.style.opacity); }
