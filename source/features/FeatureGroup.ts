@@ -10,9 +10,9 @@ export class FeatureGroup extends Feature implements IPoint {
     private _features: Feature[];
     private _position: Coordinates;
 
-    constructor(position: Coordinates, { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
+    constructor(features, { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
         super({symbol, ...params});
-        this._position = position;
+        this._features = features;
     }
 
     projectTo(crs: Crs): PointFeature {
@@ -20,21 +20,41 @@ export class FeatureGroup extends Feature implements IPoint {
         return new PointFeature(projected.position, { crs: crs, symbol: this.symbol });
     }
 
-    get features(): Feature[] {
+    centreOfMass() {
+        const [x, y] = this._features.reduce((prev: Coordinates, curr: any) =>
+            [prev[0] + curr.x, prev[1] + curr.y], [0, 0]);
+
+        return [x / this._features.length, y / this._features.length];
+    };
+
+    features(): Feature[] {
         return this._features;
     }
 
-    get bbox(): Bbox { return new Bbox(this._position, this._position, this.crs); }
+    get position(): Coordinates {
+        const [ x, y ] = this.centreOfMass();
+        return [x, y]
+    }
+    set position(position: Coordinates) {
+        this._position = position;
+        this.redraw();
+    }
 
-    get position(): Coordinates { return [this._position[0], this._position[1]]; }
+    get bbox(): Bbox {
+        const [ x, y ] = this.centreOfMass();
+        return new Bbox([x, y], [x, y], this.crs);
+    }
 
-    get x(): number { return this._position[0]; }
+    get point(): Point { return new Point(this.position, this.crs); }
+    set point(point: Point) { this.position = point.projectTo(this.crs).position; }
+
+    get x(): number { return this.centreOfMass()[0]; }
     set x(x: number) {
         this._position[0] = x;
         this.redraw();
     }
 
-    get y(): number { return this._position[1]; }
+    get y(): number { return this.centreOfMass()[1]; }
     set y(y: number) {
         this._position[1] = y;
         this.redraw();
