@@ -5,7 +5,6 @@ import {PointSymbol} from "../symbols/point/Point";
 import {Crs} from "../Crs";
 import {Bbox} from "../Bbox";
 import {PointFeature} from "./PointFeature";
-import {LabelFeature} from "./Label";
 
 export class FeatureGroup extends Feature implements IPoint {
     private _features: Feature[];
@@ -30,7 +29,7 @@ export class FeatureGroup extends Feature implements IPoint {
     }
 
     projectTo(crs: Crs): FeatureGroup {
-        return new FeatureGroup(this._features, { crs: crs, symbol: this.symbol });
+        return new FeatureGroup(this._features, { crs, symbol: this.symbol });
     }
 
     features(): Feature[] {
@@ -51,6 +50,7 @@ export class FeatureGroup extends Feature implements IPoint {
 
     get bbox(): Bbox {
         if (this._bbox) return this._bbox;
+
         let xMin = Number.MAX_VALUE;
         let yMin = Number.MAX_VALUE;
         let xMax = Number.MIN_VALUE;
