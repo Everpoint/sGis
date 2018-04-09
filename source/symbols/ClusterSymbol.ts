@@ -15,6 +15,7 @@ const DEFAULT_WRAPPER_STYLE = `
     box-sizing: border-box;
     border-color: #fff;
     border-style: solid;
+    cursor: pointer;
 `;
 setCssClasses({[DEFAULT_WRAPPER_CLASS_NAME]: DEFAULT_WRAPPER_STYLE});
 
@@ -48,6 +49,8 @@ export interface DynamicClusterSymbolParams {
     stroke?: string;
     count?: string;
     borderWidth?: number;
+    borderStyle?: string;
+    borderColor?: string;
 }
 
 export class ClusterSymbol extends DynamicPointSymbol {
@@ -63,6 +66,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
     stroke: string;
     count: string;
     borderWidth: number;
+    borderStyle: string;
+    borderColor: string;
 
     constructor(
         {
@@ -79,6 +84,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
             colors = [],
             fill = '#fff',
             stroke = '#89CCF1',
+            borderStyle = 'solid',
+            borderColor = '#fff',
         }: DynamicClusterSymbolParams = {},
     ) {
         super({offset});
@@ -104,6 +111,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
         this.node = node;
         this.count = count;
         this.borderWidth = borderWidth;
+        this.borderStyle = borderStyle;
+        this.borderColor = borderColor;
     }
 
     polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
@@ -150,6 +159,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
 
         if (this.node) {
             wrapper.appendChild(this.node);
+            wrapper.style.borderWidth = '0';
         } else {
             const radius = this.size / 2 - this.borderWidth;
             const r2 = this.size + this.strokeWidth - this.borderWidth;
@@ -199,12 +209,12 @@ export class ClusterSymbol extends DynamicPointSymbol {
                 startAngle += value;
             });
             svg.classList.add(...this.svgClassNames);
+            wrapper.style.border = `${this.borderWidth}px ${this.borderStyle} ${this.borderColor}`;
             wrapper.appendChild(svg);
         }
 
         wrapper.style.width = `${this.size + this.strokeWidth}px`;
         wrapper.style.height = `${this.size + this.strokeWidth}px`;
-        wrapper.style.borderWidth = `${this.borderWidth}px`;
         wrapper.classList.add(...this.wrapperClassNames);
 
         return wrapper;
