@@ -4,26 +4,22 @@ import {Coordinates} from "../baseTypes";
 import {PointSymbol} from "../symbols/point/Point";
 import {Crs} from "../Crs";
 import {Bbox} from "../Bbox";
-import {PointFeature} from "./PointFeature";
 
 export class FeatureGroup extends Feature implements IPoint {
     private _features: Feature[];
-    private _bbox: Bbox;
+    private _bbox?: Bbox;
 
-    constructor(features, { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
+    constructor(features: Feature[], { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
         super({symbol, ...params});
         this._features = features.map(feature => {
             if (this.crs.equals(feature.crs)) return feature;
             else {
                 let projected = feature.projectTo(this.crs);
-                return new PointFeature(projected.position, { crs: this.crs, symbol: this.symbol });
+                return projected;
             }
         });
     }
 
-    /**
-     * Returns a copy of the feature. Only generic properties are copied.
-     */
     clone() {
         return new FeatureGroup(this._features, {crs: this.crs, symbol: this.symbol});
     }
@@ -32,9 +28,11 @@ export class FeatureGroup extends Feature implements IPoint {
         return new FeatureGroup(this._features, { crs, symbol: this.symbol });
     }
 
-    features(): Feature[] {
+    get features(): Feature[] {
         return this._features;
     }
+
+    get centroid(): Coordinates { return this.position; }
 
     get position(): Coordinates {
         let x:number = 0;
@@ -57,10 +55,10 @@ export class FeatureGroup extends Feature implements IPoint {
         let yMax = Number.MIN_VALUE;
 
         this._features.forEach(feature => {
-            xMin = Math.min(xMin, feature.centroid[0]);
-            yMin = Math.min(yMin, feature.centroid[1]);
-            xMax = Math.max(xMax, feature.centroid[0]);
-            yMax = Math.max(yMax, feature.centroid[1]);
+            xMin = Math.min(xMin, feature.bbox.xMin);
+            yMin = Math.min(yMin, feature.bbox.yMin);
+            xMax = Math.max(xMax, feature.bbox.xMax);
+            yMax = Math.max(yMax, feature.bbox.yMax);
         });
 
         this._bbox = new Bbox([xMin, yMin], [xMax, yMax], this.crs);
@@ -72,11 +70,4 @@ export class FeatureGroup extends Feature implements IPoint {
     get x(): number { return this.position[0]; }
 
     get y(): number { return this.position[1]; }
-
-    /**
-     * @deprecated
-     */
-    get coordinates(): Coordinates { return [this.position[0], this.position[1]]; }
-
-    get centroid(): Coordinates { return this.position; }
 }
