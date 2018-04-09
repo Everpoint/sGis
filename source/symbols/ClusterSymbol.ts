@@ -11,6 +11,10 @@ const DEFAULT_WRAPPER_STYLE = `
     align-items: center;
     -ms-flex-pack: center;
     justify-content: center;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border-color: #fff;
+    border-style: solid;
 `;
 setCssClasses({[DEFAULT_WRAPPER_CLASS_NAME]: DEFAULT_WRAPPER_STYLE});
 
@@ -43,6 +47,7 @@ export interface DynamicClusterSymbolParams {
     fill?: string;
     stroke?: string;
     count?: string;
+    borderWidth?: number;
 }
 
 export class ClusterSymbol extends DynamicPointSymbol {
@@ -57,6 +62,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
     fill: string;
     stroke: string;
     count: string;
+    borderWidth: number;
 
     constructor(
         {
@@ -65,6 +71,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
             wrapperClassNames = '',
             svgClassNames = '',
             labelClassNames = '',
+            borderWidth = 2,
             strokeWidth = 6,
             size = 44 - strokeWidth,
             values = [],
@@ -75,6 +82,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
         }: DynamicClusterSymbolParams = {},
     ) {
         super({offset});
+
         this.wrapperClassNames = wrapperClassNames
             ? [DEFAULT_WRAPPER_CLASS_NAME].concat(wrapperClassNames.split(' '))
             : [DEFAULT_WRAPPER_CLASS_NAME];
@@ -95,6 +103,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
         this.stroke = stroke;
         this.node = node;
         this.count = count;
+        this.borderWidth = borderWidth;
     }
 
     polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
@@ -142,8 +151,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
         if (this.node) {
             wrapper.appendChild(this.node);
         } else {
-            const radius = this.size / 2;
-            const r2 = this.size + this.strokeWidth;
+            const radius = this.size / 2 - this.borderWidth;
+            const r2 = this.size + this.strokeWidth - this.borderWidth;
             const c = radius + this.strokeWidth / 2;
             const svg = new SvgRender({
                 width: r2,
@@ -195,6 +204,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
 
         wrapper.style.width = `${this.size + this.strokeWidth}px`;
         wrapper.style.height = `${this.size + this.strokeWidth}px`;
+        wrapper.style.borderWidth = `${this.borderWidth}px`;
         wrapper.classList.add(...this.wrapperClassNames);
 
         return wrapper;
