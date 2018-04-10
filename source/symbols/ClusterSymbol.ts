@@ -48,7 +48,7 @@ export interface DynamicClusterSymbolParams {
     colors?: Array<string>;
     fill?: string;
     stroke?: string;
-    count?: string;
+    count?: string | number;
     borderWidth?: number;
     borderStyle?: string;
     borderColor?: string;
@@ -65,7 +65,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
     colors: Array<string>;
     fill: string;
     stroke: string;
-    count: string;
+    count: string | number;
     borderWidth: number;
     borderStyle: string;
     borderColor: string;
@@ -153,7 +153,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
 
         if (this.count) {
             const label = document.createElement('div');
-            label.innerText = this.count;
+            label.innerText = this.count.toString();
             label.classList.add(...this.labelClassNames);
             wrapper.appendChild(label);
         }
