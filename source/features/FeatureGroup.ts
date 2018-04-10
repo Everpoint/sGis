@@ -5,10 +5,20 @@ import {PointSymbol} from "../symbols/point/Point";
 import {Crs} from "../Crs";
 import {Bbox} from "../Bbox";
 
+/**
+ * Represents a group or a cluster of geographic features.
+ */
 export class FeatureGroup extends Feature implements IPoint {
     private _features: Feature[];
     private _bbox?: Bbox;
 
+    /**
+     * When the group is created, all the features given in constructor are projected into the group crs. It means that
+     * the group might not have the original features, but their copies in the projected CRS. If features are changed
+     * after the group is created, a new group must be created to reflect the changes.
+     * @param features - list of features to be added to the group
+     * @param __namedParameters
+     */
     constructor(features: Feature[], { symbol = new PointSymbol(), ...params }: FeatureParams = {}) {
         super({symbol, ...params});
         this._features = features.map(feature => {
@@ -24,10 +34,19 @@ export class FeatureGroup extends Feature implements IPoint {
         return new FeatureGroup(this._features, {crs: this.crs, symbol: this.symbol});
     }
 
+    /**
+     * Projects the group and all the features in it to the given CRS, returning a copy of the group containing
+     * copies of the features.
+     * @param crs
+     */
     projectTo(crs: Crs): FeatureGroup {
         return new FeatureGroup(this._features, { crs, symbol: this.symbol });
     }
 
+    /**
+     * The list of features in the group. Position and bbox of the group will be calculated based on the position and
+     * bboxes of all the features in the group.
+     */
     get features(): Feature[] {
         return this._features;
     }
