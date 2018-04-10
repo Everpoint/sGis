@@ -158,7 +158,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
         }
 
         if (this.node) {
-            wrapper.appendChild(this.node);
+            const cloneNode = this.node.cloneNode();
+            wrapper.appendChild(cloneNode);
             wrapper.style.borderWidth = '0';
         } else {
             const radius = this.size / 2 - this.borderWidth;
