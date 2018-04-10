@@ -16,6 +16,7 @@ const DEFAULT_WRAPPER_STYLE = `
     border-color: #fff;
     border-style: solid;
     cursor: pointer;
+    z-index: 1;
 `;
 setCssClasses({[DEFAULT_WRAPPER_CLASS_NAME]: DEFAULT_WRAPPER_STYLE});
 
