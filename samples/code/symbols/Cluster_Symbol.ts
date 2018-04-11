@@ -16,48 +16,53 @@ let {map} = init({
     layers: [new TileLayer('http://b.tile.openstreetmap.org/{z}/{x}/{y}.png')]
 });
 
-const img = document.createElement('img');
-img.classList.add('sGis-dynamicClusterIMG');
-img.src = 'https://skay.ua/img/logomini.png';
-
 let symbols = [
+    new ClusterSymbol(),
     new ClusterSymbol({
-        count: 4,
+        fill: 'rgba(252, 217, 89, 1)',
+        borderColor: '#fff',
+        cssClassName: 'sGis-dynamicCluster customCluster',
+        offset: [0, -3],
     }),
     new ClusterSymbol({
-        count: 44,
-        values: [444, 55, 233, 140],
-        colors: ['#32fd44', '#24b0fd', '#fdeb34', '#fd450e'],
+        cssClassName: 'sGis-dynamicCluster secondCustomCluster',
+        borderColor: 'rgb(100, 199, 108)',
+        font: 'bold 12px Roboto, sans-serif',
     }),
     new ClusterSymbol({
-        count: 14,
-        node: img,
-    }),
-    new ClusterSymbol({
-        count: 444,
+        size: 30,
+        cssClassName: 'sGis-dynamicCluster thirdCustomCluster',
+        outlineWidth: 0,
         borderWidth: 0,
-        wrapperClassNames: 'custom-cluster',
-        labelClassNames: 'custom-label',
-        fill: 'rgba(0, 0, 0, 0.8)',
+        font: 'bold 14px sans-serif',
+        fill: 'rgba(249, 88, 87, 1)',
     }),
 ];
 
 setStyleNode(`
-    .sGis-dynamicClusterLabel {
-        position: absolute;
-    }
-    .sGis-dynamicClusterIMG {
-        width: 100%;
-        height: auto;
-        position: absolute;
-    }
-    .custom-cluster {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    }
-    .custom-label {
+    .customCluster {
         color: #fff;
-        font-weight: bold;
-        text-shadow: 2px 2px 3px rgba(255,255,255,0.1);
+        cursor: pointer;
+    }
+    .customCluster:before {
+        content:'';
+        position: absolute;
+        height: 100%;
+	    width: 100%;
+        transform: scale(0);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transition: all 0.4s ease;
+    }
+    .customCluster:hover:before {
+        transform: scale(1);
+    }
+    .secondCustomCluster {
+        color: rgb(100, 199, 108);
+    }
+    .thirdCustomCluster {
+        color: #fff;
+        box-shadow: 0 0 4px 11px rgba(249, 88, 87, 0.4);
     }
 `);
 
@@ -74,19 +79,21 @@ const points = [
         [38.684968, 56.197796],
         [36.484312, 55.106483],
         [37.115252, 56.884747],
-        [35.857988, 54.967378],
+        [37.857988, 56.967378],
+        [33.857988, 55.967378],
+        [34.857988, 52.967378],
     ],
     [
         [38.684968, 56.195796],
         [38.484312, 54.206483],
         [37.115252, 56.883747],
-        [36.857988, 56.467378],
     ],
     [
         [38.684968, 56.194796],
         [38.484312, 54.205483],
-        [37.115252, 56.883747],
+        [38.115252, 57.883747],
         [36.857988, 54.467378],
+        [36.877988, 54.417378],
     ],
 ].map(group =>
     group.map(point => new PointFeature([point[0], point[1]], { crs: wgs84 })),
