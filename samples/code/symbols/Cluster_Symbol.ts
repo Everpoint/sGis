@@ -19,29 +19,30 @@ let {map} = init({
 let symbols = [
     new ClusterSymbol(),
     new ClusterSymbol({
-        fill: 'rgba(252, 217, 89, 1)',
+        fontColor: '#fff',
+        fillColor: 'rgba(252, 217, 89, 1)',
         borderColor: '#fff',
         cssClassName: 'sGis-dynamicCluster customCluster',
         offset: [0, -3],
     }),
     new ClusterSymbol({
-        cssClassName: 'sGis-dynamicCluster secondCustomCluster',
+        fontColor: 'rgb(100, 199, 108)',
         borderColor: 'rgb(100, 199, 108)',
         font: 'bold 12px Roboto, sans-serif',
     }),
     new ClusterSymbol({
+        fontColor: '#fff',
         size: 30,
-        cssClassName: 'sGis-dynamicCluster thirdCustomCluster',
+        cssClassName: 'sGis-dynamicCluster secondCustomCluster',
         outlineWidth: 0,
         borderWidth: 0,
         font: 'bold 14px sans-serif',
-        fill: 'rgba(249, 88, 87, 1)',
+        fillColor: 'rgba(249, 88, 87, 1)',
     }),
 ];
 
 setStyleNode(`
     .customCluster {
-        color: #fff;
         cursor: pointer;
     }
     .customCluster:before {
@@ -58,9 +59,6 @@ setStyleNode(`
         transform: scale(1);
     }
     .secondCustomCluster {
-        color: rgb(100, 199, 108);
-    }
-    .thirdCustomCluster {
         color: #fff;
         box-shadow: 0 0 4px 11px rgba(249, 88, 87, 0.4);
     }

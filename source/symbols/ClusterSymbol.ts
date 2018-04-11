@@ -21,7 +21,8 @@ export interface DynamicClusterSymbolParams {
     font?: string;
     outlineWidth?: number;
     size?: number;
-    fill?: string;
+    fillColor?: string;
+    fontColor?: string;
     borderWidth?: number;
     borderColor?: string;
     offset?: Offset;
@@ -32,7 +33,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
     font: string;
     outlineWidth: number;
     size: number;
-    fill: string;
+    fillColor: string;
+    fontColor: string;
     borderWidth: number;
     borderColor: string;
 
@@ -42,7 +44,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
             font = '13px Times New Roman, sans-serif',
             outlineWidth = 2,
             size = 44,
-            fill = '#fff',
+            fillColor = '#fff',
+            fontColor = '#000',
             borderWidth = 6,
             borderColor = '#89CCF1',
             offset = [-size / 2, -size / 2],
@@ -54,7 +57,8 @@ export class ClusterSymbol extends DynamicPointSymbol {
         this.font = font;
         this.size = size;
         this.outlineWidth = outlineWidth;
-        this.fill = fill;
+        this.fillColor = fillColor;
+        this.fontColor = fontColor;
         this.borderWidth = borderWidth;
         this.borderColor = borderColor;
     }
@@ -66,10 +70,11 @@ export class ClusterSymbol extends DynamicPointSymbol {
         if (this.cssClassName) node.className = this.cssClassName;
         node.style.width = `${size}px`;
         node.style.height = `${size}px`;
-        node.style.backgroundColor = this.fill;
+        node.style.color = this.fontColor;
+        node.style.backgroundColor = this.fillColor;
         node.style.border = `${this.borderWidth}px solid ${this.borderColor}`;
         node.style.font = this.font;
-        if(this.outlineWidth) node.style.boxShadow = `0 0 0 ${this.outlineWidth}px ${this.fill},
+        if(this.outlineWidth) node.style.boxShadow = `0 0 0 ${this.outlineWidth}px ${this.fillColor},
             0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)`;
         node.innerText = feature._features.length.toString();
 
