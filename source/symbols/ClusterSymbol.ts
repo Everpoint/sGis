@@ -41,7 +41,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
             cssClassName = DEFAULT_CLASS_NAME,
             font = '13px Times New Roman, sans-serif',
             outlineWidth = 2,
-            size = 44 - outlineWidth,
+            size = 44,
             fill = '#fff',
             borderWidth = 6,
             borderColor = '#89CCF1',
@@ -61,7 +61,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
 
     protected _getFeatureNode(feature: FeatureGroup): HTMLElement {
         const node = document.createElement('div');
-        const size = this.size;
+        const size = this.size - this.outlineWidth * 2;
 
         if (this.cssClassName) node.className = this.cssClassName;
         node.style.width = `${size}px`;
