@@ -26,6 +26,7 @@ let symbols = [
         offset: [0, -3],
     }),
     new ClusterSymbol({
+        borderWidth: 4,
         fontColor: 'rgb(100, 199, 108)',
         borderColor: 'rgb(100, 199, 108)',
         font: 'bold 12px Roboto, sans-serif',
