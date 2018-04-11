@@ -17,7 +17,6 @@ const DEFAULT_STYLE = `
 setCssClasses({[DEFAULT_CLASS_NAME]: DEFAULT_STYLE});
 
 export interface DynamicClusterSymbolParams {
-    cssClassName?: string;
     font?: string;
     outlineWidth?: number;
     size?: number;
@@ -29,7 +28,6 @@ export interface DynamicClusterSymbolParams {
 }
 
 export class ClusterSymbol extends DynamicPointSymbol {
-    cssClassName: string;
     font: string;
     outlineWidth: number;
     size: number;
@@ -40,7 +38,6 @@ export class ClusterSymbol extends DynamicPointSymbol {
 
     constructor(
         {
-            cssClassName = DEFAULT_CLASS_NAME,
             font = '13px Times New Roman, sans-serif',
             outlineWidth = 2,
             size = 44,
@@ -53,7 +50,6 @@ export class ClusterSymbol extends DynamicPointSymbol {
     ) {
         super({offset});
 
-        this.cssClassName = cssClassName;
         this.font = font;
         this.size = size;
         this.outlineWidth = outlineWidth;
@@ -67,14 +63,14 @@ export class ClusterSymbol extends DynamicPointSymbol {
         const node = document.createElement('div');
         const size = this.size - this.outlineWidth * 2;
 
-        if (this.cssClassName) node.className = this.cssClassName;
+        node.className = DEFAULT_CLASS_NAME;
         node.style.width = `${size}px`;
         node.style.height = `${size}px`;
         node.style.color = this.fontColor;
         node.style.backgroundColor = this.fillColor;
         node.style.border = `${this.borderWidth}px solid ${this.borderColor}`;
         node.style.font = this.font;
-        if(this.outlineWidth) node.style.boxShadow = `0 0 0 ${this.outlineWidth}px ${this.fillColor},
+        node.style.boxShadow = `0 0 0 ${this.outlineWidth}px ${this.fillColor},
             0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)`;
         node.innerText = feature._features.length.toString();
 
