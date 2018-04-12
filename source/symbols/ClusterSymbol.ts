@@ -72,7 +72,7 @@ export class ClusterSymbol extends DynamicPointSymbol {
         node.style.font = this.font;
         node.style.boxShadow = `0 0 0 ${this.outlineWidth}px ${this.fillColor},
             0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)`;
-        node.innerText = feature._features.length.toString();
+        node.innerText = feature.features.length.toString();
 
         return node;
     }
