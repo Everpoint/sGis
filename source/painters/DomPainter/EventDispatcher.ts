@@ -60,7 +60,10 @@ export class EventDispatcher {
         for (let i = layerRenderers.length - 1; i >= 0; i--) {
             let [caughtRender, intersectionType] = layerRenderers[i].getEventCatcher(event.eventFlag, position);
 
-            if (Array.isArray(intersectionType)) {
+            if (caughtRender && caughtRender.contourIndex >= 0 && caughtRender.pointIndex >= 0) {
+                event.contourIndex = caughtRender.contourIndex;
+                event.pointIndex = caughtRender.pointIndex;
+            } else if (Array.isArray(intersectionType)) {
                 event.contourIndex = intersectionType[0];
                 event.pointIndex = intersectionType[1];
             }
@@ -89,7 +92,7 @@ export class EventDispatcher {
     private _listenFor(node: HTMLElement, eventType: string, handler) {
         listenDomEvent(node, eventType, (event) => {
             let target = (event && event.target);
-            let cancelEvent = false;
+            let cancelEvent = event.defaultPrevented;
             while (target && target !== node) {
                 if ((<MapHtmlElement>target).doNotBubbleToMap) {
                     cancelEvent = true;
