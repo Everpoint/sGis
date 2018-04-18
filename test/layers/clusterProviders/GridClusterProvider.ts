@@ -37,7 +37,7 @@ describe('GridClusterProvider', () => {
 
     it('.getClusters() should return contains the same length', () => {
         const sumFeaturesLength = clusters.reduce((prev: number, curr: FeatureGroup) => {
-            return prev + curr._features.length;
+            return prev + curr.features.length;
         }, 0);
 
         expect(points.length).toBe(sumFeaturesLength);
@@ -48,25 +48,8 @@ describe('GridClusterProvider', () => {
 
         for (let i = 0; i < clusters.length; i++) {
             for (let j = i + 1; j < clusters.length; j++) {
-                if (pythagoras(clusters[i], clusters[j]) * resolution < clusterSize * resolution)
+                if (pythagoras(clusters[i], clusters[j]) < clusterSize * resolution)
                     distanceIsExceeded = true;
-            }
-        }
-
-        expect(distanceIsExceeded).toBe(false);
-    });
-
-    it('The distance between points in cluster does not exceed the specified size', () => {
-        let distanceIsExceeded = false;
-
-        const clusterFeatures = clusters[1]._features;
-
-        for (let i = 0; i < clusterFeatures.length; i++) {
-            for (let j = i + 1; j < clusterFeatures.length; j++) {
-                if (
-                    pythagoras(clusterFeatures[i], clusterFeatures[j]) * resolution <
-                    clusterSize * resolution
-                ) distanceIsExceeded = true;
             }
         }
 
