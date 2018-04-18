@@ -1,12 +1,13 @@
 import {FeatureGroup} from '../../features/FeatureGroup';
-import {Bbox} from "../../Bbox";
+import {geo, Crs} from '../../Crs'
 import {Feature} from "../../features/Feature";
 import {copyArray} from '../../utils/utils';
 
 export interface IClusterProvider {
     features?: Feature[];
-    width?: number;
-    height?: number;
+    size?: number;
+    resolution?: number;
+    crs?: Crs;
 }
 
 export interface FeatureCluster extends Feature {
@@ -16,16 +17,16 @@ export interface FeatureCluster extends Feature {
 
 export class GridClusterProvider {
     private _features: Feature[];
-    private _width: number;
-    private _height: number;
+    private _size: number;
+    private _crs: Crs;
 
-    constructor({ features = [], width = 44, height = 44 }: IClusterProvider = {}) {
+    constructor({ features = [], size = 44, resolution = 9444, crs = geo }: IClusterProvider = {}) {
         this._features = features;
-        this._width = width;
-        this._height = height;
+        this._size = size * resolution;
+        this._crs = crs;
     }
 
-    private _groupByIndex(features: Feature[], bbox: Bbox): FeatureGroup[] {
+    private _groupByIndex(features: Feature[]): FeatureGroup[] {
         const groups: { [key: string]: FeatureCluster[] } = {};
         const f = (feature: FeatureCluster) => [feature.indexX, feature.indexY];
 
@@ -36,7 +37,7 @@ export class GridClusterProvider {
         });
 
         return Object.keys(groups).map( (group) => {
-            return new FeatureGroup(groups[group], { crs: bbox.crs });
+            return new FeatureGroup(groups[group], { crs: this._crs });
         })
     }
 
@@ -44,15 +45,14 @@ export class GridClusterProvider {
         return Math.hypot(p2.centroid[0] - p1.centroid[0], p2.centroid[1] - p1.centroid[1]);
     }
 
-
-    private _compareGroupsByDistance(featureGroups: FeatureGroup[], bbox: Bbox, size: number): FeatureGroup[] {
+    private _compareGroupsByDistance(featureGroups: FeatureGroup[]): FeatureGroup[] {
         const groups = copyArray(featureGroups);
         const clusters: FeatureGroup[] = [];
 
         for (let i = 0; i < groups.length; i++) {
             let cluster: Feature[] = groups[i].features;
             for (let j = i + 1; j < groups.length; j++) {
-                if (this._pythagoras(groups[i], groups[j]) < size) {
+                if (this._pythagoras(groups[i], groups[j]) < this._size) {
                     cluster = cluster.concat(groups[j].features);
                     groups.splice(j, 1);
                 }
@@ -62,47 +62,46 @@ export class GridClusterProvider {
                 clusters.length > 0 &&
                 this._pythagoras(
                     clusters[clusters.length - 1],
-                    new FeatureGroup(cluster, { crs: bbox.crs }),
-                ) < size
+                    new FeatureGroup(cluster, { crs: this._crs }),
+                ) < this._size
             ) {
                 clusters[clusters.length - 1] = new FeatureGroup(
                     clusters[clusters.length - 1].features.concat(cluster),
-                    { crs: bbox.crs },
+                    { crs: this._crs },
                 );
-            } else clusters.push(new FeatureGroup(cluster, { crs: bbox.crs }));
+            } else clusters.push(new FeatureGroup(cluster, { crs: this._crs }));
         }
         return clusters;
     }
 
-    private _checkDistance(groups: FeatureGroup[], size: number): boolean {
+    private _checkDistance(groups: FeatureGroup[]): boolean {
         let flag: boolean = false;
+
         for (let i = 0; i < groups.length; i++) {
             if(flag) break;
             for (let j = i + 1; j < groups.length; j++) {
                 if(flag) break;
-                if (this._pythagoras(groups[i], groups[j]) < size) flag = true;
+                if (this._pythagoras(groups[i], groups[j]) < this._size) flag = true;
             }
         }
         return flag;
     }
 
-    getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
-        const size = this._width > this._height ? this._width : this._height * resolution;
-
+    getClusters(): FeatureGroup[] {
         const indexedFeatures = this._features.map(feature => {
-            const point = feature.projectTo(bbox.crs);
-            const indexX = Math.round(point.centroid[0] / size);
-            const indexY = Math.round(point.centroid[1] / size);
+            const point = feature.projectTo(this._crs);
+            const indexX = Math.round(point.centroid[0] / this._size);
+            const indexY = Math.round(point.centroid[1] / this._size);
             return Object.assign(feature, { indexX, indexY });
         });
 
         let flag: boolean = true;
-        let clusters: FeatureGroup[] = this._groupByIndex(indexedFeatures, bbox);
+        let clusters: FeatureGroup[] = this._groupByIndex(indexedFeatures);
 
         while (flag) {
-            const comparedClusters = this._compareGroupsByDistance(clusters, bbox, size);
+            const comparedClusters = this._compareGroupsByDistance(clusters);
             clusters = comparedClusters;
-            flag = this._checkDistance(comparedClusters, size);
+            flag = this._checkDistance(comparedClusters);
         }
 
         return clusters;

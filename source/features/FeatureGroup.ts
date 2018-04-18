@@ -9,7 +9,7 @@ import {Bbox} from "../Bbox";
  * Represents a group or a cluster of geographic features.
  */
 export class FeatureGroup extends Feature implements IPoint {
-    private _features: Feature[];
+    _features: Feature[];
     private _bbox?: Bbox;
 
     /**
