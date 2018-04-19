@@ -24,8 +24,9 @@ export class FeatureGroup extends Feature implements IPoint {
         this._features = features.map(feature => {
             if (this.crs.equals(feature.crs)) return feature;
             else {
-                let projected = feature.projectTo(this.crs);
-                return projected;
+                const projected = feature.projectTo(this.crs);
+                const assigned  = Object.assign(feature, projected);
+                return assigned;
             }
         });
     }

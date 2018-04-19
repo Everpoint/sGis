@@ -55,4 +55,30 @@ describe('GridClusterProvider', () => {
 
         expect(distanceIsExceeded).toBe(false);
     });
+
+    it('property check', () => {
+        interface SecretPoint extends PointFeature {
+            name?: string;
+        }
+        const secretPoint: SecretPoint = new PointFeature([150.834439, 59.544667], {crs: wgs84});
+        const pointName = 'Секретная точка';
+        secretPoint.name = pointName;
+        points.push(secretPoint);
+
+        const clusters = new GridClusterProvider({
+            size: clusterSize,
+            features: points,
+            crs: webMercator,
+            resolution,
+        }).getClusters();
+
+        interface MbSecretPoint extends Feature {
+            name?: string;
+        }
+
+        const mbSecretPoint: MbSecretPoint = clusters[2].features[3];
+
+        expect(clusters[2].features.length).toBe(4);
+        expect(mbSecretPoint.name).toBe(pointName);
+    });
 });
