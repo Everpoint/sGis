@@ -1,13 +1,12 @@
 import {FeatureGroup} from '../../features/FeatureGroup';
-import {geo, Crs} from '../../Crs'
+import {Bbox} from '../../Bbox';
 import {Feature} from "../../features/Feature";
-import {copyArray} from '../../utils/utils';
+import {copyArray, error} from '../../utils/utils';
 
 export interface IClusterProvider {
     features?: Feature[];
     size?: number;
     resolution?: number;
-    crs?: Crs;
 }
 
 export interface FeatureCluster extends Feature {
@@ -18,15 +17,17 @@ export interface FeatureCluster extends Feature {
 export class GridClusterProvider {
     private _features: Feature[];
     private _size: number;
-    private _crs: Crs;
+    private _resolution: number;
+    private _clusters: FeatureGroup[];
 
-    constructor({ features = [], size = 44, resolution = 9444, crs = geo }: IClusterProvider = {}) {
-        this._features = features;
-        this._size = size * resolution;
-        this._crs = crs;
+    constructor({ size = 44 }: IClusterProvider = {}) {
+        this._features = [];
+        this._size = size;
+        this._resolution = 9444;
+        this._clusters = [];
     }
 
-    private _groupByIndex(features: Feature[]): FeatureGroup[] {
+    private _groupByIndex(features: Feature[], bbox: Bbox): FeatureGroup[] {
         const groups: { [key: string]: FeatureCluster[] } = {};
         const f = (feature: FeatureCluster) => [feature.indexX, feature.indexY];
 
@@ -37,7 +38,7 @@ export class GridClusterProvider {
         });
 
         return Object.keys(groups).map( (group) => {
-            return new FeatureGroup(groups[group], { crs: this._crs });
+            return new FeatureGroup(groups[group], { crs: bbox.crs });
         })
     }
 
@@ -45,14 +46,14 @@ export class GridClusterProvider {
         return Math.hypot(p2.centroid[0] - p1.centroid[0], p2.centroid[1] - p1.centroid[1]);
     }
 
-    private _compareGroupsByDistance(featureGroups: FeatureGroup[]): FeatureGroup[] {
+    private _compareGroupsByDistance(featureGroups: FeatureGroup[], bbox: Bbox): FeatureGroup[] {
         const groups = copyArray(featureGroups);
         const clusters: FeatureGroup[] = [];
 
         for (let i = 0; i < groups.length; i++) {
             let cluster: Feature[] = groups[i].features;
             for (let j = i + 1; j < groups.length; j++) {
-                if (this._pythagoras(groups[i], groups[j]) < this._size) {
+                if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) {
                     cluster = cluster.concat(groups[j].features);
                     groups.splice(j, 1);
                 }
@@ -62,14 +63,14 @@ export class GridClusterProvider {
                 clusters.length > 0 &&
                 this._pythagoras(
                     clusters[clusters.length - 1],
-                    new FeatureGroup(cluster, { crs: this._crs }),
-                ) < this._size
+                    new FeatureGroup(cluster, { crs: bbox.crs }),
+                ) < this._size * this._resolution
             ) {
                 clusters[clusters.length - 1] = new FeatureGroup(
                     clusters[clusters.length - 1].features.concat(cluster),
-                    { crs: this._crs },
+                    { crs: bbox.crs },
                 );
-            } else clusters.push(new FeatureGroup(cluster, { crs: this._crs }));
+            } else clusters.push(new FeatureGroup(cluster, { crs: bbox.crs }));
         }
         return clusters;
     }
@@ -81,29 +82,55 @@ export class GridClusterProvider {
             if(flag) break;
             for (let j = i + 1; j < groups.length; j++) {
                 if(flag) break;
-                if (this._pythagoras(groups[i], groups[j]) < this._size) flag = true;
+                if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) flag = true;
             }
         }
         return flag;
     }
 
-    getClusters(): FeatureGroup[] {
-        const indexedFeatures = this._features.map(feature => {
-            const point = feature.projectTo(this._crs);
-            const indexX = Math.round(point.centroid[0] / this._size);
-            const indexY = Math.round(point.centroid[1] / this._size);
-            return Object.assign(feature, { indexX, indexY });
-        });
+    getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
+        if (this._resolution !== resolution) {
+            this._resolution = resolution;
+            const indexedFeatures = this._features.map(feature => {
+                const point = feature.projectTo(bbox.crs);
+                const indexX = Math.round(point.centroid[0] / (this._size * this._resolution));
+                const indexY = Math.round(point.centroid[1] / (this._size * this._resolution));
+                return Object.assign(feature, { indexX, indexY });
+            });
 
-        let flag: boolean = true;
-        let clusters: FeatureGroup[] = this._groupByIndex(indexedFeatures);
+            let flag: boolean = true;
+            let clusters: FeatureGroup[] = this._groupByIndex(indexedFeatures, bbox);
 
-        while (flag) {
-            const comparedClusters = this._compareGroupsByDistance(clusters);
-            clusters = comparedClusters;
-            flag = this._checkDistance(comparedClusters);
+            while (flag) {
+                const comparedClusters = this._compareGroupsByDistance(clusters, bbox);
+                clusters = comparedClusters;
+                flag = this._checkDistance(comparedClusters);
+            }
+
+            this._clusters = clusters;
         }
 
-        return clusters;
+        return this._clusters;
+    }
+
+    add(features: Feature | Feature[]): void {
+        this._clusters = [];
+        const toAdd = Array.isArray(features) ? features : [features];
+        if (toAdd.length === 0) return;
+        toAdd.forEach(f => {
+            if (this._features.indexOf(f) !== -1) error(new Error(`Feature ${f} is already in the GridClusterProvider`));
+        });
+        this._features = this._features.concat(toAdd);
+    }
+
+    remove(features: Feature | Feature[]): void {
+        this._clusters = [];
+        const toRemove = Array.isArray(features) ? features : [features];
+        if (toRemove.length === 0) return;
+        toRemove.forEach(f => {
+            let index = this._features.indexOf(f);
+            if (index === -1) error(new Error(`Feature ${f} is not in the GridClusterProvider`));
+            this._features.splice(index, 1);
+        });
     }
 }
