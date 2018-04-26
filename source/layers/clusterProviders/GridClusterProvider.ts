@@ -19,12 +19,14 @@ export class GridClusterProvider {
     private _size: number;
     private _resolution: number;
     private _clusters: FeatureGroup[];
+    private _cache:  { [key: string]: FeatureGroup[]; };
 
     constructor({ size = 44 }: IClusterProvider = {}) {
         this._features = [];
         this._size = size;
         this._resolution = 9444;
         this._clusters = [];
+        this._cache = {};
     }
 
     private _groupByIndex(features: Feature[], bbox: Bbox): FeatureGroup[] {
@@ -89,7 +91,13 @@ export class GridClusterProvider {
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
-        if (this._resolution !== resolution) {
+        if (this._cache[resolution]) this._clusters = this._cache[resolution];
+
+        if (
+            this._resolution !== resolution &&
+            !this._cache[resolution] ||
+            this._clusters.length === 0
+        ) {
             this._resolution = resolution;
             const indexedFeatures = this._features.map(feature => {
                 const point = feature.projectTo(bbox.crs);
@@ -107,6 +115,10 @@ export class GridClusterProvider {
                 flag = this._checkDistance(comparedClusters);
             }
 
+            this._cache = {
+                ...this._cache,
+                [resolution]: this._clusters,
+            }
             this._clusters = clusters;
         }
 
@@ -114,6 +126,7 @@ export class GridClusterProvider {
     }
 
     add(features: Feature | Feature[]): void {
+        this._cache = {}
         this._clusters = [];
         const toAdd = Array.isArray(features) ? features : [features];
         if (toAdd.length === 0) return;
@@ -124,6 +137,7 @@ export class GridClusterProvider {
     }
 
     remove(features: Feature | Feature[]): void {
+        this._cache = {}
         this._clusters = [];
         const toRemove = Array.isArray(features) ? features : [features];
         if (toRemove.length === 0) return;
