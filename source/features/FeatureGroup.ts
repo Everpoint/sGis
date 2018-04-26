@@ -1,4 +1,4 @@
-import {Feature, FeatureParams} from './Feature'
+import {Feature, FeatureParams} from "./Feature"
 import {IPoint, Point} from "../Point";
 import {Coordinates} from "../baseTypes";
 import {PointSymbol} from "../symbols/point/Point";

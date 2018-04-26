@@ -1,7 +1,7 @@
-import {FeatureGroup} from '../../features/FeatureGroup';
-import {Bbox} from '../../Bbox';
+import {FeatureGroup} from "../../features/FeatureGroup";
+import {Bbox} from "../../Bbox";
 import {Feature} from "../../features/Feature";
-import {copyArray, error} from '../../utils/utils';
+import {copyArray, error} from "../../utils/utils";
 
 export interface IClusterProvider {
     features?: Feature[];

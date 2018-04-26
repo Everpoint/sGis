@@ -1,5 +1,5 @@
-import {DynamicPointSymbol} from './Symbol';
-import {setCssClasses} from '../utils/utils';
+import {DynamicPointSymbol} from "./Symbol";
+import {setCssClasses} from "../utils/utils";
 import {Offset} from "../baseTypes";
 import {FeatureGroup} from "../features/FeatureGroup";
 
