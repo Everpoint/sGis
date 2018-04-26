@@ -24,7 +24,7 @@ export class GridClusterProvider {
     constructor({ size = 44 }: IClusterProvider = {}) {
         this._features = [];
         this._size = size;
-        this._resolution = 9444;
+        this._resolution = 0;
         this._clusters = [];
         this._cache = {};
     }
@@ -91,13 +91,9 @@ export class GridClusterProvider {
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
-        if (this._cache[resolution]) this._clusters = this._cache[resolution];
+        if (this._cache[resolution]) return this._cache[resolution];
 
-        if (
-            this._resolution !== resolution &&
-            !this._cache[resolution] ||
-            this._clusters.length === 0
-        ) {
+        if (this._resolution !== resolution && !this._cache[resolution]) {
             this._resolution = resolution;
             const indexedFeatures = this._features.map(feature => {
                 const point = feature.projectTo(bbox.crs);
@@ -117,7 +113,7 @@ export class GridClusterProvider {
 
             this._cache = {
                 ...this._cache,
-                [resolution]: this._clusters,
+                [resolution]: clusters,
             }
             this._clusters = clusters;
         }
