@@ -53,26 +53,19 @@ export class GridClusterProvider {
         const clusters: FeatureGroup[] = [];
 
         for (let i = 0; i < group.length; i++) {
-            let cluster: Feature[] = group[i].features;
+            const cluster: Feature[] = group[i].features;
+            let flag = false;
+
             for (let j = i + 1; j < group.length; j++) {
                 if (this._pythagoras(group[i], group[j]) < size) {
-                    cluster = cluster.concat(group[j].features);
+                    flag = true;
+                    cluster.push(...group[j].features);
                     group.splice(j, 1);
                 }
             }
 
-            if (
-                clusters.length > 0 &&
-                this._pythagoras(
-                    clusters[clusters.length - 1],
-                    new FeatureGroup(cluster, { crs: bbox.crs }),
-                ) < size
-            ) {
-                clusters[clusters.length - 1] = new FeatureGroup(
-                    clusters[clusters.length - 1].features.concat(cluster),
-                    { crs: bbox.crs },
-                );
-            } else clusters.push(new FeatureGroup(cluster, { crs: bbox.crs }));
+            if (flag) clusters.push(new FeatureGroup(cluster, { crs: bbox.crs }));
+            else clusters.push(group[i]);
         }
         return clusters;
     }
@@ -81,9 +74,9 @@ export class GridClusterProvider {
         let flag: boolean = false;
 
         for (let i = 0; i < groups.length; i++) {
-            if(flag) break;
+            if (flag) break;
             for (let j = i + 1; j < groups.length; j++) {
-                if(flag) break;
+                if (flag) break;
                 if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) flag = true;
             }
         }
@@ -131,7 +124,7 @@ export class GridClusterProvider {
         toAdd.forEach(f => {
             if (this._features.indexOf(f) !== -1) error(new Error(`Feature ${f} is already in the GridClusterProvider`));
         });
-        this._features = this._features.concat(toAdd);
+        this._features.push(...toAdd);
     }
 
     remove(features: Feature | Feature[]): void {
