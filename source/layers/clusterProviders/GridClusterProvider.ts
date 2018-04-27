@@ -1,7 +1,7 @@
 import {FeatureGroup} from "../../features/FeatureGroup";
 import {Bbox} from "../../Bbox";
 import {Feature} from "../../features/Feature";
-import {copyArray, error} from "../../utils/utils";
+import {error} from "../../utils/utils";
 
 export interface IClusterProvider {
     features?: Feature[];
@@ -48,16 +48,16 @@ export class GridClusterProvider {
         return Math.hypot(p2.centroid[0] - p1.centroid[0], p2.centroid[1] - p1.centroid[1]);
     }
 
-    private _compareGroupsByDistance(featureGroups: FeatureGroup[], bbox: Bbox): FeatureGroup[] {
-        const groups = copyArray(featureGroups);
+    private _compareGroupsByDistance(group: FeatureGroup[], bbox: Bbox): FeatureGroup[] {
+        const size = this._size * this._resolution;
         const clusters: FeatureGroup[] = [];
 
-        for (let i = 0; i < groups.length; i++) {
-            let cluster: Feature[] = groups[i].features;
-            for (let j = i + 1; j < groups.length; j++) {
-                if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) {
-                    cluster = cluster.concat(groups[j].features);
-                    groups.splice(j, 1);
+        for (let i = 0; i < group.length; i++) {
+            let cluster: Feature[] = group[i].features;
+            for (let j = i + 1; j < group.length; j++) {
+                if (this._pythagoras(group[i], group[j]) < size) {
+                    cluster = cluster.concat(group[j].features);
+                    group.splice(j, 1);
                 }
             }
 
@@ -66,7 +66,7 @@ export class GridClusterProvider {
                 this._pythagoras(
                     clusters[clusters.length - 1],
                     new FeatureGroup(cluster, { crs: bbox.crs }),
-                ) < this._size * this._resolution
+                ) < size
             ) {
                 clusters[clusters.length - 1] = new FeatureGroup(
                     clusters[clusters.length - 1].features.concat(cluster),
@@ -87,6 +87,7 @@ export class GridClusterProvider {
                 if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) flag = true;
             }
         }
+
         return flag;
     }
 
@@ -95,10 +96,11 @@ export class GridClusterProvider {
 
         if (this._resolution !== resolution && !this._cache[resolution]) {
             this._resolution = resolution;
+            const size = this._size * resolution;
             const indexedFeatures = this._features.map(feature => {
                 const point = feature.projectTo(bbox.crs);
-                const indexX = Math.round(point.centroid[0] / (this._size * this._resolution));
-                const indexY = Math.round(point.centroid[1] / (this._size * this._resolution));
+                const indexX = Math.round(point.centroid[0] / size);
+                const indexY = Math.round(point.centroid[1] / size);
                 return Object.assign(feature, { indexX, indexY });
             });
 
