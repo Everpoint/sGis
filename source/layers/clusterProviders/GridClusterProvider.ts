@@ -48,40 +48,31 @@ export class GridClusterProvider {
         return Math.hypot(p2.centroid[0] - p1.centroid[0], p2.centroid[1] - p1.centroid[1]);
     }
 
-    private _compareGroupsByDistance(group: FeatureGroup[], bbox: Bbox): FeatureGroup[] {
+    private _compareGroupsByDistance(group: FeatureGroup[], bbox: Bbox): any {
         const size = this._size * this._resolution;
-        const clusters: FeatureGroup[] = [];
+        const clustered: FeatureGroup[] = [];
+        let checkDistance = false;
 
         for (let i = 0; i < group.length; i++) {
             const cluster: Feature[] = group[i].features;
-            let flag = false;
+            let newGroup = false;
 
             for (let j = i + 1; j < group.length; j++) {
                 if (this._pythagoras(group[i], group[j]) < size) {
-                    flag = true;
+                    checkDistance = true;
+                    newGroup = true;
                     cluster.push(...group[j].features);
                     group.splice(j, 1);
                 }
             }
 
-            if (flag) clusters.push(new FeatureGroup(cluster, { crs: bbox.crs }));
-            else clusters.push(group[i]);
+            if (newGroup) clustered.push(new FeatureGroup(cluster, { crs: bbox.crs }));
+            else clustered.push(group[i]);
         }
-        return clusters;
-    }
-
-    private _checkDistance(groups: FeatureGroup[]): boolean {
-        let flag: boolean = false;
-
-        for (let i = 0; i < groups.length; i++) {
-            if (flag) break;
-            for (let j = i + 1; j < groups.length; j++) {
-                if (flag) break;
-                if (this._pythagoras(groups[i], groups[j]) < this._size * this._resolution) flag = true;
-            }
-        }
-
-        return flag;
+        return {
+            checkDistance,
+            clustered,
+        };
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
@@ -101,9 +92,9 @@ export class GridClusterProvider {
             let clusters: FeatureGroup[] = this._groupByIndex(indexedFeatures, bbox);
 
             while (flag) {
-                const comparedClusters = this._compareGroupsByDistance(clusters, bbox);
-                clusters = comparedClusters;
-                flag = this._checkDistance(comparedClusters);
+                const { clustered, checkDistance } = this._compareGroupsByDistance(clusters, bbox);
+                clusters = clustered;
+                flag = checkDistance;
             }
 
             this._cache = {
