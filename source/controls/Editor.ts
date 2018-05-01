@@ -220,6 +220,11 @@ export class Editor extends Control {
     }
 
     private _handleFeatureClick(feature: Feature, event: sGisClickEvent): void {
+        if (!this.isActive) {
+            this._removeListener(feature);
+            return;
+        }
+
         if (this.ignoreEvents) return;
         event.stopPropagation();
         this._select(feature);
