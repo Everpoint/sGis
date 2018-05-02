@@ -28,7 +28,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^21.1.10",
-    "canvas-prebuilt": "^1.6.0",
+    "canvas-prebuilt": "^1.6.5-prerelease.1",
     "jest": "^21.2.1",
     "ncp": "^2.0.0",
     "rollup": "^0.50.0",
