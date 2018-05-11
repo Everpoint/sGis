@@ -4,6 +4,7 @@ import {Symbol} from "../symbols/Symbol";
 import {Bbox} from "../Bbox";
 import {Render} from "../renders/Render";
 import {Coordinates} from "../baseTypes";
+import {DynamicSymbolFeature} from "../symbols/DynamicSymbolFeature";
 
 export interface FeatureParams {
     crs?: Crs;
@@ -183,6 +184,12 @@ class FeatureSymbolContainer {
 
     reset() {
         this._cached = undefined;
+
+        let dynamicFeature = <DynamicSymbolFeature>this._feature;
+        if (dynamicFeature.__dynamicSymbolRender) {
+            dynamicFeature.__dynamicSymbolRender.update();
+            dynamicFeature.__dynamicSymbolRender.redraw(dynamicFeature);
+        }
     }
 
     setTempSymbol(symbol: Symbol<Feature>): void {

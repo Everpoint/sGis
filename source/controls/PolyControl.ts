@@ -1,4 +1,5 @@
 import {
+    ChangeEvent,
     Control, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent,
     PointAddEvent
 } from "./Control";
@@ -106,7 +107,7 @@ export abstract class PolyControl extends Control {
         this._activeFeature.redraw();
         if (this._tempLayer) this._tempLayer.redraw();
 
-        this.fire(event);
+        this.fire(new ChangeEvent(ringIndex, pointIndex));
     }
 
     private _handleDblclick(event: sGisEvent): void {

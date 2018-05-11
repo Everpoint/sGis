@@ -47,7 +47,7 @@ export abstract class DynamicPointSymbol extends Symbol<PointFeature> {
     readonly offset: Offset;
     readonly onRender?: () => void;
 
-    constructor({offset = [5, 0], onRender}: DynamicPointSymbolParams = {}) {
+    constructor({offset = [0, 0], onRender}: DynamicPointSymbolParams = {}) {
         super();
         this.offset = offset;
         this.onRender = onRender;
@@ -63,8 +63,11 @@ export abstract class DynamicPointSymbol extends Symbol<PointFeature> {
         dynamicFeature.__dynamicSymbolRender = new DynamicRender({
             node: node,
             onRender: this.onRender,
-            update: (bbox: Bbox, resolution: number) => {
-                if (!dynamicFeature.crs.canProjectTo(bbox.crs)) return;
+            update: (bbox: Bbox = null, resolution: number = null) => {
+                if (bbox === null) bbox = dynamicFeature.__lastBbox;
+                if (resolution === null) resolution = dynamicFeature.__lastResolution;
+
+                if (!bbox || !resolution || !dynamicFeature.crs.canProjectTo(bbox.crs)) return;
 
                 let point = dynamicFeature.projectTo(bbox.crs);
                 let dx = Math.round((point.x - bbox.xMin) / resolution + this.offset[0]);
@@ -72,6 +75,12 @@ export abstract class DynamicPointSymbol extends Symbol<PointFeature> {
 
                 node.style.left = `${dx.toString()}px`;
                 node.style.top = `${dy.toString()}px`;
+
+                dynamicFeature.__lastBbox = bbox;
+                dynamicFeature.__lastResolution = resolution;
+            },
+            redraw: () => {
+                this._updateFeatureNode(dynamicFeature);
             }
         });
 
@@ -98,6 +107,10 @@ export abstract class DynamicPointSymbol extends Symbol<PointFeature> {
                 });
             }
         });
+    }
+
+    protected _updateFeatureNode(feature: PointFeature): void {
+        // do nothing
     }
 }
 

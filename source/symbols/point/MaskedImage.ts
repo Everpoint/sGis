@@ -9,6 +9,8 @@ import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/PointFeature";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 
+const MAX_TRIES = 3;
+
 export interface MaskedImageSymbolParams {
     /** @see [[MaskedImage.width]] */
     width?: number,
@@ -149,7 +151,7 @@ export class MaskedImage extends Symbol<PointFeature> {
 
     _isLoaded(): boolean { return this._image.complete && this._mask.complete; }
 
-    _updateMasked(): void {
+    _updateMasked(triesNo: number = 0): void {
         if (!this._mask || !this._image || !this._isLoaded()) return;
 
         let canvas = document.createElement('canvas');
@@ -157,6 +159,12 @@ export class MaskedImage extends Symbol<PointFeature> {
         canvas.height = this._mask.height;
 
         let ctx = canvas.getContext('2d');
+        if (canvas.width === 0 || canvas.height === 0) {
+            // IE sometimes forgets to change the size of canvas and fails to draw the image. Need to check for that.
+            if (triesNo > MAX_TRIES) return;
+            setTimeout(() => this._updateMasked(triesNo+1), 0);
+            return;
+        }
         ctx.drawImage(this._mask, 0, 0);
 
         let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -168,6 +176,12 @@ export class MaskedImage extends Symbol<PointFeature> {
         resultCanvas.height = this._image.height;
 
         let resultCtx = resultCanvas.getContext('2d');
+        if (resultCanvas.width === 0 || resultCanvas.height === 0) {
+            // IE sometimes forgets to change the size of canvas and fails to draw the image. Need to check for that.
+            if (triesNo > MAX_TRIES) return;
+            setTimeout(() => this._updateMasked(triesNo+1), 0);
+            return;
+        }
         resultCtx.drawImage(this._image, 0, 0);
         resultCtx.drawImage(canvas, 0, 0);
 
