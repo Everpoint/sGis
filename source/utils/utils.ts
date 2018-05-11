@@ -24,9 +24,10 @@ export const debounce = function(func: Function, interval: number): () => void{
     let timer: number | null = null;
     return function() {
         if (timer) clearTimeout(timer);
+        let args = arguments;
         timer = window.setTimeout(function (this: any) {
             timer = null;
-            func.apply(this, arguments);
+            func.apply(this, args);
         }, interval);
     }
 };

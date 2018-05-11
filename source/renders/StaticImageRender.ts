@@ -48,6 +48,7 @@ export abstract class StaticImageRender extends StaticRender {
         if (this._width > 0) this._node.width = this._width;
         if (this._height > 0) this._node.height = this._height;
 
+        this._node.style.opacity = this._opacity.toString();
         this._node.src = this._src;
     }
 

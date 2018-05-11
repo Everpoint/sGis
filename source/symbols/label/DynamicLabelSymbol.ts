@@ -40,4 +40,9 @@ export class DynamicLabelSymbol extends DynamicPointSymbol {
 
         return node;
     }
+
+    protected _updateFeatureNode(feature: LabelFeature): void {
+        let node = this.getNode(feature);
+        node.innerText = feature.content;
+    }
 }

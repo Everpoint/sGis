@@ -39,8 +39,8 @@ export class PolyEditor extends Control {
 
     ignoreEvents: boolean = false;
 
-    private _activeRing: number | null;
-    private _activeIndex: number | null;
+    private _activeRing: number | null = null;
+    private _activeIndex: number | null = null;
 
     hoverSnappingProvider: PolySnappingProvider | null;
 
@@ -159,6 +159,8 @@ export class PolyEditor extends Control {
         if (this.activeLayer) this.activeLayer.redraw();
         this.fire(new ChangeEvent(this._activeRing, this._activeIndex));
     }
+
+    get isDraggingVertex() { return this._activeRing !== null; }
 
     private _handleDragEnd(): void {
         this._activeRing = null;

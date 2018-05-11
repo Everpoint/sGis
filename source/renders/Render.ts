@@ -2,6 +2,7 @@ import {Coordinates} from "../baseTypes";
 import {sGisMouseEvent} from "../commonEvents";
 import {Bbox} from "../Bbox";
 import {MouseEventFlags} from "../EventHandler";
+import {Feature} from "../features/Feature";
 
 export type IntersectionType = boolean | [number, number];
 
@@ -16,6 +17,9 @@ export abstract class Render {
 
     private _listensFor: MouseEventFlags = MouseEventFlags.None;
     private _eventHandler?: RenderEventHandler = null;
+
+    contourIndex: number = -1;
+    pointIndex: number = -1;
 
     get listensFor(): MouseEventFlags { return this._listensFor; }
 
@@ -35,11 +39,13 @@ export abstract class StaticRender extends Render {
 export abstract class VectorRender extends StaticRender {
 }
 
-export type UpdateMethod = (bbox: Bbox, resolution: number) => void;
+export type UpdateMethod = (bbox?: Bbox, resolution?: number) => void;
+export type RedrawMethod = (feature: Feature) => void;
 
 export interface DynamicRenderParams {
     node: HTMLElement;
     update: UpdateMethod;
+    redraw: RedrawMethod;
     onRender?: () => void;
 }
 
@@ -50,14 +56,16 @@ export class DynamicRender extends Render {
 
     readonly node: HTMLElement;
     readonly update: UpdateMethod;
+    readonly redraw: RedrawMethod;
     readonly onRender?: () => void;
 
-    constructor({node, update, onRender}: DynamicRenderParams) {
+    constructor({node, update, redraw, onRender}: DynamicRenderParams) {
         super();
 
         this.node = node;
         this.update = update;
         this.onRender = onRender;
+        this.redraw = redraw;
     }
 }
 
