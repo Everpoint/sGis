@@ -1,13 +1,14 @@
 import {ChangeEvent, Control, ControlParams, EditEvent} from "./Control";
 import {Poly} from "../features/Poly";
-import {move} from "../geotools";
-import {Point} from "../Point";
+import {move, pointToLineDistanceSquare} from "../geotools";
+import {IPoint, Point} from "../Point";
 import {Polygon} from "../features/Polygon";
 import {DragEndEvent, DragEvent, DragStartEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
 import {Coordinates} from "../baseTypes";
 import {Crs} from "../Crs";
 import {PolySnappingProvider} from "./snapping/PolySnappingProvider";
 import {lineSnapping, vertexSnapping} from "./snapping/SnappingMethods";
+import {squareDistance} from "../utils/math";
 
 export interface PolyEditorParams extends ControlParams {
     onFeatureRemove?: () => void,
@@ -116,33 +117,70 @@ export class PolyEditor extends Control {
     private _handleDragStart(event: DragStartEvent): void {
         if (this.ignoreEvents || !this.vertexChangeAllowed && !this.featureDragAllowed) return;
 
-        this._activeRing = event.contourIndex;
-        this._activeIndex = event.pointIndex;
+        let [ringIndex, pointIndex] = this._getTargetPoint(event.point);
+        console.log("Vertex", ringIndex, pointIndex);
 
-        if (this._activeRing !== null && this._activeIndex !== null && this.vertexChangeAllowed) {
-            let ring = this._activeFeature.rings[this._activeRing];
-            let point = this._getProjectedPoint(ring[this._activeIndex], this._activeFeature.crs);
-            let evPoint = event.point.position;
-
-            let targetDist = this.vertexSize * this.map.resolution;
-            let currDist = distance(point, evPoint);
-            if (currDist >= targetDist) {
-                let nextIndex = (this._activeIndex+1) % ring.length;
-                point = this._getProjectedPoint(ring[nextIndex], this._activeFeature.crs);
-                let nextDist = distance(point, evPoint);
-                if (nextDist < targetDist) {
-                    this._activeIndex = nextIndex;
-                } else {
-                    this._activeFeature.insertPoint(this._activeRing, this._activeIndex + 1, evPoint);
-                    this._activeIndex = this._activeIndex + 1;
-                }
+        if (ringIndex === null) {
+            [ringIndex, pointIndex] = this._getTargetEdge(event.point);
+            console.log("Edge", ringIndex, pointIndex);
+            if (ringIndex !== null) {
+                pointIndex++;
+                this._activeFeature.insertPoint(ringIndex, pointIndex, event.point.position);
             }
         }
+
+        this._activeRing = ringIndex;
+        this._activeIndex = pointIndex;
 
         if (this._activeRing !== null || this.featureDragAllowed) {
             event.draggingObject = this._activeFeature;
             event.stopPropagation();
         }
+    }
+
+    private _getTargetPoint(point: IPoint): [number, number] | [null, null] {
+        if (!this.activeFeature) return [null, null];
+
+        let closestDistanceSq = this.vertexSize * this.vertexSize * this.map.resolution * this.map.resolution;
+        let closestRingIndex = null;
+        let closestPointIndex = null;
+        this.activeFeature.rings.forEach((ring, ringIndex) => {
+            ring.forEach((coord, pointIndex) => {
+                let projected = this._getProjectedPoint(coord, this.map.crs);
+                let distanceSq = squareDistance(projected, point.position);
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    closestRingIndex = ringIndex;
+                    closestPointIndex = pointIndex;
+                }
+            });
+        });
+
+        return [closestRingIndex, closestPointIndex];
+    }
+
+    private _getTargetEdge(point: IPoint): [number, number] | [null, null] {
+        if (!this.activeFeature) return [null, null];
+
+        let closestDistanceSq = this.vertexSize * this.vertexSize * this.map.resolution * this.map.resolution;
+        let closestRingIndex = null;
+        let closestEdgeIndex = null;
+
+        this.activeFeature.rings.forEach((ring, ringIndex) => {
+            ring.forEach((coord, pointIndex) => {
+                let projectedA = this._getProjectedPoint(coord, this.map.crs);
+                let projectedB = this._getProjectedPoint(pointIndex === ring.length - 1 ? ring[0] : ring[pointIndex + 1], this.map.crs);
+                let distanceSq = pointToLineDistanceSquare(point.position, [projectedA, projectedB]);
+
+                if (distanceSq < closestDistanceSq) {
+                    closestDistanceSq = distanceSq;
+                    closestRingIndex = ringIndex;
+                    closestEdgeIndex = pointIndex;
+                }
+            });
+        });
+
+        return [closestRingIndex, closestEdgeIndex];
     }
 
     private _handleDrag(event: DragEvent): void {
@@ -178,26 +216,25 @@ export class PolyEditor extends Control {
     }
 
     private _handleDblClick(event: sGisDoubleClickEvent): void {
-        if (this.ignoreEvents || event.contourIndex === null || event.pointIndex === null) return;
+        if (this.ignoreEvents) return;
+        let [ringIndex, pointIndex] = this._getTargetPoint(event.point);
+        if (ringIndex === null) return;
 
-        let ringIndex = event.contourIndex;
         let ring = this._activeFeature.rings[ringIndex];
-
-        let index = event.pointIndex;
         let evPoint = event.point.projectTo(this._activeFeature.crs).position;
-        let d1 = distance(evPoint, ring[index]);
+        let d1 = distance(evPoint, ring[pointIndex]);
 
-        let nextIndex = (index+1)%ring.length;
+        let nextIndex = (pointIndex+1)%ring.length;
         let d2 = distance(evPoint, ring[nextIndex]);
 
-        if (d2 < d1) index = nextIndex;
+        if (d2 < d1) pointIndex = nextIndex;
 
         if (ring.length > 2) {
-            this._activeFeature.removePoint(ringIndex, index);
-            this.fire('edit', { ringIndex: ringIndex, pointIndex: index });
+            this._activeFeature.removePoint(ringIndex, pointIndex);
+            this.fire('edit', { ringIndex: ringIndex, pointIndex: pointIndex });
         } else if (this._activeFeature.rings.length > 1) {
             this._activeFeature.removeRing(ringIndex);
-            this.fire('edit', { ringIndex: ringIndex, pointIndex: index });
+            this.fire('edit', { ringIndex: ringIndex, pointIndex: pointIndex });
         } else if (this.onFeatureRemove) {
             this.onFeatureRemove();
         }

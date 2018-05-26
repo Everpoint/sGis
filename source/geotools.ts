@@ -188,11 +188,19 @@ export const contains = function(polygon: Coordinates[][] | Coordinates[], point
 
 /**
  * Returns the minimum distance between the given point and line.
- * @param {Position} point
- * @param {Position[]} line - line coordinates in the form [[x1, y1], [x2, y2]]
- * @returns {Number}
+ * @param point
+ * @param line - line coordinates in the form [[x1, y1], [x2, y2]]
  */
-export const pointToLineDistance = function(point: Coordinates, line: Line) {
+export const pointToLineDistance = function(point: Coordinates, line: Line): number {
+    return Math.sqrt(pointToLineDistanceSquare(point, line));
+};
+
+/**
+ * Returns the minimum square distance between the given point and line.
+ * @param point
+ * @param line
+ */
+export const pointToLineDistanceSquare = function(point: Coordinates, line: Line): number {
     let lx = line[1][0] - line[0][0];
     let ly = line[1][1] - line[0][1];
     let dx = line[0][0] - point[0];
@@ -200,7 +208,7 @@ export const pointToLineDistance = function(point: Coordinates, line: Line) {
     let t = 0 - (dx * lx + dy * ly) / (lx * lx + ly * ly);
 
     t = t < 0 ? 0 : t > 1 ? 1 : t;
-    return Math.sqrt(Math.pow(lx * t + dx, 2) + Math.pow(ly * t + dy, 2));
+    return Math.pow(lx * t + dx, 2) + Math.pow(ly * t + dy, 2);
 };
 
 /**

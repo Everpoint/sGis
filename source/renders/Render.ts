@@ -4,8 +4,6 @@ import {Bbox} from "../Bbox";
 import {MouseEventFlags} from "../EventHandler";
 import {Feature} from "../features/Feature";
 
-export type IntersectionType = boolean | [number, number];
-
 export type RenderEventHandler = (event: sGisMouseEvent) => void;
 
 export abstract class Render {
@@ -13,7 +11,7 @@ export abstract class Render {
      * Returns true if 'position' is inside the render.
      * @param position in the rendered (px) coordinates in {x: X, y: Y} format.
      */
-    abstract contains(position: Coordinates): IntersectionType;
+    abstract contains(position: Coordinates): boolean;
 
     private _listensFor: MouseEventFlags = MouseEventFlags.None;
     private _eventHandler?: RenderEventHandler = null;
@@ -50,7 +48,7 @@ export interface DynamicRenderParams {
 }
 
 export class DynamicRender extends Render {
-    contains(position: Coordinates): IntersectionType {
+    contains(position: Coordinates): boolean {
         return false;
     }
 
