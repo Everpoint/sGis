@@ -3,7 +3,7 @@ import {Bbox} from "../../Bbox";
 import {Container} from "./Container";
 import {Layer} from "../../layers/Layer";
 import {Coordinates} from "../../baseTypes";
-import {DynamicRender, IntersectionType, Render, StaticRender, VectorRender} from "../../renders/Render";
+import {DynamicRender, Render, StaticRender, VectorRender} from "../../renders/Render";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {StaticImageRender} from "../../renders/StaticImageRender";
 import {StaticHtmlImageRender} from "../../renders/StaticHtmlImageRender";
@@ -298,18 +298,17 @@ export class LayerRenderer {
         }
     }
 
-    getEventCatcher(eventFlag: MouseEventFlags, position: Coordinates): [Render, IntersectionType] {
-        if (!this._eventCatchers[eventFlag]) return [null, null];
+    getEventCatcher(eventFlag: MouseEventFlags, position: Coordinates): Render | null {
+        if (!this._eventCatchers[eventFlag]) return null;
 
         let keys = Array.from(this._eventCatchers[eventFlag].keys());
         for (let i = keys.length - 1; i >= 0; i--) {
             let render = keys[i];
-            let intersectionType = render.contains && render.contains(position);
-            if (intersectionType) {
-                return [render, intersectionType];
+            if (render.contains(position)) {
+                return render;
             }
         }
 
-        return [null, null];
+        return null;
     }
 }
