@@ -7,15 +7,20 @@ export interface IClusterProvider {
     features?: Feature[];
     size?: number;
     resolution?: number;
+    cache?: FeatureGroup[];
+    getClusters(bbox: Bbox, resolution: number): FeatureGroup[];
+    add(features: Feature | Feature[]): void;
+    remove(features: Feature | Feature[]): void;
+    has(feature: Feature): boolean;
 }
 
-export class GridClusterProvider {
-    private _features: Feature[];
-    private _size: number;
+export class GridClusterProvider implements IClusterProvider {
+    readonly _features: Feature[];
+    readonly _size: number;
     private _resolution: number;
     private _cache: FeatureGroup[];
 
-    constructor({ size = 44 }: IClusterProvider = {}) {
+    constructor(size = 44) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
@@ -80,5 +85,9 @@ export class GridClusterProvider {
                 );
             this._features.splice(index, 1);
         });
+    }
+
+    has(feature: Feature): boolean {
+        return this._features.indexOf(feature) !== -1;
     }
 }
