@@ -4,9 +4,7 @@ import {Offset} from "./baseTypes";
 
 export interface sGisMouseEventParams {
     point: IPoint,
-    browserEvent: MouseEvent,
-    contourIndex?: number | null,
-    pointIndex?: number | null
+    browserEvent: MouseEvent
 }
 
 export abstract class sGisMouseEvent extends sGisEvent {
@@ -14,15 +12,11 @@ export abstract class sGisMouseEvent extends sGisEvent {
 
     readonly point: IPoint;
     readonly browserEvent: MouseEvent;
-    contourIndex: number | null;
-    pointIndex: number | null;
 
-    constructor({type, flag}: {type: string, flag: MouseEventFlags}, {point, browserEvent, contourIndex = null, pointIndex = null}: sGisMouseEventParams) {
+    constructor({type, flag}: {type: string, flag: MouseEventFlags}, {point, browserEvent}: sGisMouseEventParams) {
         super(type);
         this.point = point;
         this.browserEvent = browserEvent;
-        this.contourIndex = contourIndex;
-        this.pointIndex = pointIndex;
         this.eventFlag = flag;
     }
 }
