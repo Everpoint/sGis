@@ -34,11 +34,9 @@ export class GridClusterProvider {
                 const point = this._features[i].projectTo(bbox.crs);
                 const indexX = Math.round(point.centroid[0] / size);
                 const indexY = Math.round(point.centroid[1] / size);
-                if (groups[`${indexX}${indexY}`]) {
-                    groups[`${indexX}${indexY}`] = groups[`${indexX}${indexY}`].concat(
-                        this._features[i],
-                    );
-                } else groups[`${indexX}${indexY}`] = [this._features[i]];
+                if (groups[`${indexX}-${indexY}`]) {
+                    groups[`${indexX}-${indexY}`].push(this._features[i]);
+                } else groups[`${indexX}-${indexY}`] = [this._features[i]];
             }
 
             this._cache = Object.keys(groups).map(
@@ -59,7 +57,12 @@ export class GridClusterProvider {
         const toAdd = Array.isArray(features) ? features : [features];
         if (toAdd.length === 0) return;
         toAdd.forEach(f => {
-            if (this._features.indexOf(f) !== -1) error(new Error(`Feature ${f} is already in the GridClusterProvider`));
+            if (this._features.indexOf(f) !== -1)
+                error(
+                    new Error(
+                        `Feature ${f} is already in the GridClusterProvider`,
+                    ),
+                );
         });
         this._features.push(...toAdd);
     }
@@ -71,7 +74,10 @@ export class GridClusterProvider {
         if (toRemove.length === 0) return;
         toRemove.forEach(f => {
             let index = this._features.indexOf(f);
-            if (index === -1) error(new Error(`Feature ${f} is not in the GridClusterProvider`));
+            if (index === -1)
+                error(
+                    new Error(`Feature ${f} is not in the GridClusterProvider`),
+                );
             this._features.splice(index, 1);
         });
     }
