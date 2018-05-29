@@ -76,9 +76,9 @@ export class PolyRender extends VectorRender {
 
     get isVector() { return true; }
 
-    contains(position: Coordinates): boolean | [number, number] {
+    contains(position: Coordinates): boolean {
         let polygonContains = contains(this.coordinates, position, this.strokeWidth / 2 + this.lineContainsTolerance);
-        if (this.enclosed) return polygonContains;
-        return Array.isArray(polygonContains) && polygonContains[1] !== this.coordinates[polygonContains[0]].length - 1 ? polygonContains : false;
+        if (this.enclosed) return !!polygonContains;
+        return Array.isArray(polygonContains) && polygonContains[1] !== this.coordinates[polygonContains[0]].length - 1;
     }
 }
