@@ -16,7 +16,7 @@ export class GridClusterProvider implements IClusterProvider {
     private _resolution: number;
     private _cache: FeatureGroup[];
 
-    constructor(size = 44) {
+    constructor(size = 244) {
         this._features = [];
         this._size = size;
         this._resolution = 0;

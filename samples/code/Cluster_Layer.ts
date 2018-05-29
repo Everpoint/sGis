@@ -4,16 +4,7 @@ import {TileLayer} from "../../source/layers/TileLayer";
 import {PointFeature} from "../../source/features/PointFeature";
 import {wgs84} from "../../source/Crs";
 
-// import data from '../resources/fairs.json';
-
-const data = [
-    [83.77203, 53.351048],
-    [83.68264, 53.346348],
-    [83.675354, 53.366997],
-    [83.74456, 53.37964],
-    [83.69457, 53.25384],
-    [83.76995, 53.355083],
-];
+import data from '../resources/fairs.json';
 
 let {map} = init({
     position: [58, 92],
