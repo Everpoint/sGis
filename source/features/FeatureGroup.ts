@@ -1,4 +1,4 @@
-import {Feature, FeatureParams} from './Feature'
+import {Feature, FeatureParams} from "./Feature"
 import {IPoint, Point} from "../Point";
 import {Coordinates} from "../baseTypes";
 import {PointSymbol} from "../symbols/point/Point";
@@ -23,10 +23,7 @@ export class FeatureGroup extends Feature implements IPoint {
         super({symbol, ...params});
         this._features = features.map(feature => {
             if (this.crs.equals(feature.crs)) return feature;
-            else {
-                let projected = feature.projectTo(this.crs);
-                return projected;
-            }
+            else return feature.projectTo(this.crs);
         });
     }
 
