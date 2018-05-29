@@ -1,16 +1,17 @@
 import {Layer, LayerConstructorParams} from './Layer';
 import {Feature} from '../features/Feature';
-import {GridClusterProvider} from '../layers/clusterProviders/GridClusterProvider';
 import {Symbol} from '../symbols/Symbol';
 import {Bbox} from '../Bbox';
 import {Render} from '../renders/Render';
 import {StaticImageRender} from '../renders/StaticImageRender';
 import {ClusterSymbol} from '../symbols/ClusterSymbol';
 import {FeatureGroup} from '../features/FeatureGroup';
+import {IClusterProvider, GridClusterProvider} from "./clusterProviders/GridClusterProvider";
+import {FeaturesAddEvent, FeaturesRemoveEvent} from "./FeatureLayer";
 
 export interface ClusterLayerConstructorParams extends LayerConstructorParams {
     clusterSymbol?: Symbol<Feature>;
-    gridClusterProvider?: GridClusterProvider;
+    gridClusterProvider?: IClusterProvider;
 }
 
 /**
@@ -19,7 +20,7 @@ export interface ClusterLayerConstructorParams extends LayerConstructorParams {
  */
 export class ClusterLayer extends Layer {
     private _clusterSymbol: Symbol<Feature>;
-    private _gridClusterProvider: GridClusterProvider;
+    private _gridClusterProvider: IClusterProvider;
 
     /**
      * @param __namedParameters - properties to be set to the corresponding fields.
@@ -42,19 +43,19 @@ export class ClusterLayer extends Layer {
     getRenders(bbox: Bbox, resolution: number): Render[] {
         let renders: Array<Render> = [];
 
-        this.getFeatures(bbox, resolution).forEach((feature: FeatureGroup) => {
-            if (
-                feature.features.length === 1 &&
-                feature.symbol !== feature.features[0].symbol
-            ) {
-                feature.symbol = feature.features[0].symbol;
-            } else if (
-                feature.features.length > 1 &&
-                feature.symbol !== this._clusterSymbol
-            ) {
-                feature.symbol = this._clusterSymbol;
+        this.getFeatures(bbox, resolution).forEach((cluster: FeatureGroup) => {
+            if (cluster.symbol !== this._clusterSymbol) {
+                cluster.symbol = this._clusterSymbol;
             }
-            renders = renders.concat(feature.render(resolution, bbox.crs));
+
+            if (cluster.features.length === 1) {
+                renders = renders.concat(
+                    cluster.features[0].render(resolution, bbox.crs),
+                );
+            } else {
+                renders = renders.concat(cluster.render(resolution, bbox.crs));
+            }
+
             renders.forEach(render => {
                 if (render instanceof StaticImageRender) {
                     render.onLoad = () => {
@@ -73,11 +74,19 @@ export class ClusterLayer extends Layer {
     }
 
     add(features: Feature | Feature[]): void {
-        this._gridClusterProvider.add(features);
+        const toAdd = Array.isArray(features) ? features : [features];
+        if (toAdd.length === 0) return;
+        this.fire(new FeaturesAddEvent(toAdd));
+        this._gridClusterProvider.add(toAdd);
+        this.redraw();
     }
 
     remove(features: Feature | Feature[]): void {
-        this._gridClusterProvider.remove(features);
+        const toRemove = Array.isArray(features) ? features : [features];
+        if (toRemove.length === 0) return;
+        this.fire(new FeaturesRemoveEvent(toRemove));
+        this._gridClusterProvider.remove(toRemove);
+        this.redraw();
     }
 
     has(feature: Feature): boolean {

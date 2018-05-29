@@ -4,10 +4,6 @@ import {Feature} from "../../features/Feature";
 import {error} from "../../utils/utils";
 
 export interface IClusterProvider {
-    features?: Feature[];
-    size?: number;
-    resolution?: number;
-    cache?: FeatureGroup[];
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[];
     add(features: Feature | Feature[]): void;
     remove(features: Feature | Feature[]): void;
