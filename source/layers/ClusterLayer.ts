@@ -16,7 +16,7 @@ export interface ClusterLayerConstructorParams extends LayerConstructorParams {
 
 /**
  * A layer that contains arbitrary set of features.
- * @alias sGis.FeatureLayer
+ * @alias sGis.ClusterLayer
  */
 export class ClusterLayer extends Layer {
     private _clusterSymbol: Symbol<Feature>;
@@ -24,7 +24,6 @@ export class ClusterLayer extends Layer {
 
     /**
      * @param __namedParameters - properties to be set to the corresponding fields.
-     * @param extensions - [JS ONLY]additional properties to be copied to the created instance.
      */
     constructor(
         {
@@ -33,9 +32,8 @@ export class ClusterLayer extends Layer {
             gridClusterProvider = new GridClusterProvider(),
             ...layerParams,
         }: ClusterLayerConstructorParams = {},
-        extensions?: Object,
     ) {
-        super({ delayedUpdate, ...layerParams }, extensions);
+        super({ delayedUpdate, ...layerParams });
         this._clusterSymbol = clusterSymbol;
         this._gridClusterProvider = gridClusterProvider;
     }
@@ -73,6 +71,12 @@ export class ClusterLayer extends Layer {
         return this._gridClusterProvider.getClusters(bbox, resolution);
     }
 
+    /**
+     * Adds a feature or an array of features to the layer.
+     * @param features - features to add.
+     * @throws if one of the features is already in the layer.
+     * @fires FeaturesAddEvent
+     */
     add(features: Feature | Feature[]): void {
         const toAdd = Array.isArray(features) ? features : [features];
         if (toAdd.length === 0) return;
@@ -81,6 +85,12 @@ export class ClusterLayer extends Layer {
         this.redraw();
     }
 
+    /**
+     * Removes a feature or an array of features from the layer.
+     * @param features - feature or features to be removed.
+     * @throws if the one of the features is not in the layer.
+     * @fires [[FeaturesRemoveEvent]]
+     */
     remove(features: Feature | Feature[]): void {
         const toRemove = Array.isArray(features) ? features : [features];
         if (toRemove.length === 0) return;
@@ -89,6 +99,10 @@ export class ClusterLayer extends Layer {
         this.redraw();
     }
 
+    /**
+     * Returns true if the given feature is in the layer.
+     * @param feature
+     */
     has(feature: Feature): boolean {
         return this._gridClusterProvider.has(feature);
     }
