@@ -16,7 +16,7 @@ export class GridClusterProvider implements IClusterProvider {
     private _resolution: number;
     private _cache: FeatureGroup[];
 
-    constructor(size = 244) {
+    constructor(size = 88) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
@@ -33,8 +33,8 @@ export class GridClusterProvider implements IClusterProvider {
 
             for (let i = 0; i < this._features.length; i++) {
                 const point = this._features[i].projectTo(bbox.crs);
-                const indexX = Math.round(point.centroid[0] / size);
-                const indexY = Math.round(point.centroid[1] / size);
+                const indexX = Math.floor(point.centroid[0] / size);
+                const indexY = Math.floor(point.centroid[1] / size);
                 if (groups[`${indexX}-${indexY}`]) {
                     groups[`${indexX}-${indexY}`].push(this._features[i]);
                 } else groups[`${indexX}-${indexY}`] = [this._features[i]];
