@@ -15,7 +15,6 @@ export interface ClusterLayerConstructorParams extends LayerConstructorParams {
 }
 
 /**
- * A layer that contains arbitrary set of features.
  * @alias sGis.ClusterLayer
  */
 export class ClusterLayer extends Layer {
