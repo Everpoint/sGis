@@ -36,7 +36,7 @@ describe('GridClusterProvider', () => {
     const clusters = clusterProvider.getClusters(bbox, resolution);
 
     it('.getClusters() should return 3 featureGroup', () => {
-        expect(clusters.length).toBe(3);
+        expect(clusters.length).toBe(4);
     });
 
     it('.getClusters() should return contains 9 object', () => {
@@ -44,7 +44,7 @@ describe('GridClusterProvider', () => {
     });
 
     it('getClusters with changing resolution', () => {
-        expect(clusterProvider.getClusters(bbox, resolution).length).toBe(3);
+        expect(clusterProvider.getClusters(bbox, resolution).length).toBe(4);
         expect(clusterProvider.getClusters(bbox, 4444).length).toBe(5);
     });
 });
