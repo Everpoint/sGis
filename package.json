@@ -1,6 +1,6 @@
 {
-  "name": "sgis",
-  "version": "0.4.0",
+  "name": "@evergis/sgis",
+  "version": "0.4.1",
   "description": "",
   "main": "dist/sGis.js",
   "types": "dist/sGis.d.ts",
@@ -17,7 +17,8 @@
     "build-ts": "tsc",
     "build-samples": "tsc -p ./config/tsconfig-samples.json && node ./config/build-samples.js && npm run copy-samples",
     "copy-samples": "ncp ./temp/samples ./doc/samples && ncp ./temp/source ./doc/source && ncp ./samples/resources ./doc/samples/resources",
-    "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js"
+    "rollup": "tsc -p ./config/tsconfig-rollup.json && rollup --config ./config/rollup.config.js",
+    "prepublishOnly": "npm ci && npm run build"
   },
   "repository": {
     "type": "git",
