@@ -34,7 +34,8 @@
     "rollup": "^0.50.0",
     "ts-jest": "^21.2.4",
     "typedoc": "git+https://github.com/Maximkaaa/typedoc.git#dev",
-    "typescript": "^2.7.2"
+    "typescript": "^2.7.2",
+    "typedoc-default-themes": "https://github.com/Maximkaaa/typedoc-default-themes#dev"
   },
   "jest": {
     "transform": {
