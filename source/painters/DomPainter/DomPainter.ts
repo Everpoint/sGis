@@ -5,10 +5,10 @@ import {Container} from "./Container";
 import {AnimationEndEvent, AnimationStartEvent, Map as sGisMap} from "../../Map";
 import {Layer} from "../../layers/Layer";
 import {Bbox} from "../../Bbox";
-import {error, warn} from "../../utils/utils";
+import {error, warn, debounce} from "../../utils/utils";
 import {softEquals} from "../../utils/math";
 import {Coordinates} from "../../baseTypes";
-import {EventHandler} from "../../EventHandler";
+import {EventHandler, sGisEvent} from "../../EventHandler";
 import {ContentsChangeEvent} from "../../LayerGroup";
 import {DragEvent, sGisDoubleClickEvent} from "../../commonEvents";
 
@@ -17,6 +17,14 @@ let layerWrapperStyle = 'position: absolute; width: 100%; height: 100%; z-index:
 
 export interface DomPainterParams {
     wrapper?: HTMLElement | string;
+}
+
+export class MapResize extends sGisEvent {
+    static type = 'mapResize';
+
+    constructor() {
+        super(MapResize.type);
+    }
 }
 
 export class DomPainter extends EventHandler {
@@ -121,6 +129,8 @@ export class DomPainter extends EventHandler {
         });
     }
 
+    private _fireMapResize = debounce(() => this.fire(new MapResize()), this._map && this._map.changeEndDelay || 300)
+
     private _addLayer(layer: Layer, index: number): void {
         this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));
     }
@@ -212,8 +222,13 @@ export class DomPainter extends EventHandler {
     }
 
     private _updateSize(): void {
-        this._width = this._wrapper ? this._wrapper.clientWidth || this._wrapper.offsetWidth : 0;
-        this._height = this._wrapper ? this._wrapper.clientHeight || this._wrapper.offsetHeight : 0;
+        const newWidth = this._wrapper ? this._wrapper.clientWidth || this._wrapper.offsetWidth : 0;
+        const newHeight = this._wrapper ? this._wrapper.clientHeight || this._wrapper.offsetHeight : 0;
+        if (this._width !== newWidth || this._height !== newHeight) {
+            this._fireMapResize();
+        }
+        this._width = newWidth;
+        this._height = newHeight;
     }
 
     /**
