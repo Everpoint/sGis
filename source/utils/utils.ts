@@ -20,7 +20,7 @@ export const warn = function(error: string): void {
  * @param func - callback function
  * @param interval - interval in ms
  */
-export const debounce = function(func: Function, interval: number): () => void{
+export const debounce = function(func: Function, interval: number): (...args) => void{
     let timer: number | null = null;
     return function() {
         if (timer) clearTimeout(timer);

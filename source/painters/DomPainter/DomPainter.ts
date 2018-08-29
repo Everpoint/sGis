@@ -22,8 +22,13 @@ export interface DomPainterParams {
 export class MapResize extends sGisEvent {
     static type = 'mapResize';
 
-    constructor() {
+    readonly width: number;
+    readonly height: number;
+
+    constructor(width, height) {
         super(MapResize.type);
+        this.width = width;
+        this.height = height;
     }
 }
 
@@ -129,7 +134,7 @@ export class DomPainter extends EventHandler {
         });
     }
 
-    private _fireMapResize = debounce(() => this.fire(new MapResize()), this._map && this._map.changeEndDelay || 300)
+    private _fireMapResize = debounce((width: number, height: number) => this.fire(new MapResize(width, height)), this._map && this._map.changeEndDelay || 300)
 
     private _addLayer(layer: Layer, index: number): void {
         this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));
@@ -225,7 +230,7 @@ export class DomPainter extends EventHandler {
         const newWidth = this._wrapper ? this._wrapper.clientWidth || this._wrapper.offsetWidth : 0;
         const newHeight = this._wrapper ? this._wrapper.clientHeight || this._wrapper.offsetHeight : 0;
         if (this._width !== newWidth || this._height !== newHeight) {
-            this._fireMapResize();
+            this._fireMapResize(newWidth, newHeight);
         }
         this._width = newWidth;
         this._height = newHeight;
