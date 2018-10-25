@@ -17,11 +17,16 @@ export class Canvas {
 
     bbox: Bbox;
 
-    constructor() {
-        this._setNode();
+    constructor(canvasNode?: HTMLCanvasElement) {
+        if (canvasNode) {
+          this._canvasNode = canvasNode;
+          this._ctx = this._canvasNode.getContext('2d');
+        } else {
+          this._createNode();
+        }
     }
 
-    _setNode() {
+    _createNode() {
         this._canvasNode = document.createElement('canvas');
         this._canvasNode.style.pointerEvents = 'none';
         this._ctx = this._canvasNode.getContext('2d');
