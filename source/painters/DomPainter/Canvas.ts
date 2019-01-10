@@ -98,7 +98,14 @@ export class Canvas {
 
         this._ctx.translate(x, y);
         this._ctx.rotate(render.angle);
+
+        let opacity = render.opacity;
+        if (opacity !== 1) this._ctx.globalAlpha = opacity;
+
         this._ctx.drawImage(render.node, render.offset[0], render.offset[1], render.width, render.height);
+
+        if (opacity !== 1) this._ctx.globalAlpha = 1;
+
         this._ctx.rotate(-render.angle);
         this._ctx.translate(-x, -y);
     }
