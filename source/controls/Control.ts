@@ -24,20 +24,20 @@ export class DrawingBeginEvent extends sGisEvent {
  * Drawing of the current feature is finished.
  * @event DrawingFinishEvent
  */
-export class DrawingFinishEvent extends sGisEvent {
+export class DrawingFinishEvent<FeatureType = Feature> extends sGisEvent {
     static type: string = 'drawingFinish';
 
     /**
      * The feature that was created.
      */
-    readonly feature: Feature;
+    readonly feature: FeatureType;
 
     /**
      * Browser mouse event that triggered the event.
      */
     readonly browserEvent: MouseEvent;
 
-    constructor(feature: Feature, browserEvent: MouseEvent) {
+    constructor(feature: FeatureType, browserEvent: MouseEvent) {
         super(DrawingFinishEvent.type);
         this.feature = feature;
         this.browserEvent = browserEvent;

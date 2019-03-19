@@ -49,7 +49,7 @@ export class PointControl extends Control {
         this.fire(new DrawingFinishEvent(feature, clickEvent.browserEvent));
     }
 
-    private _handleMouseMove(event: sGisEvent): void {
+    protected _handleMouseMove(event: sGisEvent): void {
         let mouseMoveEvent = event as sGisMouseMoveEvent;
         this._snap(mouseMoveEvent.point.position, mouseMoveEvent.browserEvent.altKey);
     }
