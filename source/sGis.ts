@@ -66,8 +66,8 @@ export const event = eventModule;
 export {Bbox} from "./Bbox";
 export {Control} from "./controls/Control";
 
-export const version = "0.4.0";
-export const releaseDate = "21.05.2018";
+export const version = "0.4.6";
+export const releaseDate = "19.03.2019";
 
 let utilsModulesExt = <any>{};
 Object.assign(utilsModulesExt, utilsModule, { Color: Color });
