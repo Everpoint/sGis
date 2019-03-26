@@ -95,7 +95,7 @@ export abstract class PolyControl extends Control {
         if (this._tempLayer) this._tempLayer.add(this._activeFeature);
     }
 
-    private _handleMousemove(event: sGisEvent): void {
+    protected _handleMousemove(event: sGisEvent): void {
         let mousemoveEvent = event as sGisMouseMoveEvent;
         let position = this._snap(mousemoveEvent.point.position, mousemoveEvent.browserEvent.altKey);
         if (!this._activeFeature) return;

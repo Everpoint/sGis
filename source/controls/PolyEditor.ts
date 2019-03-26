@@ -101,7 +101,7 @@ export class PolyEditor extends Control {
         if (feature) this.activate();
     }
 
-    private _handleMousemove(event: sGisMouseMoveEvent): void {
+    protected _handleMousemove(event: sGisMouseMoveEvent): void {
         if (this.ignoreEvents) {
             this._unsnap();
             return;
