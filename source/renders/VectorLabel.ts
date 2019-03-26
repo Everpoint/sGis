@@ -16,6 +16,7 @@ export interface VectorLabelRenderParams {
     fontSize?: number;
     fontFamily?: string;
     fontStyle?: string;
+    fontWeight?: number;
 
     strokeColor?: string;
     strokeWidth?: number;
@@ -35,6 +36,7 @@ export class VectorLabel extends StaticVectorImageRender {
     fontSize: number;
     fontFamily: string;
     fontStyle?: string;
+    fontWeight?: number;
 
     strokeColor: string;
     strokeWidth: number;
@@ -57,6 +59,7 @@ export class VectorLabel extends StaticVectorImageRender {
         fontSize = 14,
         fontFamily = 'arial',
         fontStyle = null,
+        fontWeight,
         strokeColor = 'white',
         strokeWidth = 2,
         fillColor = 'black'
@@ -69,6 +72,7 @@ export class VectorLabel extends StaticVectorImageRender {
         this.fontSize = fontSize;
         this.fontFamily = fontFamily;
         this.fontStyle = fontStyle;
+        this.fontWeight = fontWeight;
 
         this.strokeColor = strokeColor;
         this.strokeWidth = strokeWidth;
@@ -87,6 +91,7 @@ export class VectorLabel extends StaticVectorImageRender {
     get font(): string {
         let font = '';
         if (this.fontStyle) font += this.fontStyle + ' ';
+        if (this.fontWeight) font += this.fontWeight + ' ';
         font += `${this.fontSize}px ${this.fontFamily}`;
         return font;
     }
