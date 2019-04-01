@@ -118,11 +118,10 @@ export class PolyEditor extends Control {
         if (this.ignoreEvents || !this.vertexChangeAllowed && !this.featureDragAllowed) return;
 
         let [ringIndex, pointIndex] = this._getTargetPoint(event.point);
-        console.log("Vertex", ringIndex, pointIndex);
 
         if (ringIndex === null) {
             [ringIndex, pointIndex] = this._getTargetEdge(event.point);
-            console.log("Edge", ringIndex, pointIndex);
+
             if (ringIndex !== null) {
                 pointIndex++;
                 this._activeFeature.insertPoint(ringIndex, pointIndex, event.point.position);

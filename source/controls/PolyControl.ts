@@ -61,22 +61,19 @@ export abstract class PolyControl extends Control {
 
     private _handleClick(event: sGisEvent): void {
         let clickEvent = event as sGisClickEvent;
-        setTimeout(() => {
-            if (Date.now() - this._dblClickTime < 30) return;
-            if (this._activeFeature) {
-                if (clickEvent.browserEvent.ctrlKey) {
-                    this.startNewRing();
-                } else {
-                    this._activeFeature.addPoint(this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
-                }
+        if (this._activeFeature) {
+            if (clickEvent.browserEvent.ctrlKey) {
+                this.startNewRing();
             } else {
-                this.startNewFeature(clickEvent.point);
-                this.fire(new DrawingBeginEvent());
+                this._activeFeature.addPoint(this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
             }
-            this.fire(new PointAddEvent());
+        } else {
+            this.startNewFeature(clickEvent.point);
+            this.fire(new DrawingBeginEvent());
+        }
+        this.fire(new PointAddEvent());
 
-            if (this._tempLayer) this._tempLayer.redraw();
-        }, 10);
+        if (this._tempLayer) this._tempLayer.redraw();
 
         event.stopPropagation();
     }

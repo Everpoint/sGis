@@ -96,13 +96,15 @@ export class PointAddEvent extends sGisEvent {
 
 export interface ControlParams {
     /** @see [[Control.useTempLayer]] */
-    useTempLayer?: boolean,
+    useTempLayer?: boolean;
     /** @see [[Control.snappingProvider]] */
-    snappingProvider?: ISnappingProvider,
+    snappingProvider?: ISnappingProvider;
     /** @see [[Control.activeLayer]] */
-    activeLayer?: FeatureLayer,
+    activeLayer?: FeatureLayer;
     /** @see [[Control.isActive]] */
-    isActive?: boolean
+    isActive?: boolean;
+
+    snappingSymbol?: Symbol<PointFeature>;
 }
 
 export interface ControlWithSymbolParams extends ControlParams{
@@ -116,7 +118,7 @@ export interface ControlWithSymbolParams extends ControlParams{
 export abstract class Control extends EventHandler {
     private _map: Map;
     private _snappingFeature?: PointFeature;
-    private _snappingSymbol: Symbol<PointFeature> = new CrossPointSymbol();
+    private _snappingSymbol: Symbol<PointFeature>;
 
     protected _isActive: boolean = false;
 
@@ -147,12 +149,13 @@ export abstract class Control extends EventHandler {
      * @param map - map the control will work with.
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    protected constructor(map: Map, {useTempLayer = false, snappingProvider, activeLayer, isActive = false}: ControlParams = {}) {
+    protected constructor(map: Map, {useTempLayer = false, snappingProvider, activeLayer, isActive = false, snappingSymbol = new CrossPointSymbol()}: ControlParams = {}) {
         super();
         this._map = map;
         this.useTempLayer = useTempLayer;
         this.snappingProvider = snappingProvider;
         this.activeLayer = activeLayer;
+        this._snappingSymbol = snappingSymbol;
 
         if (isActive) this.isActive = isActive;
     }
