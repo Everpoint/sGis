@@ -142,12 +142,16 @@ export class PolyTransform extends Control {
         this._tempLayer.add(this._rotationHandle);
     }
 
+    protected getScaleHandleSymbol(index: number) {
+        return this.scaleHandleSymbol.clone();
+    }
+
     private _setScaleHandles(): void {
         this._scaleHandles = [];
         for (let i = 0; i < 9; i++) {
             if (i === 4) continue;
 
-            let symbol = <PointSymbol>this.scaleHandleSymbol.clone();
+            let symbol = <PointSymbol>this.getScaleHandleSymbol(i);
             let xk = i % 3 - 1;
             let yk = 1- Math.floor(i/3);
             symbol.offset = [this.scaleHandleOffset * xk, this.scaleHandleOffset * yk];
