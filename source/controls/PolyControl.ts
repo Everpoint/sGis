@@ -11,6 +11,10 @@ import {Symbol} from "../symbols/Symbol";
 import {sGisEvent} from "../EventHandler";
 import {Map} from "../Map";
 
+export interface PolyControlParams extends ControlWithSymbolParams{
+    dblClickMinTime?: number;
+}
+
 /**
  * Base class for polyline and polygon controls. When active, click on the map will start a new feature, then
  * every next click adds a new point to the feature. If ctrl is held during click, new point is added and then new
@@ -25,6 +29,7 @@ import {Map} from "../Map";
 export abstract class PolyControl extends Control {
     private _dblClickTime: number = 0;
     private _activeFeature: Poly | null = null;
+    dblClickMinTime: number;
 
     /**
      * Symbol with which new features will be created.
@@ -35,7 +40,9 @@ export abstract class PolyControl extends Control {
      * @param map - map the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    protected constructor(map: Map, {snappingProvider, activeLayer, isActive = false, symbol}: ControlWithSymbolParams = {}) {
+    protected constructor(map: Map, {
+        snappingProvider, activeLayer, isActive = false, symbol, dblClickMinTime = 30
+    }: PolyControlParams = {}) {
         super(map, {snappingProvider, activeLayer, useTempLayer: true});
 
         this._handleClick = this._handleClick.bind(this);
@@ -44,6 +51,7 @@ export abstract class PolyControl extends Control {
 
         this.symbol = symbol;
         this.isActive = isActive;
+        this.dblClickMinTime = dblClickMinTime;
     }
 
     protected _activate(): void {
@@ -61,19 +69,22 @@ export abstract class PolyControl extends Control {
 
     private _handleClick(event: sGisEvent): void {
         let clickEvent = event as sGisClickEvent;
-        if (this._activeFeature) {
-            if (clickEvent.browserEvent.ctrlKey) {
-                this.startNewRing();
+        setTimeout(() => {
+            if (Date.now() - this._dblClickTime < this.dblClickMinTime) return;
+            if (this._activeFeature) {
+                if (clickEvent.browserEvent.ctrlKey) {
+                    this.startNewRing();
+                } else {
+                    this._activeFeature.addPoint(this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
+                }
             } else {
-                this._activeFeature.addPoint(this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
+                this.startNewFeature(clickEvent.point);
+                this.fire(new DrawingBeginEvent());
             }
-        } else {
-            this.startNewFeature(clickEvent.point);
-            this.fire(new DrawingBeginEvent());
-        }
-        this.fire(new PointAddEvent());
+            this.fire(new PointAddEvent());
 
-        if (this._tempLayer) this._tempLayer.redraw();
+            if (this._tempLayer) this._tempLayer.redraw();
+        }, 10);
 
         event.stopPropagation();
     }

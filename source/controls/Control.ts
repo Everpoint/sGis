@@ -107,7 +107,7 @@ export interface ControlParams {
     snappingSymbol?: Symbol<PointFeature>;
 }
 
-export interface ControlWithSymbolParams extends ControlParams{
+export interface ControlWithSymbolParams extends ControlParams {
     symbol?: Symbol<Feature>
 }
 

@@ -1,9 +1,8 @@
-import {PolyControl} from "./PolyControl";
+import {PolyControl, PolyControlParams} from "./PolyControl";
 import {Polygon} from "../features/Polygon";
 import {PolygonSymbol} from "../symbols/polygon/Simple";
 import {Coordinates} from "../baseTypes";
 import {Poly} from "../features/Poly";
-import {ControlWithSymbolParams} from "./Control";
 import {Map} from "../Map";
 
 /**
@@ -15,7 +14,7 @@ export class PolygonControl extends PolyControl {
      * @param map - map the control will work with
      * @param properties - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {symbol = new PolygonSymbol(), ...controlOptions}: ControlWithSymbolParams = {}) {
+    constructor(map: Map, {symbol = new PolygonSymbol(), ...controlOptions}: PolyControlParams = {}) {
         super(map, {symbol, ...controlOptions});
     }
 
