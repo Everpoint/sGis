@@ -269,7 +269,8 @@ export class EventDispatcher {
             let len1 = Math.sqrt(Math.pow(x11 - x21, 2) + Math.pow(y11 - y21, 2));
             let len2 = Math.sqrt(Math.pow(x12 - x22, 2) + Math.pow(y12 - y22, 2));
 
-            let basePoint = this._master.getPointFromPxPosition(base[0], base[1]);
+            let baseOffset = getMouseOffset(event.target, { pageX: base[0], pageY: base[1] });
+            let basePoint = this._master.getPointFromPxPosition(baseOffset.x, baseOffset.y);
             let dc = [c1[0] - c2[0], c2[1] - c1[1]];
 
             let zoomK = len1 / len2;
