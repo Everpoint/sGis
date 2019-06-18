@@ -310,10 +310,10 @@ export class AlbersEqualArea extends Crs {
         wgs84.setProjectionTo(this, ([lon, lat]) => {
             let rLon = math.degToRad(lon),
                 rLat = math.degToRad(lat),
-                th = _n * (rLat - _lon0),
-                ro = Math.sqrt(_c - 2 * _n * Math.sin(rLon)) / _n,
+                th = _n * (rLon - _lon0),
+                ro = Math.sqrt(_c - 2 * _n * Math.sin(rLat)) / _n,
                 x = ro * Math.sin(th) * this.R,
-                y = _ro0 - ro * Math.cos(th) * this.R;
+                y = (_ro0 - ro * Math.cos(th)) * this.R;
 
             return [x, y];
         });
