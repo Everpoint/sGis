@@ -36,6 +36,8 @@ export type TileIndex = {
     level: number;
 }
 
+export type GetTileUrl  = (xIndex: number, yIndex: number, level: number)  => string;
+
 /**
  * A layer that is drawn as a set of tile images received from server. The layer calculates tile indexes (x, y, z)
  * according to the tile scheme and requested resolution, then inserts them into url mask and creates ImageFeatures
@@ -44,7 +46,7 @@ export type TileIndex = {
  */
 export class TileLayer extends Layer {
     private _tileCache: {[key: string]: TileRender} = {};
-    private readonly _urlMask: string;
+    private readonly _urlMask: string  | GetTileUrl;
     private readonly _cacheSize: number;
     private _transitionTime: number;
     private _cachedIndexes: string[] = [];
@@ -68,7 +70,7 @@ export class TileLayer extends Layer {
      * @param __namedParameters - properties to be set to the corresponding fields.
      * @param extensions - [JS ONLY]additional properties to be copied to the created instance
      */
-    constructor(urlMask, {
+    constructor(urlMask: string | GetTileUrl, {
         tileScheme = TileScheme.default,
         crs = webMercator,
         cycleX = true,
@@ -97,9 +99,13 @@ export class TileLayer extends Layer {
      * @param level - scale level of the tile.
      */
     getTileUrl(xIndex: number, yIndex: number, level: number): string {
-        return this._urlMask.replace('{x}', xIndex.toString())
-            .replace('{y}', yIndex.toString())
-            .replace('{z}', level.toString());
+        if (typeof this._urlMask === "string") {
+            return this._urlMask.replace('{x}', xIndex.toString())
+                .replace('{y}', yIndex.toString())
+                .replace('{z}', level.toString());
+        } else {
+            return this._urlMask(xIndex, yIndex, level);
+        }
     }
 
     getRenders(bbox: Bbox, resolution: number): Render[] {
