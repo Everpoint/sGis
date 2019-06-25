@@ -1,5 +1,5 @@
 export default {
-    input: './temp/sGis.js',
+    input: './es/sGis.js',
     output: {
         file: './dist/sGis_bundle.js',
         format: 'umd',
