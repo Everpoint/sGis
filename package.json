@@ -1,12 +1,13 @@
 {
   "name": "@evergis/sgis",
-  "version": "0.4.13",
+  "version": "0.5.0-alpha.1",
   "description": "",
   "main": "dist/sGis_bundle.js",
   "module": "es/sGis.esm.js",
   "types": "es/sGis.d.ts",
   "files": [
-    "dist", "es"
+    "dist",
+    "es"
   ],
   "directories": {
     "test": "test"
