@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "skipLibCheck": true,
-    "target": "es2015",
-    "module": "es2015",
-    "outDir": "../temp"
+    "target": "esnext",
+    "module": "esnext",
+    "outDir": "../es"
   },
   "include": [
     "../source/**/*.ts"
