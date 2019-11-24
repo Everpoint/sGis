@@ -8,7 +8,7 @@ import {DomPainter} from "./DomPainter";
 import {Coordinates} from "../../baseTypes";
 import {Render} from "../../renders/Render";
 
-const MIN_WHEEL_DELAY = 50;
+const MIN_WHEEL_DELAY = 300;
 
 export interface MapHtmlElement extends HTMLElement {
     doNotBubbleToMap: boolean;
