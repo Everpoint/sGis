@@ -5,6 +5,7 @@ import {Bbox} from "../Bbox";
 import {sGisEvent} from "../EventHandler";
 import {Render} from "../renders/Render";
 import {StaticImageRender} from "../renders/StaticImageRender";
+import {Poly} from "../features/Poly";
 
 export interface FeatureLayerConstructorParams extends LayerConstructorParams {
     features?: Feature[]
@@ -81,8 +82,12 @@ export class FeatureLayer extends Layer {
     getFeatures(bbox: Bbox, resolution: number): Feature[] {
         if (!this.checkVisibility(resolution)) return [];
 
-        return this._features.filter(feature => feature.crs.canProjectTo(bbox.crs) &&
-            (feature.persistOnMap || feature.bbox.intersects(bbox)))
+        return this._features.filter(feature => {
+            if (feature instanceof Poly) {
+                return feature.crs.canProjectTo(bbox.crs);
+            }
+            return feature.crs.canProjectTo(bbox.crs) && (feature.persistOnMap || feature.bbox.intersects(bbox));
+        });
     }
 
     /**
