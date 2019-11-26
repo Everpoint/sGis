@@ -190,6 +190,7 @@ export class Map extends LayerGroup {
      */
     getAdjustedResolution(resolution: number, direction: boolean = false): number {
         if (!this.tileScheme) return resolution;
+        resolution = Math.min(Math.max(resolution, this.minResolution || 0), this.maxResolution || Number.MAX_VALUE);
         return this.tileScheme.getAdjustedResolution(resolution, direction);
     }
 
