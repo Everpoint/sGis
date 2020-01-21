@@ -100,6 +100,11 @@ export abstract class DynamicLayer extends Layer {
         this.fire(new PropertyChangeEvent('source'));
     }
 
+    resetRender(): void {
+        this._nextRender = undefined;
+        this.forceUpdate();
+    }
+
     get opacity() { return this.getOpacity(); }
     set opacity(opacity) {
         this.setOpacity(opacity);
