@@ -1,4 +1,4 @@
-import {Layer, LayerConstructorParams, PropertyChangeEvent} from "./Layer";
+import {Layer, LayerConstructorParams, LayerErrorEvent, PropertyChangeEvent} from "./Layer";
 import {Crs} from "../Crs";
 import {Bbox} from "../Bbox";
 import {Render} from "../renders/Render";
@@ -47,16 +47,12 @@ export abstract class DynamicLayer extends Layer {
             this._loadNextRender(bbox, resolution);
         }
 
-        if (this._nextRender !== this._currentRender && this._nextRender.isReady && !this._nextRender.error) {
+        if (this._nextRender !== this._currentRender && this._nextRender.isReady) {
             this._currentRender = this._nextRender;
         }
 
-        if (this._nextRender.error) {
-            this._currentRender = undefined;
-        }
-
         this._forceUpdate = false;
-        return this._currentRender ? [this._currentRender] : [];
+        return this._currentRender && !this._currentRender.error ? [this._currentRender] : [];
     }
 
     private _loadNextRender(bbox: Bbox, resolution: number): void {
@@ -74,6 +70,9 @@ export abstract class DynamicLayer extends Layer {
                 opacity: this.opacity,
                 onLoad: () => {
                     this.redraw();
+                },
+                onError: (err) => {
+                    this.fire(new LayerErrorEvent(err));
                 },
                 onDisplayed: () => {
                     this._startNextLoad();
@@ -98,11 +97,6 @@ export abstract class DynamicLayer extends Layer {
     forceUpdate(): void {
         this._forceUpdate = true;
         this.fire(new PropertyChangeEvent('source'));
-    }
-
-    resetRender(): void {
-        this._nextRender = undefined;
-        this.forceUpdate();
     }
 
     get opacity() { return this.getOpacity(); }
