@@ -44,6 +44,24 @@ export class VisibilityChangeEvent extends sGisEvent {
 }
 
 /**
+ * Layer unable to be loaded.
+ * @event LayerErrorEvent
+ */
+export class LayerErrorEvent extends sGisEvent {
+    static type: string = 'layerError';
+
+    /**
+     *  Error event that happened
+     */
+    readonly error: ErrorEvent;
+
+    constructor(error: ErrorEvent) {
+        super(LayerErrorEvent.type);
+        this.error = error;
+    }
+}
+
+/**
  * Base class for all map layers. A layer is a container for features, that is responsible for filter out (or create)
  * features for requested bbox and resolution.
  * @alias sGis.Layer

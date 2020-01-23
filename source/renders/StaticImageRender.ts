@@ -6,6 +6,7 @@ export interface StaticImageRenderParams {
     width?: number;
     height?: number;
     onLoad?: () => void;
+    onError?: (err?: ErrorEvent) => void;
     offset?: Offset;
     opacity?: number;
 }
@@ -19,12 +20,14 @@ export abstract class StaticImageRender extends StaticRender {
 
     offset: Offset;
     onLoad?: () => void;
+    onError?: (err?: ErrorEvent) => void;
 
-    constructor({src, width = 0, height = 0, onLoad = null, opacity = 1, offset = [0, 0]}: StaticImageRenderParams) {
+    constructor({src, width = 0, height = 0, onLoad = null, onError = null, opacity = 1, offset = [0, 0]}: StaticImageRenderParams) {
         super();
 
         this.offset = offset;
         this.onLoad = onLoad;
+        this.onError = onError;
 
         this._opacity = opacity;
         this._width = width;
@@ -41,7 +44,7 @@ export abstract class StaticImageRender extends StaticRender {
         };
 
         this._node.onerror = (err) => {
-            this._node.onload(err);
+            if (this.onError) this.onError(err);
         };
 
 
