@@ -97,17 +97,14 @@ export class LayerGroup extends EventHandler {
             this.fire(new ContentsChangeEvent(ContentsChangeType.Remove, [layer]));
             removed = true;
         } else if (recurse) {
-            let isAllLayersRemoved = true;
             for (let i = 0; i < this._layers.length; i++) {
                 if (!(this._layers[i] instanceof LayerGroup)) continue;
                 let group = <LayerGroup>this._layers[i];
                 if (group.contains(layer)) {
-                    if (!group.removeLayer(layer, true)) {
-                      isAllLayersRemoved = false;
-                    }
+                    group.removeLayer(layer, true);
                 }
             }
-            removed = isAllLayersRemoved;
+            removed = true;
         }
 
         return removed;
