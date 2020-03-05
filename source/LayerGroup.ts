@@ -82,9 +82,9 @@ export class LayerGroup extends EventHandler {
      * @param layer - layer to remove.
      * @param recurse - if set to true, the layer will be removed from all child groups containing this layer.
      * @fires [[ContentsChangeEvent]]
-     * @throws If the layer not in the group.
+     * @returns {boolean} layer removed or not
      */
-    removeLayer(layer: GroupItem, recurse: boolean = false): void {
+    removeLayer(layer: GroupItem, recurse: boolean = false): boolean {
         let index = this._layers.indexOf(layer);
         let removed = false;
 
@@ -97,17 +97,20 @@ export class LayerGroup extends EventHandler {
             this.fire(new ContentsChangeEvent(ContentsChangeType.Remove, [layer]));
             removed = true;
         } else if (recurse) {
+            let isAllLayersRemoved = true;
             for (let i = 0; i < this._layers.length; i++) {
                 if (!(this._layers[i] instanceof LayerGroup)) continue;
                 let group = <LayerGroup>this._layers[i];
                 if (group.contains(layer)) {
-                    group.removeLayer(layer, true);
-                    removed = true;
+                    if (!group.removeLayer(layer, true)) {
+                      isAllLayersRemoved = false;
+                    }
                 }
             }
+            removed = isAllLayersRemoved;
         }
 
-        if (!removed) error(new Error('The layer is not in the group'));
+        return removed;
     }
 
     private _setChildListeners(layer: GroupItem): void {
