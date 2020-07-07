@@ -31,7 +31,7 @@ export type RectCoordinates = [number, number, number, number];
 export type HTMLRasterElement = HTMLImageElement | HTMLCanvasElement;
 
 /**
- *  Drop shadow of the polygon "offsetX offsetY blur color".
+ *  Drop shadow of the polygon {offsetX, offsetY, blur, color}.
  */
 export type Shadow = {
     offsetX?: number,

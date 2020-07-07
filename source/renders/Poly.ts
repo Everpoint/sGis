@@ -65,7 +65,7 @@ export class PolyRender extends VectorRender {
     /** Fill image of the polygon */
     fillImage: HTMLImageElement = null;
 
-    /** Drop shadow of the polygon "offsetX offsetY blur color". */
+    /** Drop shadow of the polygon {offsetX, offsetY, blur, color}. */
     shadow?: Shadow = null;
 
     /**
