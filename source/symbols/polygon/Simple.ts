@@ -6,6 +6,7 @@ import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
+import {Shadow} from "../../baseTypes";
 
 export interface PolygonSymbolConstructorParams {
     /** @see [[PolygonSymbol.fillColor]] */
@@ -16,8 +17,8 @@ export interface PolygonSymbolConstructorParams {
     strokeWidth?: number,
     /** @see [[PolygonSymbol.lineDash]] */
     lineDash?: number[],
-    /** @see [[PolygonSymbol.dropShadow]] */
-    dropShadow?: string
+    /** @see [[PolygonSymbol.shadow]] */
+    shadow?: Shadow
 }
 
 /**
@@ -37,8 +38,8 @@ export class PolygonSymbol extends Symbol<Polygon> {
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
     lineDash: number[] = [];
 
-    /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
-    dropShadow: string = null;
+    /** Emulation CanvasRenderingContext2D.filter shadow. */
+    shadow: Shadow = null;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -60,9 +61,9 @@ export class PolygonSymbol extends Symbol<Polygon> {
             strokeWidth: this.strokeWidth,
             fillColor: this.fillColor,
             lineDash: this.lineDash,
-            dropShadow: this.dropShadow
+            shadow: this.shadow
         })];
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'dropShadow']);
+registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'shadow']);

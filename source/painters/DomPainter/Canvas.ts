@@ -110,36 +110,48 @@ export class Canvas {
         this._ctx.translate(-x, -y);
     }
 
-    _drawPoly(render: PolyRender) {
+    private _drawLines(render: PolyRender) {
         const coordinates = render.coordinates;
 
-        if (typeof render.dropShadow === 'string') {
-            const [offsetX, offsetY, blur, ...color] = render.dropShadow.split(" ");
-            const shadowColor = color.join(" ");
+        for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
+            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
+            for (let i = 1, len = coordinates[ring].length; i < len; i++) {
+                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
+            }
+            if (render.enclosed) {
+                this._ctx.closePath();
+            }
+        }
+    }
 
-            this._ctx.beginPath();
-            this._ctx.save();
-            drawLines(this._ctx);
-            this._ctx.lineWidth = 0;
-            this._ctx.shadowBlur = +blur;
-            this._ctx.shadowColor = shadowColor;
-            this._ctx.strokeStyle = shadowColor;
-            this._ctx.shadowOffsetX = +offsetX;
-            this._ctx.shadowOffsetY = +offsetY;
-            this._ctx.fillStyle = shadowColor;
-            this._ctx.fill();
-            this._ctx.stroke();
-            this._ctx.restore();
+    _drawShadow(render: PolyRender) {
+        const {offsetX, offsetY, blur, color} = render.shadow;
 
-            this._ctx.save();
-            this._ctx.beginPath();
-            this._ctx.globalCompositeOperation = 'destination-out';
-            drawLines(this._ctx);
-            this._ctx.closePath();
-            this._ctx.fill();
-            this._ctx.stroke();
+        this._ctx.save();
+        this._ctx.shadowBlur = blur;
+        this._ctx.shadowColor = color;
+        this._ctx.shadowOffsetX = offsetX;
+        this._ctx.shadowOffsetY = offsetY;
+        this._ctx.fillStyle = color;
+        this._ctx.beginPath();
+        this._drawLines(render);
+        this._ctx.fill();
+        this._ctx.restore();
 
-            this._ctx.restore();
+        this._ctx.fillStyle = '#000';
+        this._ctx.globalCompositeOperation = 'destination-out';
+        this._ctx.fill();
+
+        this._ctx.fillStyle = render.fillColor;
+        this._ctx.globalCompositeOperation = 'source-over';
+    }
+
+    _drawPoly(render: PolyRender) {
+        const coordinates = render.coordinates;
+        const shadow = render.shadow;
+
+        if (typeof shadow === 'object' && shadow !== null) {
+            this._drawShadow(render);
         }
 
         this._ctx.beginPath();
@@ -148,34 +160,22 @@ export class Canvas {
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
-        drawLines(this._ctx)
+        this._drawLines(render);
 
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
             this._ctx.fill();
         } else if (render.fillStyle === FillStyle.Image) {
             this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
-            let patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
+            const patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
                 patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
+
             this._ctx.translate(patternOffsetX, patternOffsetY);
             this._ctx.fill();
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
 
-
         this._ctx.stroke();
-
-        function drawLines(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
-            for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
-                ctx.moveTo(coordinates[ring][0][0] + offsetX, coordinates[ring][0][1] + offsetY);
-                for (let i = 1, len = coordinates[ring].length; i < len; i++) {
-                    ctx.lineTo(coordinates[ring][i][0] + offsetX, coordinates[ring][i][1] + offsetY);
-                }
-                if (render.enclosed) {
-                    ctx.closePath();
-                }
-            }
-        }
     }
 
     get isEmpty() { return this._isEmpty; }

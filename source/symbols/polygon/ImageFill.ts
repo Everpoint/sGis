@@ -6,6 +6,7 @@ import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
+import {Shadow} from "../../baseTypes";
 
 export interface ImageFillConstructorParams {
     /** @see [[ImageFill.strokeColor]] */
@@ -16,8 +17,8 @@ export interface ImageFillConstructorParams {
     lineDash?: number[],
     /** @see [[ImageFill.src]] */
     src?: string,
-    /** @see [[ImageFill.dropShadow]] */
-    dropShadow?: string
+    /** @see [[ImageFill.shadow]] */
+    shadow?: Shadow
 }
 
 /**
@@ -38,7 +39,7 @@ export class ImageFill extends Symbol<Polygon> {
     lineDash: number[];
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
-    dropShadow: string = null;
+    shadow: Shadow = null;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -48,7 +49,7 @@ export class ImageFill extends Symbol<Polygon> {
         strokeWidth = 1,
         strokeColor = 'block',
         lineDash = [],
-        dropShadow = null
+        shadow = null
     }: ImageFillConstructorParams = {}) {
         super();
 
@@ -56,7 +57,7 @@ export class ImageFill extends Symbol<Polygon> {
         this.strokeColor = strokeColor;
         this.lineDash = lineDash;
         this._src = src;
-        this.dropShadow = dropShadow;
+        this.shadow = shadow;
 
         this._updateImage();
     }
@@ -75,7 +76,7 @@ export class ImageFill extends Symbol<Polygon> {
             fillStyle: FillStyle.Image,
             fillImage: this._image,
             lineDash: this.lineDash,
-            dropShadow: this.dropShadow
+            shadow: this.shadow
         })];
     }
 
@@ -94,4 +95,4 @@ export class ImageFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'dropShadow']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'shadow']);

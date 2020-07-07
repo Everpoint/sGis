@@ -7,6 +7,7 @@ import {Render} from "../../renders/Render";
 import {Crs} from "../../Crs";
 import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
+import {Shadow} from "../../baseTypes";
 
 const ALPHA_NORMALIZER = 65025;
 
@@ -23,8 +24,8 @@ export interface BrushFillConstructorParams {
     fillForeground?: string,
     /** @see [[BrushFill.fillBackground]] */
     fillBackground?: string,
-    /** @see [[BrushFill.dropShadow]] */
-    dropShadow?: string
+    /** @see [[BrushFill.shadow]] */
+    shadow?: Shadow
 }
 
 /**
@@ -57,7 +58,7 @@ export class BrushFill extends Symbol<Polygon> {
     lineDash: number[] = [];
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
-    dropShadow: string = null;
+    shadow: Shadow = null;
     
     private _initialized: boolean = false;
 
@@ -82,7 +83,7 @@ export class BrushFill extends Symbol<Polygon> {
             fillStyle: FillStyle.Image,
             fillImage: this._brush,
             lineDash: this.lineDash,
-            dropShadow: this.dropShadow
+            shadow: this.shadow
         })];
     }
 
@@ -144,4 +145,4 @@ export class BrushFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'dropShadow']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'shadow']);
