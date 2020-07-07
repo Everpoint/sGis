@@ -14,7 +14,9 @@ export interface PolylineSymbolConstructorParams {
     /** @see [[PolylineSymbol.strokeWidth]] */
     strokeWidth?: number,
     /** @see [[PolylineSymbol.lineDash]] */
-    lineDash?: number[]
+    lineDash?: number[],
+    /** @see [[PolylineSymbol.dropShadow]] */
+    dropShadow?: string
 }
 
 /**
@@ -30,6 +32,9 @@ export class PolylineSymbol extends Symbol<Polyline> {
 
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
     lineDash: number[] = [];
+
+    /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
+    dropShadow: string = null;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -47,7 +52,8 @@ export class PolylineSymbol extends Symbol<Polyline> {
             enclosed: false,
             strokeColor: this.strokeColor,
             strokeWidth: this.strokeWidth,
-            lineDash: this.lineDash
+            lineDash: this.lineDash,
+            dropShadow: this.dropShadow
         })];
     }
 
@@ -68,4 +74,4 @@ export class PolylineSymbol extends Symbol<Polyline> {
     }
 }
 
-registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth']);
+registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth', 'dropShadow']);

@@ -26,7 +26,9 @@ export interface PolyRenderConstructorParams {
     /** @see [[PolyRender.lineDash]] */
     lineDash?: number[],
     /** @see [[PolyRender.fillImage]] */
-    fillImage?: HTMLImageElement
+    fillImage?: HTMLImageElement,
+    /** @see [[PolyRender.dropShadow]] */
+    dropShadow?: string
 }
 
 /**
@@ -62,6 +64,9 @@ export class PolyRender extends VectorRender {
 
     /** Fill image of the polygon */
     fillImage: HTMLImageElement = null;
+
+    /** Drop shadow of the polygon "offsetX offsetY blur color". */
+    dropShadow?: string = null;
 
     /**
      * @param coordinates - the coordinates of the polygon.

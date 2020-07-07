@@ -22,7 +22,9 @@ export interface BrushFillConstructorParams {
     /** @see [[BrushFill.fillForeground]] */
     fillForeground?: string,
     /** @see [[BrushFill.fillBackground]] */
-    fillBackground?: string
+    fillBackground?: string,
+    /** @see [[BrushFill.dropShadow]] */
+    dropShadow?: string
 }
 
 /**
@@ -53,6 +55,9 @@ export class BrushFill extends Symbol<Polygon> {
 
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
     lineDash: number[] = [];
+
+    /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
+    dropShadow: string = null;
     
     private _initialized: boolean = false;
 
@@ -76,7 +81,8 @@ export class BrushFill extends Symbol<Polygon> {
             strokeWidth: this.strokeWidth,
             fillStyle: FillStyle.Image,
             fillImage: this._brush,
-            lineDash: this.lineDash
+            lineDash: this.lineDash,
+            dropShadow: this.dropShadow
         })];
     }
 
@@ -138,4 +144,4 @@ export class BrushFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'dropShadow']);

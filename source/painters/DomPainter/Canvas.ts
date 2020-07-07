@@ -111,7 +111,36 @@ export class Canvas {
     }
 
     _drawPoly(render: PolyRender) {
-        var coordinates = render.coordinates;
+        const coordinates = render.coordinates;
+
+        if (typeof render.dropShadow === 'string') {
+            const [offsetX, offsetY, blur, ...color] = render.dropShadow.split(" ");
+            const shadowColor = color.join(" ");
+
+            this._ctx.beginPath();
+            this._ctx.save();
+            drawLines(this._ctx);
+            this._ctx.lineWidth = 0;
+            this._ctx.shadowBlur = +blur;
+            this._ctx.shadowColor = shadowColor;
+            this._ctx.strokeStyle = shadowColor;
+            this._ctx.shadowOffsetX = +offsetX;
+            this._ctx.shadowOffsetY = +offsetY;
+            this._ctx.fillStyle = shadowColor;
+            this._ctx.fill();
+            this._ctx.stroke();
+            this._ctx.restore();
+
+            this._ctx.save();
+            this._ctx.beginPath();
+            this._ctx.globalCompositeOperation = 'destination-out';
+            drawLines(this._ctx);
+            this._ctx.closePath();
+            this._ctx.fill();
+            this._ctx.stroke();
+
+            this._ctx.restore();
+        }
 
         this._ctx.beginPath();
         this._ctx.lineCap = 'round';
@@ -119,17 +148,7 @@ export class Canvas {
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
-
-        for (var ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
-            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
-            for (var i = 1, len = coordinates[ring].length; i < len; i++) {
-                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
-            }
-
-            if (render.enclosed) {
-                this._ctx.closePath();
-            }
-        }
+        drawLines(this._ctx)
 
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
@@ -145,6 +164,18 @@ export class Canvas {
 
 
         this._ctx.stroke();
+
+        function drawLines(ctx: CanvasRenderingContext2D, offsetX: number = 0, offsetY: number = 0) {
+            for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
+                ctx.moveTo(coordinates[ring][0][0] + offsetX, coordinates[ring][0][1] + offsetY);
+                for (let i = 1, len = coordinates[ring].length; i < len; i++) {
+                    ctx.lineTo(coordinates[ring][i][0] + offsetX, coordinates[ring][i][1] + offsetY);
+                }
+                if (render.enclosed) {
+                    ctx.closePath();
+                }
+            }
+        }
     }
 
     get isEmpty() { return this._isEmpty; }
