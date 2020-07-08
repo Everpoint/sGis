@@ -124,36 +124,25 @@ export class Canvas {
         }
     }
 
-    private _drawShadow(render: PolyRender) {
-        const {offsetX, offsetY, blur, color} = render.shadow;
+    private _setShadow(render: PolyRender | null) {
+        if (render === null) {
+            this._ctx.shadowOffsetX = 0;
+            this._ctx.shadowOffsetY = 0;
+            this._ctx.shadowBlur = 0;
+            this._ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+        } else {
+            const {offsetX, offsetY, blur, color} = render.shadow;
 
-        this._ctx.shadowBlur = blur;
-        this._ctx.shadowColor = color;
-        this._ctx.shadowOffsetX = offsetX;
-        this._ctx.shadowOffsetY = offsetY;
-        this._ctx.fillStyle = color;
-        this._ctx.beginPath();
-        this._drawLines(render);
-        this._ctx.fill();
-
-        this._ctx.shadowBlur = 0;
-        this._ctx.shadowColor = 'transparent';
-        this._ctx.shadowOffsetX = 0;
-        this._ctx.shadowOffsetY = 0;
-        this._ctx.fillStyle = '#000';
-        this._ctx.globalCompositeOperation = 'destination-out';
-        this._ctx.fill();
-        this._ctx.fillStyle = render.fillColor;
-        this._ctx.globalCompositeOperation = 'source-over';
+            this._ctx.shadowOffsetX = offsetX;
+            this._ctx.shadowOffsetY = offsetY;
+            this._ctx.shadowBlur = blur;
+            this._ctx.shadowColor = color;
+        }
     }
 
     _drawPoly(render: PolyRender) {
         const coordinates = render.coordinates;
-        const shadow = render.shadow;
-
-        if (typeof shadow === 'object' && shadow !== null) {
-            this._drawShadow(render);
-        }
+        const withShadow = typeof render.shadow === 'object' && render.shadow !== null;
 
         this._ctx.beginPath();
         this._ctx.lineCap = 'round';
@@ -162,6 +151,10 @@ export class Canvas {
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
         this._drawLines(render);
+
+        if (withShadow) {
+            this._setShadow(render);
+        }
 
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
@@ -176,7 +169,15 @@ export class Canvas {
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
 
+        if (withShadow && render.enclosed) {
+            this._setShadow(null);
+        }
+
         this._ctx.stroke();
+
+        if (withShadow && !render.enclosed) {
+            this._setShadow(null);
+        }
     }
 
     get isEmpty() { return this._isEmpty; }

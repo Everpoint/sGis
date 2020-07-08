@@ -2,6 +2,7 @@
 /// Title: "Polygon symbols"
 
 import {FeatureLayer} from "../../../source/layers/FeatureLayer";
+import {Polyline} from "../../../source/features/Polyline";
 import {Polygon} from "../../../source/features/Polygon";
 import {init} from "../../../source/init";
 import {TileLayer} from "../../../source/layers/TileLayer";
@@ -11,6 +12,7 @@ import {polygonData} from "../../resources/polygonData";
 import {BrushFill} from "../../../source/symbols/polygon/BrushFill";
 import {ImageFill} from "../../../source/symbols/polygon/ImageFill";
 import {PolygonSymbol} from "../../../source/symbols/polygon/Simple";
+import {PolylineSymbol} from "../../../source/symbols/PolylineSymbol";
 
 const {map} = init({
     wrapper: document.body,
@@ -41,11 +43,11 @@ const layer = new FeatureLayer({
                 symbol: new PolygonSymbol({
                     strokeColor: "#fff",
                     strokeWidth: 2,
-                    fillColor: "rgba(0, 95, 173, 0.2)",
+                    fillColor: "rgba(0, 95, 173, 1)",
                     shadow: {
-                        offsetX: 8,
-                        offsetY: 10,
-                        blur: 2,
+                        offsetX: 4,
+                        offsetY: 6,
+                        blur: 1,
                         color: "rgba(0, 0, 0, 0.4)",
                     }
                 }),
@@ -60,6 +62,7 @@ const layer = new FeatureLayer({
                         offsetX: -14,
                         offsetY: -8,
                         color: "rgba(0, 0, 0, 1)",
+                        blur: 10,
                     },
                 }),
             }),
@@ -69,13 +72,27 @@ const layer = new FeatureLayer({
                 symbol: new PolygonSymbol({
                     strokeColor: "#fff",
                     strokeWidth: 2,
-                    fillColor: "rgba(0, 135, 90, 0.44)",
+                    fillColor: "rgba(0,231,2,0.4)",
                     shadow: {
-                        offsetX: 6,
+                        offsetX: 2,
                         offsetY: 6,
                         blur: 0,
                         color: "rgba(0, 0, 255, 0.4)",
                     }
+                }),
+            }),
+        new Polyline(polygonData.polyline,
+            {
+                crs: wgs84,
+                symbol: new PolylineSymbol({
+                    strokeColor: "#fff",
+                    strokeWidth: 2,
+                    shadow: {
+                        offsetX: 2,
+                        offsetY: 4,
+                        blur: 4,
+                        color: "rgba(24, 78, 169, 0.6)",
+                    },
                 }),
             }),
     ]
