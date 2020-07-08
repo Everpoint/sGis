@@ -124,7 +124,7 @@ export class Canvas {
         }
     }
 
-    _drawShadow(render: PolyRender) {
+    private _drawShadow(render: PolyRender) {
         const {offsetX, offsetY, blur, color} = render.shadow;
 
         this._ctx.shadowBlur = blur;
