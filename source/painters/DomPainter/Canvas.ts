@@ -127,7 +127,6 @@ export class Canvas {
     _drawShadow(render: PolyRender) {
         const {offsetX, offsetY, blur, color} = render.shadow;
 
-        this._ctx.save();
         this._ctx.shadowBlur = blur;
         this._ctx.shadowColor = color;
         this._ctx.shadowOffsetX = offsetX;
@@ -136,13 +135,11 @@ export class Canvas {
         this._ctx.beginPath();
         this._drawLines(render);
         this._ctx.fill();
-        this._ctx.restore();
 
+        this._ctx.shadowColor = 'transparent';
         this._ctx.fillStyle = '#000';
         this._ctx.globalCompositeOperation = 'destination-out';
         this._ctx.fill();
-
-        this._ctx.fillStyle = render.fillColor;
         this._ctx.globalCompositeOperation = 'source-over';
     }
 
