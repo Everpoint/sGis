@@ -136,10 +136,14 @@ export class Canvas {
         this._drawLines(render);
         this._ctx.fill();
 
+        this._ctx.shadowBlur = 0;
         this._ctx.shadowColor = 'transparent';
+        this._ctx.shadowOffsetX = 0;
+        this._ctx.shadowOffsetY = 0;
         this._ctx.fillStyle = '#000';
         this._ctx.globalCompositeOperation = 'destination-out';
         this._ctx.fill();
+        this._ctx.fillStyle = render.fillColor;
         this._ctx.globalCompositeOperation = 'source-over';
     }
 
