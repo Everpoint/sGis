@@ -124,8 +124,8 @@ export class Canvas {
         }
     }
 
-    private _setShadow(render: PolyRender | null) {
-        if (render === null) {
+    private _setShadow(render: PolyRender) {
+        if (render.shadow === null) {
             this._ctx.shadowOffsetX = 0;
             this._ctx.shadowOffsetY = 0;
             this._ctx.shadowBlur = 0;
@@ -142,7 +142,6 @@ export class Canvas {
 
     _drawPoly(render: PolyRender) {
         const coordinates = render.coordinates;
-        const withShadow = typeof render.shadow === 'object' && render.shadow !== null;
 
         this._ctx.beginPath();
         this._ctx.lineCap = 'round';
@@ -151,10 +150,7 @@ export class Canvas {
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
         this._drawLines(render);
-
-        if (withShadow) {
-            this._setShadow(render);
-        }
+        this._setShadow(render);
 
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
@@ -169,15 +165,12 @@ export class Canvas {
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
 
-        if (withShadow && render.enclosed) {
-            this._setShadow(null);
+        if (render.enclosed) {
+            render.shadow = null
+            this._setShadow(render);
         }
 
         this._ctx.stroke();
-
-        if (withShadow && !render.enclosed) {
-            this._setShadow(null);
-        }
     }
 
     get isEmpty() { return this._isEmpty; }
