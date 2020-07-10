@@ -6,6 +6,7 @@ import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
+import {Shadow} from "../../baseTypes";
 
 export interface ImageFillConstructorParams {
     /** @see [[ImageFill.strokeColor]] */
@@ -15,7 +16,9 @@ export interface ImageFillConstructorParams {
     /** @see [[ImageFill.lineDash]] */
     lineDash?: number[],
     /** @see [[ImageFill.src]] */
-    src?: string
+    src?: string,
+    /** @see [[ImageFill.shadow]] */
+    shadow?: Shadow
 }
 
 /**
@@ -35,6 +38,9 @@ export class ImageFill extends Symbol<Polygon> {
     /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification. */
     lineDash: number[];
 
+    /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
+    shadow: Shadow = null;
+
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
@@ -42,7 +48,8 @@ export class ImageFill extends Symbol<Polygon> {
         src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
         strokeWidth = 1,
         strokeColor = 'block',
-        lineDash = []
+        lineDash = [],
+        shadow = null
     }: ImageFillConstructorParams = {}) {
         super();
 
@@ -50,6 +57,7 @@ export class ImageFill extends Symbol<Polygon> {
         this.strokeColor = strokeColor;
         this.lineDash = lineDash;
         this._src = src;
+        this.shadow = shadow;
 
         this._updateImage();
     }
@@ -67,7 +75,8 @@ export class ImageFill extends Symbol<Polygon> {
             strokeWidth: this.strokeWidth,
             fillStyle: FillStyle.Image,
             fillImage: this._image,
-            lineDash: this.lineDash
+            lineDash: this.lineDash,
+            shadow: this.shadow
         })];
     }
 
@@ -86,4 +95,4 @@ export class ImageFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'shadow']);

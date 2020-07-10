@@ -1,6 +1,6 @@
 import {VectorRender} from "./Render";
 import {contains} from "../geotools";
-import {Coordinates} from "../baseTypes";
+import {Coordinates, Shadow} from "../baseTypes";
 
 export enum FillStyle {
     None,
@@ -26,7 +26,9 @@ export interface PolyRenderConstructorParams {
     /** @see [[PolyRender.lineDash]] */
     lineDash?: number[],
     /** @see [[PolyRender.fillImage]] */
-    fillImage?: HTMLImageElement
+    fillImage?: HTMLImageElement,
+    /** @see [[PolyRender.shadow]] */
+    shadow?: Shadow
 }
 
 /**
@@ -62,6 +64,9 @@ export class PolyRender extends VectorRender {
 
     /** Fill image of the polygon */
     fillImage: HTMLImageElement = null;
+
+    /** Drop shadow of the polygon {offsetX, offsetY, blur, color}. */
+    shadow?: Shadow = null;
 
     /**
      * @param coordinates - the coordinates of the polygon.

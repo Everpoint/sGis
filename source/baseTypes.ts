@@ -1,6 +1,3 @@
-import {sGisEvent} from "./EventHandler";
-import {Point} from "./Point";
-
 /**
  * A pair of coordinates, usually [x, y] or [lon, lat].
  */
@@ -32,3 +29,13 @@ export type RectCoordinates = [number, number, number, number];
  * HTML element that can be rendered to DOM or canvas as an image.
  */
 export type HTMLRasterElement = HTMLImageElement | HTMLCanvasElement;
+
+/**
+ *  Drop shadow of the polygon {offsetX, offsetY, blur, color}.
+ */
+export type Shadow = {
+    offsetX?: number,
+    offsetY?: number,
+    blur?: number,
+    color?: string,
+};

@@ -110,8 +110,38 @@ export class Canvas {
         this._ctx.translate(-x, -y);
     }
 
+    private _drawLines(render: PolyRender) {
+        const coordinates = render.coordinates;
+
+        for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
+            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
+            for (let i = 1, len = coordinates[ring].length; i < len; i++) {
+                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
+            }
+            if (render.enclosed) {
+                this._ctx.closePath();
+            }
+        }
+    }
+
+    private _setShadow(render: PolyRender) {
+        if (render.shadow === null) {
+            this._ctx.shadowOffsetX = 0;
+            this._ctx.shadowOffsetY = 0;
+            this._ctx.shadowBlur = 0;
+            this._ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+        } else {
+            const {offsetX, offsetY, blur, color} = render.shadow;
+
+            this._ctx.shadowOffsetX = offsetX;
+            this._ctx.shadowOffsetY = offsetY;
+            this._ctx.shadowBlur = blur;
+            this._ctx.shadowColor = color;
+        }
+    }
+
     _drawPoly(render: PolyRender) {
-        var coordinates = render.coordinates;
+        const coordinates = render.coordinates;
 
         this._ctx.beginPath();
         this._ctx.lineCap = 'round';
@@ -119,30 +149,26 @@ export class Canvas {
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
-
-        for (var ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
-            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
-            for (var i = 1, len = coordinates[ring].length; i < len; i++) {
-                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
-            }
-
-            if (render.enclosed) {
-                this._ctx.closePath();
-            }
-        }
+        this._drawLines(render);
+        this._setShadow(render);
 
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
             this._ctx.fill();
         } else if (render.fillStyle === FillStyle.Image) {
             this._ctx.fillStyle = this._ctx.createPattern(render.fillImage, 'repeat');
-            let patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
+            const patternOffsetX = (coordinates[0][0][0]) % render.fillImage.width,
                 patternOffsetY = (coordinates[0][0][1]) % render.fillImage.height;
+
             this._ctx.translate(patternOffsetX, patternOffsetY);
             this._ctx.fill();
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
 
+        if (render.enclosed) {
+            render.shadow = null
+            this._setShadow(render);
+        }
 
         this._ctx.stroke();
     }
