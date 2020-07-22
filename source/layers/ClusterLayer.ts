@@ -29,7 +29,7 @@ export class ClusterLayer extends Layer {
             delayedUpdate = true,
             clusterSymbol = new ClusterSymbol(),
             gridClusterProvider = new GridClusterProvider(),
-            ...layerParams,
+            ...layerParams
         }: ClusterLayerConstructorParams = {},
     ) {
         super({ delayedUpdate, ...layerParams });

@@ -165,7 +165,7 @@ export class Canvas {
             this._ctx.translate(-patternOffsetX, -patternOffsetY);
         }
 
-        if (render.enclosed) {
+        if (render.enclosed && render.fillColor !== 'transparent') {
             render.shadow = null
             this._setShadow(render);
         }

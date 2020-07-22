@@ -41,15 +41,14 @@ const layer = new FeatureLayer({
             {
                 crs: wgs84,
                 symbol: new PolygonSymbol({
-                    strokeColor: "#fff",
+                    strokeColor: "rgb(31, 150, 184)",
                     strokeWidth: 2,
-                    fillColor: "rgba(0, 95, 173, 1)",
                     shadow: {
-                        offsetX: 4,
-                        offsetY: 6,
-                        blur: 1,
-                        color: "rgba(0, 0, 0, 0.4)",
-                    }
+                        offsetX: 0,
+                        offsetY: 10,
+                        blur: 24,
+                        color: "rgba(4, 99, 125, 0.85)",
+                    },
                 }),
             }),
         new Polygon(polygonData.kaluga,
