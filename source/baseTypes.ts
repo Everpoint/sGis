@@ -38,4 +38,5 @@ export type Shadow = {
     offsetY?: number,
     blur?: number,
     color?: string,
+    isOuter?: boolean;
 };
