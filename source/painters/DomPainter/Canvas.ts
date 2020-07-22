@@ -5,7 +5,6 @@ import {error} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {Bbox} from "../../Bbox";
-import {Shadow} from "../../baseTypes";
 
 /**
  * @alias sGis.painter.domPainter.Canvas
@@ -144,12 +143,10 @@ export class Canvas {
 
             if (isOuter) {
                 this._ctx.fillStyle = color;
-                this._ctx.beginPath();
-                this._drawLines(render);
                 this._ctx.fill();
 
                 this._resetShadow();
-                this._ctx.fillStyle = '#000';
+                this._ctx.fillStyle = 'rgba(0, 0, 0, 1)';
                 this._ctx.globalCompositeOperation = 'destination-out';
                 this._ctx.fill();
 

@@ -37,21 +37,6 @@ const layer = new FeatureLayer({
                     src: "https://avatanplus.com/files/resources/mid/5c39deca055e0168420e4526.png"
                 }),
             }),
-        new Polygon(polygonData.moscow,
-            {
-                crs: wgs84,
-                symbol: new PolygonSymbol({
-                    strokeColor: "rgb(31, 150, 184)",
-                    strokeWidth: 2,
-                    shadow: {
-                        offsetX: 4,
-                        offsetY: 10,
-                        blur: 0,
-                        color: "rgba(4, 99, 125, 1)",
-                        isOuter: true,
-                    },
-                }),
-            }),
         new Polygon(polygonData.kaluga,
             {
                 crs: wgs84,
@@ -72,13 +57,29 @@ const layer = new FeatureLayer({
                 symbol: new PolygonSymbol({
                     strokeColor: "#fff",
                     strokeWidth: 2,
-                    fillColor: "rgba(0,231,2,1)",
+                    fillColor: "rgba(0, 231, 2, 0.1)",
                     shadow: {
                         offsetX: 2,
                         offsetY: 6,
                         blur: 0,
                         color: "rgba(0, 0, 255, 0.4)",
+                        isOuter: true,
                     }
+                }),
+            }),
+        new Polygon(polygonData.moscow,
+            {
+                crs: wgs84,
+                symbol: new PolygonSymbol({
+                    strokeColor: "rgb(31, 150, 184)",
+                    strokeWidth: 2,
+                    shadow: {
+                        offsetX: 4,
+                        offsetY: 10,
+                        blur: 24,
+                        color: "rgba(4, 99, 125, 1)",
+                        isOuter: true,
+                    },
                 }),
             }),
         new Polyline(polygonData.polyline,
