@@ -44,10 +44,11 @@ const layer = new FeatureLayer({
                     strokeColor: "rgb(31, 150, 184)",
                     strokeWidth: 2,
                     shadow: {
-                        offsetX: 0,
+                        offsetX: 4,
                         offsetY: 10,
-                        blur: 24,
-                        color: "rgba(4, 99, 125, 0.85)",
+                        blur: 0,
+                        color: "rgba(4, 99, 125, 1)",
+                        isOuter: true,
                     },
                 }),
             }),
@@ -71,7 +72,7 @@ const layer = new FeatureLayer({
                 symbol: new PolygonSymbol({
                     strokeColor: "#fff",
                     strokeWidth: 2,
-                    fillColor: "rgba(0,231,2,0.4)",
+                    fillColor: "rgba(0,231,2,1)",
                     shadow: {
                         offsetX: 2,
                         offsetY: 6,
