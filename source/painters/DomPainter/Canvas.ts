@@ -123,20 +123,36 @@ export class Canvas {
             }
         }
     }
+    private _resetShadow() {
+        this._ctx.shadowOffsetX = 0;
+        this._ctx.shadowOffsetY = 0;
+        this._ctx.shadowBlur = 0;
+        this._ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    }
 
-    private _setShadow(render: PolyRender) {
-        if (render.shadow === null) {
-            this._ctx.shadowOffsetX = 0;
-            this._ctx.shadowOffsetY = 0;
-            this._ctx.shadowBlur = 0;
-            this._ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+    private _setShadow(render: PolyRender | null) {
+        if (render === null || render.shadow === null) {
+            this._resetShadow();
         } else {
-            const {offsetX, offsetY, blur, color} = render.shadow;
+            const {offsetX, offsetY, blur, color, isOuter} = render.shadow;
 
             this._ctx.shadowOffsetX = offsetX;
             this._ctx.shadowOffsetY = offsetY;
             this._ctx.shadowBlur = blur;
             this._ctx.shadowColor = color;
+
+            if (isOuter) {
+                this._ctx.fillStyle = color;
+                this._ctx.fill();
+
+                this._resetShadow();
+                this._ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+                this._ctx.globalCompositeOperation = 'destination-out';
+                this._ctx.fill();
+
+                this._ctx.fillStyle = render.fillColor;
+                this._ctx.globalCompositeOperation = 'source-over';
+            }
         }
     }
 
@@ -166,8 +182,7 @@ export class Canvas {
         }
 
         if (render.enclosed) {
-            render.shadow = null
-            this._setShadow(render);
+            this._setShadow(null);
         }
 
         this._ctx.stroke();
