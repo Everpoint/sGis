@@ -2,6 +2,7 @@ import {FeatureGroup} from "../../features/FeatureGroup";
 import {Bbox} from "../../Bbox";
 import {Feature} from "../../features/Feature";
 import {error} from "../../utils/utils";
+import {distance} from "../../geotools";
 
 export interface IClusterProvider {
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[];
@@ -10,17 +11,50 @@ export interface IClusterProvider {
     has(feature: Feature): boolean;
 }
 
+type MutableGrid = { [key: string]: Feature[] } | { [key: string]: FeatureGroup };
+
 export class GridClusterProvider implements IClusterProvider {
     readonly _features: Feature[];
     readonly _size: number;
+    readonly _distance?: number;
     private _resolution: number;
     private _cache: FeatureGroup[];
 
-    constructor(size = 88) {
+    constructor(size = 88, distance?: number) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
         this._cache = [];
+        this._distance = distance;
+    }
+
+    private getDistanceGrid(grid: MutableGrid, bbox: Bbox, resolution: number): FeatureGroup[] {
+        for (const group in grid) {
+            const gridPosition = group.split("-");
+            const x = +gridPosition[0];
+            const y = +gridPosition[1];
+            const nearest = [`${x}-${y - 1}`, `${x - 1}-${y}`, `${x - 1}-${y - 1}`];
+
+            grid[group] = new FeatureGroup(grid[group] as Feature[], { crs: bbox.crs });
+
+            for (const nearestGridKey of nearest) {
+                const currGroups = grid[group] as FeatureGroup;
+                const nearestGroups =  grid[nearestGridKey];
+
+                if (nearestGroups) {
+                    const nearestFeatureGroup = nearestGroups instanceof FeatureGroup ? nearestGroups : new FeatureGroup(nearestGroups, { crs: bbox.crs });
+
+                    if (distance(grid[group] as FeatureGroup, nearestFeatureGroup) / resolution < this._distance) {
+                        const features = [...currGroups.features, ...nearestFeatureGroup.features];
+
+                        grid[group] = new FeatureGroup(features, { crs: bbox.crs });
+                        delete grid[nearestGridKey];
+                    }
+                }
+            }
+        }
+
+        return Object.values(grid) as FeatureGroup[];
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
@@ -29,20 +63,28 @@ export class GridClusterProvider implements IClusterProvider {
             this._resolution = resolution;
             const size = this._size * resolution;
 
-            const groups: { [key: string]: Feature[] } = {};
+            const grid: { [key: string]: Feature[] } = {};
 
             for (let i = 0; i < this._features.length; i++) {
                 const point = this._features[i].projectTo(bbox.crs);
                 const indexX = Math.floor(point.centroid[0] / size);
                 const indexY = Math.floor(point.centroid[1] / size);
-                if (groups[`${indexX}-${indexY}`]) {
-                    groups[`${indexX}-${indexY}`].push(this._features[i]);
-                } else groups[`${indexX}-${indexY}`] = [this._features[i]];
+
+                if (grid[`${indexX}-${indexY}`]) {
+                    grid[`${indexX}-${indexY}`].push(this._features[i]);
+                } else {
+                    grid[`${indexX}-${indexY}`] = [this._features[i]]
+                };
             }
 
-            this._cache = Object.keys(groups).map(
-                group => new FeatureGroup(groups[group], { crs: bbox.crs }),
-            );
+           if (this._distance) {
+               this._cache = this.getDistanceGrid(grid, bbox, resolution);
+           } else {
+               this._cache = Object.keys(grid).map(
+                   group => new FeatureGroup(grid[group], { crs: bbox.crs }),
+               );
+           }
+
         }
 
         return this._cache.filter(
