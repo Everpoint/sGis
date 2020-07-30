@@ -8,6 +8,7 @@ import {ClusterSymbol} from '../symbols/ClusterSymbol';
 import {FeatureGroup} from '../features/FeatureGroup';
 import {IClusterProvider, GridClusterProvider} from "./clusterProviders/GridClusterProvider";
 import {FeaturesAddEvent, FeaturesRemoveEvent} from "./FeatureLayer";
+import {Handler} from "../EventHandler";
 
 export interface ClusterLayerConstructorParams extends LayerConstructorParams {
     clusterSymbol?: Symbol<Feature>;
@@ -76,11 +77,11 @@ export class ClusterLayer extends Layer {
         return this._gridClusterProvider.getClusters(bbox, resolution);
     }
 
-    public addClusterEvent(type: string, handler: VoidFunction, parameters: any): void {
+    public addClusterEvent(type: string, handler: Handler, parameters?: any): void {
         this._clusterEventHandlers.push({ type, handler, parameters });
     }
 
-    public removeClusterEvent(type: string, handler: VoidFunction): void {
+    public removeClusterEvent(type: string, handler: Handler): void {
         const index = this._clusterEventHandlers.findIndex(item =>  item.type === type && item.handler === handler);
 
         this._clusterEventHandlers.splice(index, 1);
