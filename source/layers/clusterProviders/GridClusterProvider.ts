@@ -33,7 +33,16 @@ export class GridClusterProvider implements IClusterProvider {
             const gridPosition = group.split("-");
             const x = +gridPosition[0];
             const y = +gridPosition[1];
-            const nearest = [`${x}-${y - 1}`, `${x - 1}-${y}`, `${x - 1}-${y - 1}`];
+            const nearest = [
+                `${x + 1}-${y}`,
+                `${x + 1}-${y + 1}`,
+                `${x}-${y + 1}`,
+                `${x - 1}-${y + 1}`,
+                `${x - 1}-${y}`,
+                `${x - 1}-${y - 1}`,
+                `${x}-${y - 1}`,
+                `${x + 1}-${y - 1}`
+            ];
 
             grid[group] = new FeatureGroup(grid[group] as Feature[], { crs: bbox.crs });
 
@@ -116,7 +125,7 @@ export class GridClusterProvider implements IClusterProvider {
         const toRemove = Array.isArray(features) ? features : [features];
         if (toRemove.length === 0) return;
         toRemove.forEach(f => {
-            let index = this._features.indexOf(f);
+            const index = this._features.indexOf(f);
             if (index === -1)
                 error(
                     new Error(`Feature ${f} is not in the GridClusterProvider`),
