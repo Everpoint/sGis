@@ -54,8 +54,8 @@ export class ClusterLayer extends Layer {
                     cluster.features[0].render(resolution, bbox.crs),
                 );
             } else {
-                this._clusterEventHandlers.forEach(({ type, handler, parameters }) =>
-                    !cluster.hasListener(type, handler) && cluster.on(type, handler, parameters),
+                this._clusterEventHandlers.forEach(({ type, handler }) =>
+                    !cluster.hasListener(type, handler) && cluster.on(type, handler),
                 );
                 renders = renders.concat(cluster.render(resolution, bbox.crs));
             }
@@ -77,8 +77,8 @@ export class ClusterLayer extends Layer {
         return this._gridClusterProvider.getClusters(bbox, resolution);
     }
 
-    public addClusterEvent(type: string, handler: Handler, parameters?: any): void {
-        this._clusterEventHandlers.push({ type, handler, parameters });
+    public addClusterEvent(type: string, handler: Handler): void {
+        this._clusterEventHandlers.push({ type, handler });
     }
 
     public removeClusterEvent(type: string, handler: Handler): void {
