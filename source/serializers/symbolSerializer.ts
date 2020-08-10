@@ -4,7 +4,9 @@ import {Symbol, SymbolConstructor} from "../symbols/Symbol";
 import {Feature} from "../features/Feature";
 
 type SymbolDescription = {
+    /** constructor (class) of the symbol. */
     Constructor: SymbolConstructor,
+    /** list of property names that should be serialized. */
     properties: string[]
 }
 
@@ -24,8 +26,8 @@ let symbolDescriptions: {[key: string]: SymbolDescription} = {};
  * @param name - unique name of the symbol type. It is used to find correct constructor on deserialization.
  * @param properties - list of property names that should be serialized.
  */
-export const registerSymbol = (constructor: SymbolConstructor, name: string, properties: string[]) => {
-    symbolDescriptions[name] = {Constructor: constructor, properties: properties};
+export const registerSymbol = <C extends Symbol<Feature>>(constructor: new () => C, name: string, properties: (keyof C)[]) => {
+    symbolDescriptions[name] = {Constructor: constructor, properties: properties as string[]};
 };
 
 /**

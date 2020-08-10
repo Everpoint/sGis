@@ -160,8 +160,9 @@ export class Canvas {
         const coordinates = render.coordinates;
 
         this._ctx.beginPath();
-        this._ctx.lineCap = 'round';
-        this._ctx.lineJoin = 'round';
+        this._ctx.lineCap = render.lineCap;
+        this._ctx.lineJoin = render.lineJoin;
+        this._ctx.miterLimit = render.miterLimit;
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);

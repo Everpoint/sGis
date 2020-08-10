@@ -1,5 +1,5 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {FillStyle, PolyRender} from "../../renders/Poly";
+import {FillStyle, PolyRender, PolyRenderConstructorParams} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Symbol} from "../Symbol";
 import {Crs} from "../../Crs";
@@ -8,13 +8,11 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface ImageFillConstructorParams {
+export interface ImageFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[ImageFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[ImageFill.strokeWidth]] */
     strokeWidth?: number,
-    /** @see [[ImageFill.lineDash]] */
-    lineDash?: number[],
     /** @see [[ImageFill.src]] */
     src?: string,
     /** @see [[ImageFill.shadow]] */
@@ -25,7 +23,7 @@ export interface ImageFillConstructorParams {
  * Symbol of polygon with image filling.
  * @alias sGis.symbol.polygon.ImageFill
  */
-export class ImageFill extends Symbol<Polygon> {
+export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorParams {
     private _image: HTMLImageElement = new Image();
     private _src: string;
 
@@ -35,8 +33,17 @@ export class ImageFill extends Symbol<Polygon> {
     /** Stroke width of the outline. */
     strokeWidth: number;
 
-    /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification. */
-    lineDash: number[];
+    /** @see [[PolyRender.lineDash]] */
+    lineDash: number[] = [];
+
+    /** @see [[PolyRender.lineCap]] */
+    lineCap: "butt" | "round" | "square" = "round";
+
+    /** @see [[PolyRender.lineJoin]] */
+    lineJoin: "bevel" | "miter" | "round" = "round";
+
+    /** @see [[PolyRender.miterLimit]] */
+    miterLimit: number = 10;
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
     shadow: Shadow = null;
@@ -76,7 +83,10 @@ export class ImageFill extends Symbol<Polygon> {
             fillStyle: FillStyle.Image,
             fillImage: this._image,
             lineDash: this.lineDash,
-            shadow: this.shadow
+            shadow: this.shadow,
+            lineCap: this.lineCap,
+            lineJoin: this.lineJoin,
+            miterLimit: this.miterLimit,
         })];
     }
 
@@ -95,4 +105,4 @@ export class ImageFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'shadow']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
