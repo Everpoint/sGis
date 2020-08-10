@@ -1,20 +1,18 @@
 import {Symbol} from "./Symbol";
 import {registerSymbol} from "../serializers/symbolSerializer";
 import {simplifyCoordinates} from "../utils/math";
-import {FillStyle, PolyRender} from "../renders/Poly";
+import {FillStyle, PolyRender, PolyRenderConstructorParams} from "../renders/Poly";
 import {Render} from "../renders/Render";
 import {Crs} from "../Crs";
 import {Poly} from "../features/Poly";
 import {Polyline} from "../features/Polyline";
 import {Coordinates, Shadow} from "../baseTypes";
 
-export interface PolylineSymbolConstructorParams {
+export interface PolylineSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit">{
     /** @see [[PolylineSymbol.strokeColor]] */
     strokeColor?: string,
     /** @see [[PolylineSymbol.strokeWidth]] */
     strokeWidth?: number,
-    /** @see [[PolylineSymbol.lineDash]] */
-    lineDash?: number[],
     /** @see [[PolylineSymbol.shadow]] */
     shadow?: Shadow
 }
@@ -23,18 +21,27 @@ export interface PolylineSymbolConstructorParams {
  * Symbol of polyline drawn as simple line.
  * @alias sGis.symbol.polyline.Simple
  */
-export class PolylineSymbol extends Symbol<Polyline> {
+export class PolylineSymbol extends Symbol<Polyline> implements PolylineSymbolConstructorParams {
     /** Stroke color of the outline. Can be any valid css color string. */
     strokeColor: string = 'black';
 
     /** Stroke width of the outline. */
     strokeWidth: number = 1;
 
-    /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
+    /** @see [[PolyRender.lineDash]] */
     lineDash: number[] = [];
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
     shadow: Shadow = null;
+    /** @see [[PolyRender.lineCap]] */
+    lineCap: "butt" | "round" | "square" = "round";
+
+    /** @see [[PolyRender.lineJoin]] */
+    lineJoin: "bevel" | "miter" | "round" = "round";
+
+    /** @see [[PolyRender.miterLimit]] */
+    miterLimit: number = 10;
+
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -53,7 +60,10 @@ export class PolylineSymbol extends Symbol<Polyline> {
             strokeColor: this.strokeColor,
             strokeWidth: this.strokeWidth,
             lineDash: this.lineDash,
-            shadow: this.shadow
+            shadow: this.shadow,
+            lineCap: this.lineCap,
+            lineJoin: this.lineJoin,
+            miterLimit: this.miterLimit,
         })];
     }
 
@@ -74,4 +84,4 @@ export class PolylineSymbol extends Symbol<Polyline> {
     }
 }
 
-registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth', 'shadow']);
+registerSymbol(PolylineSymbol, 'polyline.Simple', ['strokeColor', 'strokeWidth', 'shadow', 'lineCap', 'lineDash', 'lineJoin', 'miterLimit']);

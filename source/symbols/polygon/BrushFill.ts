@@ -1,5 +1,5 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
-import {FillStyle, PolyRender} from "../../renders/Poly";
+import {FillStyle, PolyRender, PolyRenderConstructorParams} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Color} from "../../utils/Color";
 import {Symbol} from "../Symbol";
@@ -11,13 +11,11 @@ import {Shadow} from "../../baseTypes";
 
 const ALPHA_NORMALIZER = 65025;
 
-export interface BrushFillConstructorParams {
+export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[BrushFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[BrushFill.strokeWidth]] */
     strokeWidth?: number,
-    /** @see [[BrushFill.lineDash]] */
-    lineDash?: number[]
     /** @see [[BrushFill.fillBrush]] */
     fillBrush?: number[][],
     /** @see [[BrushFill.fillForeground]] */
@@ -32,7 +30,7 @@ export interface BrushFillConstructorParams {
  * Symbol of polygon with brush filling.
  * @alias sGis.symbol.polygon.BrushFill
  */
-export class BrushFill extends Symbol<Polygon> {
+export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorParams {
     _brush: HTMLImageElement;
     _fillBackground = 'transparent';
     _fillForeground = 'black';
@@ -54,11 +52,19 @@ export class BrushFill extends Symbol<Polygon> {
     /** Stroke width of the outline. */
     strokeWidth: number = 1;
 
-    /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
+    /** @see [[PolyRender.lineDash]] */
     lineDash: number[] = [];
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
     shadow: Shadow = null;
+    /** @see [[PolyRender.lineCap]] */
+    lineCap: "butt" | "round" | "square" = "round";
+
+    /** @see [[PolyRender.lineJoin]] */
+    lineJoin: "bevel" | "miter" | "round" = "round";
+
+    /** @see [[PolyRender.miterLimit]] */
+    miterLimit: number = 10;
     
     private _initialized: boolean = false;
 
@@ -83,7 +89,10 @@ export class BrushFill extends Symbol<Polygon> {
             fillStyle: FillStyle.Image,
             fillImage: this._brush,
             lineDash: this.lineDash,
-            shadow: this.shadow
+            shadow: this.shadow,
+            lineCap: this.lineCap,
+            lineJoin: this.lineJoin,
+            miterLimit: this.miterLimit,
         })];
     }
 
@@ -145,4 +154,4 @@ export class BrushFill extends Symbol<Polygon> {
     }
 }
 
-registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'shadow']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);

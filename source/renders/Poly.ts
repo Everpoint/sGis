@@ -26,16 +26,22 @@ export interface PolyRenderConstructorParams {
     /** @see [[PolyRender.lineDash]] */
     lineDash?: number[],
     /** @see [[PolyRender.fillImage]] */
-    fillImage?: HTMLImageElement,
+    fillImage?: HTMLImageElement
     /** @see [[PolyRender.shadow]] */
     shadow?: Shadow
+    /** @see [[PolyRender.lineCap]] */
+    lineCap?: "butt" | "round" | "square";
+    /** @see [[PolyRender.lineJoin]] */
+    lineJoin?: "bevel" | "miter" | "round";
+    /** @see [[PolyRender.miterLimit]] */
+    miterLimit?: number;
 }
 
 /**
  * Rendered polygon
  * @alias sGis.render.Poly
  */
-export class PolyRender extends VectorRender {
+export class PolyRender extends VectorRender implements PolyRenderConstructorParams {
     coordinates: Coordinates[][];
 
     /** Whether the first and the last points should be connected. */
@@ -67,6 +73,35 @@ export class PolyRender extends VectorRender {
 
     /** Drop shadow of the polygon {offsetX, offsetY, blur, color}. */
     shadow?: Shadow = null;
+    /** 
+     * Property of the Canvas 2D API determines the shape used to draw the end points of lines.  
+     *
+     * - `"butt"`
+     *      The ends of lines are squared off at the endpoints.
+     * - `"round"`
+     *      The ends of lines are rounded.
+     * - `"square"`
+     *      The ends of lines are squared off by adding a box with an equal width and half the height of the line's thickness.
+     */
+    lineCap: "butt" | "round" | "square" = "round";
+
+    /** 
+     * Property of the Canvas 2D API determines the shape used to join two line segments where they meet.  
+     *
+     * - `"bevel"`
+     *      Fills an additional triangular area between the common endpoint of connected segments, and the separate outside rectangular corners of each segment.
+     * - `"round"`
+     *      Rounds off the corners of a shape by filling an additional sector of disc centered at the common endpoint of connected segments. The radius for these rounded corners is equal to the line width.
+     * - `"miter"`
+     *      Connected segments are joined by extending their outside edges to connect at a single point, with the effect of filling an additional lozenge-shaped area. This setting is affected by the miterLimit property
+     */
+    lineJoin: "bevel" | "miter" | "round" = "round";
+
+    /**
+     * Property of the Canvas 2D API sets the miter limit ratio.  
+     * @docs https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit  
+     */
+    miterLimit: number = 10;
 
     /**
      * @param coordinates - the coordinates of the polygon.

@@ -44,7 +44,7 @@ export abstract class StaticImageRender extends StaticRender {
         };
 
         this._node.onerror = (err) => {
-            if (this.onError) this.onError(err);
+            if (this.onError) this.onError(err as ErrorEvent);
         };
 
 

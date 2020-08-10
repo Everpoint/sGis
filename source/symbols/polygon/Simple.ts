@@ -1,6 +1,6 @@
 import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
-import {FillStyle, PolyRender} from "../../renders/Poly";
+import {FillStyle, PolyRender, PolyRenderConstructorParams} from "../../renders/Poly";
 import {PolylineSymbol} from "../PolylineSymbol";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
@@ -8,15 +8,13 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface PolygonSymbolConstructorParams {
+export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[PolygonSymbol.fillColor]] */
     fillColor?: string,
     /** @see [[PolygonSymbol.strokeColor]] */
     strokeColor?: string,
     /** @see [[PolygonSymbol.strokeWidth]] */
     strokeWidth?: number,
-    /** @see [[PolygonSymbol.lineDash]] */
-    lineDash?: number[],
     /** @see [[PolygonSymbol.shadow]] */
     shadow?: Shadow
 }
@@ -25,7 +23,7 @@ export interface PolygonSymbolConstructorParams {
  * Symbol of polygon with one color filling.
  * @alias sGis.symbol.polygon.Simple
  */
-export class PolygonSymbol extends Symbol<Polygon> {
+export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConstructorParams {
     /** Fill color of the polygon. Can be any valid css color string. */
     fillColor: string = 'transparent';
 
@@ -35,11 +33,19 @@ export class PolygonSymbol extends Symbol<Polygon> {
     /** Stroke width of the outline. */
     strokeWidth: number = 1;
 
-    /** Dash pattern for the line as specified in HTML CanvasRenderingContext2D.setLineDash() specification */
+    /** @see [[PolyRender.lineDash]] */
     lineDash: number[] = [];
 
     /** Emulation CanvasRenderingContext2D.filter shadow. */
     shadow: Shadow = null;
+    /** @see [[PolyRender.lineCap]] */
+    lineCap: "butt" | "round" | "square" = "round";
+
+    /** @see [[PolyRender.lineJoin]] */
+    lineJoin: "bevel" | "miter" | "round" = "round";
+
+    /** @see [[PolyRender.miterLimit]] */
+    miterLimit: number = 10;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -61,9 +67,12 @@ export class PolygonSymbol extends Symbol<Polygon> {
             strokeWidth: this.strokeWidth,
             fillColor: this.fillColor,
             lineDash: this.lineDash,
-            shadow: this.shadow
+            shadow: this.shadow,
+            lineCap: this.lineCap,
+            lineJoin: this.lineJoin,
+            miterLimit: this.miterLimit,
         })];
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'shadow']);
+registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);

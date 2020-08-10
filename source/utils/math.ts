@@ -27,6 +27,8 @@ export const extendCoordinates = function(coord: Contour, center: Coordinates): 
     coord.forEach(point => {
         point[0] = point[0] - center[0];
         point[1] = point[1] - center[1];
+        // FIX_ME:
+        // @ts-ignore
         point[2] = 1;
     });
 };
