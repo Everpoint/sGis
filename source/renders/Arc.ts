@@ -19,7 +19,9 @@ export interface ArcRenderConstructorParams {
     /** @see Arc.isSector */
     isSector?: boolean,
     /** @see Arc.clockwise */
-    clockwise?: boolean
+    clockwise?: boolean,
+    /** @see [[PolyRender.lineDash]] */
+    lineDash?: number[],
 }
 
 /**
@@ -56,6 +58,9 @@ export class Arc extends VectorRender {
 
     /** Direction of the arc. */
     clockwise: boolean = true;
+    
+    /** @see [[PolyRender.lineDash]] */
+    lineDash: number[] = [];
 
     /**
      * @param center - the center of the arc, in the [x, y] format.
