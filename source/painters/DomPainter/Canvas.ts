@@ -73,6 +73,7 @@ export class Canvas {
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.fillStyle = render.fillColor;
+        this._ctx.setLineDash(render.lineDash || []);
 
         if (render.isSector) {
             this._ctx.moveTo(center[0], center[1]);
@@ -166,6 +167,7 @@ export class Canvas {
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
+
         this._drawLines(render);
         this._setShadow(render);
 
