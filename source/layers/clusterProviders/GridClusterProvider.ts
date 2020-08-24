@@ -19,13 +19,15 @@ export class GridClusterProvider implements IClusterProvider {
     readonly _distance?: number;
     private _resolution: number;
     private _cache: FeatureGroup[];
+    readonly _onFeatures: (features: FeatureGroup[]) => void;
 
-    constructor(size = 88, distance?: number) {
+    constructor({size = 88, distance, onFeatures }: { size?: number, distance?: number, onFeatures?: (features: FeatureGroup[]) => void }) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
         this._cache = [];
         this._distance = distance;
+        this._onFeatures = onFeatures;
     }
 
     private getDistanceGrid(grid: MutableGrid, bbox: Bbox, resolution: number): FeatureGroup[] {
@@ -86,14 +88,15 @@ export class GridClusterProvider implements IClusterProvider {
                 };
             }
 
-           if (this._distance) {
-               this._cache = this.getDistanceGrid(grid, bbox, resolution);
-           } else {
-               this._cache = Object.keys(grid).map(
-                   group => new FeatureGroup(grid[group], { crs: bbox.crs }),
-               );
-           }
+            if (this._distance) {
+                this._cache = this.getDistanceGrid(grid, bbox, resolution);
+            } else {
+                this._cache = Object.keys(grid).map(
+                    group => new FeatureGroup(grid[group], { crs: bbox.crs }),
+                );
+            }
 
+            this._onFeatures && this._onFeatures(this._cache);
         }
 
         return this._cache.filter(
