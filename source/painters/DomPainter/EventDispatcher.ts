@@ -1,8 +1,9 @@
 import {getMouseOffset, getWheelDirection, listenDomEvent, removeDomEventListener} from "../../utils/domEvent";
 import {
-    DragStartEvent, DragEvent,
+    DragStartEvent, DragEvent, DragEventParams,
     sGisMouseEvent, sGisMouseEventParams, sGisMouseMoveEvent, sGisMouseOutEvent,
-    sGisMouseOverEvent, DragEndEvent, sGisClickEvent, sGisDoubleClickEvent
+    sGisMouseOverEvent, DragEndEvent, sGisClickEvent, sGisDoubleClickEvent,
+    sGisMouseDownEvent, sGisMouseUpEvent,
 } from "../../commonEvents";
 import {DomPainter} from "./DomPainter";
 import {Coordinates} from "../../baseTypes";
@@ -62,6 +63,7 @@ export class EventDispatcher {
             if (targetRender) break;
         }
 
+
         if (!mouseOutEvent && event instanceof sGisMouseMoveEvent && this._hoverRender !== targetRender) {
             if (this._hoverRender) {
                 mouseOutEvent = new sGisMouseOutEvent(event);
@@ -95,11 +97,13 @@ export class EventDispatcher {
     }
 
     private _setListeners(baseNode: HTMLElement): void {
-        this._listenFor(baseNode, 'mousedown', this._onmousedown.bind(this));
-        this._listenFor(baseNode, 'mousedown', this._onmousedown.bind(this));
         this._listenFor(baseNode, 'wheel', this._onwheel.bind(this));
+
         this._listenFor(baseNode, 'click', this._onclick.bind(this));
         this._listenFor(baseNode, 'dblclick', this._ondblclick.bind(this));
+
+        this._listenFor(baseNode, 'mousedown', this._onmousedown.bind(this));
+        this._listenFor(baseNode, 'mouseup', this._onmouseup.bind(this));
         this._listenFor(baseNode, 'mousemove', this._onmousemove.bind(this));
         this._listenFor(baseNode, 'mouseleave', this._onmouseleave.bind(this));
 
@@ -121,6 +125,11 @@ export class EventDispatcher {
         }
         event.preventDefault();
         event.stopPropagation();
+        this._dispatchEvent(new sGisMouseDownEvent(this._getMouseEventDescription(event)));
+    }
+
+    private _onmouseup(event: MouseEvent): void {
+        this._dispatchEvent(new sGisMouseUpEvent(this._getMouseEventDescription(event)));
     }
 
     private _onDocumentMousemove(event: MouseEvent): void {
@@ -138,21 +147,31 @@ export class EventDispatcher {
                 this._clickCatcher = null;
                 let originalPoint = this._master.getPointFromPxPosition(this._dragPosition.x, this._dragPosition.y);
                 let dragStartEvent = new DragStartEvent(map, {point: originalPoint, browserEvent: event});
+
                 this._dispatchEvent(dragStartEvent);
                 this._draggingObject = dragStartEvent.draggingObject;
             }
 
             this._dragPosition = mousePosition;
 
-            let dragEvent = new DragEvent({point, browserEvent: event, offset: [this._lastDrag.x, this._lastDrag.y], pxOffset: [dxPx, dyPx]});
-            this._draggingObject.fire(dragEvent);
+            const dragOptions = {point, browserEvent: event, offset: [this._lastDrag.x, this._lastDrag.y], pxOffset: [dxPx, dyPx]}
+            const dragEventMap = new DragEvent(dragOptions as DragEventParams);
+            const dragEvent = new DragEvent(dragOptions as DragEventParams);
+
+            dragEvent.stopPropagation();
+            this._dispatchEvent(dragEvent);
+            this._draggingObject.fire(dragEventMap);
         }
     }
 
     private _onDocumentMouseup(event: MouseEvent): void {
         this._clearDocumentListeners();
         if (this._draggingObject) {
-            this._draggingObject.fire(new DragEndEvent(this._getMouseEventDescription(event)));
+            const point = this._master.getPointFromPxPosition(event.offsetX, event.offsetY);
+
+            const dragEndEvent = new DragEndEvent({point, browserEvent: new MouseEvent('mouseup', event)});
+            this._dispatchEvent(dragEndEvent);
+            this._draggingObject.fire(dragEndEvent);
         }
 
         this._draggingObject = null;
@@ -244,8 +263,12 @@ export class EventDispatcher {
             }
 
             this._touchHandler.lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
-            let dragEvent = new DragEvent({point, browserEvent: fakeMouseEvent, offset: [this._touchHandler.lastDrag.x, this._touchHandler.lastDrag.y], pxOffset: [dxPx, dyPx]});
-            this._draggingObject.fire(dragEvent);
+            const dragOptions = {point, browserEvent: fakeMouseEvent, offset: [this._touchHandler.lastDrag.x, this._touchHandler.lastDrag.y], pxOffset: [dxPx, dyPx]};
+            const dragEvent = new DragEvent(dragOptions as DragEventParams);
+            const dragEventMap = new DragEvent(dragOptions as DragEventParams);
+            dragEvent.stopPropagation();
+            this._dispatchEvent(dragEvent);
+            this._draggingObject.fire(dragEventMap);
 
             this._touches[0].position = [touch.pageX, touch.pageY];
         } else if (touches.length > 1) {
@@ -295,14 +318,19 @@ export class EventDispatcher {
 
         this._touchHandler.lastDrag = null;
 
-
         if (this._touchHandler.scaleChanged) {
             this._master.allowUpdate();
             this._master.map.adjustResolution(this._touchHandler.lastZoomDirection);
             this._touchHandler.scaleChanged = false;
         } else {
             if (this._draggingObject) {
-                this._draggingObject.fire(new DragEndEvent({point: null, browserEvent: new MouseEvent('mouseup', event)}));
+                const touch = event.changedTouches[0];
+                const touchOffset = getMouseOffset(event.currentTarget, touch);
+                const point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
+
+                const dragEndEvent = new DragEndEvent({point, browserEvent: new MouseEvent('mouseup', event)});
+                this._dispatchEvent(dragEndEvent)
+                this._draggingObject.fire(dragEndEvent);
                 this._draggingObject = null;
             }
         }

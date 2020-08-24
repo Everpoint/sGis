@@ -6,12 +6,12 @@ export enum MouseEventFlags {
     MouseUp = 1 << 2,
     MouseClick = 1 << 3,
     MouseMove = 1 << 4,
-    MouseOver = 1 << 5,
-    MouseOut = 1 << 6,
+    MouseOver = 1 << 4,
+    MouseOut = 1 << 4,
     DoubleClick = 1 << 7,
     DragStart = 1 << 8,
-    Drag = 1 << 9,
-    DragEnd = 1 << 10,
+    Drag = 1 << 8,
+    DragEnd = 1 << 8,
 }
 
 export const mouseEvents: {[key: string]: {type: string, flag: MouseEventFlags}} = {

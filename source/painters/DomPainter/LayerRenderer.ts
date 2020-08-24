@@ -19,13 +19,13 @@ export type RenderForCanvas = VectorRender | StaticVectorImageRender;
 export class LayerRenderer {
     delayedUpdateTime = 500;
     listensFor: MouseEventFlags[] = [
-        MouseEventFlags.MouseClick,
-        MouseEventFlags.DoubleClick,
         MouseEventFlags.MouseDown,
-        MouseEventFlags.MouseMove,
-        MouseEventFlags.MouseOut,
-        MouseEventFlags.MouseOver,
         MouseEventFlags.MouseUp,
+        MouseEventFlags.MouseClick,
+        MouseEventFlags.MouseMove,
+        MouseEventFlags.MouseOver,
+        MouseEventFlags.MouseOut,
+        MouseEventFlags.DoubleClick,
         MouseEventFlags.DragStart
     ];
 
@@ -302,8 +302,10 @@ export class LayerRenderer {
         if (!this._eventCatchers[eventFlag]) return null;
 
         let keys = Array.from(this._eventCatchers[eventFlag].keys());
+
         for (let i = keys.length - 1; i >= 0; i--) {
             let render = keys[i];
+
             if (render.contains(position)) {
                 return render;
             }

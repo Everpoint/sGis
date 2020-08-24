@@ -48,6 +48,24 @@ export class sGisMouseMoveEvent extends sGisMouseEvent {
     }
 }
 
+export class sGisMouseDownEvent extends sGisMouseEvent {
+    static type: string = mouseEvents.mouseDown.type;
+    static eventFlag: MouseEventFlags = mouseEvents.mouseDown.flag;
+
+    constructor(params: sGisMouseEventParams) {
+        super(mouseEvents.mouseDown, params);
+    }
+}
+
+export class sGisMouseUpEvent extends sGisMouseEvent {
+    static type: string = mouseEvents.mouseUp.type;
+    static eventFlag: MouseEventFlags = mouseEvents.mouseUp.flag;
+
+    constructor(params: sGisMouseEventParams) {
+        super(mouseEvents.mouseUp, params);
+    }
+}
+
 export class sGisMouseOutEvent extends sGisMouseEvent {
     static type: string = mouseEvents.mouseOut.type;
     static eventFlag: MouseEventFlags = mouseEvents.mouseOut.flag;
