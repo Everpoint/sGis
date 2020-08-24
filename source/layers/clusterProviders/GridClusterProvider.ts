@@ -67,7 +67,7 @@ export class GridClusterProvider implements IClusterProvider {
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
-        if (this._resolution !== resolution) {
+        if (this._resolution !== resolution || this._cache.length === 0) {
             this._cache = [];
             this._resolution = resolution;
             const size = this._size * resolution;
