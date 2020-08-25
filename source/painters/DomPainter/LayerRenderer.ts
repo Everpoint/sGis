@@ -307,7 +307,7 @@ export class LayerRenderer {
         for (let i = keys.length - 1; i >= 0; i--) {
             let render = keys[i];
 
-            if (render.contains(position) || map.dragging === false) {
+            if (render.contains(position) || (map.dragging === false && eventFlag === 256)) {
                 return render;
             }
         }
