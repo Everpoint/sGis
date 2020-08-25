@@ -7,7 +7,9 @@ let id = 0;
  * @param {Function} handler - event handler
  * @returns {Function} - attached handler
  */
-export const listenDomEvent = function (element, type, handler) {
+export const listenDomEvent = function (element, sGisType, handler) {
+    let type = sGisType.toLowerCase();
+
     if (type === 'wheel') type = getWheelEventType();
     if (!handler.guid) handler.guid = ++id;
 

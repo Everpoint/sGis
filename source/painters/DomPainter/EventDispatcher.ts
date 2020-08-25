@@ -160,7 +160,10 @@ export class EventDispatcher {
 
             dragEvent.stopPropagation();
             this._dispatchEvent(dragEvent);
-            this._draggingObject.fire(dragEventMap);
+
+            if (map.dragging !== false) {
+                this._draggingObject.fire(dragEventMap);
+            }
         }
     }
 
@@ -268,7 +271,11 @@ export class EventDispatcher {
             const dragEventMap = new DragEvent(dragOptions as DragEventParams);
             dragEvent.stopPropagation();
             this._dispatchEvent(dragEvent);
-            this._draggingObject.fire(dragEventMap);
+
+            if (map.dragging !== false) {
+                this._draggingObject.fire(dragEventMap);
+            }
+
 
             this._touches[0].position = [touch.pageX, touch.pageY];
         } else if (touches.length > 1) {
