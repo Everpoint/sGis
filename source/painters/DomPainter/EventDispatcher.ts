@@ -4,6 +4,7 @@ import {
     sGisMouseEvent, sGisMouseEventParams, sGisMouseMoveEvent, sGisMouseOutEvent,
     sGisMouseOverEvent, DragEndEvent, sGisClickEvent, sGisDoubleClickEvent,
     sGisMouseDownEvent, sGisMouseUpEvent,
+    sGisTouchStartEvent, sGisTouchMoveEvent, sGisTouchEndEvent
 } from "../../commonEvents";
 import {DomPainter} from "./DomPainter";
 import {Coordinates} from "../../baseTypes";
@@ -241,6 +242,18 @@ export class EventDispatcher {
         this._touchHandler.lastDrag = {x: 0, y: 0};
 
         if (event.touches.length > 1) event.preventDefault();
+
+        this._dispatchEvent(new sGisTouchStartEvent(this._getsGisTouchEvent(event)));
+    }
+
+    private _getsGisTouchEvent(event) {
+        const touch = event.changedTouches[0];
+
+        const fakeMouseEvent = new MouseEvent('mousemove', event);
+        const touchOffset = getMouseOffset(event.currentTarget, touch);
+        const point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
+
+        return {point, browserEvent: fakeMouseEvent};
     }
 
     _ontouchmove(event: TouchEvent) {
@@ -313,6 +326,7 @@ export class EventDispatcher {
             this._touchHandler.lastZoomDirection = zoomK < 1;
         }
         event.preventDefault();
+        this._dispatchEvent(new sGisTouchMoveEvent(this._getsGisTouchEvent(event)));
     }
 
     _ontouchend(event: TouchEvent): void {
@@ -341,6 +355,8 @@ export class EventDispatcher {
                 this._draggingObject = null;
             }
         }
+
+        this._dispatchEvent(new sGisTouchEndEvent(this._getsGisTouchEvent(event)));
     }
 
     _clearTouches(event) {

@@ -12,6 +12,9 @@ export enum MouseEventFlags {
     DragStart = 1 << 8,
     Drag = 1 << 8,
     DragEnd = 1 << 8,
+    TouchStart = 1 << 4,
+    TouchMove = 1 << 4,
+    TouchEnd = 1 << 4,
 }
 
 export const mouseEvents: {[key: string]: {type: string, flag: MouseEventFlags}} = {
@@ -24,7 +27,10 @@ export const mouseEvents: {[key: string]: {type: string, flag: MouseEventFlags}}
     mouseMove: {type: 'mousemove', flag: MouseEventFlags.MouseMove},
     dragStart: {type: 'dragStart', flag: MouseEventFlags.DragStart},
     drag: {type: 'drag', flag: MouseEventFlags.Drag},
-    dragEnd: {type: 'dragEnd', flag: MouseEventFlags.DragEnd}
+    dragEnd: {type: 'dragEnd', flag: MouseEventFlags.DragEnd},
+    touchStart: {type: 'touchstart', flag: MouseEventFlags.TouchStart},
+    touchMove: {type: 'touchmove', flag: MouseEventFlags.TouchMove},
+    touchEnd: {type: 'touchend', flag: MouseEventFlags.TouchEnd}
 };
 
 const eventTypeFlags: {[key: string]: MouseEventFlags} = {};

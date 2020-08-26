@@ -123,3 +123,31 @@ export class DragEndEvent extends sGisMouseEvent {
         super(mouseEvents.dragEnd, params);
     }
 }
+
+export class sGisTouchStartEvent extends sGisMouseEvent {
+    static type: string = mouseEvents.touchStart.type;
+    static eventFlag: MouseEventFlags = mouseEvents.touchStart.flag;
+
+    constructor(params: sGisMouseEventParams) {
+        super(mouseEvents.touchStart, params);
+    }
+}
+
+export class sGisTouchMoveEvent extends sGisMouseEvent {
+    static type: string = mouseEvents.touchMove.type;
+    static eventFlag: MouseEventFlags = mouseEvents.touchMove.flag;
+
+    constructor(params: sGisMouseEventParams) {
+        super(mouseEvents.touchMove, params);
+    }
+}
+
+export class sGisTouchEndEvent extends sGisMouseEvent {
+    static type: string = mouseEvents.touchEnd.type;
+    static eventFlag: MouseEventFlags = mouseEvents.touchEnd.flag;
+
+    constructor(params: sGisMouseEventParams) {
+        super(mouseEvents.touchEnd, params);
+    }
+}
+
