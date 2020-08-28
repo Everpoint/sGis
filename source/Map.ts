@@ -83,9 +83,9 @@ export class Map extends LayerGroup {
     private _maxResolution: number;
 
     /**
-     * Disable map panning.
+     * For disable map panning.
      */
-    dragging?: boolean = true;
+    dragging: boolean = true;
 
     constructor({
         position = new Point([55.755831, 37.617673]).projectTo(webMercator).position,

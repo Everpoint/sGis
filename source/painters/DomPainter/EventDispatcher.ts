@@ -150,7 +150,10 @@ export class EventDispatcher {
                 let dragStartEvent = new DragStartEvent(map, {point: originalPoint, browserEvent: event});
 
                 this._dispatchEvent(dragStartEvent);
-                this._draggingObject = dragStartEvent.draggingObject;
+
+                if (map.dragging) {
+                    this._draggingObject = dragStartEvent.draggingObject;
+                }
             }
 
             this._dragPosition = mousePosition;
@@ -162,7 +165,7 @@ export class EventDispatcher {
             dragEvent.stopPropagation();
             this._dispatchEvent(dragEvent);
 
-            if (map.dragging !== false) {
+            if (map.dragging) {
                 this._draggingObject.fire(dragEventMap);
             }
         }
@@ -275,7 +278,10 @@ export class EventDispatcher {
             if (this._touchHandler.lastDrag.x === 0 && this._touchHandler.lastDrag.y === 0) {
                 let dragStartEvent = new DragStartEvent(map, {point, browserEvent: fakeMouseEvent});
                 this._dispatchEvent(dragStartEvent);
-                this._draggingObject = dragStartEvent.draggingObject;
+
+                if (map.dragging) {
+                    this._draggingObject = dragStartEvent.draggingObject;
+                }
             }
 
             this._touchHandler.lastDrag = {x: dxPx * resolution, y: 0 - dyPx * resolution};
@@ -285,7 +291,7 @@ export class EventDispatcher {
             dragEvent.stopPropagation();
             this._dispatchEvent(dragEvent);
 
-            if (map.dragging !== false) {
+            if (map.dragging) {
                 this._draggingObject.fire(dragEventMap);
             }
 
@@ -350,7 +356,8 @@ export class EventDispatcher {
                 const point = this._master.getPointFromPxPosition(touchOffset.x, touchOffset.y);
 
                 const dragEndEvent = new DragEndEvent({point, browserEvent: new MouseEvent('mouseup', event)});
-                this._dispatchEvent(dragEndEvent)
+                this._dispatchEvent(dragEndEvent);
+
                 this._draggingObject.fire(dragEndEvent);
                 this._draggingObject = null;
             }
