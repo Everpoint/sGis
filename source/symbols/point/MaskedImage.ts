@@ -76,18 +76,45 @@ export class MaskedImage extends Symbol<PointFeature> {
     private _image: HTMLImageElement;
     private _mask: HTMLImageElement;
 
+    private maskReadyPromise?: Promise<void>;
+    private imageReadyPromise?: Promise<void>;
+
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
-    constructor(options: MaskedImageSymbolParams = {}) {
+    constructor({
+        width,
+        height,
+        angle,
+        anchorPoint,
+        imageSource,
+        maskSource,
+        maskColor,
+        onUpdate
+    }: MaskedImageSymbolParams = {}) {
         super();
 
-        Object.assign(this, options);
-        if (!this._image) this.imageSource = this._imageSource;
-        if (!this._mask) this.maskSource = this._maskSource;
+        this.width = width;
+        this.height = height;
+        this.angle = angle;
+        this.anchorPoint = anchorPoint;
+        this._maskColor = maskColor;
+        this.onUpdate = onUpdate;
+
+        this.setImageSource(imageSource);
+        this.setMaskSource(maskSource);
 
         this._updateMasked();
+    }
+
+    prepareSymbol() {
+        return Promise.all([
+            this.imageReadyPromise,
+            this.maskReadyPromise
+        ]).then(() => {
+            this._updateMasked();
+        })
     }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
@@ -104,6 +131,10 @@ export class MaskedImage extends Symbol<PointFeature> {
             height: this.height,
             offset: [-this.anchorPoint[0], -this.anchorPoint[1]]
         })];
+    }
+
+    renderFunctionAsync(feature: PointFeature, resolution: number, crs: Crs): Promise<Render[]> {
+        return this.prepareSymbol().then(() => this.renderFunction(feature, resolution, crs));
     }
 
     /**
@@ -147,6 +178,21 @@ export class MaskedImage extends Symbol<PointFeature> {
     set maskColor(color: string) {
         this._maskColor = color;
         this._updateMasked();
+    }
+
+
+    setImageSource(src: string) {
+        this._imageSource = src;
+        this._image = new Image();
+        this.imageReadyPromise = loadImage(this._image, src);
+        return this.imageReadyPromise;
+    }
+
+    setMaskSource(src: string) {
+        this._maskSource = src;
+        this._mask = new Image();
+        this.maskReadyPromise = loadImage(this._mask, src);
+        return this.maskReadyPromise;
     }
 
     _isLoaded(): boolean { return this._image.complete && this._mask.complete; }
@@ -205,6 +251,18 @@ export class MaskedImage extends Symbol<PointFeature> {
             d[i+2] = maskColor.b * r / 255;
         }
     }
+}
+
+function loadImage(image: HTMLImageElement, src: string): Promise<void> {
+    image.src = src;
+    return new Promise((res, rej) => {
+        if (image.complete) {
+            return res()
+        }
+
+        image.onload = () => res();
+        image.onerror = error =>  rej(error);
+    })
 }
 
 registerSymbol(MaskedImage, 'point.MaskedImage', ['width', 'height', 'anchorPoint', 'imageSource', 'maskSource', 'maskColor', 'angle']);
