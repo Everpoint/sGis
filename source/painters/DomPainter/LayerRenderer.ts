@@ -299,7 +299,6 @@ export class LayerRenderer {
     }
 
     getEventCatcher(eventFlag: MouseEventFlags, position: Coordinates): Render | null {
-        const map = this._master.map;
         if (!this._eventCatchers[eventFlag]) return null;
 
         let keys = Array.from(this._eventCatchers[eventFlag].keys());
