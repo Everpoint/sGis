@@ -3,15 +3,7 @@ import {Bbox} from "../../Bbox";
 import {Feature} from "../../features/Feature";
 import {error} from "../../utils/utils";
 import {distance} from "../../geotools";
-
-export interface IClusterProvider {
-    getClusters(bbox: Bbox, resolution: number): FeatureGroup[];
-    add(features: Feature | Feature[]): void;
-    remove(features: Feature | Feature[]): void;
-    has(feature: Feature): boolean;
-}
-
-type MutableGrid = { [key: string]: Feature[] } | { [key: string]: FeatureGroup };
+import {IClusterProvider, ClusterProviderParams, MutableGrid, OnFeatures} from "./types";
 
 export class GridClusterProvider implements IClusterProvider {
     readonly _features: Feature[];
@@ -19,13 +11,15 @@ export class GridClusterProvider implements IClusterProvider {
     readonly _distance?: number;
     private _resolution: number;
     private _cache: FeatureGroup[];
+    readonly _onFeatures: OnFeatures;
 
-    constructor(size = 88, distance?: number) {
+    constructor({size = 88, distance, onFeatures}: ClusterProviderParams = {}) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
         this._cache = [];
         this._distance = distance;
+        this._onFeatures = onFeatures;
     }
 
     private getDistanceGrid(grid: MutableGrid, bbox: Bbox, resolution: number): FeatureGroup[] {
@@ -67,7 +61,7 @@ export class GridClusterProvider implements IClusterProvider {
     }
 
     getClusters(bbox: Bbox, resolution: number): FeatureGroup[] {
-        if (this._resolution !== resolution) {
+        if (this._resolution !== resolution || this._cache.length === 0) {
             this._cache = [];
             this._resolution = resolution;
             const size = this._size * resolution;
@@ -94,6 +88,7 @@ export class GridClusterProvider implements IClusterProvider {
                );
            }
 
+           this._onFeatures && this._onFeatures(this._cache);
         }
 
         return this._cache.filter(
