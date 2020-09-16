@@ -3,7 +3,7 @@ import {Bbox} from "../../Bbox";
 import {Feature} from "../../features/Feature";
 import {error} from "../../utils/utils";
 import {distance} from "../../geotools";
-import {IClusterProvider, ClusterProviderParams, MutableGrid, OnFeatures} from "./types";
+import {IClusterProvider, ClusterProviderParams, MutableGrid, OnChangeGrid} from "./types";
 
 export class GridClusterProvider implements IClusterProvider {
     readonly _features: Feature[];
@@ -11,15 +11,15 @@ export class GridClusterProvider implements IClusterProvider {
     readonly _distance?: number;
     private _resolution: number;
     private _cache: FeatureGroup[];
-    readonly _onFeatures: OnFeatures;
+    readonly _onChangeGrid: OnChangeGrid;
 
-    constructor({size = 88, distance, onFeatures}: ClusterProviderParams = {}) {
+    constructor({size = 88, distance, onChangeGrid}: ClusterProviderParams = {}) {
         this._features = [];
         this._size = size;
         this._resolution = 0;
         this._cache = [];
         this._distance = distance;
-        this._onFeatures = onFeatures;
+        this._onChangeGrid = onChangeGrid;
     }
 
     private getDistanceGrid(grid: MutableGrid, bbox: Bbox, resolution: number): FeatureGroup[] {
@@ -88,7 +88,7 @@ export class GridClusterProvider implements IClusterProvider {
                );
            }
 
-           this._onFeatures && this._onFeatures(this._cache);
+           this._onChangeGrid && this._onChangeGrid(this._cache);
         }
 
         return this._cache.filter(

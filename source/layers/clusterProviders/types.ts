@@ -11,10 +11,10 @@ export interface IClusterProvider {
 
 export type MutableGrid = { [key: string]: Feature[] } | { [key: string]: FeatureGroup };
 
-export type OnFeatures = (features: FeatureGroup[]) => void;
+export type OnChangeGrid = (features: FeatureGroup[]) => void;
 
 export type ClusterProviderParams = {
     size?: number,
     distance?: number,
-    onFeatures?: OnFeatures
+    onChangeGrid?: OnChangeGrid
 }
