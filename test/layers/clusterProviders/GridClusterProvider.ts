@@ -13,7 +13,7 @@ describe('GridClusterProvider', () => {
         webMercator,
     );
 
-    const clusterProvider = new GridClusterProvider(clusterSize);
+    const clusterProvider = new GridClusterProvider({size: clusterSize});
 
     const objects = [
         [73.355357, 54.878128],
