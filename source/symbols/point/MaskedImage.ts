@@ -2,7 +2,7 @@ import {registerSymbol} from "../../serializers/symbolSerializer";
 import {Symbol} from "../Symbol";
 import {Color} from "../../utils/Color";
 import {Coordinates, Offset} from "../../baseTypes";
-import {warn} from "../../utils/utils";
+import {warn, loadImage} from "../../utils/utils";
 import {PIN_BACKGROUND, PIN_FOREGROUND} from "../../resourses/images";
 import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
@@ -251,18 +251,6 @@ export class MaskedImage extends Symbol<PointFeature> {
             d[i+2] = maskColor.b * r / 255;
         }
     }
-}
-
-function loadImage(image: HTMLImageElement, src: string): Promise<void> {
-    image.src = src;
-    return new Promise((res, rej) => {
-        if (image.complete) {
-            return res()
-        }
-
-        image.onload = () => res();
-        image.onerror = error =>  rej(error);
-    })
 }
 
 registerSymbol(MaskedImage, 'point.MaskedImage', ['width', 'height', 'anchorPoint', 'imageSource', 'maskSource', 'maskColor', 'angle']);
