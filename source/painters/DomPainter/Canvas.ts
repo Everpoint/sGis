@@ -86,7 +86,7 @@ export class Canvas {
         this._ctx.stroke();
     }
 
-    _drawPoint(render) {
+    _drawPoint(render: Point) {
         this._ctx.strokeStyle = this._ctx.fillStyle = render.color;
         this._ctx.fillRect(render.coordinates[0], render.coordinates[1], 1, 1);
     }
@@ -161,6 +161,7 @@ export class Canvas {
         const coordinates = render.coordinates;
 
         this._ctx.beginPath();
+        this._ctx.rotate(render.angle || 0);
         this._ctx.lineCap = render.lineCap;
         this._ctx.lineJoin = render.lineJoin;
         this._ctx.miterLimit = render.miterLimit;
@@ -189,6 +190,7 @@ export class Canvas {
         }
 
         this._ctx.stroke();
+        this._ctx.rotate(-render.angle || 0);
     }
 
     get isEmpty() { return this._isEmpty; }

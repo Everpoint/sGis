@@ -18,6 +18,7 @@ export interface SquareSymbolConstructorParams {
     strokeColor?: string,
     /** @see [[SquareSymbol.strokeWidth]] */
     strokeWidth?: number
+    angle?: number
 }
 
 /**
@@ -27,8 +28,18 @@ export interface SquareSymbolConstructorParams {
 export class SquareSymbol extends Symbol<PointFeature> {
     /** Size of the square. */
     size: number = 10;
+    angle: number = 0;
 
     private _offset: Offset = [0, 0];
+
+
+    /**
+     * @param options - key-value list of the properties to be assigned to the instance.
+     */
+    constructor(options: SquareSymbolConstructorParams = {}) {
+        super();
+        Object.assign(this, options);
+    }
 
     /** Offset of the point from the feature position. If set to [0, 0], center of the circle will be at the position of the feature. */
     get offset(): Offset { return this._offset; }
@@ -52,15 +63,6 @@ export class SquareSymbol extends Symbol<PointFeature> {
     /** Width of the outline. */
     strokeWidth: number = 1;
 
-    /**
-     * @param options - key-value list of the properties to be assigned to the instance.
-     */
-    constructor(options: SquareSymbolConstructorParams = {}) {
-        super();
-        Object.assign(this, options);
-
-    }
-
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
         let position = feature.projectTo(crs).position;
@@ -79,9 +81,10 @@ export class SquareSymbol extends Symbol<PointFeature> {
             strokeColor: this.strokeColor,
             strokeWidth: this.strokeWidth,
             enclosed: true,
-            fillStyle: FillStyle.Color
+            fillStyle: FillStyle.Color,
+            angle: this.angle,
         })];
     }
 }
 
-registerSymbol(SquareSymbol, 'point.Square', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth']);
+registerSymbol(SquareSymbol, 'point.Square', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth', 'angle']);

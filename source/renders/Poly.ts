@@ -35,6 +35,8 @@ export interface PolyRenderConstructorParams {
     lineJoin?: "bevel" | "miter" | "round";
     /** @see [[PolyRender.miterLimit]] */
     miterLimit?: number;
+    /** @see [[PolyRender.angle]] */
+    angle?: number;
 }
 
 /**
@@ -102,6 +104,11 @@ export class PolyRender extends VectorRender implements PolyRenderConstructorPar
      * @docs https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit  
      */
     miterLimit: number = 10;
+
+    /**
+     * Clockwise rotation of the Poly in radians.
+     */
+    angle: number = 0;
 
     /**
      * @param coordinates - the coordinates of the polygon.

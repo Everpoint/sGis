@@ -8,7 +8,7 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface ImageFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
+export interface ImageFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "angle"> {
     /** @see [[ImageFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[ImageFill.strokeWidth]] */
@@ -47,6 +47,9 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
     shadow: Shadow = null;
+
+    /** @see [[PolyRender.angle]] */
+    angle: number = 0;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -87,6 +90,7 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
+            angle: this.angle,
         })];
     }
 
@@ -105,4 +109,4 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
     }
 }
 
-registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'angle']);
