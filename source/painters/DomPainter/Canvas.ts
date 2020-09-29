@@ -113,6 +113,13 @@ export class Canvas {
 
     private _drawLines(render: PolyRender) {
         const coordinates = render.coordinates;
+        const [centerX, centerY] = [this._ctx.canvas.width/2, this._ctx.canvas.height/2]
+
+        if (render.angle) {
+            this._ctx.translate(centerX, centerY)
+            this._ctx.rotate(render.angle);
+            this._ctx.translate(-centerX, -centerY)
+        }
 
         for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
             this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
@@ -161,7 +168,6 @@ export class Canvas {
         const coordinates = render.coordinates;
 
         this._ctx.beginPath();
-        this._ctx.rotate(render.angle);
         this._ctx.lineCap = render.lineCap;
         this._ctx.lineJoin = render.lineJoin;
         this._ctx.miterLimit = render.miterLimit;
@@ -190,7 +196,6 @@ export class Canvas {
         }
 
         this._ctx.stroke();
-        this._ctx.rotate(-render.angle);
     }
 
     get isEmpty() { return this._isEmpty; }
