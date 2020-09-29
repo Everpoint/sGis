@@ -18,6 +18,9 @@ export interface SquareSymbolConstructorParams {
     strokeColor?: string,
     /** @see [[SquareSymbol.strokeWidth]] */
     strokeWidth?: number
+    /**
+     * Clockwise rotation of the square in radians.
+     */
     angle?: number
 }
 
@@ -28,6 +31,9 @@ export interface SquareSymbolConstructorParams {
 export class SquareSymbol extends Symbol<PointFeature> {
     /** Size of the square. */
     size: number = 10;
+    /**
+     * Clockwise rotation of the square in radians.
+     */
     angle: number = 0;
 
     private _offset: Offset = [0, 0];
