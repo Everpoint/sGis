@@ -130,6 +130,8 @@ export class Canvas {
                 this._ctx.closePath();
             }
         }
+        
+        this._ctx.rotate(-render.angle);
     }
     private _resetShadow() {
         this._ctx.shadowOffsetX = 0;

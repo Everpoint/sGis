@@ -38,15 +38,6 @@ export class SquareSymbol extends Symbol<PointFeature> {
 
     private _offset: Offset = [0, 0];
 
-
-    /**
-     * @param options - key-value list of the properties to be assigned to the instance.
-     */
-    constructor(options: SquareSymbolConstructorParams = {}) {
-        super();
-        Object.assign(this, options);
-    }
-
     /** Offset of the point from the feature position. If set to [0, 0], center of the circle will be at the position of the feature. */
     get offset(): Offset { return this._offset; }
     set offset(value: Offset) {
@@ -68,6 +59,14 @@ export class SquareSymbol extends Symbol<PointFeature> {
 
     /** Width of the outline. */
     strokeWidth: number = 1;
+
+    /**
+     * @param options - key-value list of the properties to be assigned to the instance.
+     */
+    constructor(options: SquareSymbolConstructorParams = {}) {
+        super();
+        Object.assign(this, options);
+    }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
