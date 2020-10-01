@@ -5,6 +5,7 @@ import {error} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {Bbox} from "../../Bbox";
+import { rotate } from '../../utils/math';
 
 /**
  * @alias sGis.painter.domPainter.Canvas
@@ -113,25 +114,20 @@ export class Canvas {
 
     private _drawLines(render: PolyRender) {
         const coordinates = render.coordinates;
-        const [centerX, centerY] = [this._ctx.canvas.width/2, this._ctx.canvas.height/2]
+        const [cx, cy] = [this._ctx.canvas.width / 2, this._ctx.canvas.height / 2];
 
-        if (render.angle) {
-            this._ctx.translate(centerX, centerY)
-            this._ctx.rotate(render.angle);
-            this._ctx.translate(-centerX, -centerY)
-        }
+        for (let i = 0, ringsCount = coordinates.length; i < ringsCount; i++) {
+            const ring = coordinates[i]
 
-        for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
-            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
-            for (let i = 1, len = coordinates[ring].length; i < len; i++) {
-                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
+            this._ctx.moveTo(...rotate(cx,cy, ring[0][0], ring[0][1], render.angle));
+
+            for (let j = 1, len = ring.length; j < len; j++) {
+                this._ctx.lineTo(...rotate(cx,cy, ring[j][0], ring[j][1], render.angle));
             }
             if (render.enclosed) {
                 this._ctx.closePath();
             }
         }
-        
-        this._ctx.rotate(-render.angle);
     }
     private _resetShadow() {
         this._ctx.shadowOffsetX = 0;
