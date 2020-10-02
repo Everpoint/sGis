@@ -8,7 +8,7 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "angle"> {
+export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[PolygonSymbol.fillColor]] */
     fillColor?: string;
     /** @see [[PolygonSymbol.strokeColor]] */
@@ -47,9 +47,6 @@ export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConst
     /** @see [[PolyRender.miterLimit]] */
     miterLimit: number = 10;
 
-    /** @see [[PolyRender.angle]] */
-    angle: number = 0;
-
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
@@ -73,9 +70,8 @@ export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConst
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
-            angle: this.angle, 
         })];
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'angle']);
+registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);

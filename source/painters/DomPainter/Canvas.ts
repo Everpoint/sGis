@@ -5,7 +5,6 @@ import {error} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {Bbox} from "../../Bbox";
-import { rotate } from '../../utils/math';
 
 /**
  * @alias sGis.painter.domPainter.Canvas
@@ -114,15 +113,14 @@ export class Canvas {
 
     private _drawLines(render: PolyRender) {
         const coordinates = render.coordinates;
-        const [cx, cy] = [this._ctx.canvas.width / 2, this._ctx.canvas.height / 2];
 
         for (let i = 0, ringsCount = coordinates.length; i < ringsCount; i++) {
             const ring = coordinates[i]
 
-            this._ctx.moveTo(...rotate(cx,cy, ring[0][0], ring[0][1], render.angle));
+            this._ctx.moveTo(ring[0][0], ring[0][1]);
 
             for (let j = 1, len = ring.length; j < len; j++) {
-                this._ctx.lineTo(...rotate(cx,cy, ring[j][0], ring[j][1], render.angle));
+                this._ctx.lineTo(ring[j][0], ring[j][1]);
             }
             if (render.enclosed) {
                 this._ctx.closePath();

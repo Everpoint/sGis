@@ -6,6 +6,7 @@ import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/PointFeature";
 import {warn} from "../../utils/utils";
+import { rotate } from '../../utils/math';
 
 export interface SquareSymbolConstructorParams {
     /** @see [[SquareSymbol.size]] */
@@ -70,16 +71,22 @@ export class SquareSymbol extends Symbol<PointFeature> {
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
-        let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution, - position[1] / resolution];
-        let halfSize = this.size / 2;
-        let offset = this.offset;
-        let coordinates = [[
-            [pxPosition[0] - halfSize + offset[0], pxPosition[1] - halfSize + offset[1]],
-            [pxPosition[0] - halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
-            [pxPosition[0] + halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
-            [pxPosition[0] + halfSize + offset[0], pxPosition[1] - halfSize + offset[1]]
-        ]];
+
+        const position = feature.projectTo(crs).position;
+        const pxPosition = [position[0] / resolution, - position[1] / resolution];
+        const halfSize = this.size / 2;
+        const offset = this.offset;
+        const angle = -this.angle || 0;
+
+        const [x, y] = [halfSize + offset[0], halfSize + offset[1]]
+        const [cx, cy] = pxPosition;
+        
+        const coordinates = [[
+            rotate(cx, cy, cx - x, cy - y, angle),
+            rotate(cx, cy, cx - x, cy + y, angle),
+            rotate(cx, cy, cx + x, cy + y, angle),
+            rotate(cx, cy, cx + x, cy - y, angle),
+        ]] as const;
 
         return [new PolyRender(coordinates, {
             fillColor: this.fillColor,
@@ -87,7 +94,6 @@ export class SquareSymbol extends Symbol<PointFeature> {
             strokeWidth: this.strokeWidth,
             enclosed: true,
             fillStyle: FillStyle.Color,
-            angle: this.angle,
         })];
     }
 }

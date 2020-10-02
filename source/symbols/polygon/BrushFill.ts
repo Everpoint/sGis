@@ -11,7 +11,7 @@ import {Shadow} from "../../baseTypes";
 
 const ALPHA_NORMALIZER = 65025;
 
-export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "angle"> {
+export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[BrushFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[BrushFill.strokeWidth]] */
@@ -65,9 +65,6 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
 
     /** @see [[PolyRender.miterLimit]] */
     miterLimit: number = 10;
-
-    /** @see [[PolyRender.angle]] */
-    angle: number = 0;
     
     private _initialized: boolean = false;
 
@@ -96,7 +93,6 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
-            angle: this.angle,
         })];
     }
 
@@ -158,4 +154,4 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
     }
 }
 
-registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'angle']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
