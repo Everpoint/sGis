@@ -6,6 +6,7 @@ import {Crs} from "../../Crs";
 import {Render} from "../../renders/Render";
 import {PointFeature} from "../../features/PointFeature";
 import {warn} from "../../utils/utils";
+import { rotate } from '../../utils/math';
 
 export interface SquareSymbolConstructorParams {
     /** @see [[SquareSymbol.size]] */
@@ -18,6 +19,10 @@ export interface SquareSymbolConstructorParams {
     strokeColor?: string,
     /** @see [[SquareSymbol.strokeWidth]] */
     strokeWidth?: number
+    /**
+     * Clockwise rotation of the square in radians.
+     */
+    angle?: number
 }
 
 /**
@@ -27,6 +32,10 @@ export interface SquareSymbolConstructorParams {
 export class SquareSymbol extends Symbol<PointFeature> {
     /** Size of the square. */
     size: number = 10;
+    /**
+     * Clockwise rotation of the square in radians.
+     */
+    angle: number = 0;
 
     private _offset: Offset = [0, 0];
 
@@ -58,30 +67,35 @@ export class SquareSymbol extends Symbol<PointFeature> {
     constructor(options: SquareSymbolConstructorParams = {}) {
         super();
         Object.assign(this, options);
-
     }
 
     renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
         if (!(feature instanceof PointFeature)) return [];
-        let position = feature.projectTo(crs).position;
-        let pxPosition = [position[0] / resolution, - position[1] / resolution];
-        let halfSize = this.size / 2;
-        let offset = this.offset;
-        let coordinates = [[
-            [pxPosition[0] - halfSize + offset[0], pxPosition[1] - halfSize + offset[1]],
-            [pxPosition[0] - halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
-            [pxPosition[0] + halfSize + offset[0], pxPosition[1] + halfSize + offset[1]],
-            [pxPosition[0] + halfSize + offset[0], pxPosition[1] - halfSize + offset[1]]
-        ]];
+
+        const position = feature.projectTo(crs).position;
+        const pxPosition = [position[0] / resolution, - position[1] / resolution];
+        const halfSize = this.size / 2;
+        const offset = this.offset;
+        const angle = -this.angle || 0;
+
+        const [x, y] = [halfSize + offset[0], halfSize + offset[1]]
+        const [cx, cy] = pxPosition;
+        
+        const coordinates = [[
+            rotate(cx, cy, cx - x, cy - y, angle),
+            rotate(cx, cy, cx - x, cy + y, angle),
+            rotate(cx, cy, cx + x, cy + y, angle),
+            rotate(cx, cy, cx + x, cy - y, angle),
+        ]] as const;
 
         return [new PolyRender(coordinates, {
             fillColor: this.fillColor,
             strokeColor: this.strokeColor,
             strokeWidth: this.strokeWidth,
             enclosed: true,
-            fillStyle: FillStyle.Color
+            fillStyle: FillStyle.Color,
         })];
     }
 }
 
-registerSymbol(SquareSymbol, 'point.Square', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth']);
+registerSymbol(SquareSymbol, 'point.Square', ['size', 'offset', 'fillColor', 'strokeColor', 'strokeWidth', 'angle']);

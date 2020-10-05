@@ -86,7 +86,7 @@ export class Canvas {
         this._ctx.stroke();
     }
 
-    _drawPoint(render) {
+    _drawPoint(render: Point) {
         this._ctx.strokeStyle = this._ctx.fillStyle = render.color;
         this._ctx.fillRect(render.coordinates[0], render.coordinates[1], 1, 1);
     }
@@ -114,10 +114,13 @@ export class Canvas {
     private _drawLines(render: PolyRender) {
         const coordinates = render.coordinates;
 
-        for (let ring = 0, ringsCount = coordinates.length; ring < ringsCount; ring++) {
-            this._ctx.moveTo(coordinates[ring][0][0], coordinates[ring][0][1]);
-            for (let i = 1, len = coordinates[ring].length; i < len; i++) {
-                this._ctx.lineTo(coordinates[ring][i][0], coordinates[ring][i][1]);
+        for (let i = 0, ringsCount = coordinates.length; i < ringsCount; i++) {
+            const ring = coordinates[i]
+
+            this._ctx.moveTo(ring[0][0], ring[0][1]);
+
+            for (let j = 1, len = ring.length; j < len; j++) {
+                this._ctx.lineTo(ring[j][0], ring[j][1]);
             }
             if (render.enclosed) {
                 this._ctx.closePath();

@@ -10,13 +10,13 @@ import {Shadow} from "../../baseTypes";
 
 export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
     /** @see [[PolygonSymbol.fillColor]] */
-    fillColor?: string,
+    fillColor?: string;
     /** @see [[PolygonSymbol.strokeColor]] */
-    strokeColor?: string,
+    strokeColor?: string;
     /** @see [[PolygonSymbol.strokeWidth]] */
-    strokeWidth?: number,
+    strokeWidth?: number;
     /** @see [[PolygonSymbol.shadow]] */
-    shadow?: Shadow
+    shadow?: Shadow;
 }
 
 /**
@@ -53,7 +53,6 @@ export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConst
     constructor(options: PolygonSymbolConstructorParams = {}) {
         super();
         Object.assign(this, options);
-
     }
 
     renderFunction(feature: Polygon, resolution: number, crs: Crs): Render[] {

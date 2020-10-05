@@ -89,3 +89,17 @@ export const multiplyMatrix = function(a: number[][], b: number[][]): number[][]
 export const squareDistance = function(a: Coordinates, b: Coordinates) {
     return (a[0] - b[0])*(a[0] - b[0]) + (a[1] - b[1])*(a[1] - b[1]);
 };
+
+/**
+ * counter-clockwise - positive angle (@radians param)
+ * clockwise - negative angle (@radians param)
+ */
+export function rotate(cx: number, cy: number, x: number, y: number, radians: number): [number, number] {
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+
+    return [
+        (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        (cos * (y - cy)) - (sin * (x - cx)) + cy
+    ];
+}
