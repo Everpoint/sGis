@@ -86,7 +86,7 @@ export class SquareSymbol extends Symbol<PointFeature> {
             rotate(cx, cy, cx - x, cy + y, angle),
             rotate(cx, cy, cx + x, cy + y, angle),
             rotate(cx, cy, cx + x, cy - y, angle),
-        ]] as const;
+        ]];
 
         return [new PolyRender(coordinates, {
             fillColor: this.fillColor,
