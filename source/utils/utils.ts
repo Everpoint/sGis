@@ -216,3 +216,20 @@ if (typeof window.requestAnimationFrame === 'undefined') {
         return 0;
     }
 }
+
+/**
+ * async loadImage function
+ * @param image
+ * @param src
+ */
+export function loadImage(image: HTMLImageElement, src: string): Promise<void> {
+    image.src = src;
+    return new Promise((res, rej) => {
+        if (image.complete) {
+            return res()
+        }
+
+        image.onload = () => res();
+        image.onerror = error =>  rej(error);
+    })
+}

@@ -69,7 +69,7 @@ export class StaticImageSymbol extends Symbol<PointFeature> {
 
     }
 
-    renderFunction(feature: PointFeature, resolution: number, crs: Crs): Render[] {
+    renderFunction(feature: PointFeature, resolution: number, crs: Crs): StaticVectorImageRender[] {
         if (!(feature instanceof PointFeature)) return [];
         let position = feature.projectTo(crs).position;
         let pxPosition: Coordinates = [position[0] / resolution, - position[1] / resolution];
@@ -82,6 +82,13 @@ export class StaticImageSymbol extends Symbol<PointFeature> {
             height: this.height,
             offset: [-this.anchorPoint[0], -this.anchorPoint[1]]
         })];
+    }
+
+    async renderFunctionAsync(feature: PointFeature, resolution: number, crs: Crs): Promise<Render[]> {
+        const renders = this.renderFunction(feature, resolution, crs)
+
+        return Promise.all(renders.map(render => render.readyPromise)).then(() => renders)
+
     }
 }
 

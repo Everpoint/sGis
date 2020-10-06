@@ -26,6 +26,17 @@ export abstract class Symbol<T extends Feature> {
     abstract renderFunction(feature: T, resolution: number, crs: Crs): Render[]
 
     /**
+     * This async function will be called every time the feature has to be drawn. It returns an array of renders that will actually be displayed on the map.
+     * If the symbol cannot render provided feature, empty array is returned.
+     * @param feature - feature to be drawn.
+     * @param resolution - resolution of the render.
+     * @param crs - target coordinate system of the render.
+     */
+    async renderFunctionAsync(feature: T, resolution: number, crs: Crs): Promise<Render[]> {
+        return this.renderFunction(feature, resolution, crs)
+    }
+
+    /**
      * Returns a copy of the symbol. Only essential properties are copied.
      */
     clone(): Symbol<T> {
@@ -111,6 +122,10 @@ export abstract class DynamicPointSymbol extends Symbol<PointFeature> {
 
     protected _updateFeatureNode(feature: PointFeature): void {
         // do nothing
+    }
+
+    async renderFunctionAsync(feature: PointFeature, resolution: number, crs: Crs): Promise<Render[]> {
+        return this.renderFunction(feature, resolution, crs);
     }
 }
 

@@ -1,5 +1,6 @@
 import {HTMLRasterElement, Offset} from "../baseTypes";
 import {StaticRender} from "./Render";
+import {loadImage} from "../utils/utils";
 
 export interface StaticImageRenderParams {
     src: string;
@@ -22,6 +23,8 @@ export abstract class StaticImageRender extends StaticRender {
     onLoad?: () => void;
     onError?: (err?: ErrorEvent) => void;
 
+    readyPromise: Promise<void>;
+
     constructor({src, width = 0, height = 0, onLoad = null, onError = null, opacity = 1, offset = [0, 0]}: StaticImageRenderParams) {
         super();
 
@@ -39,20 +42,13 @@ export abstract class StaticImageRender extends StaticRender {
 
     private _createNode(): void {
         this._node = new Image();
-        this._node.onload = () => {
-            if (this.onLoad) this.onLoad();
-        };
-
-        this._node.onerror = (err) => {
-            if (this.onError) this.onError(err as ErrorEvent);
-        };
-
 
         if (this._width > 0) this._node.width = this._width;
         if (this._height > 0) this._node.height = this._height;
 
         this._node.style.opacity = this._opacity.toString();
-        this._node.src = this._src;
+
+        this.readyPromise = loadImage(this._node, this._src)
     }
 
     get node(): HTMLRasterElement {
