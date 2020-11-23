@@ -1,5 +1,5 @@
-import {Coordinates, HTMLRasterElement} from "../baseTypes";
-import {StaticVectorImageRender} from "./StaticVectorImageRender";
+import {Coordinates, HTMLRasterElement, Offset} from "../baseTypes";
+import {VectorRender} from "./Render";
 
 export enum HorizontalAlignment {
     Left, Center, Right
@@ -32,7 +32,7 @@ export interface VectorLabelRenderParams {
  * Text label that is drawn as a vector element. This render prerenders itself to the offscreen canvas and then allows
  * layer renderer to draw it as a simple image.
  */
-export class VectorLabel extends StaticVectorImageRender {
+export class VectorLabel extends VectorRender {
     fontSize: number;
     fontFamily: string;
     fontStyle?: string;
@@ -47,6 +47,9 @@ export class VectorLabel extends StaticVectorImageRender {
 
     /** Vertical alignment of the label relative to the position. */
     verticalAlignment: VerticalAlignment;
+
+    position: Coordinates;
+    offset?: Offset = [0, 0];
 
     private _text: string;
     private _canvas: HTMLCanvasElement;
@@ -64,7 +67,7 @@ export class VectorLabel extends StaticVectorImageRender {
         strokeWidth = 2,
         fillColor = 'black'
     }: VectorLabelRenderParams) {
-        super({src: '', position: position});
+        super();
         this._text = text;
         this.horizontalAlignment = horizontalAlignment;
         this.verticalAlignment = verticalAlignment;
@@ -77,6 +80,24 @@ export class VectorLabel extends StaticVectorImageRender {
         this.strokeColor = strokeColor;
         this.strokeWidth = strokeWidth;
         this.fillColor = fillColor;
+        this.position = position;
+    }
+
+    contains(position: Coordinates) {
+        let dx = position[0] - this.position[0];
+        let dy = position[1] - this.position[1];
+
+        return this._boxContains(dx, dy);
+    }
+
+    private _boxContains(x: number, y: number) {
+        let minX = this.position[0] + this.offset[0];
+        let minY = this.position[1] + this.offset[1];
+
+        return x > minX
+            && x < minX + this.width
+            && y > minY
+            && y < minY + this.height;
     }
 
     get node(): HTMLRasterElement {

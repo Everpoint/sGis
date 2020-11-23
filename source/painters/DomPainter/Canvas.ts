@@ -4,6 +4,7 @@ import {FillStyle, PolyRender} from "../../renders/Poly";
 import {error} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
+import {VectorLabel} from "../../renders/VectorLabel";
 import {Bbox} from "../../Bbox";
 
 /**
@@ -55,6 +56,8 @@ export class Canvas {
             this._drawPoly(render);
         } else if (render instanceof StaticVectorImageRender) {
             this._drawImage(render);
+        } else if (render instanceof VectorLabel) {
+            this._drawLabel(render);
         } else {
             error('Unknown vector geometry type.');
         }
@@ -109,6 +112,17 @@ export class Canvas {
 
         this._ctx.rotate(-render.angle);
         this._ctx.translate(-x, -y);
+    }
+
+    _drawLabel(render: VectorLabel) {
+        let [x, y] = render.position;
+
+        x = Math.round(x);
+        y = Math.round(y);
+
+        this._ctx.translate(x, y);
+
+        this._ctx.drawImage(render.node, render.offset[0], render.offset[1], render.width, render.height);
     }
 
     private _drawLines(render: PolyRender) {
