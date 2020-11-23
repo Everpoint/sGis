@@ -48,9 +48,9 @@ export abstract class StaticImageRender extends StaticRender {
 
         this._node.style.opacity = this._opacity.toString();
 
-        this.readyPromise = loadImage(this._node, this._src)
+        this.readyPromise = loadImage(this._node, this._src);
 
-        this.readyPromise.then(this.onLoad).catch(this.onError)
+        this.readyPromise.then(this.onLoad).catch(this.onError);
     }
 
     get node(): HTMLRasterElement {

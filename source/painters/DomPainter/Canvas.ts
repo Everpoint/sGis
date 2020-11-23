@@ -4,6 +4,7 @@ import {FillStyle, PolyRender} from "../../renders/Poly";
 import {error} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
+import {VectorLabel} from "../../renders/VectorLabel";
 import {Bbox} from "../../Bbox";
 
 /**
@@ -53,7 +54,7 @@ export class Canvas {
             this._drawPoint(render);
         } else if (render instanceof PolyRender) {
             this._drawPoly(render);
-        } else if (render instanceof StaticVectorImageRender) {
+        } else if (render instanceof StaticVectorImageRender || render instanceof VectorLabel) {
             this._drawImage(render);
         } else {
             error('Unknown vector geometry type.');
@@ -91,23 +92,28 @@ export class Canvas {
         this._ctx.fillRect(render.coordinates[0], render.coordinates[1], 1, 1);
     }
 
-    _drawImage(render: StaticVectorImageRender) {
+    _drawImage(render: StaticVectorImageRender | VectorLabel) {
         let [x, y] = render.position;
 
         x = Math.round(x);
         y = Math.round(y);
 
         this._ctx.translate(x, y);
-        this._ctx.rotate(render.angle);
 
-        let opacity = render.opacity;
+        if (!(render instanceof VectorLabel)) {
+            this._ctx.rotate(render.angle);
+        }
+
+        let opacity = !(render instanceof VectorLabel) ? render.opacity : 1;
         if (opacity !== 1) this._ctx.globalAlpha = opacity;
 
         this._ctx.drawImage(render.node, render.offset[0], render.offset[1], render.width, render.height);
 
         if (opacity !== 1) this._ctx.globalAlpha = 1;
 
-        this._ctx.rotate(-render.angle);
+        if (!(render instanceof VectorLabel)) {
+            this._ctx.rotate(-render.angle);
+        }
         this._ctx.translate(-x, -y);
     }
 
