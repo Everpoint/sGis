@@ -173,13 +173,31 @@ export class LayerRenderer {
 
         this._removeOutdatedRenders(renders);
 
-        this._draw(renders);
+        const vectorImages = renders.filter(r => r instanceof StaticVectorImageRender);
 
-        if (!this._canvas.isEmpty) {
-            this._addCanvasToDom(bbox);
+        if (vectorImages.length > 0 && renders.length !== vectorImages.length) {
+            this._drawVectorSync(renders, vectorImages, bbox)
+        } else {
+            this._draw(renders);
+
+            if (!this._canvas.isEmpty) {
+                this._addCanvasToDom(bbox);
+            }
+
+            this._renders = renders;
         }
+    }
 
-        this._renders = renders;
+    private _drawVectorSync(renders: Render[], images: Render[], bbox: Bbox) {
+        Promise.all(images.map(({ readyPromise }: StaticVectorImageRender) => readyPromise)).then(() => {
+            this._draw(renders);
+
+            if (!this._canvas.isEmpty) {
+                this._addCanvasToDom(bbox);
+            }
+
+            this._renders = renders;
+        });
     }
 
     private _draw(renders: Render[]): void {
