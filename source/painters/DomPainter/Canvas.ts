@@ -170,6 +170,9 @@ export class Canvas {
         const coordinates = render.coordinates;
 
         this._ctx.beginPath();
+
+        if (render.strokeWidth <= 0) return;
+
         this._ctx.lineCap = render.lineCap;
         this._ctx.lineJoin = render.lineJoin;
         this._ctx.miterLimit = render.miterLimit;
