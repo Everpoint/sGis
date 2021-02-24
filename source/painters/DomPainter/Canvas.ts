@@ -171,13 +171,11 @@ export class Canvas {
 
         this._ctx.beginPath();
 
-        if (render.strokeWidth <= 0) return;
-
         this._ctx.lineCap = render.lineCap;
         this._ctx.lineJoin = render.lineJoin;
         this._ctx.miterLimit = render.miterLimit;
         this._ctx.lineWidth = render.strokeWidth;
-        this._ctx.strokeStyle = render.strokeColor;
+        this._ctx.strokeStyle = render.strokeWidth <= 0 ? "transparent" : render.strokeColor;
         this._ctx.setLineDash(render.lineDash || []);
 
         this._drawLines(render);
