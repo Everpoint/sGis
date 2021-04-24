@@ -35,17 +35,12 @@ export default {
         typescript({
             typescript: require('typescript'),
             cacheRoot: `./.rts2_cache_esm`,
-            useTsconfigDeclarationDir: true,
-            tsconfigDefaults: {
-                compilerOptions: {
-                    sourceMap: true,
-                    declaration: true,
-                    declarationDir: './dist',
-                },
-            },
             tsconfigOverride: {
                 compilerOptions: {
                     target: 'esnext',
+                    sourceMap: true,
+                    declaration: true,
+                    declarationDir: './es',
                 },
             },
         }),

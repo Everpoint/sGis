@@ -3,7 +3,9 @@
     "skipLibCheck": true,
     "target": "esnext",
     "module": "esnext",
-    "outDir": "../es"
+    "outDir": "../es",
+    "declaration": true,
+    "declarationDir": "../dist"
   },
   "include": [
     "../source/**/*.ts"
