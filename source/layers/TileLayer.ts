@@ -46,7 +46,7 @@ export type GetTileUrl = (xIndex: number, yIndex: number, level: number) => stri
  */
 export class TileLayer extends Layer {
     private _tileCache: {[key: string]: TileRender} = {};
-    private readonly _urlMask: string;
+    private readonly _urlMask: string | GetTileUrl;
     private readonly _cacheSize: number;
     private _transitionTime: number;
     private _cachedIndexes: string[] = [];
@@ -57,7 +57,7 @@ export class TileLayer extends Layer {
     readonly tileScheme: TileScheme;
 
     /** Layer's coordinate system. */
-    readonly crs: Crs;
+    crs: Crs;
 
     /** Whether to repeat the tiles along x axis. Creates the effect of continuous map when panning horizontally. */
     cycleX: boolean;
@@ -81,12 +81,7 @@ export class TileLayer extends Layer {
     }: TileLayerConstructorParams = {}, extensions?: Object) {
         super(LayerParams, extensions);
 
-        this._urlMask = typeof urlMask === "string" ? urlMask : "";
-
-        if (typeof urlMask === "function") {
-            this.getTileUrl = urlMask.bind(null);
-        }
-
+        this._urlMask = urlMask;
         this.tileScheme = tileScheme;
         this.crs = crs;
         this.cycleX = cycleX;
@@ -104,10 +99,13 @@ export class TileLayer extends Layer {
      * @param level - scale level of the tile.
      */
     getTileUrl(xIndex: number, yIndex: number, level: number): string {
-        return this._urlMask
-            .replace('{x}', xIndex.toString())
-            .replace('{y}', yIndex.toString())
-            .replace('{z}', level.toString());
+        if (typeof this._urlMask === "string") {
+            return this._urlMask.replace('{x}', xIndex.toString())
+                .replace('{y}', yIndex.toString())
+                .replace('{z}', level.toString());
+        } else {
+            return this._urlMask(xIndex, yIndex, level);
+        }
     }
 
     getRenders(bbox: Bbox, resolution: number): Render[] {
@@ -135,15 +133,15 @@ export class TileLayer extends Layer {
     }
 
     private _getRender(index: TileIndex): TileRender {
-        const tileId = TileLayer._getTileId(index.z, index.x, index.y);
+        let tileId = TileLayer._getTileId(index.z, index.x, index.y);
 
         if (this._tileCache[tileId]) return this._tileCache[tileId];
 
-        const adjX = this.cycleX ? this._getAdjustedIndex(index.x, index.level) : index.x;
-        const adjY = this.cycleY ? this._getAdjustedIndex(index.y, index.level) : index.y;
+        let adjX = this.cycleX ? this._getAdjustedIndex(index.x, index.level) : index.x;
+        let adjY = this.cycleY ? this._getAdjustedIndex(index.y, index.level) : index.y;
 
-        const bbox = this._getTileBbox(index);
-        const tile = new TileRender({
+        let bbox = this._getTileBbox(index);
+        let tile = new TileRender({
             src: this.getTileUrl(adjX, adjY, index.z),
             width: this.tileWidth,
             height: this.tileHeight,
