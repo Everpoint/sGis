@@ -57,7 +57,7 @@ export class TileLayer extends Layer {
     readonly tileScheme: TileScheme;
 
     /** Layer's coordinate system. */
-    crs: Crs;
+    readonly crs: Crs;
 
     /** Whether to repeat the tiles along x axis. Creates the effect of continuous map when panning horizontally. */
     cycleX: boolean;
