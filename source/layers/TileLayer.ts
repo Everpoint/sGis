@@ -111,9 +111,7 @@ export class TileLayer extends Layer {
     }
 
     getRenders(bbox: Bbox, resolution: number): Render[] {
-        const projectedBbox = bbox.projectTo(this.crs);
-
-        let indexes = this._getTileIndexes(projectedBbox, resolution);
+        let indexes = this._getTileIndexes(bbox, resolution);
         let renders: TileRender[] = [];
 
         let isSetComplete = true;
