@@ -46,7 +46,7 @@ export type GetTileUrl  = (xIndex: number, yIndex: number, level: number)  => st
  */
 export class TileLayer extends Layer {
     private _tileCache: {[key: string]: TileRender} = {};
-    private readonly _urlMask: string | GetTileUrl;
+    private readonly _urlMask: string  | GetTileUrl;
     private readonly _cacheSize: number;
     private _transitionTime: number;
     private _cachedIndexes: string[] = [];
@@ -134,7 +134,6 @@ export class TileLayer extends Layer {
 
     private _getRender(index: TileIndex): TileRender {
         let tileId = TileLayer._getTileId(index.z, index.x, index.y);
-
         if (this._tileCache[tileId]) return this._tileCache[tileId];
 
         let adjX = this.cycleX ? this._getAdjustedIndex(index.x, index.level) : index.x;
