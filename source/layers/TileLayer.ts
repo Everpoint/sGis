@@ -36,7 +36,7 @@ export type TileIndex = {
     level: number;
 }
 
-export type GetTileUrl = (xIndex: number, yIndex: number, level: number) => string;
+export type GetTileUrl  = (xIndex: number, yIndex: number, level: number)  => string;
 
 /**
  * A layer that is drawn as a set of tile images received from server. The layer calculates tile indexes (x, y, z)
