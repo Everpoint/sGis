@@ -104,6 +104,11 @@ export const projectRings = function(rings: Coordinates[][], fromCrs: Crs, toCrs
     return result;
 };
 
+export const projectPoint = (coordinates: Coordinates, fromCrs: Crs, toCrs: Crs) => {
+    const projection = fromCrs.projectionTo(toCrs);
+    return projection(coordinates)
+}
+
 export const projectPoints = function(ring: Contour, fromCrs: Crs, toCrs: Crs) {
     let projection = fromCrs.projectionTo(toCrs);
     let projectedRing = [];
