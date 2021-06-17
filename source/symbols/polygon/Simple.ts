@@ -8,15 +8,13 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
+export interface PolygonSymbolConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "shadow" | "isOutsideStroke" | "isInsideStroke"> {
     /** @see [[PolygonSymbol.fillColor]] */
     fillColor?: string;
     /** @see [[PolygonSymbol.strokeColor]] */
     strokeColor?: string;
     /** @see [[PolygonSymbol.strokeWidth]] */
     strokeWidth?: number;
-    /** @see [[PolygonSymbol.shadow]] */
-    shadow?: Shadow;
 }
 
 /**
@@ -47,6 +45,12 @@ export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConst
     /** @see [[PolyRender.miterLimit]] */
     miterLimit: number = 10;
 
+    /** Drawn stroke outside. */
+    isOutsideStroke: boolean = false;
+
+    /** Drawn stroke inside. */
+    isInsideStroke: boolean = false;
+
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
      */
@@ -70,8 +74,10 @@ export class PolygonSymbol extends Symbol<Polygon> implements PolygonSymbolConst
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
+            isOutsideStroke: this.isOutsideStroke,
+            isInsideStroke: this.isInsideStroke,
         })];
     }
 }
 
-registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
+registerSymbol(PolygonSymbol, 'polygon.Simple', ['fillColor', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'isOutsideStroke', 'isInsideStroke']);

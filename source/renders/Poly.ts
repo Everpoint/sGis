@@ -35,6 +35,10 @@ export interface PolyRenderConstructorParams {
     lineJoin?: "bevel" | "miter" | "round";
     /** @see [[PolyRender.miterLimit]] */
     miterLimit?: number;
+    /** @see [[PolyRender.isOutsideStroke]] */
+    isOutsideStroke?: boolean,
+    /** @see [[PolyRender.isInsideStroke]] */
+    isInsideStroke?: boolean,
 }
 
 /**
@@ -102,6 +106,12 @@ export class PolyRender extends VectorRender implements PolyRenderConstructorPar
      * @docs https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/miterLimit  
      */
     miterLimit: number = 10;
+
+    /** Drawn stroke outside. */
+    isOutsideStroke: boolean = false;
+
+    /** Drawn stroke inside. */
+    isInsideStroke: boolean = false;
 
     /**
      * @param coordinates - the coordinates of the polygon.

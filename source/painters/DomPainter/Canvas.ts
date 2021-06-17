@@ -181,6 +181,15 @@ export class Canvas {
         this._drawLines(render);
         this._setShadow(render);
 
+        if (render.isOutsideStroke) {
+            this._ctx.lineWidth = render.strokeWidth * 2;
+            this._ctx.stroke();
+            this._ctx.globalCompositeOperation = "destination-out";
+            this._ctx.fillStyle = "#000";
+            this._ctx.fill();
+            this._ctx.globalCompositeOperation = 'source-over';
+        }
+
         if (render.fillStyle === FillStyle.Color) {
             this._ctx.fillStyle = render.fillColor;
             this._ctx.fill();
@@ -198,7 +207,15 @@ export class Canvas {
             this._setShadow(null);
         }
 
-        this._ctx.stroke();
+        if (render.isInsideStroke) {
+            this._ctx.lineWidth = render.strokeWidth * 2;
+            this._ctx.clip();
+            this._ctx.stroke();
+        }
+
+        if (!render.isOutsideStroke && !render.isInsideStroke) {
+            this._ctx.stroke();
+        }
     }
 
     get isEmpty() { return this._isEmpty; }
