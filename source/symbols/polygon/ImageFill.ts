@@ -8,15 +8,13 @@ import {Polygon} from "../../features/Polygon";
 import {Poly} from "../../features/Poly";
 import {Shadow} from "../../baseTypes";
 
-export interface ImageFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
+export interface ImageFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "shadow" | "isOutsideStroke" | "isInsideStroke"> {
     /** @see [[ImageFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[ImageFill.strokeWidth]] */
     strokeWidth?: number,
     /** @see [[ImageFill.src]] */
     src?: string,
-    /** @see [[ImageFill.shadow]] */
-    shadow?: Shadow
 }
 
 /**
@@ -47,6 +45,12 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
 
     /** Emulation CanvasRenderingContext2D.filter drop-shadow. */
     shadow: Shadow = null;
+
+    /** Drawn stroke outside. */
+    isOutsideStroke: boolean = false;
+
+    /** Drawn stroke inside. */
+    isInsideStroke: boolean = false;
 
     /**
      * @param options - key-value list of the properties to be assigned to the instance.
@@ -87,6 +91,8 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
+            isOutsideStroke: this.isOutsideStroke,
+            isInsideStroke: this.isInsideStroke,
         })];
     }
 
@@ -105,4 +111,4 @@ export class ImageFill extends Symbol<Polygon> implements ImageFillConstructorPa
     }
 }
 
-registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
+registerSymbol(ImageFill, 'polygon.ImageFill', ['src', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'isOutsideStroke', 'isInsideStroke']);

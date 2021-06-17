@@ -11,7 +11,7 @@ import {Shadow} from "../../baseTypes";
 
 const ALPHA_NORMALIZER = 65025;
 
-export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit"> {
+export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorParams, "lineDash" | "lineCap" | "lineJoin" | "miterLimit" | "isOutsideStroke" | "isInsideStroke" | "shadow"> {
     /** @see [[BrushFill.strokeColor]] */
     strokeColor?: string,
     /** @see [[BrushFill.strokeWidth]] */
@@ -22,8 +22,6 @@ export interface BrushFillConstructorParams extends Pick<PolyRenderConstructorPa
     fillForeground?: string,
     /** @see [[BrushFill.fillBackground]] */
     fillBackground?: string,
-    /** @see [[BrushFill.shadow]] */
-    shadow?: Shadow
 }
 
 /**
@@ -65,6 +63,12 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
 
     /** @see [[PolyRender.miterLimit]] */
     miterLimit: number = 10;
+
+    /** Drawn stroke outside. */
+    isOutsideStroke: boolean = false;
+
+    /** Drawn stroke inside. */
+    isInsideStroke: boolean = false;
     
     private _initialized: boolean = false;
 
@@ -93,6 +97,8 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
             lineCap: this.lineCap,
             lineJoin: this.lineJoin,
             miterLimit: this.miterLimit,
+            isOutsideStroke: this.isOutsideStroke,
+            isInsideStroke: this.isInsideStroke,
         })];
     }
 
@@ -154,4 +160,4 @@ export class BrushFill extends Symbol<Polygon> implements BrushFillConstructorPa
     }
 }
 
-registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit']);
+registerSymbol(BrushFill, 'polygon.BrushFill', ['fillBrush', 'fillBackground', 'fillForeground', 'strokeColor', 'strokeWidth', 'lineDash', 'shadow', 'lineCap', 'lineJoin', 'miterLimit', 'isOutsideStroke', 'isInsideStroke']);

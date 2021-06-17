@@ -67,21 +67,6 @@ const layer = new FeatureLayer({
                     }
                 }),
             }),
-        new Polygon(polygonData.moscow,
-            {
-                crs: wgs84,
-                symbol: new PolygonSymbol({
-                    strokeColor: "rgb(31, 150, 184)",
-                    strokeWidth: 2,
-                    shadow: {
-                        offsetX: 4,
-                        offsetY: 10,
-                        blur: 24,
-                        color: "rgba(4, 99, 125, 1)",
-                        isOuter: true,
-                    },
-                }),
-            }),
         new Polyline(polygonData.polyline,
             {
                 crs: wgs84,
@@ -96,6 +81,27 @@ const layer = new FeatureLayer({
                     },
                 }),
             }),
+        new Polygon(polygonData.moscow, {
+            crs: wgs84,
+            symbol: new PolygonSymbol({
+                strokeWidth: 8,
+                strokeColor: 'rgba(255, 255, 255, 0.74)',
+                lineCap: 'round',
+                lineJoin: 'round',
+                isOutsideStroke: true,
+            }),
+        }),
+        new Polygon(polygonData.moscow, {
+            crs: wgs84,
+            symbol: new PolygonSymbol({
+                strokeWidth: 2,
+                strokeColor: 'rgb(0, 107, 206)',
+                fillColor: 'rgba(0, 107, 206, 0.3)',
+                isInsideStroke: true,
+                lineCap: 'round',
+                lineJoin: 'round',
+            }),
+        }),
     ]
 });
 
