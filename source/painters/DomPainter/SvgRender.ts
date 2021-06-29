@@ -97,7 +97,7 @@ export class SvgRender{
             svg.appendChild(defs);
         }
 
-        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg);
+        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg, path);
         svg.appendChild(path);
 
         return svg;
@@ -167,7 +167,7 @@ export class SvgRender{
         var svgAttributes = setAttributes(circle, properties);
         var svg = this._getSvgBase(svgAttributes);
 
-        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg);
+        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg, circle);
         svg.appendChild(circle);
 
         return svg;
