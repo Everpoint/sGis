@@ -13,10 +13,17 @@ export class SvgRender{
     private _adjK: number;
     private _node: Element;
     private _position: [number, number];
+    /**
+     * Callback for append to svg any elements.
+     * @param svg - SVG element.
+     * @param svgElements - SVGPathElement or SVGCircleElement.
+     */
+    private _appendToSvg: (svg: SVGElement, svgElements: SVGPathElement | SVGCircleElement) => void;
 
-    constructor(render, adjK = 1) {
+    constructor({appendToSvg, ...render}, adjK = 1) {
         this._baseRender = render;
         this._adjK = adjK;
+        this._appendToSvg = appendToSvg;
     }
 
     getNode(callback) {
@@ -85,7 +92,7 @@ export class SvgRender{
             defs.appendChild(pattern);
         }
 
-        var path = document.createElementNS(NS, 'path');
+        var path = document.createElementNS(NS, 'path') as SVGPathElement;
         var svgAttributes = setAttributes(path, properties);
         var svg = this._getSvgBase(svgAttributes);
 
@@ -97,7 +104,7 @@ export class SvgRender{
             svg.appendChild(defs);
         }
 
-        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg, path);
+        this._appendToSvg && this._appendToSvg(svg, path);
         svg.appendChild(path);
 
         return svg;
@@ -163,18 +170,18 @@ export class SvgRender{
     }
 
     _getCircle(properties) {
-        var circle = document.createElementNS(NS, 'circle');
+        var circle = document.createElementNS(NS, 'circle') as SVGCircleElement;
         var svgAttributes = setAttributes(circle, properties);
         var svg = this._getSvgBase(svgAttributes);
 
-        this._baseRender.appendToSvg && this._baseRender.appendToSvg(svg, circle);
+        this._appendToSvg && this._appendToSvg(svg, circle);
         svg.appendChild(circle);
 
         return svg;
     }
 
-    _getSvgBase(properties) {
-        var svg = document.createElementNS(NS, 'svg');
+    _getSvgBase(properties): SVGElement {
+        var svg = document.createElementNS(NS, 'svg') as SVGElement;
         setAttributes(svg, properties);
         svg.setAttribute('style', 'pointerEvents: none;');
 
