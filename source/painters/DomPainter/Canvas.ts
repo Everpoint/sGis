@@ -1,7 +1,7 @@
 import {Arc} from "../../renders/Arc";
 import {Point} from "../../renders/Point";
 import {FillStyle, PolyRender} from "../../renders/Poly";
-import {error} from "../../utils/utils";
+import {error, isChrome, isOpera} from "../../utils/utils";
 import {RenderForCanvas} from "./LayerRenderer";
 import {StaticVectorImageRender} from "../../renders/StaticVectorImageRender";
 import {VectorLabel} from "../../renders/VectorLabel";
@@ -67,19 +67,51 @@ export class Canvas {
         this._canvasNode.style.zIndex = index;
     }
 
-    _drawArc(render) {
-        var center = render.center;
+    _drawArc(render: Arc) {
+        const center = render.center;
 
         this._ctx.beginPath();
         this._ctx.lineWidth = render.strokeWidth;
         this._ctx.strokeStyle = render.strokeColor;
         this._ctx.fillStyle = render.fillColor;
         this._ctx.setLineDash(render.lineDash || []);
+        this._ctx.lineCap = render.lineCap;
 
         if (render.isSector) {
             this._ctx.moveTo(center[0], center[1]);
         }
-        this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.endAngle, !render.clockwise);
+
+        if (isChrome || isOpera) {
+            let step = 0.01;
+            let start = render.startAngle;
+            let end = render.endAngle;
+
+            if (!render.clockwise) {
+                end -= step / 2;
+                for (let ang = start; Math.abs(ang) < end; ang -= step) {
+                    this._ctx.lineTo(
+                        Math.cos(ang) * render.radius + center[0],
+                        Math.sin(ang) * render.radius + center[1],
+                    );
+                }
+            } else {
+                end += step / 2;
+                for (let ang = start; ang < end; ang += step) {
+                    this._ctx.lineTo(
+                        Math.cos(ang) * render.radius + center[0],
+                        Math.sin(ang) * render.radius + center[1],
+                    );
+                }
+            }
+
+            this._ctx.lineTo(
+                Math.cos(render.clockwise ? render.endAngle : -render.endAngle) * render.radius + center[0],
+                Math.sin(render.clockwise ? render.endAngle : -render.endAngle) * render.radius + center[1],
+            );
+        } else {
+            this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.endAngle, !render.clockwise);
+        }
+
         if (render.isSector) {
             this._ctx.lineTo(center[0], center[1]);
         }
