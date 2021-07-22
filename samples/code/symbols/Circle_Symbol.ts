@@ -16,7 +16,7 @@ import {DomPainter} from "../../../source/painters/DomPainter/DomPainter";
 let {map, painter} = init({
     wrapper: document.body,
     layers: [new TileLayer('http://b.tile.openstreetmap.org/{z}/{x}/{y}.png')],
-    resolution: 152.87405657031263,
+    resolution: 76.43702828515632,
 });
 
 type ConvertionContext = {

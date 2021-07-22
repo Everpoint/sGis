@@ -109,7 +109,7 @@ export class Canvas {
                 Math.sin(render.clockwise ? render.endAngle : -render.endAngle) * render.radius + center[1],
             );
         } else {
-            this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.endAngle, !render.clockwise);
+            this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.clockwise ? render.endAngle : -render.endAngle, !render.clockwise);
         }
 
         if (render.isSector) {
