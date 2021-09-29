@@ -10,7 +10,6 @@ export interface HtmlImageRenderParams extends StaticImageRenderParams {
 }
 
 export class StaticHtmlImageRender extends StaticImageRender {
-    node: HTMLImageElement;
     bbox: Bbox;
 
     onDisplayed?: () => void;

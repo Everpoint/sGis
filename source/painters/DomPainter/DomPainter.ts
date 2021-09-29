@@ -134,7 +134,7 @@ export class DomPainter extends EventHandler {
         });
     }
 
-    private _fireMapResize = debounce((width: number, height: number) => this.fire(new MapResize(width, height)), this._map && this._map.changeEndDelay || 300)
+    private _fireMapResize = debounce((width: number, height: number) => this.fire(new MapResize(width, height)),  300);
 
     private _addLayer(layer: Layer, index: number): void {
         this._layerRenderers.set(layer, new LayerRenderer(this, layer, index));

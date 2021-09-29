@@ -60,7 +60,8 @@ export abstract class DynamicLayer extends Layer {
             let height = Math.round(bbox.height / resolution);
             let width = Math.round(bbox.width / resolution);
             let src = this.getUrl(bbox, resolution);
-            if (this._forceUpdate) src += `&ts=${Date.now()}`;
+            // we only load images for changed bbox, so it's safe to disable cache here
+            src += `&ts=${Date.now()}`;
 
             this._nextRender = new StaticHtmlImageRender({
                 src,
