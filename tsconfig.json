@@ -1,9 +1,9 @@
 {
   "include": ["source"],
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
+    "target": "es6",
+    "module": "es6",
+    "lib": ["dom", "es6"],
     "importHelpers": true,
     "sourceMap": true,
     "rootDir": "./source",
