@@ -37,7 +37,7 @@ export default {
             cacheRoot: `./.rts2_cache_esm`,
             tsconfigOverride: {
                 compilerOptions: {
-                    target: 'esnext',
+                    target: 'es6',
                     sourceMap: true,
                     declaration: true,
                     declarationDir: './es',
