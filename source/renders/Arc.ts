@@ -22,6 +22,8 @@ export interface ArcRenderConstructorParams {
     clockwise?: boolean,
     /** @see [[PolyRender.lineDash]] */
     lineDash?: number[],
+    /** @see [[PolyRender.lineCap]] */
+    lineCap?: "butt" | "round" | "square",
 }
 
 /**
@@ -61,6 +63,18 @@ export class Arc extends VectorRender {
     
     /** @see [[PolyRender.lineDash]] */
     lineDash: number[] = [];
+
+    /**
+     * Property of the Canvas 2D API determines the shape used to draw the end points of lines.
+     *
+     * - `"butt"`
+     *      The ends of lines are squared off at the endpoints.
+     * - `"round"`
+     *      The ends of lines are rounded.
+     * - `"square"`
+     *      The ends of lines are squared off by adding a box with an equal width and half the height of the line's thickness.
+     */
+    lineCap: "butt" | "round" | "square" = "round";
 
     /**
      * @param center - the center of the arc, in the [x, y] format.

@@ -204,10 +204,19 @@ export const browser: string = (function() {
 export const isIE: boolean = browser.search('IE') !== -1;
 
 /**
+ * Contains 'true' if the current browser is Chrome of any version.
+ */
+export const isChrome: boolean = browser.search('Chrome') !== -1;
+
+/**
+ * Contains 'true' if the current browser is Opera of any version.
+ */
+export const isOpera: boolean = browser.search('Opera') !== -1;
+
+/**
  * Contains 'true' if the current browser is run on a touch device.
  */
 export const isTouch: boolean = 'ontouchstart' in document.documentElement;
-
 
 /* Simple polyfil for tests */
 if (typeof window.requestAnimationFrame === 'undefined') {
