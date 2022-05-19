@@ -70,13 +70,11 @@ export abstract class DynamicLayer extends Layer {
                 width,
                 opacity: this.opacity,
                 onLoad: () => {
+                    this._startNextLoad();
                     this.redraw();
                 },
                 onError: (err) => {
                     this.fire(new LayerErrorEvent(err));
-                },
-                onDisplayed: () => {
-                    this._startNextLoad();
                 }
             });
             this._toLoad = null;
