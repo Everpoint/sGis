@@ -13,6 +13,7 @@ describe('LayerGroup', function() {
 
             const nonEmptyGroup = new LayerGroup([dynamicLayer, tileLayer]);
 
+            // TODO: rewrite expect to jest assertion https://jr.everpoint.ru/browse/PUB-3459
             // expect(emptyGroup).toEqual(jasmine.any(LayerGroup));
             // expect(nonEmptyGroup).toEqual(jasmine.any(LayerGroup));
 
@@ -26,6 +27,7 @@ describe('LayerGroup', function() {
                 new FeatureLayer()
             ]);
 
+            // TODO: rewrite expect to jest assertion https://jr.everpoint.ru/browse/PUB-3459
             // expect(nestedGroup).toEqual(jasmine.any(LayerGroup));
         })
     });
