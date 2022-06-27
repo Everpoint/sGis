@@ -104,7 +104,7 @@ describe('symbolSerializer', () => {
         });
 
         it('point.MaskedImage', () => {
-            let symbol1 = new MaskedImage();
+            let symbol1 = new MaskedImage({width: 15, height: 15, imageSource: 'url', maskSource: 'maskUrl', maskColor: 'black', anchorPoint: [10, -20]});
             let desc1 = symbolSerializer.serialize(symbol1);
 
             expect(desc1.width).toBeDefined();

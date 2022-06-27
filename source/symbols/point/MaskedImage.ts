@@ -55,7 +55,7 @@ export class MaskedImage extends Symbol<PointFeature> {
     set anchorPoint(anchorPoint: Offset) {
         // TODO: remove deprecated part after 2018
         let deprecated = <any>anchorPoint;
-        if (deprecated.x !== undefined && deprecated.y !== undefined) {
+        if (deprecated && deprecated.x !== undefined && deprecated.y !== undefined) {
             warn('Using anchorPoint in {x, y} format is deprecated. Use [x, y] format instead.');
             this._anchorPoint = [deprecated.x, deprecated.y];
         } else {

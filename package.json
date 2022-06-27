@@ -70,6 +70,7 @@
       "ts",
       "js"
     ],
+    "testEnvironment": "jsdom",
     "globals": {
       "ts-jest": {
         "tsConfigFile": "./config/tsconfig-jest.json"

@@ -112,6 +112,9 @@ export class TileLayer extends Layer {
         let indexes = this._getTileIndexes(bbox, resolution);
         let renders: TileRender[] = [];
 
+
+        this._cancelUnloadedTile(indexes)
+        
         let isSetComplete = true;
         for (let index of indexes) {
             let tile = this._getRender(index);
@@ -195,6 +198,21 @@ export class TileLayer extends Layer {
         if (this._cachedIndexes.length > this._cacheSize) {
             delete this._tileCache[this._cachedIndexes.shift()];
         }
+    }
+
+    private _cancelUnloadedTile(indexes: TileIndex[]): void {
+        Object.keys(this._tileCache).forEach((tileId) => {
+            const tile = this._tileCache[tileId];
+            const indexDoesNotExistInCurrentBBox = !indexes.some(
+              (index) => TileLayer._getTileId(index.z, index.x, index.y) === tileId
+            );
+            const itIsImageNodeNotLoaded = "src" in tile.node && !tile.node.complete;
+
+            if (indexDoesNotExistInCurrentBBox && itIsImageNodeNotLoaded) {
+              tile.node.src = "";
+              delete this._tileCache[tileId];
+            }
+          });
     }
 
     private _getTileIndexes(bbox: Bbox, resolution: number): TileIndex[] {
