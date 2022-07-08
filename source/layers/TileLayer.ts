@@ -206,10 +206,9 @@ export class TileLayer extends Layer {
             const indexDoesNotExistInCurrentBBox = !indexes.some(
               (index) => TileLayer._getTileId(index.z, index.x, index.y) === tileId
             );
-            const itIsImageNodeNotLoaded = "src" in tile.node && !tile.node.complete;
 
-            if (indexDoesNotExistInCurrentBBox && itIsImageNodeNotLoaded) {
-              tile.node.src = "";
+            if (indexDoesNotExistInCurrentBBox && !tile.isImageLoaded) {
+              tile.deleteNode();
               delete this._tileCache[tileId];
             }
           });
