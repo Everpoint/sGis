@@ -1,6 +1,6 @@
-import {HTMLRasterElement, Offset} from "../baseTypes";
-import {StaticRender} from "./Render";
-import {loadImage} from "../utils/utils";
+import { HTMLRasterElement, Offset } from "../baseTypes";
+import { StaticRender } from "./Render";
+import { loadImage } from "../utils/utils";
 
 export interface StaticImageRenderParams {
     src: string;
@@ -18,6 +18,9 @@ export abstract class StaticImageRender extends StaticRender {
     private _width: number;
     private _height: number;
     private _src: string;
+    private _controller: AbortController;
+    private _complete: boolean;
+    private _aborted: boolean;
 
     offset: Offset;
     onLoad?: () => void;
@@ -36,6 +39,8 @@ export abstract class StaticImageRender extends StaticRender {
         this._width = width;
         this._height = height;
         this._src = src;
+        this._complete = false;
+        this._aborted = false;
 
         this._createNode();
     }
@@ -48,7 +53,18 @@ export abstract class StaticImageRender extends StaticRender {
 
         this._node.style.opacity = this._opacity.toString();
 
-        this.readyPromise = loadImage(this._node, this._src);
+        const controller = new AbortController();
+        const signal = controller.signal;
+        this._controller = controller;
+        this.readyPromise = loadImage(this._node, this._src, signal)
+            .then(() => {
+                this._complete = true;
+            })
+            .catch((e) => {
+                if (!this._aborted) {
+                    throw e;
+                }
+            });
 
         this.readyPromise.then(this.onLoad).catch(this.onError);
     }
@@ -79,5 +95,14 @@ export abstract class StaticImageRender extends StaticRender {
     set opacity(value: number) {
         this._opacity = value;
         if (this.node) this.node.style.opacity = value.toString();
+    }
+
+    get isImageLoaded(): boolean {
+        return this._complete;
+    }
+
+    deleteNode(): void {
+        this._aborted = true;
+        this._controller.abort();
     }
 }

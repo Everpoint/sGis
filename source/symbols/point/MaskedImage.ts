@@ -184,14 +184,14 @@ export class MaskedImage extends Symbol<PointFeature> {
     setImageSource(src: string) {
         this._imageSource = src;
         this._image = new Image();
-        this.imageReadyPromise = loadImage(this._image, src);
+        this.imageReadyPromise = loadImage(this._image, src, null);
         return this.imageReadyPromise;
     }
 
     setMaskSource(src: string) {
         this._maskSource = src;
         this._mask = new Image();
-        this.maskReadyPromise = loadImage(this._mask, src);
+        this.maskReadyPromise = loadImage(this._mask, src, null);
         return this.maskReadyPromise;
     }
 
