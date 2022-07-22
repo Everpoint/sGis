@@ -1,4 +1,3 @@
-import { Polygon } from '../features/Polygon';
 import { debounce } from '../utils/utils';
 import {
     ChangeEvent,
@@ -7,7 +6,7 @@ import {
 } from "./Control";
 import {Poly} from "../features/Poly";
 import {Coordinates} from "../baseTypes";
-import { DragEvent, sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent } from '../commonEvents';
+import { sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent } from '../commonEvents';
 import {IPoint} from "../Point";
 import {Symbol} from "../symbols/Symbol";
 import {sGisEvent} from "../EventHandler";
