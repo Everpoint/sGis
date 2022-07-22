@@ -15,7 +15,7 @@ export interface ISnappingProvider {
      *                      that is being edited at the moment.
      * @param isPolygon - specifies if the feature being edited should be considered enclosed.
      */
-    getSnappingPoint(point: Coordinates, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean): Coordinates | null;
+    getSnappingPoint(point: Coordinates, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean): Promise<Coordinates | null> | Coordinates | null;
 
     /**
      * Returns a copy of the given provider. This method is needed to create complex snapping providers, consisting

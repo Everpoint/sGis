@@ -11,7 +11,7 @@ export class CombinedSnappingProvider implements ISnappingProvider{
     getSnappingPoint(point: Coordinates, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean): Coordinates | null {
         for (let i = 0; i < this.providers.length; i++) {
             const snappingPoint = this.providers[i].getSnappingPoint(point, activeContour, activeIndex, isPolygon);
-            if (snappingPoint !== null) return snappingPoint;
+            if (snappingPoint !== null) return snappingPoint as Coordinates;
         }
     }
 

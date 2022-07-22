@@ -182,17 +182,17 @@ export class DomPainter extends EventHandler {
 
             let redrawNeeded = this._redrawNeeded;
             if (this._updateAllowed) {
-                layers.reverse().forEach(layer => {
-                    let renderer = this._layerRenderers.get(layer);
-                    if (redrawNeeded || renderer.updateNeeded) {
-                        try {
-                            renderer.update();
-                        } catch (e) {
-                            warn(e);
-                            renderer.updateNeeded = false;
-                        }
+                for (let i = layers.length - 1; i >= 0; i--) {
+                  let renderer = this._layerRenderers.get(layers[i]);
+                  if (redrawNeeded || renderer.updateNeeded) {
+                    try {
+                      renderer.update();
+                    } catch (e) {
+                      warn(e);
+                      renderer.updateNeeded = false;
                     }
-                });
+                  }
+                }
 
                 this._redrawNeeded = false;
             }
