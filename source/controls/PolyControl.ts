@@ -1,3 +1,4 @@
+import { debounce } from '../utils/utils';
 import {
     ChangeEvent,
     Control, ControlWithSymbolParams, DrawingBeginEvent, DrawingFinishEvent,
@@ -5,7 +6,7 @@ import {
 } from "./Control";
 import {Poly} from "../features/Poly";
 import {Coordinates} from "../baseTypes";
-import {sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent} from "../commonEvents";
+import { sGisClickEvent, sGisDoubleClickEvent, sGisMouseMoveEvent } from '../commonEvents';
 import {IPoint} from "../Point";
 import {Symbol} from "../symbols/Symbol";
 import {sGisEvent} from "../EventHandler";
@@ -41,9 +42,9 @@ export abstract class PolyControl extends Control {
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
     protected constructor(map: Map, {
-        snappingProvider, activeLayer, isActive = false, symbol, dblClickMinTime = 30
+        snappingProvider, snappingSymbol, activeLayer, isActive = false, symbol, dblClickMinTime = 30
     }: PolyControlParams = {}) {
-        super(map, {snappingProvider, activeLayer, useTempLayer: true});
+        super(map, {snappingProvider, snappingSymbol, activeLayer, useTempLayer: true});
 
         this._handleClick = this._handleClick.bind(this);
         this._handleMousemove = this._handleMousemove.bind(this);
@@ -75,7 +76,13 @@ export abstract class PolyControl extends Control {
                 if (clickEvent.browserEvent.ctrlKey) {
                     this.startNewRing();
                 } else {
-                    this._activeFeature.addPoint(this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey), this._activeFeature.rings.length - 1);
+                    const snappingResult = this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey);
+                    Promise.resolve(snappingResult).then((point) => {
+                      this._activeFeature.addPoint(point, this._activeFeature.rings.length - 1);
+                      this.fire(new PointAddEvent());
+                      if (this._tempLayer) this._tempLayer.redraw();
+                    });
+                    return;
                 }
             } else {
                 this.startNewFeature(clickEvent.point);
@@ -105,18 +112,37 @@ export abstract class PolyControl extends Control {
 
     protected _handleMousemove(event: sGisEvent): void {
         let mousemoveEvent = event as sGisMouseMoveEvent;
-        let position = this._snap(mousemoveEvent.point.position, mousemoveEvent.browserEvent.altKey);
         if (!this._activeFeature) return;
 
         let ringIndex = this._activeFeature.rings.length - 1;
         let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
 
-        this._activeFeature.rings[ringIndex][pointIndex] = this._snap(position, mousemoveEvent.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, this._activeFeature.isEnclosed);
+        this._activeFeature.rings[ringIndex][pointIndex] = mousemoveEvent.point.position;
         this._activeFeature.redraw();
+
         if (this._tempLayer) this._tempLayer.redraw();
 
+        this._unsnap();
+
         this.fire(new ChangeEvent(ringIndex, pointIndex));
+
+        this._debouncedSnappingHandle(mousemoveEvent);
     }
+
+    private _snappingHandle(event: sGisMouseMoveEvent): void {
+        let ringIndex = this._activeFeature.rings.length - 1;
+        let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
+        const snappingResult = this._snap(event.point.position, event.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, this._activeFeature.isEnclosed);
+        Promise.resolve(snappingResult).then((point) => {
+            this._activeFeature.rings[ringIndex][pointIndex] = point || event.point.position;
+            this._activeFeature.redraw();
+            if (this._tempLayer) this._tempLayer.redraw();
+
+            this.fire(new ChangeEvent(ringIndex, pointIndex));
+        });
+    }
+
+    private _debouncedSnappingHandle = debounce(this._snappingHandle.bind(this), 50);
 
     private _handleDblclick(event: sGisEvent): void {
         let feature = this._activeFeature;

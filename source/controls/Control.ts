@@ -222,7 +222,7 @@ export abstract class Control extends EventHandler {
      *                    points should be connected.
      * @param snappingProviderOverride - if specified, this provider will be used instead of the default one.
      */
-    protected _snap(point: Coordinates, isAltPressed: boolean, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean, snappingProviderOverride?: ISnappingProvider): Coordinates {
+    protected _snap(point: Coordinates, isAltPressed: boolean, activeContour?: Contour, activeIndex?: number, isPolygon?: boolean, snappingProviderOverride?: ISnappingProvider): Promise<Coordinates> | Coordinates {
         let snappingPoint = null;
         const snappingProvider = snappingProviderOverride || this.snappingProvider;
 
@@ -230,17 +230,23 @@ export abstract class Control extends EventHandler {
             snappingPoint = snappingProvider.getSnappingPoint(point, activeContour, activeIndex, isPolygon);
         }
 
-        if (this._tempLayer) {
-            const snappingFeature = this._getSnappingFeature(snappingPoint || point);
-            if (snappingPoint && !this._tempLayer.has(snappingFeature)) {
-                this._tempLayer.add(snappingFeature);
-            } else if (!snappingPoint && this._tempLayer.has(snappingFeature)) {
-                this._tempLayer.remove(snappingFeature);
-            }
-            this._tempLayer.redraw();
-        }
+        Promise.resolve(snappingPoint).then((snappingPointResult) => {
+          this._snappingPointRender(point, snappingPointResult);
+        });
 
         return snappingPoint || point;
+    }
+
+    protected _snappingPointRender(currentPosition: Coordinates, snappingPointResult: Coordinates): void {
+      if (this._tempLayer) {
+        const snappingFeature = this._getSnappingFeature(snappingPointResult || currentPosition);
+        if (snappingPointResult && !this._tempLayer.has(snappingFeature)) {
+          this._tempLayer.add(snappingFeature);
+        } else if (!snappingPointResult && this._tempLayer.has(snappingFeature)) {
+          this._tempLayer.remove(snappingFeature);
+        }
+        this._tempLayer.redraw();
+      }
     }
 
     /**
@@ -252,7 +258,7 @@ export abstract class Control extends EventHandler {
         }
     }
 
-    private _getSnappingFeature(point: Coordinates | null): PointFeature {
+    protected _getSnappingFeature(point: Coordinates | null): PointFeature {
         if (!this._snappingFeature) {
             this._snappingFeature = new PointFeature([0, 0], {crs: this._map.crs, symbol: this._snappingSymbol});
         }

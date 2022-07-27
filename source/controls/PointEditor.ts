@@ -1,4 +1,5 @@
-import {Control, ControlParams, EditEvent} from "./Control";
+import { debounce } from '../utils/utils';
+import { Control, ControlParams, EditEvent } from './Control';
 import {PointFeature} from "../features/PointFeature";
 import {DragEndEvent, DragEvent, DragStartEvent} from "../commonEvents";
 import {Map} from "../Map";
@@ -17,8 +18,8 @@ export class PointEditor extends Control {
      * @param map - map object the control will work with
      * @param __namedParameters - key-value set of properties to be set to the instance
      */
-    constructor(map: Map, {snappingProvider, isActive = false, activeLayer}: ControlParams = {}) {
-        super(map, {useTempLayer: true, snappingProvider, activeLayer});
+    constructor(map: Map, {snappingProvider, snappingSymbol, isActive = false, activeLayer}: ControlParams = {}) {
+        super(map, {useTempLayer: true, snappingProvider, snappingSymbol, activeLayer});
 
         this._handleDragStart = this._handleDragStart.bind(this);
         this._handleDrag = this._handleDrag.bind(this);
@@ -65,9 +66,24 @@ export class PointEditor extends Control {
     private _handleDrag(event: sGisEvent): void {
         if (!this._activeFeature) return;
         let dragEvent = event as DragEvent;
-        this._activeFeature.position = this._snap(dragEvent.point.position, dragEvent.browserEvent.altKey);
+        this._activeFeature.position = dragEvent.point.position;
+
         if (this.activeLayer) this.activeLayer.redraw();
+
+        this._unsnap();
+
+        this._debouncedSnappingHandle(dragEvent);
     }
+
+    private _snappingHandle(event: DragEvent): void {
+        const snappingResult = this._snap(event.point.position, event.browserEvent.altKey);
+        Promise.resolve(snappingResult).then((point) => {
+          this._activeFeature.position = point || event.point.position;
+          if (this.activeLayer) this.activeLayer.redraw();
+        });
+    }
+
+    private _debouncedSnappingHandle = debounce(this._snappingHandle.bind(this), 50);
 
     private _handleDragEnd(): void {
         this.fire(new EditEvent());

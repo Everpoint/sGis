@@ -1,3 +1,4 @@
+import { debounce } from '../utils/utils';
 import {ChangeEvent, Control, ControlParams, EditEvent} from "./Control";
 import {Poly} from "../features/Poly";
 import {move, pointToLineDistanceSquare} from "../geotools";
@@ -185,17 +186,33 @@ export class PolyEditor extends Control {
     private _handleDrag(event: DragEvent): void {
         if (this._activeRing === null) return this._handleFeatureDrag(event);
 
-        this._activeFeature.setPoint(this._activeRing, this._activeIndex, this._snap(
-            event.point.position,
-            event.browserEvent.altKey,
-            this._activeFeature.rings[this._activeRing],
-            this._activeIndex,
-            this._activeFeature instanceof Polygon
-        ));
+        this._activeFeature.setPoint(this._activeRing, this._activeIndex, event.point.position);
         this._activeFeature.redraw();
         if (this.activeLayer) this.activeLayer.redraw();
         this.fire(new ChangeEvent(this._activeRing, this._activeIndex));
+
+        this._unsnap();
+
+        this._debouncedSnappingHandle(event);
     }
+
+    private _snappingHandle(event: DragEvent): void {
+        const snappingResult = this._snap(
+          event.point.position,
+          event.browserEvent.altKey,
+          this._activeFeature.rings[this._activeRing],
+          this._activeIndex,
+          this._activeFeature instanceof Polygon
+        );
+        Promise.resolve(snappingResult).then((point) => {
+          this._activeFeature.setPoint(this._activeRing, this._activeIndex, point || event.point.position);
+          this._activeFeature.redraw();
+          if (this.activeLayer) this.activeLayer.redraw();
+          this.fire(new ChangeEvent(this._activeRing, this._activeIndex));
+        });
+    }
+
+    private _debouncedSnappingHandle = debounce(this._snappingHandle.bind(this), 50);
 
     get isDraggingVertex() { return this._activeRing !== null; }
 
