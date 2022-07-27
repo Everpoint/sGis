@@ -231,16 +231,14 @@ if (typeof window.requestAnimationFrame === 'undefined') {
  * @param image
  * @param src
  */
- export function loadImage(
-    image: HTMLImageElement,
-    src: string,
-    signal: AbortSignal | null
-): Promise<void> {
-    return fetch(src, { signal })
-        .then((res) => res.blob())
-        .then((blob) => {
-            const url = URL.createObjectURL(blob);
-            image.src = url;
-        });
-}
+export function loadImage(image: HTMLImageElement, src: string): Promise<void> {
+    image.src = src;
+    return new Promise((res, rej) => {
+        if (image.complete) {
+            return res()
+        }
 
+        image.onload = () => res();
+        image.onerror = error =>  rej(error);
+    })
+}
