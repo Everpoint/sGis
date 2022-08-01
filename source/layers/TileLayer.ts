@@ -209,7 +209,7 @@ export class TileLayer extends Layer {
             const itIsImageNodeNotLoaded = "src" in tile.node && !tile.node.complete;
 
             if (indexDoesNotExistInCurrentBBox && itIsImageNodeNotLoaded) {
-              tile.node.src = "";
+              tile.deleteNode();
               delete this._tileCache[tileId];
             }
           });
