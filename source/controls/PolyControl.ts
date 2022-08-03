@@ -112,6 +112,11 @@ export abstract class PolyControl extends Control {
 
     protected _handleMousemove(event: sGisEvent): void {
         let mousemoveEvent = event as sGisMouseMoveEvent;
+
+        this._unsnap();
+
+        this._debouncedSnappingHandle(mousemoveEvent);
+
         if (!this._activeFeature) return;
 
         let ringIndex = this._activeFeature.rings.length - 1;
@@ -122,24 +127,24 @@ export abstract class PolyControl extends Control {
 
         if (this._tempLayer) this._tempLayer.redraw();
 
-        this._unsnap();
-
         this.fire(new ChangeEvent(ringIndex, pointIndex));
-
-        this._debouncedSnappingHandle(mousemoveEvent);
     }
 
     private _snappingHandle(event: sGisMouseMoveEvent): void {
-        let ringIndex = this._activeFeature.rings.length - 1;
-        let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
-        const snappingResult = this._snap(event.point.position, event.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, this._activeFeature.isEnclosed);
-        Promise.resolve(snappingResult).then((point) => {
-            this._activeFeature.rings[ringIndex][pointIndex] = point || event.point.position;
-            this._activeFeature.redraw();
-            if (this._tempLayer) this._tempLayer.redraw();
+        if (this._activeFeature) {
+            let ringIndex = this._activeFeature.rings.length - 1;
+            let pointIndex = this._activeFeature.rings[ringIndex].length - 1;
+            const snappingResult = this._snap(event.point.position, event.browserEvent.altKey, this._activeFeature.rings[ringIndex], pointIndex, this._activeFeature.isEnclosed);
+            Promise.resolve(snappingResult).then((point) => {
+                this._activeFeature.rings[ringIndex][pointIndex] = point || event.point.position;
+                this._activeFeature.redraw();
+                if (this._tempLayer) this._tempLayer.redraw();
 
-            this.fire(new ChangeEvent(ringIndex, pointIndex));
-        });
+                this.fire(new ChangeEvent(ringIndex, pointIndex));
+            });
+        } else {
+            this._snap(event.point.position, event.browserEvent.altKey);
+        }
     }
 
     private _debouncedSnappingHandle = debounce(this._snappingHandle.bind(this), 50);
