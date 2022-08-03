@@ -197,6 +197,8 @@ export class PolyEditor extends Control {
     }
 
     private _snappingHandle(event: DragEvent): void {
+        if (!this._activeFeature) return;
+
         const snappingResult = this._snap(
           event.point.position,
           event.browserEvent.altKey,

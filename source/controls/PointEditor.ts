@@ -76,6 +76,7 @@ export class PointEditor extends Control {
     }
 
     private _snappingHandle(event: DragEvent): void {
+        if (!this._activeFeature) return;
         const snappingResult = this._snap(event.point.position, event.browserEvent.altKey);
         Promise.resolve(snappingResult).then((point) => {
           this._activeFeature.position = point || event.point.position;
