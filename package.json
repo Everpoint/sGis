@@ -1,6 +1,6 @@
 {
   "name": "@evergis/sgis",
-  "version": "0.5.0-alpha.24",
+  "version": "0.5.0-alpha.25",
   "description": "",
   "main": "dist/sGis_bundle.js",
   "module": "es/sGis.esm.js",
