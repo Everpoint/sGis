@@ -18,6 +18,7 @@ export abstract class StaticImageRender extends StaticRender {
     private _width: number;
     private _height: number;
     private _src: string;
+    private _aborted: boolean;
 
     offset: Offset;
     onLoad?: () => void;
@@ -36,6 +37,7 @@ export abstract class StaticImageRender extends StaticRender {
         this._width = width;
         this._height = height;
         this._src = src;
+        this._aborted = false;
 
         this._createNode();
     }
@@ -49,8 +51,13 @@ export abstract class StaticImageRender extends StaticRender {
         this._node.style.opacity = this._opacity.toString();
 
         this.readyPromise = loadImage(this._node, this._src);
+        this.readyPromise.then(this.onLoad).catch((error) => {
+            if (this._aborted) {
+                return;
+            }
+            this.onError(error);
+        });
 
-        this.readyPromise.then(this.onLoad).catch(this.onError);
     }
 
     get node(): HTMLRasterElement {
@@ -79,5 +86,12 @@ export abstract class StaticImageRender extends StaticRender {
     set opacity(value: number) {
         this._opacity = value;
         if (this.node) this.node.style.opacity = value.toString();
+    }
+
+    deleteNode(): void {
+        this._aborted = true;
+        if (this._node) {
+            this._node.src = "";
+        }
     }
 }

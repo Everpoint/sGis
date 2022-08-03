@@ -47,7 +47,7 @@ export abstract class DynamicLayer extends Layer {
             this._loadNextRender(bbox, resolution);
         }
 
-        if (this._nextRender !== this._currentRender && this._nextRender.isReady) {
+        if (this._nextRender !== this._currentRender && this._nextRender && this._nextRender.isReady) {
             this._currentRender = this._nextRender;
         }
 
@@ -79,6 +79,12 @@ export abstract class DynamicLayer extends Layer {
             });
             this._toLoad = null;
         } else {
+            if (this._nextRender && !this._nextRender.isReady) {
+                this._nextRender.deleteNode()
+                // create new new StaticHtmlImageRender
+                this._nextRender = this._currentRender;
+                this._loadNextRender(bbox, resolution)
+            }
             this._toLoad = {bbox, resolution};
         }
     }
