@@ -193,24 +193,24 @@ export class PolyEditor extends Control {
 
         this._unsnap();
 
-        this._debouncedSnappingHandle(event);
+        this._debouncedSnappingHandle(event, this._activeRing, this._activeIndex);
     }
 
-    private _snappingHandle(event: DragEvent): void {
+    private _snappingHandle(event: DragEvent, activeRing: number, activeIndex: number): void {
         if (!this._activeFeature) return;
 
         const snappingResult = this._snap(
-          event.point.position,
-          event.browserEvent.altKey,
-          this._activeFeature.rings[this._activeRing],
-          this._activeIndex,
-          this._activeFeature instanceof Polygon
+            event.point.position,
+            event.browserEvent.altKey,
+            this._activeFeature.rings[activeRing],
+            activeIndex,
+            this._activeFeature instanceof Polygon
         );
         Promise.resolve(snappingResult).then((point) => {
-          this._activeFeature.setPoint(this._activeRing, this._activeIndex, point || event.point.position);
-          this._activeFeature.redraw();
-          if (this.activeLayer) this.activeLayer.redraw();
-          this.fire(new ChangeEvent(this._activeRing, this._activeIndex));
+            this._activeFeature.setPoint(activeRing, activeIndex, point || event.point.position);
+            this._activeFeature.redraw();
+            if (this.activeLayer) this.activeLayer.redraw();
+            this.fire(new ChangeEvent(activeRing, activeIndex));
         });
     }
 
