@@ -66,7 +66,7 @@ export const event = eventModule;
 export {Bbox} from "./Bbox";
 export {Control} from "./controls/Control";
 
-export const version = "0.5.0-alpha.26";
+export const version = "0.5.0-alpha.27";
 export const releaseDate = "15.08.2022";
 
 let utilsModulesExt = <any>{};
