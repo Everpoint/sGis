@@ -28,7 +28,8 @@ export class FeatureLayerSnappingProvider extends SnappingProviderBase {
     }
 
     protected _getSnappingData(point: Coordinates): SnappingData {
-        let bbox = Bbox.fromPoint(new Point(point, this._map.crs), this.snappingDistance * this._map.resolution);
+        const currentPoint = new Point(point, this._map.crs);
+        let bbox = Bbox.fromPoint(currentPoint, this.snappingDistance * this._map.resolution);
         let features = this._layer.getFeatures(bbox, this._map.resolution);
 
         let snappingData: SnappingData = {points: [], lines: []};
@@ -40,7 +41,17 @@ export class FeatureLayerSnappingProvider extends SnappingProviderBase {
             }
         });
 
-        return snappingData
+        snappingData.points = snappingData.points.filter((dataPoint) =>
+            !currentPoint.equals(new Point(dataPoint, this._map.crs)));
+
+        snappingData.lines = snappingData.lines.filter((line) => {
+            const lineStart = new Point(line[0], this._map.crs);
+            const lineEnd = new Point(line[1], this._map.crs);
+
+            return !(currentPoint.equals(lineStart) || currentPoint.equals(lineEnd));
+        });
+
+        return snappingData;
     }
 
     /**
