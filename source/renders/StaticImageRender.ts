@@ -19,6 +19,8 @@ export abstract class StaticImageRender extends StaticRender {
     private _height: number;
     private _src: string;
     private _aborted: boolean;
+    private _controller: AbortController;
+    private _complete: boolean;
 
     offset: Offset;
     onLoad?: () => void;
@@ -38,6 +40,7 @@ export abstract class StaticImageRender extends StaticRender {
         this._height = height;
         this._src = src;
         this._aborted = false;
+        this._complete = false;
 
         this._createNode();
     }
@@ -47,16 +50,24 @@ export abstract class StaticImageRender extends StaticRender {
 
         if (this._width > 0) this._node.width = this._width;
         if (this._height > 0) this._node.height = this._height;
-
+        
         this._node.style.opacity = this._opacity.toString();
-
-        this.readyPromise = loadImage(this._node, this._src);
-        this.readyPromise.then(this.onLoad).catch((error) => {
+        
+        const controller = new AbortController();
+        const signal = controller.signal;
+        this._controller = controller;
+        this.readyPromise = loadImage(this._node, this._src, signal);
+        this.readyPromise
+          .then(() => {
+            this._complete = true;
+            this.onLoad();
+          })
+          .catch((error) => {
             if (this._aborted) {
-                return;
+              return;
             }
             this.onError(error);
-        });
+          });
 
     }
 
@@ -74,6 +85,7 @@ export abstract class StaticImageRender extends StaticRender {
         return this._height;
     }
 
+    // working only for base64 src
     get isReady(): boolean {
         return this._node && this._node.complete;
     }
@@ -88,8 +100,13 @@ export abstract class StaticImageRender extends StaticRender {
         if (this.node) this.node.style.opacity = value.toString();
     }
 
+    get isImageLoaded(): boolean {
+        return this._complete;
+    }
+
     deleteNode(): void {
         this._aborted = true;
+        this._controller.abort();
         if (this._node) {
             this._node.src = "";
         }

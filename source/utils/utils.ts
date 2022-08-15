@@ -230,15 +230,31 @@ if (typeof window.requestAnimationFrame === 'undefined') {
  * async loadImage function
  * @param image
  * @param src
+ * @param signal
  */
-export function loadImage(image: HTMLImageElement, src: string): Promise<void> {
+ export function loadImage(
+    image: HTMLImageElement,
+    src: string,
+    signal: AbortSignal | null
+  ): Promise<void> {
+    if (signal && !src.includes(";base64")) {
+      return fetch(src, { signal })
+        .then((res) => res.blob())
+        .then((data) => {
+          const url = URL.createObjectURL(data);
+          image.src = url;
+        });
+    }
+
     image.src = src;
     return new Promise((res, rej) => {
-        if (image.complete) {
-            return res()
-        }
-
-        image.onload = () => res();
-        image.onerror = error =>  rej(error);
-    })
-}
+      if (image.complete) {
+        return res();
+      }
+  
+      image.onload = () => res();
+      image.onerror = (error) => rej(error);
+    });
+  }
+  
+  

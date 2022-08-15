@@ -118,8 +118,8 @@ export class TileLayer extends Layer {
         let isSetComplete = true;
         for (let index of indexes) {
             let tile = this._getRender(index);
-            if (tile.isReady && !tile.error) renders.push(tile);
-            if (!tile.error && (!tile.isComplete || !tile.isReady)) isSetComplete = false;
+            if (tile.isImageLoaded && !tile.error) renders.push(tile);
+            if (!tile.error && (!tile.isComplete || !tile.isImageLoaded)) isSetComplete = false;
         }
 
         if (isSetComplete) {
@@ -206,9 +206,8 @@ export class TileLayer extends Layer {
             const indexDoesNotExistInCurrentBBox = !indexes.some(
               (index) => TileLayer._getTileId(index.z, index.x, index.y) === tileId
             );
-            const itIsImageNodeNotLoaded = "src" in tile.node && !tile.node.complete;
 
-            if (indexDoesNotExistInCurrentBBox && itIsImageNodeNotLoaded) {
+            if (indexDoesNotExistInCurrentBBox && !tile.isImageLoaded) {
               tile.deleteNode();
               delete this._tileCache[tileId];
             }
@@ -275,7 +274,7 @@ export class TileLayer extends Layer {
         this._opacity = opacity;
 
         for (let tileId of Object.keys(this._tileCache)) {
-            if (this._tileCache[tileId].isReady) this._tileCache[tileId].node.style.opacity = opacity.toString();
+            if (this._tileCache[tileId].isImageLoaded) this._tileCache[tileId].node.style.opacity = opacity.toString();
         }
 
         this.redraw();
