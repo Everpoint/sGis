@@ -81,36 +81,7 @@ export class Canvas {
             this._ctx.moveTo(center[0], center[1]);
         }
 
-        if (isChrome || isOpera) {
-            let step = 0.01;
-            let start = render.startAngle;
-            let end = render.endAngle;
-
-            if (!render.clockwise) {
-                end -= step / 2;
-                for (let ang = start; Math.abs(ang) < end; ang -= step) {
-                    this._ctx.lineTo(
-                        Math.cos(ang) * render.radius + center[0],
-                        Math.sin(ang) * render.radius + center[1],
-                    );
-                }
-            } else {
-                end += step / 2;
-                for (let ang = start; ang < end; ang += step) {
-                    this._ctx.lineTo(
-                        Math.cos(ang) * render.radius + center[0],
-                        Math.sin(ang) * render.radius + center[1],
-                    );
-                }
-            }
-
-            this._ctx.lineTo(
-                Math.cos(render.clockwise ? render.endAngle : -render.endAngle) * render.radius + center[0],
-                Math.sin(render.clockwise ? render.endAngle : -render.endAngle) * render.radius + center[1],
-            );
-        } else {
-            this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.clockwise ? render.endAngle : -render.endAngle, !render.clockwise);
-        }
+        this._ctx.arc(center[0], center[1], render.radius, render.startAngle, render.clockwise ? render.endAngle : -render.endAngle, !render.clockwise);
 
         if (render.isSector) {
             this._ctx.lineTo(center[0], center[1]);
