@@ -91,7 +91,12 @@ export abstract class StaticImageRender extends StaticRender {
     }
 
     get error(): boolean {
-        return this._node && this._node.complete && this._node.naturalWidth === 0;
+        return (
+            this._node &&
+            ((this._node.complete && this._node.src) ||
+              (this.isImageLoaded && this._node.parentElement)) &&
+            this._node.naturalWidth === 0
+          );
     }
 
     get opacity(): number { return parseFloat(this.node.style.opacity); }
