@@ -76,12 +76,7 @@ export abstract class PolyControl extends Control {
                 if (clickEvent.browserEvent.ctrlKey) {
                     this.startNewRing();
                 } else {
-                    const snappingResult = this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey);
-                    Promise.resolve(snappingResult).then((point) => {
-                      this._activeFeature.addPoint(point, this._activeFeature.rings.length - 1);
-                      this.fire(new PointAddEvent());
-                      if (this._tempLayer) this._tempLayer.redraw();
-                    });
+                    this._activeFeature.addPoint(clickEvent.point.position, this._activeFeature.rings.length - 1);
                     return;
                 }
             } else {
