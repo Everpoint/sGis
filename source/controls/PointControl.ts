@@ -44,13 +44,10 @@ export class PointControl extends Control {
     private _handleClick(event: sGisEvent): void {
         event.stopPropagation();
         let clickEvent = event as sGisClickEvent;
-        const snappingResult = this._snap(clickEvent.point.position, clickEvent.browserEvent.altKey);
-        Promise.resolve(snappingResult).then((point) => {
-          let feature = new PointFeature(point || clickEvent.point.position, {crs: this.map.crs, symbol: this.symbol});
+        let feature = new PointFeature(clickEvent.point.position, {crs: this.map.crs, symbol: this.symbol});
 
-          if (this.activeLayer) this.activeLayer.add(feature);
-          this.fire(new DrawingFinishEvent(feature, clickEvent.browserEvent));
-        });
+        if (this.activeLayer) this.activeLayer.add(feature);
+        this.fire(new DrawingFinishEvent(feature, clickEvent.browserEvent));
     }
 
     protected _handleMouseMove(event: sGisEvent): void {
